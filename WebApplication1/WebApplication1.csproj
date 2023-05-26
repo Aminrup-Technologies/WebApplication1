@@ -1,0 +1,1213 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{EC9A7587-77ED-49ED-85CA-CC119F93D489}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WebApplication1</RootNamespace>
+    <AssemblyName>WebApplication1</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TypeScriptToolsVersion>1.8</TypeScriptToolsVersion>
+    <TargetFrameworkProfile />
+    <Use64BitIISExpress />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DeployEncryptKey>
+    </DeployEncryptKey>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <PublishDatabaseSettings>
+      <Objects>
+        <ObjectGroup Name="DbConn-Deployment" Order="1">
+          <Destination Path="Data Source=KAUSHIK-PC\SQLEXPRESS%3bInitial Catalog=ats_erp%3bIntegrated Security=True" />
+          <Object Type="DbFullSql">
+            <PreSource Path="Data Source=atswork.in%3b Initial Catalog=ats_erp%3b Persist Security Info=True%3bUser ID=webapp%3b Password=OH4Y%40ats%3b Max Pool Size=1000000%3b" ScriptSchema="True" ScriptData="True" CopyAllFullTextCatalogs="False" DriDefaults="True" />
+            <Source Path="obj\Debug\AutoScripts\DbConn-Deployment_SchemaAndData.sql" Transacted="True" />
+          </Object>
+        </ObjectGroup>
+      </Objects>
+    </PublishDatabaseSettings>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.9.0, Culture=neutral, PublicKeyToken=0e99375e54769942, processorArchitecture=MSIL">
+      <HintPath>..\packages\Portable.BouncyCastle.1.8.9\lib\net40\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
+    <Reference Include="ClosedXML, Version=0.100.3.0, Culture=neutral, PublicKeyToken=fd1eb21b62ae805b, processorArchitecture=MSIL">
+      <HintPath>..\packages\ClosedXML.0.100.3\lib\netstandard2.0\ClosedXML.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.19.0.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.2.19.0\lib\net46\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelNumberFormat, Version=1.1.0.0, Culture=neutral, PublicKeyToken=23c6f5d73be07eca, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelNumberFormat.1.1.0\lib\net20\ExcelNumberFormat.dll</HintPath>
+    </Reference>
+    <Reference Include="Irony, Version=1.0.11.0, Culture=neutral, PublicKeyToken=ca48ace7223ead47, processorArchitecture=MSIL">
+      <HintPath>..\packages\Irony.NetCore.1.0.11\lib\net461\Irony.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.barcodes, Version=7.2.3.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext7.7.2.3\lib\net461\itext.barcodes.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.commons, Version=7.2.3.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext7.commons.7.2.3\lib\net461\itext.commons.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.forms, Version=7.2.3.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext7.7.2.3\lib\net461\itext.forms.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.io, Version=7.2.3.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext7.7.2.3\lib\net461\itext.io.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.kernel, Version=7.2.3.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext7.7.2.3\lib\net461\itext.kernel.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.layout, Version=7.2.3.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext7.7.2.3\lib\net461\itext.layout.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.pdfa, Version=7.2.3.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext7.7.2.3\lib\net461\itext.pdfa.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.sign, Version=7.2.3.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext7.7.2.3\lib\net461\itext.sign.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.styledxmlparser, Version=7.2.3.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext7.7.2.3\lib\net461\itext.styledxmlparser.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.svg, Version=7.2.3.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext7.7.2.3\lib\net461\itext.svg.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp, Version=5.5.13.3, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\iTextSharp.5.5.13.3\lib\itextsharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.5.0.0\lib\net461\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.5.0.0\lib\net461\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.5.0.0\lib\net461\Microsoft.Extensions.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.5.0.0\lib\net461\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Options, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Options.5.0.0\lib\net461\Microsoft.Extensions.Options.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Primitives.5.0.0\lib\net461\Microsoft.Extensions.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Types, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.SqlServer.Types.11.0.2\lib\net20\Microsoft.SqlServer.Types.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="netstandard" />
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="QRCoder, Version=1.4.3.0, Culture=neutral, PublicKeyToken=c4ed5b9ae8358a28, processorArchitecture=MSIL">
+      <HintPath>..\packages\QRCoder.1.4.3\lib\net40\QRCoder.dll</HintPath>
+    </Reference>
+    <Reference Include="SixLabors.Fonts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d998eea7b14cab13, processorArchitecture=MSIL">
+      <HintPath>..\packages\SixLabors.Fonts.1.0.0-beta19\lib\netstandard2.0\SixLabors.Fonts.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.5.0.0\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.FileSystem.Primitives.4.3.0\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.IO.Packaging, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Packaging.6.0.0\lib\net461\System.IO.Packaging.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.UnmanagedMemoryStream, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.UnmanagedMemoryStream.4.3.0\lib\net46\System.IO.UnmanagedMemoryStream.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="XLParser, Version=1.5.2.0, Culture=neutral, PublicKeyToken=63397e1e46bb91b4, processorArchitecture=MSIL">
+      <HintPath>..\packages\XLParser.1.5.2\lib\net461\XLParser.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bussiness\.gitignore" />
+    <Content Include="bussiness\production\add_expenses.aspx" />
+    <Content Include="bussiness\production\add_expense_heads.aspx" />
+    <Content Include="bussiness\production\add_expense_subheads.aspx" />
+    <Content Include="bussiness\production\add_workorderdata.aspx" />
+    <Content Include="bussiness\production\add_workorders.aspx" />
+    <Content Include="bussiness\production\add_wo_skillcategory.aspx" />
+    <Content Include="bussiness\production\aminrup\adda.aspx" />
+    <Content Include="bussiness\production\aminrup\manage_roles.aspx" />
+    <Content Include="bussiness\production\attach_manpower.aspx" />
+    <Content Include="bussiness\production\blank_page.aspx" />
+    <Content Include="bussiness\production\create_supplymemo.aspx" />
+    <Content Include="bussiness\production\css\Site.css" />
+    <Content Include="bussiness\production\emp_payroll_wages.aspx" />
+    <Content Include="bussiness\production\emp_profilepic.aspx" />
+    <Content Include="bussiness\production\gen_agl_F17.aspx" />
+    <Content Include="bussiness\production\gen_jsr_F17.aspx" />
+    <Content Include="bussiness\production\gen_kpo_F17.aspx" />
+    <Content Include="bussiness\production\gen_ninl_f17.aspx" />
+    <Content Include="bussiness\production\images\american-express.png" />
+    <Content Include="bussiness\production\images\cropper.jpg" />
+    <Content Include="bussiness\production\images\favicon.ico" />
+    <Content Include="bussiness\production\images\img.jpg" />
+    <Content Include="bussiness\production\images\inbox.png" />
+    <Content Include="bussiness\production\images\mastercard.png" />
+    <Content Include="bussiness\production\images\media.jpg" />
+    <Content Include="bussiness\production\images\nextMonth.jpeg" />
+    <Content Include="bussiness\production\images\paypal.png" />
+    <Content Include="bussiness\production\images\picture.jpg" />
+    <Content Include="bussiness\production\images\prevMonth.jpeg" />
+    <Content Include="bussiness\production\images\prod-1.jpg" />
+    <Content Include="bussiness\production\images\prod-2.jpg" />
+    <Content Include="bussiness\production\images\prod-3.jpg" />
+    <Content Include="bussiness\production\images\prod-4.jpg" />
+    <Content Include="bussiness\production\images\prod-5.jpg" />
+    <Content Include="bussiness\production\images\Triangle.gif" />
+    <Content Include="bussiness\production\images\user.png" />
+    <Content Include="bussiness\production\images\visa.png" />
+    <Content Include="bussiness\production\js\jquery-1.9.1.js" />
+    <Content Include="bussiness\production\manage_profile.aspx" />
+    <Content Include="bussiness\production\pyrl_deductionlist.aspx" />
+    <Content Include="bussiness\production\pyrl_deductions.aspx" />
+    <Content Include="bussiness\production\pyrl_gnrtdashbrd.aspx" />
+    <Content Include="bussiness\production\pyrl_managedashbrd.aspx" />
+    <Content Include="bussiness\production\rpts\A4.css" />
+    <Content Include="bussiness\production\rpts\rpt_CombinedF16.aspx" />
+    <Content Include="bussiness\production\rpts\supplymemo.aspx" />
+    <Content Include="bussiness\production\rpts\testing.aspx" />
+    <Content Include="bussiness\production\str\strdshbrd.aspx" />
+    <Content Include="bussiness\production\vw_emp_attencal.aspx" />
+    <Content Include="bussiness\production\vw_inchsupmem.aspx" />
+    <Content Include="bussiness\production\vw_lineitemjobs.aspx" />
+    <Content Include="bussiness\production\vw_supplyjobs.aspx" />
+    <Content Include="bussiness\production\csms_mainview.aspx" />
+    <Content Include="bussiness\production\csm_approvals.aspx" />
+    <Content Include="bussiness\production\csm_globaltraining.aspx" />
+    <Content Include="bussiness\production\csm_reports.aspx" />
+    <Content Include="bussiness\production\csm_soptraining.aspx" />
+    <Content Include="bussiness\production\generate_appvrsite_atdncsheet.aspx" />
+    <Content Include="bussiness\production\generate_atdncsheet.aspx" />
+    <Content Include="bussiness\production\csm_incidentreporting.aspx" />
+    <Content Include="bussiness\production\generate_banksheets.aspx" />
+    <Content Include="bussiness\production\generate_esicsheets.aspx" />
+    <Content Include="bussiness\production\generate_f29sheet.aspx" />
+    <Content Include="bussiness\production\generate_pfsheets.aspx" />
+    <Content Include="bussiness\production\generate_siteatdncsheet.aspx" />
+    <Content Include="bussiness\production\generate_trialform17.aspx" />
+    <Content Include="bussiness\production\jobapprovalpage.aspx" />
+    <Content Include="bussiness\production\jobs_and_manpower.aspx" />
+    <Content Include="bussiness\production\navigater.aspx" />
+    <Content Include="bussiness\production\ppe_request.aspx" />
+    <Content Include="bussiness\production\rpts\f29.aspx" />
+    <Content Include="bussiness\production\rpts\tbttalk_rpt.aspx" />
+    <Content Include="bussiness\production\searchemployee.aspx" />
+    <Content Include="bussiness\production\csm_toolboxtalk.aspx" />
+    <Content Include="bussiness\production\swap_jobdate.aspx" />
+    <Content Include="bussiness\production\viewupdate_empmustertabledata.aspx" />
+    <Content Include="bussiness\production\viewupdate_emppayrolldata.aspx" />
+    <Content Include="bussiness\production\view_createdjobs.aspx" />
+    <Content Include="bussiness\production\view_dailyjobs.aspx" />
+    <Content Include="bussiness\production\view_empmonthlyatt.aspx" />
+    <Content Include="bussiness\production\view_expensedetails.aspx" />
+    <Content Include="bussiness\production\view_expenses.aspx" />
+    <Content Include="bussiness\production\view_jobsforapproval.aspx" />
+    <Content Include="bussiness\production\atsworksite_incharges.aspx" />
+    <Content Include="bussiness\production\ats_work_sites.aspx" />
+    <Content Include="bussiness\production\create_jobid.aspx" />
+    <Content Include="bussiness\production\emp_bulkregistration.aspx" />
+    <Content Include="bussiness\production\emp_identity_data.aspx" />
+    <Content Include="bussiness\production\emp_payrollcategory.aspx" />
+    <Content Include="bussiness\production\emp_payroll_designation.aspx" />
+    <Content Include="bussiness\production\emp_registration.aspx" />
+    <Content Include="bussiness\production\emp_personal_details.aspx" />
+    <Content Include="bussiness\production\job_inpunch.aspx" />
+    <Content Include="bussiness\production\job_outpunch.aspx" />
+    <Content Include="bussiness\production\job_permitupload.aspx" />
+    <Content Include="bussiness\production\manage_jobid.aspx" />
+    <Content Include="bussiness\production\upload_wrkordrlineitems.aspx" />
+    <Content Include="bussiness\production\view_approvedjobs.aspx" />
+    <Content Include="bussiness\production\view_emp_mastertbldata.aspx" />
+    <Content Include="bussiness\production\homepage.aspx" />
+    <Content Include="bussiness\production\view_jobdetails.aspx" />
+    <Content Include="bussiness\production\view_monthlyjobs.aspx" />
+    <Content Include="bussiness\production\view_rejectedjobs.aspx" />
+    <Content Include="bussiness\production\vw_csm_toolboxtalk.aspx" />
+    <Content Include="bussiness\production\vw_csm_toolboxtalkdetails.aspx" />
+    <Content Include="bussiness\production\vw_monthlyatten.aspx" />
+    <Content Include="bussiness\production\vw_sopapproval.aspx" />
+    <Content Include="bussiness\production\vw_tbtforapproval.aspx" />
+    <Content Include="bussiness\production\vw_tbt_masterapproval.aspx" />
+    <Content Include="bussiness\production\workcompany_dept.aspx" />
+    <Content Include="bussiness\production\workcomp_deptheads.aspx" />
+    <Content Include="bussiness\production\workcomp_dept_locations.aspx" />
+    <Content Include="bussiness\production\add_workorder_lineitems.aspx" />
+    <Content Include="bussiness\production\work_company.aspx" />
+    <Content Include="bussiness\production\work_country.aspx" />
+    <Content Include="bussiness\production\work_region.aspx" />
+    <Content Include="bussiness\production\work_states.aspx" />
+    <Content Include="bussiness\production\vw_emp_paymentbankdetails.aspx" />
+    <Content Include="packages.config" />
+    <Content Include="bussiness\.bowerrc" />
+    <Content Include="bussiness\bower.json" />
+    <Content Include="bussiness\changelog.md" />
+    <Content Include="bussiness\docs\fonts\fonts\fontawesome-webfont.eot" />
+    <Content Include="bussiness\docs\fonts\fonts\fontawesome-webfont.ttf" />
+    <Content Include="bussiness\docs\fonts\fonts\fontawesome-webfont.woff" />
+    <Content Include="bussiness\docs\fonts\fonts\FontAwesome.otf" />
+    <Content Include="bussiness\docs\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="bussiness\docs\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="bussiness\docs\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="bussiness\docs\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="bussiness\docs\fonts\less\bordered-pulled.less" />
+    <Content Include="bussiness\docs\fonts\less\core.less" />
+    <Content Include="bussiness\docs\fonts\less\fixed-width.less" />
+    <Content Include="bussiness\docs\fonts\less\font-awesome.less" />
+    <Content Include="bussiness\docs\fonts\less\icons.less" />
+    <Content Include="bussiness\docs\fonts\less\larger.less" />
+    <Content Include="bussiness\docs\fonts\less\list.less" />
+    <Content Include="bussiness\docs\fonts\less\mixins.less" />
+    <Content Include="bussiness\docs\fonts\less\path.less" />
+    <Content Include="bussiness\docs\fonts\less\rotated-flipped.less" />
+    <Content Include="bussiness\docs\fonts\less\spinning.less" />
+    <Content Include="bussiness\docs\fonts\less\stacked.less" />
+    <Content Include="bussiness\docs\fonts\less\variables.less" />
+    <Content Include="bussiness\docs\fonts\scss\font-awesome.scss" />
+    <Content Include="bussiness\docs\fonts\scss\_bordered-pulled.scss" />
+    <Content Include="bussiness\docs\fonts\scss\_core.scss" />
+    <Content Include="bussiness\docs\fonts\scss\_fixed-width.scss" />
+    <Content Include="bussiness\docs\fonts\scss\_icons.scss" />
+    <Content Include="bussiness\docs\fonts\scss\_larger.scss" />
+    <Content Include="bussiness\docs\fonts\scss\_list.scss" />
+    <Content Include="bussiness\docs\fonts\scss\_mixins.scss" />
+    <Content Include="bussiness\docs\fonts\scss\_path.scss" />
+    <Content Include="bussiness\docs\fonts\scss\_rotated-flipped.scss" />
+    <Content Include="bussiness\docs\fonts\scss\_spinning.scss" />
+    <Content Include="bussiness\docs\fonts\scss\_stacked.scss" />
+    <Content Include="bussiness\docs\fonts\scss\_variables.scss" />
+    <Content Include="bussiness\package.json" />
+    <Content Include="bussiness\src\scss\custom.scss" />
+    <Content Include="bussiness\src\scss\daterangepicker.scss" />
+    <Content Include="bussiness\production\webmaster.Master" />
+    <Content Include="bussiness\production\aminrup\aminrup.Master" />
+    <None Include="Properties\PublishProfiles\deploy.pubxml" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bussiness\build\css\custom.css" />
+    <Content Include="bussiness\build\css\custom.min.css" />
+    <Content Include="bussiness\build\images\back_disabled.png" />
+    <Content Include="bussiness\build\images\back_enabled.png" />
+    <Content Include="bussiness\build\images\back_enabled_hover.png" />
+    <Content Include="bussiness\build\images\forward_disabled.png" />
+    <Content Include="bussiness\build\images\forward_enabled.png" />
+    <Content Include="bussiness\build\images\forward_enabled_hover.png" />
+    <Content Include="bussiness\build\images\loading.gif" />
+    <Content Include="bussiness\build\js\custom.js" />
+    <Content Include="bussiness\build\js\custom.min.js" />
+    <Content Include="bussiness\docs\css\animate.min.css" />
+    <Content Include="bussiness\docs\css\bootstrap.min.css" />
+    <Content Include="bussiness\docs\css\docs.min.css" />
+    <Content Include="bussiness\docs\css\shCoreDefault.css" />
+    <Content Include="bussiness\docs\fonts\css\font-awesome.css" />
+    <Content Include="bussiness\docs\fonts\css\font-awesome.min.css" />
+    <Content Include="bussiness\docs\fonts\fonts\fontawesome-webfont.svg" />
+    <Content Include="bussiness\docs\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="bussiness\docs\images\layout.png" />
+    <Content Include="bussiness\docs\images\min_menu.png" />
+    <Content Include="bussiness\docs\images\min_menu.tiff" />
+    <Content Include="bussiness\docs\images\welcome.png" />
+    <Content Include="bussiness\docs\images\welcome.tiff" />
+    <Content Include="bussiness\docs\index.html" />
+    <Content Include="bussiness\docs\js\bootstrap.min.js" />
+    <Content Include="bussiness\docs\js\jquery.min.js" />
+    <Content Include="bussiness\docs\js\shBrushXml.js" />
+    <Content Include="bussiness\docs\js\shCore.js" />
+    <Content Include="bussiness\gulpfile.js" />
+    <Content Include="bussiness\production\css\maps\jquery-jvectormap-2.0.3.css" />
+    <Content Include="bussiness\production\js\datepicker\daterangepicker.js" />
+    <Content Include="bussiness\production\js\moment\moment.min.js" />
+    <Content Include="bussiness\production\login.aspx" />
+    <Content Include="bussiness\src\js\custom.js" />
+    <Content Include="bussiness\src\js\examples.js" />
+    <Content Include="bussiness\src\js\helpers\smartresize.js" />
+    <Content Include="index.html" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="bussiness\production\add_expenses.aspx.cs">
+      <DependentUpon>add_expenses.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\add_expenses.aspx.designer.cs">
+      <DependentUpon>add_expenses.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\add_expense_heads.aspx.cs">
+      <DependentUpon>add_expense_heads.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\add_expense_heads.aspx.designer.cs">
+      <DependentUpon>add_expense_heads.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\add_expense_subheads.aspx.cs">
+      <DependentUpon>add_expense_subheads.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\add_expense_subheads.aspx.designer.cs">
+      <DependentUpon>add_expense_subheads.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\add_workorderdata.aspx.cs">
+      <DependentUpon>add_workorderdata.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\add_workorderdata.aspx.designer.cs">
+      <DependentUpon>add_workorderdata.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\add_workorders.aspx.cs">
+      <DependentUpon>add_workorders.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\add_workorders.aspx.designer.cs">
+      <DependentUpon>add_workorders.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\add_wo_skillcategory.aspx.cs">
+      <DependentUpon>add_wo_skillcategory.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\add_wo_skillcategory.aspx.designer.cs">
+      <DependentUpon>add_wo_skillcategory.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\aminrup\adda.aspx.cs">
+      <DependentUpon>adda.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\aminrup\adda.aspx.designer.cs">
+      <DependentUpon>adda.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\aminrup\aminrup.Master.cs">
+      <DependentUpon>aminrup.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\aminrup\aminrup.Master.designer.cs">
+      <DependentUpon>aminrup.Master</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\aminrup\manage_roles.aspx.cs">
+      <DependentUpon>manage_roles.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\aminrup\manage_roles.aspx.designer.cs">
+      <DependentUpon>manage_roles.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\attach_manpower.aspx.cs">
+      <DependentUpon>attach_manpower.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\attach_manpower.aspx.designer.cs">
+      <DependentUpon>attach_manpower.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\blank_page.aspx.cs">
+      <DependentUpon>blank_page.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\blank_page.aspx.designer.cs">
+      <DependentUpon>blank_page.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\create_supplymemo.aspx.cs">
+      <DependentUpon>create_supplymemo.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\create_supplymemo.aspx.designer.cs">
+      <DependentUpon>create_supplymemo.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\emp_payroll_wages.aspx.cs">
+      <DependentUpon>emp_payroll_wages.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\emp_payroll_wages.aspx.designer.cs">
+      <DependentUpon>emp_payroll_wages.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\emp_profilepic.aspx.cs">
+      <DependentUpon>emp_profilepic.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\emp_profilepic.aspx.designer.cs">
+      <DependentUpon>emp_profilepic.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\gen_agl_F17.aspx.cs">
+      <DependentUpon>gen_agl_F17.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\gen_agl_F17.aspx.designer.cs">
+      <DependentUpon>gen_agl_F17.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\gen_jsr_F17.aspx.cs">
+      <DependentUpon>gen_jsr_F17.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\gen_jsr_F17.aspx.designer.cs">
+      <DependentUpon>gen_jsr_F17.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\gen_kpo_F17.aspx.cs">
+      <DependentUpon>gen_kpo_F17.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\gen_kpo_F17.aspx.designer.cs">
+      <DependentUpon>gen_kpo_F17.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\gen_ninl_f17.aspx.cs">
+      <DependentUpon>gen_ninl_f17.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\gen_ninl_f17.aspx.designer.cs">
+      <DependentUpon>gen_ninl_f17.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\manage_profile.aspx.cs">
+      <DependentUpon>manage_profile.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\manage_profile.aspx.designer.cs">
+      <DependentUpon>manage_profile.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\pyrl_deductionlist.aspx.cs">
+      <DependentUpon>pyrl_deductionlist.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\pyrl_deductionlist.aspx.designer.cs">
+      <DependentUpon>pyrl_deductionlist.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\pyrl_deductions.aspx.cs">
+      <DependentUpon>pyrl_deductions.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\pyrl_deductions.aspx.designer.cs">
+      <DependentUpon>pyrl_deductions.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\pyrl_gnrtdashbrd.aspx.cs">
+      <DependentUpon>pyrl_gnrtdashbrd.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\pyrl_gnrtdashbrd.aspx.designer.cs">
+      <DependentUpon>pyrl_gnrtdashbrd.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\pyrl_managedashbrd.aspx.cs">
+      <DependentUpon>pyrl_managedashbrd.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\pyrl_managedashbrd.aspx.designer.cs">
+      <DependentUpon>pyrl_managedashbrd.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\rpts\rpt_CombinedF16.aspx.cs">
+      <DependentUpon>rpt_CombinedF16.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\rpts\rpt_CombinedF16.aspx.designer.cs">
+      <DependentUpon>rpt_CombinedF16.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\rpts\supplymemo.aspx.cs">
+      <DependentUpon>supplymemo.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\rpts\supplymemo.aspx.designer.cs">
+      <DependentUpon>supplymemo.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\rpts\testing.aspx.cs">
+      <DependentUpon>testing.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\rpts\testing.aspx.designer.cs">
+      <DependentUpon>testing.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\str\strdshbrd.aspx.cs">
+      <DependentUpon>strdshbrd.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\str\strdshbrd.aspx.designer.cs">
+      <DependentUpon>strdshbrd.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\vw_emp_attencal.aspx.cs">
+      <DependentUpon>vw_emp_attencal.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\vw_emp_attencal.aspx.designer.cs">
+      <DependentUpon>vw_emp_attencal.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\vw_inchsupmem.aspx.cs">
+      <DependentUpon>vw_inchsupmem.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\vw_inchsupmem.aspx.designer.cs">
+      <DependentUpon>vw_inchsupmem.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\vw_lineitemjobs.aspx.cs">
+      <DependentUpon>vw_lineitemjobs.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\vw_lineitemjobs.aspx.designer.cs">
+      <DependentUpon>vw_lineitemjobs.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\vw_supplyjobs.aspx.cs">
+      <DependentUpon>vw_supplyjobs.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\vw_supplyjobs.aspx.designer.cs">
+      <DependentUpon>vw_supplyjobs.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\csms_mainview.aspx.cs">
+      <DependentUpon>csms_mainview.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\csms_mainview.aspx.designer.cs">
+      <DependentUpon>csms_mainview.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\csm_approvals.aspx.cs">
+      <DependentUpon>csm_approvals.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\csm_approvals.aspx.designer.cs">
+      <DependentUpon>csm_approvals.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\csm_globaltraining.aspx.cs">
+      <DependentUpon>csm_globaltraining.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\csm_globaltraining.aspx.designer.cs">
+      <DependentUpon>csm_globaltraining.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\csm_reports.aspx.cs">
+      <DependentUpon>csm_reports.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\csm_reports.aspx.designer.cs">
+      <DependentUpon>csm_reports.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\csm_soptraining.aspx.cs">
+      <DependentUpon>csm_soptraining.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\csm_soptraining.aspx.designer.cs">
+      <DependentUpon>csm_soptraining.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\generate_appvrsite_atdncsheet.aspx.cs">
+      <DependentUpon>generate_appvrsite_atdncsheet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\generate_appvrsite_atdncsheet.aspx.designer.cs">
+      <DependentUpon>generate_appvrsite_atdncsheet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\generate_atdncsheet.aspx.cs">
+      <DependentUpon>generate_atdncsheet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\generate_atdncsheet.aspx.designer.cs">
+      <DependentUpon>generate_atdncsheet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\csm_incidentreporting.aspx.cs">
+      <DependentUpon>csm_incidentreporting.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\csm_incidentreporting.aspx.designer.cs">
+      <DependentUpon>csm_incidentreporting.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\generate_banksheets.aspx.cs">
+      <DependentUpon>generate_banksheets.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\generate_banksheets.aspx.designer.cs">
+      <DependentUpon>generate_banksheets.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\generate_esicsheets.aspx.cs">
+      <DependentUpon>generate_esicsheets.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\generate_esicsheets.aspx.designer.cs">
+      <DependentUpon>generate_esicsheets.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\generate_f29sheet.aspx.cs">
+      <DependentUpon>generate_f29sheet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\generate_f29sheet.aspx.designer.cs">
+      <DependentUpon>generate_f29sheet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\generate_pfsheets.aspx.cs">
+      <DependentUpon>generate_pfsheets.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\generate_pfsheets.aspx.designer.cs">
+      <DependentUpon>generate_pfsheets.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\generate_siteatdncsheet.aspx.cs">
+      <DependentUpon>generate_siteatdncsheet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\generate_siteatdncsheet.aspx.designer.cs">
+      <DependentUpon>generate_siteatdncsheet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\generate_trialform17.aspx.cs">
+      <DependentUpon>generate_trialform17.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\generate_trialform17.aspx.designer.cs">
+      <DependentUpon>generate_trialform17.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\jobapprovalpage.aspx.cs">
+      <DependentUpon>jobapprovalpage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\jobapprovalpage.aspx.designer.cs">
+      <DependentUpon>jobapprovalpage.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\jobs_and_manpower.aspx.cs">
+      <DependentUpon>jobs_and_manpower.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\jobs_and_manpower.aspx.designer.cs">
+      <DependentUpon>jobs_and_manpower.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\navigater.aspx.cs">
+      <DependentUpon>navigater.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\navigater.aspx.designer.cs">
+      <DependentUpon>navigater.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\Payroll_OH4Y.cs" />
+    <Compile Include="bussiness\production\ppe_request.aspx.cs">
+      <DependentUpon>ppe_request.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\ppe_request.aspx.designer.cs">
+      <DependentUpon>ppe_request.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\rpts\f29.aspx.cs">
+      <DependentUpon>f29.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\rpts\f29.aspx.designer.cs">
+      <DependentUpon>f29.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\rpts\tbttalk_rpt.aspx.cs">
+      <DependentUpon>tbttalk_rpt.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\rpts\tbttalk_rpt.aspx.designer.cs">
+      <DependentUpon>tbttalk_rpt.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\searchemployee.aspx.cs">
+      <DependentUpon>searchemployee.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\searchemployee.aspx.designer.cs">
+      <DependentUpon>searchemployee.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\csm_toolboxtalk.aspx.cs">
+      <DependentUpon>csm_toolboxtalk.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\csm_toolboxtalk.aspx.designer.cs">
+      <DependentUpon>csm_toolboxtalk.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\swap_jobdate.aspx.cs">
+      <DependentUpon>swap_jobdate.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\swap_jobdate.aspx.designer.cs">
+      <DependentUpon>swap_jobdate.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\viewupdate_empmustertabledata.aspx.cs">
+      <DependentUpon>viewupdate_empmustertabledata.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\viewupdate_empmustertabledata.aspx.designer.cs">
+      <DependentUpon>viewupdate_empmustertabledata.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\viewupdate_emppayrolldata.aspx.cs">
+      <DependentUpon>viewupdate_emppayrolldata.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\viewupdate_emppayrolldata.aspx.designer.cs">
+      <DependentUpon>viewupdate_emppayrolldata.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\view_createdjobs.aspx.cs">
+      <DependentUpon>view_createdjobs.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\view_createdjobs.aspx.designer.cs">
+      <DependentUpon>view_createdjobs.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\view_dailyjobs.aspx.cs">
+      <DependentUpon>view_dailyjobs.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\view_dailyjobs.aspx.designer.cs">
+      <DependentUpon>view_dailyjobs.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\view_empmonthlyatt.aspx.cs">
+      <DependentUpon>view_empmonthlyatt.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\view_empmonthlyatt.aspx.designer.cs">
+      <DependentUpon>view_empmonthlyatt.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\view_expensedetails.aspx.cs">
+      <DependentUpon>view_expensedetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\view_expensedetails.aspx.designer.cs">
+      <DependentUpon>view_expensedetails.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\view_expenses.aspx.cs">
+      <DependentUpon>view_expenses.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\view_expenses.aspx.designer.cs">
+      <DependentUpon>view_expenses.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\view_jobsforapproval.aspx.cs">
+      <DependentUpon>view_jobsforapproval.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\view_jobsforapproval.aspx.designer.cs">
+      <DependentUpon>view_jobsforapproval.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\atsworksite_incharges.aspx.cs">
+      <DependentUpon>atsworksite_incharges.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\atsworksite_incharges.aspx.designer.cs">
+      <DependentUpon>atsworksite_incharges.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\ats_work_sites.aspx.cs">
+      <DependentUpon>ats_work_sites.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\ats_work_sites.aspx.designer.cs">
+      <DependentUpon>ats_work_sites.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\CountChecker.cs" />
+    <Compile Include="bussiness\production\create_jobid.aspx.cs">
+      <DependentUpon>create_jobid.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\create_jobid.aspx.designer.cs">
+      <DependentUpon>create_jobid.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\DB_Utility_OH4Y.cs" />
+    <Compile Include="bussiness\production\emp_bulkregistration.aspx.cs">
+      <DependentUpon>emp_bulkregistration.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\emp_bulkregistration.aspx.designer.cs">
+      <DependentUpon>emp_bulkregistration.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\emp_identity_data.aspx.cs">
+      <DependentUpon>emp_identity_data.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\emp_identity_data.aspx.designer.cs">
+      <DependentUpon>emp_identity_data.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\emp_payrollcategory.aspx.cs">
+      <DependentUpon>emp_payrollcategory.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\emp_payrollcategory.aspx.designer.cs">
+      <DependentUpon>emp_payrollcategory.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\emp_payroll_designation.aspx.cs">
+      <DependentUpon>emp_payroll_designation.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\emp_payroll_designation.aspx.designer.cs">
+      <DependentUpon>emp_payroll_designation.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\emp_registration.aspx.cs">
+      <DependentUpon>emp_registration.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\emp_registration.aspx.designer.cs">
+      <DependentUpon>emp_registration.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\job_inpunch.aspx.cs">
+      <DependentUpon>job_inpunch.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\job_inpunch.aspx.designer.cs">
+      <DependentUpon>job_inpunch.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\job_outpunch.aspx.cs">
+      <DependentUpon>job_outpunch.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\job_outpunch.aspx.designer.cs">
+      <DependentUpon>job_outpunch.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\job_permitupload.aspx.cs">
+      <DependentUpon>job_permitupload.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\job_permitupload.aspx.designer.cs">
+      <DependentUpon>job_permitupload.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\login.aspx.cs">
+      <DependentUpon>login.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\login.aspx.designer.cs">
+      <DependentUpon>login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\emp_personal_details.aspx.cs">
+      <DependentUpon>emp_personal_details.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\emp_personal_details.aspx.designer.cs">
+      <DependentUpon>emp_personal_details.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\manage_jobid.aspx.cs">
+      <DependentUpon>manage_jobid.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\manage_jobid.aspx.designer.cs">
+      <DependentUpon>manage_jobid.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\upload_wrkordrlineitems.aspx.cs">
+      <DependentUpon>upload_wrkordrlineitems.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\upload_wrkordrlineitems.aspx.designer.cs">
+      <DependentUpon>upload_wrkordrlineitems.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\view_approvedjobs.aspx.cs">
+      <DependentUpon>view_approvedjobs.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\view_approvedjobs.aspx.designer.cs">
+      <DependentUpon>view_approvedjobs.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\view_emp_mastertbldata.aspx.cs">
+      <DependentUpon>view_emp_mastertbldata.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\view_emp_mastertbldata.aspx.designer.cs">
+      <DependentUpon>view_emp_mastertbldata.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\homepage.aspx.cs">
+      <DependentUpon>homepage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\homepage.aspx.designer.cs">
+      <DependentUpon>homepage.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\view_jobdetails.aspx.cs">
+      <DependentUpon>view_jobdetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\view_jobdetails.aspx.designer.cs">
+      <DependentUpon>view_jobdetails.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\view_monthlyjobs.aspx.cs">
+      <DependentUpon>view_monthlyjobs.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\view_monthlyjobs.aspx.designer.cs">
+      <DependentUpon>view_monthlyjobs.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\view_rejectedjobs.aspx.cs">
+      <DependentUpon>view_rejectedjobs.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\view_rejectedjobs.aspx.designer.cs">
+      <DependentUpon>view_rejectedjobs.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\vw_csm_toolboxtalk.aspx.cs">
+      <DependentUpon>vw_csm_toolboxtalk.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\vw_csm_toolboxtalk.aspx.designer.cs">
+      <DependentUpon>vw_csm_toolboxtalk.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\vw_csm_toolboxtalkdetails.aspx.cs">
+      <DependentUpon>vw_csm_toolboxtalkdetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\vw_csm_toolboxtalkdetails.aspx.designer.cs">
+      <DependentUpon>vw_csm_toolboxtalkdetails.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\vw_monthlyatten.aspx.cs">
+      <DependentUpon>vw_monthlyatten.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\vw_monthlyatten.aspx.designer.cs">
+      <DependentUpon>vw_monthlyatten.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\vw_sopapproval.aspx.cs">
+      <DependentUpon>vw_sopapproval.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\vw_sopapproval.aspx.designer.cs">
+      <DependentUpon>vw_sopapproval.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\vw_tbtforapproval.aspx.cs">
+      <DependentUpon>vw_tbtforapproval.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\vw_tbtforapproval.aspx.designer.cs">
+      <DependentUpon>vw_tbtforapproval.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\vw_tbt_masterapproval.aspx.cs">
+      <DependentUpon>vw_tbt_masterapproval.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\vw_tbt_masterapproval.aspx.designer.cs">
+      <DependentUpon>vw_tbt_masterapproval.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\webmaster.Master.cs">
+      <DependentUpon>webmaster.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\webmaster.Master.designer.cs">
+      <DependentUpon>webmaster.Master</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\workcompany_dept.aspx.cs">
+      <DependentUpon>workcompany_dept.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\workcompany_dept.aspx.designer.cs">
+      <DependentUpon>workcompany_dept.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\workcomp_deptheads.aspx.cs">
+      <DependentUpon>workcomp_deptheads.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\workcomp_deptheads.aspx.designer.cs">
+      <DependentUpon>workcomp_deptheads.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\workcomp_dept_locations.aspx.cs">
+      <DependentUpon>workcomp_dept_locations.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\workcomp_dept_locations.aspx.designer.cs">
+      <DependentUpon>workcomp_dept_locations.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\add_workorder_lineitems.aspx.cs">
+      <DependentUpon>add_workorder_lineitems.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\add_workorder_lineitems.aspx.designer.cs">
+      <DependentUpon>add_workorder_lineitems.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\work_company.aspx.cs">
+      <DependentUpon>work_company.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\work_company.aspx.designer.cs">
+      <DependentUpon>work_company.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\work_country.aspx.cs">
+      <DependentUpon>work_country.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\work_country.aspx.designer.cs">
+      <DependentUpon>work_country.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\work_region.aspx.cs">
+      <DependentUpon>work_region.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\work_region.aspx.designer.cs">
+      <DependentUpon>work_region.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\work_states.aspx.cs">
+      <DependentUpon>work_states.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\work_states.aspx.designer.cs">
+      <DependentUpon>work_states.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\vw_emp_paymentbankdetails.aspx.cs">
+      <DependentUpon>vw_emp_paymentbankdetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\vw_emp_paymentbankdetails.aspx.designer.cs">
+      <DependentUpon>vw_emp_paymentbankdetails.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="Microsoft.Office.Core">
+      <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>8</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Microsoft.Office.Interop.Excel">
+      <Guid>{00020813-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>9</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="VBIDE">
+      <Guid>{0002E157-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>3</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup />
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>9630</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:9630/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+	<table class="pdf">
+	<tr>
+		<td style=" background-color: #8779F6; color: white; text-shadow: 2px 2px 4px black; padding: 25px "  >
+                                        <span style="font: normal 26px/24px Century Gothic; font-weight: bold; "><center>INSPECTION REPORT 
+
+                                        <br>
+                                            LIFTING TOOLS AND TACKLES
+
+                                        </center></span>
+                                    </td>
+	</tr></table>
+
+<table class="pdf">
+  <tr>
+    <th>DEPARTMENT:</th>
+    <th>MECHANICAL</th>
+    <th>LOCATION:</th>
+    <th>SP#4</th>
+  </tr>
+  <tr>
+    <th>LINE MANAGER:</th>
+    <th>MUKESH KUMAR</th>
+    <th>SAFETY SUPV.:</th>
+    <th>RAJENDRA PRASHAD</th>
+  </tr>
+  <tr>
+    <th>DATE:</th>
+    <th>20/07/2021</th>
+    <th>CONTRACTOR REP.:</th>
+    <th>SHIV KUMAR</th>
+  </tr>
+</table>
+
+<style>
+	 .h1{
+	 	text-align: center;
+	    background-color: (255,99,71,0.4);
+	    border-style: solid;
+	 }
+
+	 table, th, td {
+           border: 1px solid black;
+           border-collapse: collapse;
+           text-align: left;
+           width: 844px;
+           padding: 9px;
+        }
+     table{
+          width: 100%;
+        }
+        .pdf1{
+			width: 844px;
+           
+		}
+
+     .pdf{
+     	width: 844px;
+
+     }
+
+     #table-style {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 844px;
+}
+
+#table-style td, #table-style th {
+  border: none;
+  padding: 15px;
+}
+
+/*#table-style tr:hover {background-color: #ddd;}*/
+
+#table-style th {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  text-align: left;
+  background-color: #04AA6D;
+  color: white;
+}
+
+.button{
+	border: 1px solid #fff;
+	color: black;
+    text-decoration: none;
+    transition: 0.4s ease;
+}
+
+.button:hover{
+	background-color: #a59afc;
+    color: white;
+}
+
+.btn{
+	border: 1px solid #fff;
+	background-color: #a81407;
+    color: white;
+    text-decoration: none;
+    transition: 0.4s ease;
+}
+.btn:hover{
+	background-color: grey;
+    color: white;
+}
+:placeholder-shown{
+    border-collapse: collapse;
+}
+
+@media print
+		{
+			#button{
+						visibility: hidden;
+			}
+	    }
+
+	 
+
+</style>
+
+
+</head>
+<body>
+	<br/>
+	<table style="border-collapse: collapse; width: 844px; background-color: #897DEA; color: white; text-shadow: 2px 2px 4px black;">
+		<th style="text-align: center; padding: 12px">ITEMS DISCUSSED : (Indciate if NOT discussed)</th>
+	</table>
+    <br/>
+
+	<table id="table-style" class="pdf">
+<ol>
+  <tr>
+    <td>1. Safety contact and review of action items from last meeting.</td>
+  </tr>
+
+  <tr>
+    <td>2. Items of general safety importance to the total work site.</td>
+
+  </tr>
+  <tr>
+    <td>3. Items of safety interest to this group.</td>
+
+  </tr>
+  <tr>
+    <td>4. Standard operation procedure (SOP) relevant to this group.</td>
+
+  </tr>
+  <tr>
+    <td>5. Reminders to Employees of their Personal Responsibilities to ensure and Maintain.</td>
+
+  </tr>
+  <tr>
+    <td>6. Safety message Handouts/circulars to be shared with contact employees.</td>
+
+  </tr>
+  <tr>
+    <td>7. Actions resulting from this meeting and points raised by Contact employee and supervisors.</td>
+
+  </tr>
+<ol/>
+</table>
+<!----------------------------------------------------->
+<p style="page-break-before: always;"></p>  <!-- page break -->
+
+<h1 align="left" style="font-family:verdana"><font color="green">ats</font></h1>
+	<table border="2" class="pdf1" style="color: white;
+            text-shadow: 2px 2px 4px black;text-align: center;">
+		<tr bgcolor="#8665f7">
+			<th><h3><b><center>ITEMS</b></h3></th>
+			<th><h3><b><center>ACTION BY</b></h3></th>
+			<th><h3><b><center>WHEN</b></h3></th>
+		</tr>
+		<tbody id="table-id1">
+			
+		</tbody>
+		
+	</table class="pdf1">
+     <input type="button" value="Add New Entry" id="newrow1" class="pdf button">
+
+
+	<table>
+	<p align="left"><i><p><b>Signature of Contractor / line Manager .................................................<b></p></i></p>
+	<p style="text-align: right; "><i><h3><pre>                                                          Date:- ..................................</pre></p></i></p>
+	<h5>Note:Toolbox meeting is generally conducted every shift,therefore a register considering above requirments.</h5>
+    </table>
+    <!-------------------------->
+
+	<script type="text/javascript">
+
+		/*for table 1*/
+		$(document).ready(function()
+		{
+			$("#newrow1").click(function()
+			{
+				var addcontrols="<tr>"
+				       addcontrols+="<td><input type='text'></td>"
+                       addcontrols+="<td><input type='text'></td>"
+                       addcontrols+="<td><input type='text'></td>"
+                           $("#table-id1").append(addcontrols);
+			});
+
+		});
+		/* for table 2*/
+		$(document).ready(function()
+		{
+			$("#newrow").click(function()
+			{
+				var i=1
+				var addcontrols="<tr>"
+				       addcontrols+="<td></td>"
+                       addcontrols+="<td><input type='text'></td>"
+                       addcontrols+="<td><input type='text'></td>"
+                       addcontrols+="<td><input type='text'></td>"
+                       addcontrols+="<td><input type='text'></td>"
+				                addcontrols+="</tr>"
+
+				                $("#table-id").append(addcontrols);
+			});
+
+		});
+
+	</script>
+
+    <table border="2" style="text-shadow: 2px 2px 4px black;" class="pdf">
+    	<thead bgcolor="#8665f7" style="color: white;">
+    		<tr>
+    			<th><b><center>SL.NO<b></th>
+    			<th><b><center>NAME OF WORKS<b></th>
+    			<th><b><center>DESIGNATION<b></th>
+    			<th><b><center>GATE PASS NO.<b></th>
+			    <th><b><center>SIGN<b></th>
+    		</tr>
+    	</thead>
+    	<tbody id="table-id">
+    	</tbody>
+    	<tfoot>
+    		
+    	</tfoot>
+	
+    </table>
+     <input type="button" value="Add New Entry" id="newrow" class="pdf button" >
+      <!-------------------------->
+	<!--<table border="2" class="pdf1" id="myTable" >
+		<tr align="center" bgcolor="#8665f7" style="color: white;
+            text-shadow: 2px 2px 4px black;">
+			<th><h3><b><center>SL.NO</b></h3></th>
+			<th><h3><b><center>NAME OF WORKS</b></h3></th>
+			<th><h3><b><center>DESIGNATION</b></h3></th>
+			<th><h3><b><center>GATE PASS NO.</b></h3></th>
+			<th><h3><b><center>SIGN</b></h3></th>
+		</tr>
+		
+		
+		
+	</table>
+	<br>
+	<button id="button" type="button" onclick="myFunction()">Add New Entry</button>
+	<script>
+		function myFunction(){
+			var table=document.getElementById("myTable");
+			var row=table.insertRow();
+			var cell1=row.insertCell(0);
+			var cell2=row.insertCell(1);
+			var cell3=row.insertCell(2);
+			var cell4=row.insertCell(3);
+			var cell5=row.insertCell(4);
+			
+			cell1.innerHTML="<br>";
+			cell2.innerHTML="";
+			cell3.innerHTML="";
+			cell4.innerHTML="";
+			cell5.innerHTML="";
+
+		}
+	</script>-->
+	<br><br>
+	<table class="pdf1">
+		<pre>should be made and maintained                                                   Signature by Safety Officer/Supervisor</pre>
+
+	</table>
+
+
+<button onclick="window.print()" id="button" class="btn" >Print</button>
+
+</body>
+</html>

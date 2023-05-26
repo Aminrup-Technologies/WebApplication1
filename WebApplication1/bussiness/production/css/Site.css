@@ -1,0 +1,278 @@
+﻿.calendarOuter {
+    text-align: center;
+    float: left;
+    margin-left: 10px;
+}
+
+.detailsOuter {
+    text-align: left;
+    width: 500px;
+    float: left;
+    margin-left: 25px;
+}
+
+.calendarWrapper {
+    background-color: #A1DCED; /*#4CCAEF; */
+    border-radius: 7px;
+    -moz-border-radius: 7px;
+    -webkit-border-radius: 7px;
+    padding: 10px;
+    display: inline-block;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0px 0px 15px Gray;
+}
+
+.myCalendar {
+    background-color: #f2f2f2;
+    width: 400px; /*156px;*/
+    border: none !important;
+}
+
+    .myCalendar a {
+        text-decoration: none;
+    }
+
+    .myCalendar .calTitle {
+        font-weight: bold;
+        height: 40px;
+        line-height: 40px;
+        background-color: #4CCAEF;
+        color: #ffffff;
+        border: none !important;
+    }
+
+    .myCalendar th.calDayHeader {
+        height: 35px;
+        font-size: 0.8em;
+    }
+
+    .myCalendar tr {
+        border-bottom: solid 1px #ddd;
+    }
+
+        .myCalendar tr td.hovered {
+            background-color: #e0e0e0 !important;
+        }
+
+    .myCalendar table tr {
+        border-bottom: none !important;
+    }
+
+    .myCalendar tr:last-child td {
+        border-bottom: none;
+    }
+
+    .myCalendar tr td.calDay, .myCalendar tr th.calDayHeader {
+        border-right: solid 1px #ddd;
+        border-top: solid 1px #ddd;
+    }
+
+    .myCalendar tr td:last-child.calDay, .myCalendar tr th:last-child.calDayHeader {
+        border-right: none;
+    }
+
+    .myCalendar td.calDay:nth-child(7) a,
+    .myCalendar td.calDay:nth-child(6) a {
+        color: #c52e2e !important;
+    }
+
+    .myCalendar .calNextPrev {
+        text-align: center;
+    }
+
+        .myCalendar .calNextPrev a {
+            font-size: 1px; /* 1px = get rid if it */
+        }
+
+        .myCalendar .calNextPrev:nth-child(1) a {
+            color: #4CCAEF !important;
+            background: url("../Images/prevMonth.jpeg") no-repeat center center;
+            background-size: 20px 20px;
+        }
+
+            .myCalendar .calNextPrev:nth-child(1) a:hover, .myCalendar .myCalendarNextPrev:nth-child(3) a:hover {
+                background-color: transparent;
+            }
+
+        .myCalendar .calNextPrev:nth-child(3) a {
+            color: #4CCAEF !important;
+            background: url("../Images/nextMonth.jpeg") no-repeat center center;
+            background-size: 20px 20px;
+        }
+
+    .myCalendar .calDaySelected a {
+        background-color: #BFE4FF; /*#25bae5;*/
+    }
+
+    .myCalendar .calDayHeader a,
+    .myCalendar .calDay a,
+    .myCalendar .calDaySelected a,
+    .myCalendar .calNextPrev a {
+        display: block;
+        line-height: 40px;
+    }
+
+    .myCalendar .calToday {
+        background-color: #f2f2f2;
+        -webkit-box-shadow: 1px 1px 8px 1px #8f8f8f;
+        box-shadow: 1px 1px 8px 1px #8f8f8f;
+        display: inline-block;
+        width: 52px !important;
+        height: 43px !important;
+        border: 1px solid #ddd;
+        padding-top: 6px;
+        /*        margin-left: -1px;
+        margin-top: -1px;
+        padding-top:3px;
+        position: relative;*/
+    }
+
+        .myCalendar .calToday a { /*color: orange #25bae5 !important;*/
+            font-weight: bold;
+        }
+
+        .myCalendar .calToday.calDaySelected a {
+            /*display: inline;*/
+            line-height: 22px;
+            background-color: transparent;
+        }
+
+        .myCalendar .calToday.calDaySelected {
+            background-color: #BFE4FF;
+        }
+
+        .myCalendar .calToday a:after {
+            content: "TODAY";
+            color: #000;
+            font-size: 0.5em;
+            display: inline-block;
+            pointer-events: none;
+            width: 100%;
+            float: left;
+            padding-bottom:2px;
+        }
+    /*
+.myCalendar .calDay a:hover,
+.myCalendar .calDaySelected a:hover,
+.myCalendar .calToday:hover
+{
+    background-color: #e0e0e0;/*#25bae5;
+}
+*/
+    .myCalendar td.otherMonthDay a,
+    .myCalendar td.otherMonthDay:nth-child(1) a,
+    .myCalendar td.otherMonthDay:nth-child(7) a {
+        color: #b0b0b0 !important;
+    }
+
+    .myCalendar .activityDay a {
+        background-image: url(../Images/Triangle.gif);
+        background-position: top right;
+        background-repeat: no-repeat;
+        background-size: 10px 10px;
+    }
+
+    .myCalendar .calDay.activityDay a:hover {
+        background-image: url(../Images/Triangle.gif);
+        background-position: top right;
+        background-repeat: no-repeat;
+        background-size:10px 10px;
+    }
+
+.SelectedDate {
+    font-size: 18px;
+    color: gray;
+    display: block;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+table.details{
+    font-size: 12px;
+    width: auto;
+    
+    
+}
+
+    table.details td {
+        vertical-align: top;
+        padding-bottom: 10px;
+        width: auto;
+    }
+
+        table.details td.time {
+            font-weight: bold;
+            width: 30%;
+            text-align: right;
+            color: black;
+            padding-right: 15px;
+        }
+
+        table.details td.desc {
+            width: 70%;
+            text-align: left;
+            padding-left: 15px;
+        }
+
+        table.details td.empty {
+            font-weight: normal;
+            text-align: left;
+        }
+
+@media screen and (max-width:600px) {
+    .calendarOuter {
+        float: none;
+        margin: 0px auto;
+    }
+
+    .detailsOuter {
+        float: none;
+        width: auto;
+        margin: 20px 10px;
+    }
+
+    .myCalendar {
+        width: 296px; /*156px;*/
+    }
+
+        .myCalendar .calToday {
+            width: 42px !important;
+            height: 32px !important;
+            padding-top: 1px;
+        }
+
+    .calendarWrapper {
+        border-radius: 5px;
+        -moz-border-radius: 5px;
+        -webkit-border-radius: 5px;
+        padding: 7px;
+        box-shadow: 0px 0px 10px Gray;
+    }
+
+    .myCalendar .calTitle {
+        height: 6px;
+        line-height: 6px;
+    }
+
+    .myCalendar th.calDayHeader {
+        height: 25px;
+        font-size: 0.7em;
+    }
+
+    .myCalendar .calNextPrev a {
+        line-height: 35px;
+    }
+
+    .myCalendar .calDay a,
+    .myCalendar .calDaySelected a,
+    .myCalendar .calNextPrev a {
+        display: block;
+        line-height: 35px;
+    }
+
+    .myCalendar .calToday.calDaySelected a {
+        line-height: 16px;
+    }
+}
