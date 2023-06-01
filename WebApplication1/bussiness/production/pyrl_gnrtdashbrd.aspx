@@ -72,8 +72,10 @@
                              <a class="btn btn-app" href="gen_ninl_F17.aspx" id="NINL_F17" runat="server">
                                     <asp:Label ID="Label10" runat="server" Text="0" Visible="false"></asp:Label>
                                 <i class="fa fa-edit"></i>NINL F17
-
                             </a>
+
+                            <a class="btn btn-app" href="gen_ats_f17.aspx" id="ATS_F17" runat="server">
+                                <span class="badge bg-green">New</span><i class="fa fa-edit"></i>ATS Global F17</a>
 
                             <a class="btn btn-app" href="#">
                                     <asp:Label ID="Label23" runat="server" Text="0" Visible="false"></asp:Label>

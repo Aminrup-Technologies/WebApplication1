@@ -11,17 +11,8 @@ namespace WebApplication1.bussiness.production
 {
 
 
-    public partial class gen_agl_F17
+    public partial class gen_ats_f17
     {
-
-        /// <summary>
-        /// DDL_State control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList DDL_State;
 
         /// <summary>
         /// DDL_Region control.

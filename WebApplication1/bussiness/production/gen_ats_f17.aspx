@@ -1,5 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="gen_agl_F17.aspx.cs" Inherits="WebApplication1.bussiness.production.gen_agl_F17" %>
-
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="gen_ats_f17.aspx.cs" Inherits="WebApplication1.bussiness.production.gen_ats_f17" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -7,7 +6,7 @@
         <div class="">
             <div class="page-title">
                 <div class="title_left">
-                    <h5>Generate Form 17</h5>
+                    <h5>Generate Form 17 (Trail / NO Deductions) </h5>
                 </div>
 
                 <div class="title_right">
@@ -30,13 +29,6 @@
                         <div class="x_content">
                             <div class="row">
 
-                                <div class="col-md-3 col-sm-6 col-xs-6 col-lg-2 form-group">
-                                    <label>Work State <span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-3 col-sm-6 col-xs-6 col-lg-2 form-group">
-                                    <asp:DropDownList ID="DDL_State" runat="server" CssClass="form-control form-control-sm rounded" AutoPostBack="true" OnSelectedIndexChanged="DDL_State_SelectedIndexChanged"></asp:DropDownList>
-
-                                </div>
                                 <div class="col-md-3 col-sm-6 col-xs-6 col-lg-2 form-group">
                                     <label>Work Region <span class="text text-danger">*</span></label>
                                 </div>

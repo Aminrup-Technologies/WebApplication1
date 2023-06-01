@@ -10,7 +10,7 @@ using System.IO;
 
 namespace WebApplication1.bussiness.production
 {
-    public partial class gen_agl_F17 : System.Web.UI.Page
+    public partial class gen_ats_f17 : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
         Payroll_OH4Y PayRoll = new Payroll_OH4Y();
@@ -37,51 +37,25 @@ namespace WebApplication1.bussiness.production
             }
             if (!IsPostBack)
             {
-                string CmdString1a = "select State_Name, State_Code from tlb_work_state order by Id";
-                BindStates(CmdString1a);
-
-                //string CmdString1 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = 'IN' and State_Code ='OD' order by Id ";
-                //BindRegions(CmdString1);
+                string CmdString1 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = 'IN' order by Id ";
+                BindRegions(CmdString1);
 
                 dbcl.CalDateCombo1(DDL_Day, DDL_Month, DDL_Year);
                 dbcl.CalDateCombo1(DDL_D2, DDL_M2, DDL_Y2);
-
-                //if (Session["REGION"].ToString() != "GBL")
-                //{
-                //    CheckforUser();
-                //}
-                if (Session["REGION"].ToString() == "KPO")
-                {
-                    CheckforUser();
-                    GorssBreaker = 18500;
-                }
-                else if (Session["REGION"].ToString() == "AGL")
-                {
-                    CheckforUser();
-                    GorssBreaker = 20500;
-                }
             }
         }
 
-        private void CheckforUser()
-        {
-            DDL_Region.SelectedValue = Session["REGION"].ToString();
-            DDL_Region.Enabled = false;
-            string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = 'IN' and Work_Region_Code = '" + Session["REGION"].ToString() + "' order by Id ";
-            BindCompany(CmdString3);
-        }
-
-        private void BindStates(string CmdString)
+        private void BindCompany(string CmdString)
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             SqlCommand Cmd = new SqlCommand(CmdString, dbcl.Conn);
             Cmd.CommandType = CommandType.Text;
-            DDL_State.DataSource = Cmd.ExecuteReader();
-            DDL_State.DataTextField = "State_Name";
-            DDL_State.DataValueField = "State_Code";
-            DDL_State.DataBind();
-            DDL_State.Items.Insert(0, "Please Select Option");
+            DDL_Company.DataSource = Cmd.ExecuteReader();
+            DDL_Company.DataTextField = "Company_Name";
+            DDL_Company.DataValueField = "Company_Code";
+            DDL_Company.DataBind();
+            DDL_Company.Items.Insert(0, "Please Select Option");
             dbcl.DisconnectDb();
         }
 
@@ -98,24 +72,13 @@ namespace WebApplication1.bussiness.production
             DDL_Region.Items.Insert(0, "Please Select Option");
             dbcl.DisconnectDb();
         }
+
         protected void DDL_Region_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = 'IN' and State_Code ='OD' and Work_Region_Code = '" + DDL_Region.SelectedValue.ToString() + "' order by Id ";
+            string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = 'IN' and Work_Region_Code = '" + DDL_Region.SelectedValue.ToString() + "' order by Id ";
             BindCompany(CmdString3);
         }
-        private void BindCompany(string CmdString)
-        {
-            dbcl.Sqlconnection();
-            dbcl.ConnectDb();
-            SqlCommand Cmd = new SqlCommand(CmdString, dbcl.Conn);
-            Cmd.CommandType = CommandType.Text;
-            DDL_Company.DataSource = Cmd.ExecuteReader();
-            DDL_Company.DataTextField = "Company_Name";
-            DDL_Company.DataValueField = "Company_Code";
-            DDL_Company.DataBind();
-            DDL_Company.Items.Insert(0, "Please Select Option");
-            dbcl.DisconnectDb();
-        }
+
         protected void btn_submit_Click(object sender, EventArgs e)
         {
             string startday = "";
@@ -128,20 +91,14 @@ namespace WebApplication1.bussiness.production
 
             year = DDL_Year.SelectedItem.Text.ToString();
             month = DDL_Month.SelectedItem.Text.ToString();
-            //region = DDL_Region.SelectedValue.ToString();
-
-            //year = "2021";
-            //month = "08";
             region = DDL_Region.SelectedValue.ToString();
             company = DDL_Company.SelectedValue.ToString();
 
             date1 = year + "-" + month + "-" + minday;
             date2 = year + "-" + month + "-" + maxday;
 
-
-            //CalWorkingDays = 26;
-
             CalWorkingDays = Convert.ToInt32(DDL_Days.SelectedItem.Text.ToString());
+
 
             if (DataRowChecker() != true) //If row does not exists then create row
             {
@@ -208,6 +165,8 @@ namespace WebApplication1.bussiness.production
 
             BindGridByQuery(query);
         }
+
+
         private Boolean DataRowChecker()
         {
             Boolean flag = false;
@@ -1275,12 +1234,6 @@ namespace WebApplication1.bussiness.production
         protected void btn_f29print_Click(object sender, EventArgs e)
         {
             Response.Write("<script>window.open ('/bussiness/production/rpts/f29.aspx?Year=" + year + "&Month=" + month + "&Region=" + region + "','_blank');</script>");
-        }
-
-        protected void DDL_State_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            string CmdString1 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = 'IN' and State_Code ='" + DDL_State.SelectedValue.ToString() + "' order by Id ";
-            BindRegions(CmdString1);
         }
     }
 }

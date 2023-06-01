@@ -114,6 +114,15 @@ namespace WebApplication1.bussiness.production
         protected global::System.Web.UI.WebControls.Label Label10;
 
         /// <summary>
+        /// ATS_F17 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor ATS_F17;
+
+        /// <summary>
         /// Label23 control.
         /// </summary>
         /// <remarks>

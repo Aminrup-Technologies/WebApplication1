@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.UI;
-using System.Web.UI.WebControls;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 
 namespace WebApplication1.bussiness.production
 {
@@ -13,6 +10,11 @@ namespace WebApplication1.bussiness.production
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
         DataTable dt = new DataTable();
+
+        static string User_Photo = string.Empty;
+        // Default folder
+        static readonly string rootFolder = @"C:\atswork.in\wwwroot\erp_images\ProfilePhoto";
+        static readonly string localFolder = @"D:\OH4Y Works\OH4Y_2021\Demo\WebApplication1\WebApplication1\erp_images\ProfilePhoto";
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -68,7 +70,7 @@ namespace WebApplication1.bussiness.production
                         string User_Skill = dt.Rows[0]["SkillCategory"].ToString();
                         string User_Desg = dt.Rows[0]["SkillDesignation"].ToString();
 
-                        string User_Photo = dt.Rows[0]["PrfPicFile"].ToString();
+                        User_Photo = dt.Rows[0]["PrfPicFile"].ToString();
                         //string User_PhotoPath = dt.Rows[0]["PrfPicPath"].ToString();
 
                         Session["USERID"] = UserID;
@@ -90,7 +92,16 @@ namespace WebApplication1.bussiness.production
                         }
                         else
                         {
-                            Session["User_Photo"] = User_Photo;
+                            //Check for physical file
+                            bool File = FlieExistence();
+                            if (File == true)
+                            {
+                                Session["User_Photo"] = User_Photo;
+                            }
+                            else
+                            {
+                                Session["User_Photo"] = "No_Image.jpg";
+                            }
                         }
                         Response.Redirect("homepage.aspx");
                     }
@@ -113,5 +124,37 @@ namespace WebApplication1.bussiness.production
                 txt_loginid.Text = "";
             }
         }
+
+        private bool FlieExistence()
+        {
+            if (File.Exists(Path.Combine(rootFolder, User_Photo)))
+            {
+                Response.Clear();
+                Response.ContentType = "application/octect-stream";
+                Response.AppendHeader("content-disposition", "filename=" + User_Photo);
+                Response.TransmitFile(Server.MapPath(@"\erp_images\Permits\") + User_Photo);
+                Response.End();
+                return true;
+
+            }
+            else if (File.Exists(Path.Combine(localFolder, User_Photo)))
+            {
+                Response.Clear();
+                Response.ContentType = "application/octect-stream";
+                Response.AppendHeader("content-disposition", "filename=" + User_Photo);
+                Response.TransmitFile(Server.MapPath(@"\erp_images\Permits\") + User_Photo);
+                Response.End();
+                return true;
+            }
+            else
+            {
+                string title = "Notifications :";
+                string body = "NO Physical File Found...!!";
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                return false;
+            }
+        }
+
+
     }
 }

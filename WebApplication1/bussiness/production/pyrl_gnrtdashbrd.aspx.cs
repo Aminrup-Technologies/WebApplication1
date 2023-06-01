@@ -20,37 +20,48 @@ namespace WebApplication1.bussiness.production
                 if (Session["REGION"].ToString() == "KPO")
                 {
                     AGL_F17.Visible = false;
-                    KPO_F17.Visible = true;
+                    KPO_F17.Visible = false;
                     NINL_F17.Visible = false;
-                    JSR_F17.Visible = false;
+                    JSR_F17.Visible = false; ATS_F17.Visible = false;
                 }
                 else if (Session["REGION"].ToString() == "AGL")
                 {
-                    AGL_F17.Visible = true;
+                    AGL_F17.Visible = false;
                     KPO_F17.Visible = false;
                     NINL_F17.Visible = false;
-                    JSR_F17.Visible = false;
+                    JSR_F17.Visible = false; ATS_F17.Visible = false;
                 }
                 else if (Session["REGION"].ToString() == "NINL")
                 {
                     AGL_F17.Visible = false;
                     KPO_F17.Visible = false;
-                    NINL_F17.Visible = true;
-                    JSR_F17.Visible = false;
+                    NINL_F17.Visible = false;
+                    JSR_F17.Visible = false; ATS_F17.Visible = false;
                 }
                 else if (Session["REGION"].ToString() == "JSR")
                 {
-                    AGL_F17.Visible = false;
-                    KPO_F17.Visible = false;
-                    NINL_F17.Visible = false;
-                    JSR_F17.Visible = true;
+                    if (Session["WORKMAN"].ToString() == "J8")
+                    {
+                        AGL_F17.Visible = false;
+                        KPO_F17.Visible = false;
+                        NINL_F17.Visible = false;
+                        JSR_F17.Visible = false;
+                        ATS_F17.Visible = true;
+                    }
+                    else
+                    {
+                        AGL_F17.Visible = false;
+                        KPO_F17.Visible = false;
+                        NINL_F17.Visible = false;
+                        JSR_F17.Visible = false; ATS_F17.Visible = false;
+                    }     
                 }
                 else
                 {
                     AGL_F17.Visible = false;
                     KPO_F17.Visible = false;
                     NINL_F17.Visible = false;
-                    JSR_F17.Visible = false;
+                    JSR_F17.Visible = false; ATS_F17.Visible = false;
                 }
             }
         }
