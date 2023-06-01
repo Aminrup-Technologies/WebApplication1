@@ -8,6 +8,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Threading;
+using System.IO;
 
 namespace WebApplication1.bussiness.production
 {
@@ -15,6 +16,10 @@ namespace WebApplication1.bussiness.production
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
         Payroll_OH4Y PayRoll = new Payroll_OH4Y();
+
+        // Default folder
+        static readonly string rootFolder = @"C:\atswork.in\wwwroot\erp_images\ProfilePhoto";
+        static readonly string localFolder = @"D:\OH4Y Works\OH4Y_2021\Demo\WebApplication1\WebApplication1\erp_images\ProfilePhoto";
 
         public static string UserPass = "";
         DataTable dt = new DataTable();
@@ -29,7 +34,16 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-                    ProfilePic_3.Src = "../../erp_images/ProfilePhoto/" + Session["User_Photo"].ToString() + "";
+                    bool File =  FlieExistence();
+                    if (File == true)
+                    {
+                        ProfilePic_3.Src = "../../erp_images/ProfilePhoto/" + Session["User_Photo"].ToString() + "";
+                    }
+                    else
+                    {
+                        ProfilePic_3.Src = "../../erp_images/ProfilePhoto/No_Image.jpg";
+                    }
+                    
                     // Perform the login action here, such as prompting the user for credentials and validating them
                     lbl_username.Text = Session["USERNAME"].ToString();
                     LoadLoginDetails();
@@ -39,6 +53,38 @@ namespace WebApplication1.bussiness.production
                     EmployeeDeductionsBinder();
                 }
             }
+        }
+
+        private bool FlieExistence()
+        {
+            if (File.Exists(Path.Combine(rootFolder, Session["User_Photo"].ToString())))
+            {
+                Response.Clear();
+                Response.ContentType = "application/octect-stream";
+                Response.AppendHeader("content-disposition", "filename=" + Session["User_Photo"].ToString());
+                Response.TransmitFile(Server.MapPath(@"\erp_images\Permits\") + Session["User_Photo"].ToString());
+                Response.End();
+                return true;
+
+            }
+            else if (File.Exists(Path.Combine(localFolder, Session["User_Photo"].ToString())))
+            {
+                Response.Clear();
+                Response.ContentType = "application/octect-stream";
+                Response.AppendHeader("content-disposition", "filename=" + Session["User_Photo"].ToString());
+                Response.TransmitFile(Server.MapPath(@"\erp_images\Permits\") + Session["User_Photo"].ToString());
+                Response.End();
+                return true;
+            }
+            else
+            {
+                string title = "Notifications :";
+                string body = "NO Physical File Found...!!";
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                return false;
+            }
+
+            
         }
 
         private void EmployeeDataLoader()
