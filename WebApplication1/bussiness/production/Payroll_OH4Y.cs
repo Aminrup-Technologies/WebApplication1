@@ -307,6 +307,13 @@ namespace WebApplication1.bussiness.production
             hrmamnt = Math.Round(hramult / CalWorkingDays, 2);
         }
 
+        public void EmployeeWashPayCalculations(Int32 TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, ref decimal hrmamnt)
+        {
+            decimal hrapay = HRAAmount;
+            decimal hramult = Math.Round(hrapay * TOtalPresents, 0);
+            hrmamnt = Math.Round(hramult / CalWorkingDays, 0);
+        }
+
         public void EmployeeOthersPayCalculations5_NINL(Int32 TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, decimal BasicSalary, ref decimal hrmamnt)
         {
             decimal hrapay = BasicSalary;

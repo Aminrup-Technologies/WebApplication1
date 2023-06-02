@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="gen_ats_f17.aspx.cs" Inherits="WebApplication1.bussiness.production.gen_ats_f17" %>
+
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -150,362 +151,362 @@
             </div>
 
             <div class="row" id="f17grid" runat="server" visible="false">
-                <div class="card-box col-md-12 col-sm-12 small" style="width: 1100px; height: 450px; overflow: scroll;">
-                    <asp:GridView ID="GridView" runat="server" Width="100%" CssClass="table table-striped table-hover table-bordered table-responsive table-sm dt-responsive" AutoGenerateColumns="false" ShowHeaderWhenEmpty="true" EmptyDataText="No Data Found" OnDataBound="GridView_DataBound">
-                        <Columns>
+                <div class="card-box col-md-12 col-sm-12 small" style="width: 1500px; height: 450px; overflow: scroll;">
+                    <asp:GridView ID="GridView" runat="server" Width="100%" CssClass="table table-striped table-hover table-bordered table-sm" AutoGenerateColumns="false" ShowHeaderWhenEmpty="true" EmptyDataText="No Data Found" OnDataBound="GridView_DataBound">
+                        <columns>
                             <asp:TemplateField HeaderText="SL" Visible="True" HeaderStyle-Width="2%">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_slno" runat="server" Text="<%# Container.DataItemIndex + 1 %>"></asp:Label>
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
+                                </itemtemplate>
+                                <itemstyle cssclass="text text-center" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="W SL" Visible="true">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_WorkmanSL" runat="server" Text='<%# Bind("WorkmanSL") %>' />
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
+                                </itemtemplate>
+                                <itemstyle cssclass="text text-center" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="Region" Visible="false">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_WorkRegion" runat="server" Text='<%# Bind("WorkRegion") %>' />
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
+                                </itemtemplate>
+                                <itemstyle cssclass="text text-center" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Employee Name" Visible="true">
-                                <ItemTemplate>
+                            <asp:TemplateField HeaderText="Employee Name" Visible="true" HeaderStyle-Width="25%">
+                                <itemtemplate>
                                     <asp:Label ID="lbl_FullName" runat="server" Text='<%# Bind("FullName") %>' />
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-left" />
+                                </itemtemplate>
+                                <itemstyle cssclass="text text-left" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="SKill Category" Visible="true">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_SkillCategory" runat="server" Text='<%# Bind("SkillCategory") %>' />
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
+                                </itemtemplate>
+                                <itemstyle cssclass="text text-center" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Wage Rate" HeaderStyle-Width="2%">
-                                <ItemTemplate>
+                            <asp:TemplateField HeaderText="Wage Rate" HeaderStyle-Width="2%" Visible="false">
+                                <itemtemplate>
                                     <asp:Label ID="lbl_payrate" runat="server"></asp:Label>
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="grid" />
-                                <ItemStyle CssClass="grid" />
+                                </itemtemplate>
+                                <headerstyle cssclass="grid" />
+                                <itemstyle cssclass="grid" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="SKill Designation" Visible="true">
-                                <ItemTemplate>
+                            <asp:TemplateField HeaderText="Designation" Visible="false">
+                                <itemtemplate>
                                     <asp:Label ID="lbl_SkillDesignation" runat="server" Text='<%# Bind("SkillDesignation") %>' />
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
+                                </itemtemplate>
+                                <itemstyle cssclass="text text-center" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="Fixed Yes / No" HeaderStyle-Width="2%" Visible="true">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_FixedSalary_YesNo" runat="server" Text='<%# Bind("FixedSalary_YesNo") %>'></asp:Label>
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
+                                </itemtemplate>
+                                <itemstyle cssclass="text text-center" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="Fixed Salary" HeaderStyle-Width="2%" Visible="true">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_FixedAmount" runat="server" Text='<%# Bind("FixedAmount") %>'></asp:Label>
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
+                                </itemtemplate>
+                                <itemstyle cssclass="text text-center" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="Fixed Rate" HeaderStyle-Width="2%" Visible="true">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_fixedwagerate" runat="server"></asp:Label>
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
+                                </itemtemplate>
+                                <itemstyle cssclass="text text-center" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="WH" HeaderStyle-Width="2%" Visible="true">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_WorkHours" runat="server" Text='<%# Bind("WorkHours") %>'></asp:Label>
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
+                                </itemtemplate>
+                                <itemstyle cssclass="text text-center" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="OT F" HeaderStyle-Width="2%" Visible="true">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_OTFactor" runat="server" Text='<%# Bind("OTFactor") %>'></asp:Label>
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
+                                </itemtemplate>
+                                <itemstyle cssclass="text text-center" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="OT M" HeaderStyle-Width="2%" Visible="true">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_OTMultiplier" runat="server" Text='<%# Bind("OTMultiplier") %>'></asp:Label>
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
+                                </itemtemplate>
+                                <itemstyle cssclass="text text-center" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="OT Div" HeaderStyle-Width="2%" Visible="true">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_OT_Divisibility" runat="server" Text='<%# Bind("OT_Divisibility") %>'></asp:Label>
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
+                                </itemtemplate>
+                                <itemstyle cssclass="text text-center" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="Advance" HeaderStyle-Width="2%" Visible="true">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_Cur_Advance" runat="server" Text='<%# Bind("Cur_Advance") %>'></asp:Label>
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
+                                </itemtemplate>
+                                <itemstyle cssclass="text text-center" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="Fines" HeaderStyle-Width="2%" Visible="true">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_Cur_Fines" runat="server" Text='<%# Bind("Cur_Fines") %>'></asp:Label>
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
+                                </itemtemplate>
+                                <itemstyle cssclass="text text-center" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Others" HeaderStyle-Width="2%" Visible="true">
-                                <ItemTemplate>
+                            <asp:TemplateField HeaderText="Others" HeaderStyle-Width="2%" Visible="false">
+                                <itemtemplate>
                                     <asp:Label ID="lbl_Cur_Others" runat="server" Text='<%# Bind("Cur_Others") %>'></asp:Label>
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
+                                </itemtemplate>
+                                <itemstyle cssclass="text text-center" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="DA / VDA" HeaderStyle-Width="2%" Visible="true">
-                                <ItemTemplate>
+                            <asp:TemplateField HeaderText="DA / VDA" HeaderStyle-Width="2%" Visible="false">
+                                <itemtemplate>
                                     <asp:Label ID="lbl_DA_VDA" runat="server" Text='<%# Bind("DA_VDA") %>'></asp:Label>
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
+                                </itemtemplate>
+                                <itemstyle cssclass="text text-center" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="HRA" HeaderStyle-Width="2%" Visible="true">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_HRA" runat="server" Text='<%# Bind("HRA") %>'></asp:Label>
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
+                                </itemtemplate>
+                                <itemstyle cssclass="text text-center" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Conv." HeaderStyle-Width="2%" Visible="true">
-                                <ItemTemplate>
+                            <asp:TemplateField HeaderText="Conv." HeaderStyle-Width="2%" Visible="false">
+                                <itemtemplate>
                                     <asp:Label ID="lbl_Conv_Allowance" runat="server" Text='<%# Bind("Conv_Allowance") %>'></asp:Label>
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
+                                </itemtemplate>
+                                <itemstyle cssclass="text text-center" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="Medical" HeaderStyle-Width="2%" Visible="false">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_Medical_Allowance" runat="server" Text='<%# Bind("Medical_Allowance") %>'></asp:Label>
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
+                                </itemtemplate>
+                                <itemstyle cssclass="text text-center" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="Washing" HeaderStyle-Width="2%" Visible="true">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_Washing_Allowance" runat="server" Text='<%# Bind("Washing_Allowance") %>'></asp:Label>
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
+                                </itemtemplate>
+                                <itemstyle cssclass="text text-center" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="ATT" HeaderStyle-Width="2%" Visible="false">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_ATT_Allowance" runat="server" Text='<%# Bind("ATT_Allowance") %>'></asp:Label>
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
+                                </itemtemplate>
+                                <itemstyle cssclass="text text-center" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="SPCL" HeaderStyle-Width="2%" Visible="false">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_SPCL_Allowance" runat="server" Text='<%# Bind("SPCL_Allowance") %>'></asp:Label>
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
+                                </itemtemplate>
+                                <itemstyle cssclass="text text-center" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="Misc" HeaderStyle-Width="2%" Visible="true">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_Misc_Earnings" runat="server" Text='<%# Bind("Misc_Earnings") %>'></asp:Label>
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="grid" />
-                                <ItemStyle CssClass="grid" />
+                                </itemtemplate>
+                                <headerstyle cssclass="grid" />
+                                <itemstyle cssclass="grid" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="P" HeaderStyle-Width="2%">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_presents" runat="server" Font-Bold="true" ForeColor="#009933"></asp:Label>
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="grid" />
-                                <ItemStyle CssClass="grid" />
+                                </itemtemplate>
+                                <headerstyle cssclass="grid" />
+                                <itemstyle cssclass="grid" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="OT" HeaderStyle-Width="2%">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_ttlot" runat="server"></asp:Label>
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="grid" />
-                                <ItemStyle CssClass="grid" />
+                                </itemtemplate>
+                                <headerstyle cssclass="grid" />
+                                <itemstyle cssclass="grid" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="Basic Wages" HeaderStyle-Width="2%">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_basicsalary" runat="server"></asp:Label>
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="grid" />
-                                <ItemStyle CssClass="grid" />
+                                </itemtemplate>
+                                <headerstyle cssclass="grid" />
+                                <itemstyle cssclass="grid" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="Wages of Fix Rate" HeaderStyle-Width="2%">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_fixratesal" runat="server"></asp:Label>
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="grid" />
-                                <ItemStyle CssClass="grid" />
+                                </itemtemplate>
+                                <headerstyle cssclass="grid" />
+                                <itemstyle cssclass="grid" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="OT Pay" HeaderStyle-Width="2%">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_otwages" runat="server"></asp:Label>
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="grid" />
-                                <ItemStyle CssClass="grid" />
+                                </itemtemplate>
+                                <headerstyle cssclass="grid" />
+                                <itemstyle cssclass="grid" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="DA/ VDA Pay" HeaderStyle-Width="2%">
-                                <ItemTemplate>
+                            <asp:TemplateField HeaderText="DA/ VDA Pay" HeaderStyle-Width="2%" Visible="false">
+                                <itemtemplate>
                                     <asp:Label ID="lbl_DaVdaPay" runat="server"></asp:Label>
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="grid" />
-                                <ItemStyle CssClass="grid" />
+                                </itemtemplate>
+                                <headerstyle cssclass="grid" />
+                                <itemstyle cssclass="grid" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="HRA Pay" HeaderStyle-Width="2%">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_HRAPay" runat="server"></asp:Label>
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="grid" />
-                                <ItemStyle CssClass="grid" />
+                                </itemtemplate>
+                                <headerstyle cssclass="grid" />
+                                <itemstyle cssclass="grid" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="Conv Pay" HeaderStyle-Width="2%" Visible="false">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_ConvPay" runat="server"></asp:Label>
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="grid" />
-                                <ItemStyle CssClass="grid" />
+                                </itemtemplate>
+                                <headerstyle cssclass="grid" />
+                                <itemstyle cssclass="grid" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="Med Pay" HeaderStyle-Width="2%" Visible="false">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_MedPay" runat="server"></asp:Label>
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="grid" />
-                                <ItemStyle CssClass="grid" />
+                                </itemtemplate>
+                                <headerstyle cssclass="grid" />
+                                <itemstyle cssclass="grid" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="Wash Pay" HeaderStyle-Width="2%">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_WashPay" runat="server"></asp:Label>
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="grid" />
-                                <ItemStyle CssClass="grid" />
+                                </itemtemplate>
+                                <headerstyle cssclass="grid" />
+                                <itemstyle cssclass="grid" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="ATT Pay" HeaderStyle-Width="2%" Visible="false">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_AttPay" runat="server"></asp:Label>
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="grid" />
-                                <ItemStyle CssClass="grid" />
+                                </itemtemplate>
+                                <headerstyle cssclass="grid" />
+                                <itemstyle cssclass="grid" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="SPCL Pay" HeaderStyle-Width="2%" Visible="false">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_SPCLPay" runat="server"></asp:Label>
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="grid" />
-                                <ItemStyle CssClass="grid" />
+                                </itemtemplate>
+                                <headerstyle cssclass="grid" />
+                                <itemstyle cssclass="grid" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="Misc Pay" HeaderStyle-Width="2%" Visible="false">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_MiscPay" runat="server"></asp:Label>
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="grid" />
-                                <ItemStyle CssClass="grid" />
+                                </itemtemplate>
+                                <headerstyle cssclass="grid" />
+                                <itemstyle cssclass="grid" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="G-BW Pay" HeaderStyle-Width="2%">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_otherspay" runat="server"></asp:Label>
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="grid" />
-                                <ItemStyle CssClass="grid" />
+                                </itemtemplate>
+                                <headerstyle cssclass="grid" />
+                                <itemstyle cssclass="grid" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="Actual Gross" HeaderStyle-Width="2%">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_actualgross" runat="server"></asp:Label>
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="grid" />
-                                <ItemStyle CssClass="grid" />
+                                </itemtemplate>
+                                <headerstyle cssclass="grid" />
+                                <itemstyle cssclass="grid" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="ESIC Gross" HeaderStyle-Width="2%">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_grossamount" runat="server"></asp:Label>
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="grid" />
-                                <ItemStyle CssClass="grid" />
+                                </itemtemplate>
+                                <headerstyle cssclass="grid" />
+                                <itemstyle cssclass="grid" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="PF Pay" HeaderStyle-Width="2%">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_PFPay" runat="server"></asp:Label>
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="grid" />
-                                <ItemStyle CssClass="grid" />
+                                </itemtemplate>
+                                <headerstyle cssclass="grid" />
+                                <itemstyle cssclass="grid" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="ESIC Pay" HeaderStyle-Width="2%">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_esicpay" runat="server"></asp:Label>
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="grid" />
-                                <ItemStyle CssClass="grid" />
+                                </itemtemplate>
+                                <headerstyle cssclass="grid" />
+                                <itemstyle cssclass="grid" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="NET Pay - 1" HeaderStyle-Width="2%">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_netpay1" runat="server"></asp:Label>
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="grid" />
-                                <ItemStyle CssClass="grid" />
+                                </itemtemplate>
+                                <headerstyle cssclass="grid" />
+                                <itemstyle cssclass="grid" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="Total Ded" HeaderStyle-Width="2%">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_ttlded" runat="server"></asp:Label>
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="grid" />
-                                <ItemStyle CssClass="grid" />
+                                </itemtemplate>
+                                <headerstyle cssclass="grid" />
+                                <itemstyle cssclass="grid" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="Final Net Pay-1" HeaderStyle-Width="2%">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_netpayfnl" runat="server"></asp:Label>
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="grid" />
-                                <ItemStyle CssClass="grid" />
+                                </itemtemplate>
+                                <headerstyle cssclass="grid" />
+                                <itemstyle cssclass="grid" />
                             </asp:TemplateField>
 
                             <asp:TemplateField HeaderText="NET Pay - 2" HeaderStyle-Width="2%">
-                                <ItemTemplate>
+                                <itemtemplate>
                                     <asp:Label ID="lbl_netpay2" runat="server"></asp:Label>
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="grid" />
-                                <ItemStyle CssClass="grid" />
+                                </itemtemplate>
+                                <headerstyle cssclass="grid" />
+                                <itemstyle cssclass="grid" />
                             </asp:TemplateField>
-                        </Columns>
+                        </columns>
                     </asp:GridView>
                 </div>
             </div>
@@ -575,8 +576,8 @@
             if (document.getElementById('<%=DDL_EmpWorkStatus.ClientID%>').selectedIndex == 0) {
                 ShowPopup("Error :", "Employee Status selection required");
                 document.getElementById('<%=DDL_EmpWorkStatus.ClientID%>').focus();
-            return false;
+                return false;
+            }
         }
-    }
     </script>
 </asp:Content>
