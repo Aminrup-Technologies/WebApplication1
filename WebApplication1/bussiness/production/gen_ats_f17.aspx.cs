@@ -27,8 +27,9 @@ namespace WebApplication1.bussiness.production
         public static string date1 = "";
         public static string date2 = "";
         public static Int32 CalWorkingDays = 0;
+        public static Int32 CalWorkingDaysF = 0;
         public static Int32 TotalPresents = 0;
-        public static decimal GorssBreaker = 0;
+        public static decimal GorssBreaker = 20500;
 
         public static Int32 WashBreak = 1000; //Added for Calculating Washing Allowances
 
@@ -166,6 +167,8 @@ namespace WebApplication1.bussiness.production
 
             string query = "select WorkmanSL, WorkRegion, FullName, SkillCategory, SkillDesignation,FixedSalary_YesNo, FixedAmount, WorkHours, OTFactor, OTMultiplier, DA_VDA, HRA,Conv_Allowance, Medical_Allowance, Washing_Allowance, ATT_Allowance, SPCL_Allowance, Misc_Earnings, OT_Divisibility, Cur_Advance, Cur_Fines, Cur_Others from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and F17_YesNo='Yes' order by Id";
 
+            //string query = "select WorkmanSL, WorkRegion, FullName, SkillCategory, SkillDesignation,FixedSalary_YesNo, FixedAmount, WorkHours, OTFactor, OTMultiplier, DA_VDA, HRA,Conv_Allowance, Medical_Allowance, Washing_Allowance, ATT_Allowance, SPCL_Allowance, Misc_Earnings, OT_Divisibility, Cur_Advance, Cur_Fines, Cur_Others from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and F17_YesNo='Yes' and WorkmanSL='A577' order by Id";
+
             BindGridByQuery(query);
         }
 
@@ -293,12 +296,11 @@ namespace WebApplication1.bussiness.production
                 Label lbl_netpay1 = (Label)GridView.Rows[i].FindControl("lbl_netpay1");
                 Label lbl_netpay2 = (Label)GridView.Rows[i].FindControl("lbl_netpay2");
 
-
+                TotalPresents = 0;
                 //----------------- Function call to find out the Total Present aganist the Employee Workman Sl----------------//
                 string empwrk = lbl_WorkmanSL.Text.ToString();
                 PayRoll.FindEmployeeTotalPresentByDates2(date1, date2, empwrk, ref TotalPresents);
                 lbl_presents.Text = TotalPresents.ToString();
-
 
                 //----------------- Function call to find out the Total OverTime Unit aganist the Employee Workman Sl----------------//
                 decimal TotalOT = .0m;
@@ -313,11 +315,26 @@ namespace WebApplication1.bussiness.production
                 PayRoll.FindPayCadre(skillevel, workregion, ref dr);
                 lbl_payrate.Text = dr.ToString();
 
+                if (region == "KPO")
+                {
+                    if (empwrk == "K68" || empwrk == "K91" || empwrk == "K92" || empwrk == "K579" || empwrk == "K584" || empwrk == "K612" || empwrk == "K620")
+                    {
+                        CalWorkingDaysF = 27;
+                    }
+                    else
+                    {
+                        CalWorkingDaysF = CalWorkingDays;
+                    }
+                }
+                else
+                {
+                    CalWorkingDaysF = CalWorkingDays;
+                }
 
                 //----------------- Calculation for Employee who are in Fixed Salary----------------//
                 string fixedyesno = lbl_FixedSalary_YesNo.Text.ToString();
                 decimal fixedamount = Convert.ToDecimal(lbl_FixedAmount.Text.ToString());
-                decimal fdr = Convert.ToDecimal(fixedamount) / Convert.ToDecimal(CalWorkingDays);
+                decimal fdr = Convert.ToDecimal(fixedamount) / Convert.ToDecimal(CalWorkingDaysF);
                 decimal fnlfdr = Math.Round(fdr, 2);
                 lbl_fixedwagerate.Text = fnlfdr.ToString();
 
@@ -369,23 +386,24 @@ namespace WebApplication1.bussiness.production
                 Label lbl_netpayfnl = (Label)GridView.Rows[i].FindControl("lbl_netpayfnl");
 
                 //---------------- DA/VDA Alowances Cal-------------------------------------//
-                PayRoll.EmployeeOthersPayCalculations1(TotalPresents, CalWorkingDays, DaVdaAmount, ref DaVdaPay);
+                PayRoll.EmployeeOthersPayCalculations1(TotalPresents, CalWorkingDaysF, DaVdaAmount, ref DaVdaPay);
                 lbl_DaVdaPay.Text = DaVdaPay.ToString();
 
                 //---------------- HRA Alowances Cal-------------------------------------//
-                PayRoll.EmployeeOthersPayCalculations2(TotalPresents, CalWorkingDays, HRAAmount, ref HRAPay);
+                PayRoll.EmployeeOthersPayCalculations2(TotalPresents, CalWorkingDaysF, HRAAmount, ref HRAPay);
                 lbl_HRAPay.Text = HRAPay.ToString();
 
                 //---------------- Conv Alowances Cal-------------------------------------//
-                PayRoll.EmployeeOthersPayCalculations3(TotalPresents, CalWorkingDays, ConvAmount, ref ConvPay);
+                PayRoll.EmployeeOthersPayCalculations3(TotalPresents, CalWorkingDaysF, ConvAmount, ref ConvPay);
                 lbl_ConvPay.Text = ConvPay.ToString();
 
                 //---------------- Medical Alowances Cal-------------------------------------//
-                PayRoll.EmployeeOthersPayCalculations4(TotalPresents, CalWorkingDays, MedAmount, ref MedPay);
+                PayRoll.EmployeeOthersPayCalculations4(TotalPresents, CalWorkingDaysF, MedAmount, ref MedPay);
                 lbl_MedPay.Text = MedPay.ToString();
-
+                WashPay = 0;
+                WashPayF = 0;
                 //---------------- Wash Alowances Cal-------------------------------------//
-                PayRoll.EmployeeWashPayCalculations(TotalPresents, CalWorkingDays, WashBreak, ref WashPay);
+                PayRoll.EmployeeWashPayCalculations(TotalPresents, CalWorkingDaysF, WashBreak, ref WashPay);
                 if (WashPay <= 0)
                 {
                     WashPayF = 0;
@@ -397,15 +415,15 @@ namespace WebApplication1.bussiness.production
                 lbl_WashPay.Text = WashPayF.ToString();
 
                 //---------------- Att Alowances Cal-------------------------------------//
-                PayRoll.EmployeeOthersPayCalculations6(TotalPresents, CalWorkingDays, AttAmount, ref AttPay);
+                PayRoll.EmployeeOthersPayCalculations6(TotalPresents, CalWorkingDaysF, AttAmount, ref AttPay);
                 lbl_AttPay.Text = AttPay.ToString();
 
                 //---------------- SPCL Alowances Cal-------------------------------------//
-                PayRoll.EmployeeOthersPayCalculations7(TotalPresents, CalWorkingDays, SPCLAmount, ref SPCLPay);
+                PayRoll.EmployeeOthersPayCalculations7(TotalPresents, CalWorkingDaysF, SPCLAmount, ref SPCLPay);
                 lbl_SPCLPay.Text = SPCLPay.ToString();
 
                 //---------------- MISC Alowances Cal-------------------------------------//
-                PayRoll.EmployeeOthersPayCalculations8(TotalPresents, CalWorkingDays, MiscAmount, ref MiscPay);
+                PayRoll.EmployeeOthersPayCalculations8(TotalPresents, CalWorkingDaysF, MiscAmount, ref MiscPay);
                 lbl_MiscPay.Text = MiscPay.ToString();
 
                 //--------------- PF Calucations --------------------//
@@ -424,6 +442,7 @@ namespace WebApplication1.bussiness.production
                 decimal actualgross = 0.0m;
                 decimal grossesic = 0.0m;
                 decimal otherpay = 0.0m;
+                decimal otherpayF = 0.0m;
 
                 if (fixedyesno == "Yes")  ///Check whether the employee is in Fixed or Daily Rate Payroll
                 {
@@ -442,7 +461,7 @@ namespace WebApplication1.bussiness.production
                             lbl_otwages.Text = otpay.ToString();
                         }
                         otherpay = FixRateSalary - BasicSalary - WashPayF;
-                        actualgross = BasicSalary + otpay + otherpay;
+                        actualgross = BasicSalary + otpay + otherpay + WashPayF;
                     }
                     else
                     {
@@ -459,7 +478,8 @@ namespace WebApplication1.bussiness.production
                             lbl_otwages.Text = otpay.ToString();
                         }
                         otherpay = FixRateSalary - BasicSalary - WashPayF;
-                        actualgross = BasicSalary + otpay + otherpay;
+
+                        actualgross = BasicSalary + otpay + otherpay + WashPayF;
                     }
                     lbl_actualgross.Text = actualgross.ToString();
                 }
@@ -479,8 +499,9 @@ namespace WebApplication1.bussiness.production
                         {
                             lbl_otwages.Text = otpay.ToString();
                         }
-                        otherpay = FixRateSalary - BasicSalary - WashPayF;
-                        actualgross = BasicSalary + otpay + otherpay;
+                        WashPayF = 0;
+                        otherpay =0;
+                        actualgross = BasicSalary + otpay + otherpay+ WashPayF;
                     }
                     else
                     {
@@ -496,18 +517,20 @@ namespace WebApplication1.bussiness.production
                         {
                             lbl_otwages.Text = otpay.ToString();
                         }
-                        otherpay = FixRateSalary - BasicSalary - WashPayF;
-                        actualgross = BasicSalary + otpay + otherpay;
+                        WashPayF = 0;
+                        otherpay = 0;
+                        actualgross = BasicSalary + otpay + otherpay + WashPayF;
                     }
                     lbl_actualgross.Text = actualgross.ToString();
                 }
+
 
                 //----------------Gross Calculation & NET Payment 2 -------------------------------//
                 decimal washgross = actualgross + WashPayF + ConvPay;
 
                 if (actualgross > GorssBreaker)
                 {
-                    grossesic = actualgross- GorssBreaker - WashPayF;
+                    grossesic = GorssBreaker - WashPayF;
                 }
                 else
                 {
@@ -515,7 +538,15 @@ namespace WebApplication1.bussiness.production
                 }
 
                 lbl_grossamount.Text = grossesic.ToString();
-                lbl_otherspay.Text = otherpay.ToString();
+                if (otherpay < 0 )
+                {
+                    otherpayF = 0;
+                }
+                else
+                {
+                    otherpayF = otherpay;
+                }
+                lbl_otherspay.Text = otherpayF.ToString();
 
                 //--------------------- ESIC pay---------------------------------------------------//
 
