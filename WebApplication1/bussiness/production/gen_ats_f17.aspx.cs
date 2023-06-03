@@ -315,11 +315,11 @@ namespace WebApplication1.bussiness.production
                 PayRoll.FindPayCadre(skillevel, workregion, ref dr);
                 lbl_payrate.Text = dr.ToString();
 
-                if (region == "KPO")
+                if (workregion == "KPO")
                 {
                     if (empwrk == "K68" || empwrk == "K91" || empwrk == "K92" || empwrk == "K579" || empwrk == "K584" || empwrk == "K612" || empwrk == "K620")
                     {
-                        CalWorkingDaysF = 27;
+                        CalWorkingDaysF = 26;
                     }
                     else
                     {

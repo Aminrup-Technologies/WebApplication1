@@ -181,7 +181,7 @@ namespace WebApplication1.bussiness.production.rpts
         {
             DbCL.Sqlconnection();
             DbCL.ConnectDb();
-            string cmdString = "select top(10) WorkmanSL from tbl_trialpayroll where SalaryYear='" + Year + "' and SalaryMonth='" + Month + "' and Region='" + Region + "' order by Id";      
+            string cmdString = "select WorkmanSL from tbl_trialpayroll where SalaryYear='" + Year + "' and SalaryMonth='" + Month + "' and Region='" + Region + "' order by Id";      
             SqlCommand cmd = new SqlCommand(cmdString, DbCL.Conn);     
             cmd.CommandType = CommandType.Text;    
             int Sl = 1;
@@ -197,7 +197,7 @@ namespace WebApplication1.bussiness.production.rpts
                 {
                     EmpWrk = dt_emps.Rows[i][0].ToString();
                     str = str + "<tr><td height='70' width='3%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>" + Sl + "</td>";
-                    //FindFirstHalfData(Year, Month, Region, CalMonthDays, StartDay, EndDay, EmpWrk);
+                    FindFirstHalfData(Year, Month, Region, CalMonthDays, StartDay, EndDay, EmpWrk);
                     Sl = Sl + 1;
                     lblTotalData.Text = str;
                 }
