@@ -233,12 +233,6 @@ namespace WebApplication1.bussiness.production
             SqlCommand cmd = new SqlCommand(query, dbcl.Conn);
             SqlDataAdapter da = new SqlDataAdapter(cmd);
             da.Fill(dt_emps);
-            
-
-            //SqlCommand cmd = new SqlCommand(query, dbcl.Conn);
-            //SqlDataAdapter ad = new SqlDataAdapter(cmd);
-            //DataSet ds = new DataSet();
-            //ad.Fill(ds);
             GridView.DataSource = dt_emps;
             GridView.DataBind();
             dbcl.Sqlconnection(); dbcl.ConnectDb();
