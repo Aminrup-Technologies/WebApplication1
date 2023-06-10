@@ -779,17 +779,17 @@ namespace WebApplication1.bussiness.production
         {
             Clear();
 
-            //if (DateTime.Now.Year.ToString() == Year && DateTime.Now.Month.ToString("MM") == Month)
-            //{
-            //    finalized.Visible = false;
-            //    realtime.Visible = true;
-            //}
-            //else
-            //{
-            //    finalized.Visible = true;
-            //    realtime.Visible = false;
-            //    salary_pdfrow.Visible = true;
-            //}
+            if (DateTime.Now.Year.ToString() == Year && DateTime.Now.Month.ToString("MM") == Month)
+            {
+                finalized.Visible = false;
+                realtime.Visible = true;
+            }
+            else
+            {
+                finalized.Visible = true;
+                realtime.Visible = false;
+                salary_pdfrow.Visible = true;
+            }
             string cmdString = "select * from tbl_trialpayroll where SalaryMonth = '" + Month + "' AND SalaryYear = '" + Year + "' and WorkmanSL='" + Session["WORKMAN"].ToString() + "'";
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
@@ -835,7 +835,8 @@ namespace WebApplication1.bussiness.production
                 lbl_pfpay.Text = pfpay.ToString();
                 lbl_esicpay.Text = esicpay.ToString();
 
-                Int32 otherpay = esicgross - earning - ttlded;
+                Int32 otherpay = Convert.ToInt32(Rdr["OthersPay"].ToString());
+                //Int32 otherpay = esicgross - earning - ttlded;
                 lbl_allowances.Text = otherpay.ToString();
 
                 lbl_advance.Text = Rdr["TotalDeduction"].ToString();
