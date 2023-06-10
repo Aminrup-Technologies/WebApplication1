@@ -228,9 +228,9 @@
 
 									<li id="Reltab" runat="server" visible="true"><a><i class="fa fa-edit"></i>Expenses<span class="fa fa-chevron-down"></span></a>
 										<ul class="nav child_menu">
-											<li id="budget" runat="server" visible="true"><a href="#">Budget</a></li>
+											<li id="budget" runat="server" visible="false"><a href="#">Budget</a></li>
 											<li id="add_exphd" runat="server" visible="true"><a href="add_expense_heads.aspx">Expense Heads</a></li>
-											<li id="add_expsbhd" runat="server" visible="true"><a href="add_expense_subheads.aspx">Expense Sub-Heads</a></li>
+											<li id="add_expsbhd" runat="server" visible="false"><a href="add_expense_subheads.aspx">Expense Sub-Heads</a></li>
 											<li id="add_exp" runat="server" visible="true"><a href="add_expenses.aspx">Add Expenses</a></li>
 											<li id="mng_exp" runat="server" visible="true"><a href="view_expenses.aspx">View & Manage Expenses</a></li>
 										</ul>

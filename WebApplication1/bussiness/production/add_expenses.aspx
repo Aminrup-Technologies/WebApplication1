@@ -221,12 +221,12 @@
                                             <ItemStyle CssClass="grid" />
                                         </asp:TemplateField>
 
-                                        <asp:TemplateField HeaderText="Sub-Head" HeaderStyle-Width="20%">
+                                       <%-- <asp:TemplateField HeaderText="Sub-Head" HeaderStyle-Width="20%">
                                             <ItemTemplate>
                                                 <asp:Label ID="lbl_ExpSubHead" runat="server" Text='<%# Bind("ExpSubHead") %>'></asp:Label>
                                             </ItemTemplate>
                                             <HeaderStyle CssClass="grid" />
-                                        </asp:TemplateField>
+                                        </asp:TemplateField>--%>
 
                                         <asp:TemplateField HeaderText="Qnty" Visible="true">
                                             <ItemTemplate>
