@@ -233,7 +233,7 @@ namespace WebApplication1.bussiness.production
             SqlCommand cmd = new SqlCommand(query, dbcl.Conn);
             SqlDataAdapter da = new SqlDataAdapter(cmd);
             da.Fill(dt_emps);
-            
+
 
             //SqlCommand cmd = new SqlCommand(query, dbcl.Conn);
             //SqlDataAdapter ad = new SqlDataAdapter(cmd);
@@ -433,7 +433,7 @@ namespace WebApplication1.bussiness.production
 
 
                 //---------------- OT Pay -------- Gross Rate
-                decimal otpay = 0.0m;    
+                decimal otpay = 0.0m;
                 decimal wrkhrs = Convert.ToDecimal(lbl_WorkHours.Text.ToString());
                 decimal otdiv = Convert.ToDecimal(lbl_OT_Divisibility.Text.ToString());  //Added on 29-11-2021
                 decimal otfactor = Convert.ToDecimal(lbl_OTFactor.Text.ToString());
