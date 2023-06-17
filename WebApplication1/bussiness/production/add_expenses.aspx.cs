@@ -64,10 +64,6 @@ namespace WebApplication1.bussiness.production
                         string CmdString3 = "select Company_Department, DB_Code from tlb_workregion_compdept where Country_Code = 'IN' and State_Code ='" + Session["USTATE"].ToString() + "' and Work_Region_Code = '" + Session["REGION"].ToString() + "' and Company_Code = '" + Session["COMPANY_CODE"].ToString() + "'  order by Id ";
                         BindCompanyDept(CmdString3);
 
-
-
-
-
                         wrkordr_row1.Visible = true;
                         wrkordr_row2.Visible = true;
 
@@ -81,8 +77,6 @@ namespace WebApplication1.bussiness.production
 
                         loc_row1.Visible = true;
                         loc_row2.Visible = true;
-
-
                     }
                 }
             }
@@ -460,7 +454,6 @@ namespace WebApplication1.bussiness.production
                 string CmdString2 = "select WO_Number, DB_Code from tlb_WO_Data where Work_Region_Code = '" + rgn_code + "' and Company_Code = '" + comp_code + "' and Dept_DBCode='" + compdept_code + "' and WO_Status='Active' order by WO_Type";
                 BindWorkorder(CmdString2);
 
-
                 string query = "select CompDept_Location,DB_Code from tlb_workregion_compdept_loc where Dept_DBCode='" + compdept_code + "'";
                 BindDepLoc(query);
             }
@@ -818,7 +811,7 @@ namespace WebApplication1.bussiness.production
             {
                 ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup();", true);
                 lblMessage.ForeColor = System.Drawing.Color.Red;
-                lblMessage.Text = "815 : ____!";
+                lblMessage.Text = "814 : ____!";
             }
         }
 
