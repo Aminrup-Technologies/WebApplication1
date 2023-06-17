@@ -64,10 +64,6 @@ namespace WebApplication1.bussiness.production
                         string CmdString3 = "select Company_Department, DB_Code from tlb_workregion_compdept where Country_Code = 'IN' and State_Code ='" + Session["USTATE"].ToString() + "' and Work_Region_Code = '" + Session["REGION"].ToString() + "' and Company_Code = '" + Session["COMPANY_CODE"].ToString() + "'  order by Id ";
                         BindCompanyDept(CmdString3);
 
-
-
-
-
                         wrkordr_row1.Visible = true;
                         wrkordr_row2.Visible = true;
 
@@ -81,8 +77,6 @@ namespace WebApplication1.bussiness.production
 
                         loc_row1.Visible = true;
                         loc_row2.Visible = true;
-
-
                     }
                 }
             }
@@ -457,9 +451,8 @@ namespace WebApplication1.bussiness.production
                 string compdept_code = DDL_CompDept.SelectedValue.ToString();
                 string compdept_name = DDL_CompDept.SelectedItem.ToString();
 
-                string CmdString2 = "select WO_Number, DB_Code from tlb_WO_Data where Work_Region_Code = '" + rgn_code + "' and Company_Code = '" + comp_code + "' and WO_Status='Active' order by WO_Type";
+                string CmdString2 = "select WO_Number, DB_Code from tlb_WO_Data where Work_Region_Code = '" + rgn_code + "' and Company_Code = '" + comp_code + "' and Dept_DBCode='" + compdept_code + "' and WO_Status='Active' order by WO_Type";
                 BindWorkorder(CmdString2);
-
 
                 string query = "select CompDept_Location,DB_Code from tlb_workregion_compdept_loc where Dept_DBCode='" + compdept_code + "'";
                 BindDepLoc(query);
@@ -512,15 +505,16 @@ namespace WebApplication1.bussiness.production
                 string comp_code = DDL_Company.SelectedValue.ToString();
                 string comp_name = DDL_Company.SelectedItem.ToString();
 
-                string CmdString2 = "select Worksite_Name, DB_Code from tlb_atsworksites where WorkRegion_Code='" + rgn_code + "' and Company_Code = '" + comp_code + "' order by Id";
+                string compdept_code = DDL_CompDept.SelectedValue.ToString();
+                string compdept_name = DDL_CompDept.SelectedItem.ToString();
+
+                string CmdString2 = "select Worksite_Name, DB_Code from tlb_atsworksites where WorkRegion_Code='" + rgn_code + "' and Company_Code = '" + comp_code + "' and Dept_DBCode='" + compdept_code + "' order by Id";
                 BindWorkSites(CmdString2);
 
                 DDL_Worksite.SelectedIndex = 1;
 
                 worksite_row1.Visible = true;
                 worksite_row2.Visible = true;
-
-
 
                 submitbtns.Visible = true;
             }
@@ -565,14 +559,24 @@ namespace WebApplication1.bussiness.production
         {
             if (DDL_ExpHeads.SelectedIndex != 0)
             {
-                subhead_row1.Visible = true;
-                subhead_row2.Visible = true;
+                //subhead_row1.Visible = true;
+                //subhead_row2.Visible = true;
 
                 quantity_row1.Visible = true;
                 quantity_row2.Visible = true;
 
-                string query = "select SubHead,SubHead from tlb_expsubheads where Region='" + Session["REGION"].ToString() + "' and HeadCode = '" + DDL_ExpHeads.SelectedValue.ToString() + "' order by Id";
-                Bind_ExpSubHeads(query);
+                expdescp_row1.Visible = true;
+                expdescp_row2.Visible = true;
+
+                AddExpensesButtons.Visible = true;
+                pdfuploadbuttonrow1.Visible = true;
+                pdfuploadbuttonrow2.Visible = true;
+
+                expamnt_row1.Visible = true;
+                expamnt_row2.Visible = true;
+
+                //string query = "select SubHead,SubHead from tlb_expsubheads where Region='" + Session["REGION"].ToString() + "' and HeadCode = '" + DDL_ExpHeads.SelectedValue.ToString() + "' order by Id";
+                //Bind_ExpSubHeads(query);
             }
             else
             {
@@ -656,7 +660,7 @@ namespace WebApplication1.bussiness.production
             dt.TableName = "Expenses";
             dt.Columns.Add(new DataColumn("slno", typeof(string)));
             dt.Columns.Add(new DataColumn("ExpHead", typeof(string)));
-            dt.Columns.Add(new DataColumn("ExpSubHead", typeof(string)));
+            //dt.Columns.Add(new DataColumn("ExpSubHead", typeof(string)));
             dt.Columns.Add(new DataColumn("Quantity", typeof(string)));
             dt.Columns.Add(new DataColumn("Description", typeof(string)));
             dt.Columns.Add(new DataColumn("ClaimAmount", typeof(string)));
@@ -695,16 +699,21 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_addbtns_Click(object sender, EventArgs e)
         {
-            if (DDL_SubHeads.SelectedIndex != 0)
+            if (DDL_ExpHeads.SelectedIndex != 0)
             {
                 ADDTOLIST();
                 Div3.Visible = false;
                 finaldisptach.Visible = true;
                 btn_finish.Enabled = true;
+
+                pdfuploadbuttonrow1.Visible = true;
+                pdfuploadbuttonrow2.Visible = true;
             }
             else
             {
-
+                ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup();", true);
+                lblMessage.ForeColor = System.Drawing.Color.Red;
+                lblMessage.Text = "719 : ____!";
             }
         }
 
@@ -722,7 +731,7 @@ namespace WebApplication1.bussiness.production
                         drCurrentRow = dtCurrentTable.NewRow();
 
                         drCurrentRow["ExpHead"] = DDL_ExpHeads.SelectedItem.Text.ToString();
-                        drCurrentRow["ExpSubHead"] = DDL_SubHeads.SelectedItem.Text.ToString();
+                        //drCurrentRow["ExpSubHead"] = DDL_SubHeads.SelectedItem.Text.ToString();
                         drCurrentRow["Quantity"] = txt_quantity.Text.ToString();
 
                         //----------Added on 13-05-20201--------------------------------//
@@ -756,7 +765,7 @@ namespace WebApplication1.bussiness.production
                     BindMyGridview();
 
                     DDL_ExpHeads.SelectedIndex = 0;
-                    DDL_SubHeads.SelectedIndex = 0;
+                    //DDL_SubHeads.SelectedIndex = 0;
                     txt_quantity.Text = "1";
                     txt_amount.Text = "";
                     txt_expdescp.Text = "N/A";
@@ -800,7 +809,9 @@ namespace WebApplication1.bussiness.production
             }
             else
             {
-
+                ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup();", true);
+                lblMessage.ForeColor = System.Drawing.Color.Red;
+                lblMessage.Text = "814 : ____!";
             }
         }
 
@@ -816,7 +827,7 @@ namespace WebApplication1.bussiness.production
                 for (i = 0; i <= dt1.Rows.Count - 1; i++)
                 {
                     string head = ((Label)GridView1.Rows[i].FindControl("lbl_ExpHead")).Text;
-                    string subhead = ((Label)GridView1.Rows[i].FindControl("lbl_ExpSubHead")).Text;
+                    //string subhead = ((Label)GridView1.Rows[i].FindControl("lbl_ExpSubHead")).Text;
                     string qnty = ((Label)GridView1.Rows[i].FindControl("lbl_Quantity")).Text;
 
                     string descp = ((Label)GridView1.Rows[i].FindControl("lbl_Description")).Text;
@@ -827,7 +838,7 @@ namespace WebApplication1.bussiness.production
                     string fileext = ((Label)GridView1.Rows[i].FindControl("lbl_Extension")).Text;
                     string data = ((Label)GridView1.Rows[i].FindControl("lbl_Data")).Text;
 
-                    Int32 returnflag = InsertIntoAttendanceTable(head, subhead, qnty, descp, claimamnt, filename, filetype, fileext, data);
+                    Int32 returnflag = InsertIntoAttendanceTable(head, qnty, descp, claimamnt, filename, filetype, fileext, data);
                     if (returnflag != 0)
                     {
                         flag = true;
@@ -841,7 +852,7 @@ namespace WebApplication1.bussiness.production
             return flag;
         }
 
-        private Int32 InsertIntoAttendanceTable(string head, string subhead, string qnty, string descp, string claimamnt, string filename, string filetype, string fileext, string data)
+        private Int32 InsertIntoAttendanceTable(string head, string qnty, string descp, string claimamnt, string filename, string filetype, string fileext, string data)
         {
             Int32 flag = 0;
             Byte[] bytes = { 0 };
@@ -852,7 +863,7 @@ namespace WebApplication1.bussiness.production
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@ExpenseID", lbl_expid.Text.ToString());
                 cmd.Parameters.AddWithValue("@ExpHead", head);
-                cmd.Parameters.AddWithValue("@ExpSubHead", subhead);
+                cmd.Parameters.AddWithValue("@ExpSubHead", "No Data");
                 cmd.Parameters.AddWithValue("@Quantity", qnty);
                 cmd.Parameters.AddWithValue("@Description", descp);
                 cmd.Parameters.AddWithValue("@ClaimAmount", Convert.ToDecimal(claimamnt));

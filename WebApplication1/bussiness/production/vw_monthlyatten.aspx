@@ -101,7 +101,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-6 col-sm-6 profile_details" id="PaymentView" runat="server" visible="false">
+                <div class="col-md-6 col-sm-6 profile_details" id="PaymentView" runat="server" visible="true">
                     <div class="well profile_view col-sm-12 col-lg-12">
                         <div class="col-sm-12">
                             <h4 class="brief"><i>Payment :
