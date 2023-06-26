@@ -355,9 +355,6 @@
     <Content Include="landing_page\icons\demo.html" />
     <Content Include="landing_page\icons\orion-svg-sprite.svg" />
     <Content Include="landing_page\icons\styles.css" />
-    <Content Include="landing_page\img\ats_translogo.png" />
-    <Content Include="landing_page\img\ats_webheader.png" />
-    <Content Include="landing_page\img\BigBoss.jpg" />
     <Content Include="landing_page\img\favicon.png" />
     <Content Include="landing_page\img\hero-banner-1.jpg" />
     <Content Include="landing_page\img\hero-banner-2.jpg" />
@@ -367,14 +364,6 @@
     <Content Include="landing_page\img\logo.png" />
     <Content Include="landing_page\img\logo.svg" />
     <Content Include="landing_page\img\marker.png" />
-    <Content Include="landing_page\img\Picture1.jpg" />
-    <Content Include="landing_page\img\Picture2.jpg" />
-    <Content Include="landing_page\img\Picture3.jpg" />
-    <Content Include="landing_page\img\Picture4.jpg" />
-    <Content Include="landing_page\img\Picture5.jpg" />
-    <Content Include="landing_page\img\Picture6.jpg" />
-    <Content Include="landing_page\img\Picture7.png" />
-    <Content Include="landing_page\img\Picture8.jpg" />
     <Content Include="landing_page\img\services-1.jpg" />
     <Content Include="landing_page\img\services-2.jpg" />
     <Content Include="landing_page\img\services-3.jpg" />
@@ -1280,7 +1269,9 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="landing_page\vendor\jquery.cookie\test\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
