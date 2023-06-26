@@ -382,7 +382,6 @@
     <Content Include="landing_page\js\leaflet.js" />
     <Content Include="landing_page\services.html" />
     <Content Include="landing_page\style.css" />
-    <Content Include="landing_page\test.html" />
     <Content Include="landing_page\vendor\bootstrap\css\bootstrap-grid.css" />
     <Content Include="landing_page\vendor\bootstrap\css\bootstrap-grid.min.css" />
     <Content Include="landing_page\vendor\bootstrap\css\bootstrap-reboot.css" />
