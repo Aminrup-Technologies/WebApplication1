@@ -256,10 +256,10 @@ namespace WebApplication1.bussiness.production
                     dbotp_current_advance = Convert.ToInt32(Rdr["Cur_Advance"]);
                     txt_curradvamnt.Text = dbotp_current_advance.ToString().Trim();
 
-                    if (dbotp_current_advance != 0)
-                    {
-                        inputed_current_advance = dbotp_current_advance;
-                    }
+                    //if (dbotp_current_advance != 0)
+                    //{
+                    //    inputed_current_advance = dbotp_current_advance;
+                    //}
                     dbinp_total_advance = dbotp_total_advance;
                 }
                 DbCL.Conn.Close();
