@@ -233,7 +233,7 @@ namespace WebApplication1.bussiness.production
             SqlCommand cmd = new SqlCommand(query, dbcl.Conn);
             SqlDataAdapter da = new SqlDataAdapter(cmd);
             da.Fill(dt_emps);
-            
+
 
             //SqlCommand cmd = new SqlCommand(query, dbcl.Conn);
             //SqlDataAdapter ad = new SqlDataAdapter(cmd);
@@ -499,8 +499,8 @@ namespace WebApplication1.bussiness.production
                             lbl_otwages.Text = otpay.ToString();
                         }
                         WashPayF = 0;
-                        otherpay =0;
-                        actualgross = BasicSalary + otpay + otherpay+ WashPayF;
+                        otherpay = 0;
+                        actualgross = BasicSalary + otpay + otherpay + WashPayF;
                     }
                     else
                     {
@@ -537,7 +537,7 @@ namespace WebApplication1.bussiness.production
                 }
 
                 lbl_grossamount.Text = grossesic.ToString();
-                if (otherpay < 0 )
+                if (otherpay < 0)
                 {
                     otherpayF = 0;
                 }
@@ -573,7 +573,7 @@ namespace WebApplication1.bussiness.production
                     }
                     else
                     {
-                        netpay2  = 0.0m;
+                        netpay2 = 0.0m;
                     }
                 }
                 else

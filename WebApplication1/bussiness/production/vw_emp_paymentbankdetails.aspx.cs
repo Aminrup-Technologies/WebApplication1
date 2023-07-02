@@ -9,12 +9,18 @@ using System.Data;
 using ClosedXML.Excel;
 using System.Configuration;
 using System.IO;
+using System.Drawing;
 
 namespace WebApplication1.bussiness.production
 {
     public partial class vw_emp_paymentbankdetails : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
+
+        public static string state = string.Empty;
+        public static string region = string.Empty;
+        public static string comp = string.Empty;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -25,7 +31,23 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-                    BindGrid();
+                    if (Session["Changer"] != null)
+                    {
+                        string[] retrievedArray = (string[])Session["Changer"];
+                        region = retrievedArray[1].ToString();
+                        comp = retrievedArray[2].ToString();
+                        state = retrievedArray[0].ToString();
+
+                        Session["Changer"] = null;
+                    }
+                    else
+                    {
+                        region = Session["REGION"].ToString();
+                        comp = Session["COMPANY_CODE"].ToString();
+                        state = Session["STATE"].ToString();
+                    }
+
+                    BindGrid(state, region, comp);
                     DDL_EmpWorkStatus.SelectedIndex = 2;
                 }
             }
@@ -38,7 +60,7 @@ namespace WebApplication1.bussiness.production
             string constr = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
             using (SqlConnection con = new SqlConnection(constr))
             {
-                using (SqlCommand cmd = new SqlCommand("select Id, WorkStatus, WorkmanSL, FullName, Fathername, Payment_Bank, Payment_Account, Payment_IFSC, BankBranch from tbl_Employee_Mustertable where WorkRegion = '" + Session["REGION"].ToString() + "' and WorkCompany='" + Session["COMPANY_CODE"].ToString() + "' and WorkStatus='Active' order by Id desc"))
+                using (SqlCommand cmd = new SqlCommand("select Id, WorkStatus, WorkmanSL, FullName, Fathername, Payment_Bank, Payment_Account, Payment_IFSC, BankBranch from tbl_Employee_Mustertable where WorkState ='"+ state + "' and WorkRegion = '" + region + "' and WorkCompany='" + comp + "' and WorkStatus='Active' order by Id desc"))
                 {
                     using (SqlDataAdapter sda = new SqlDataAdapter())
                     {
@@ -70,9 +92,9 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-        private void BindGrid()
+        private void BindGrid(string state, string region, string comp)
         {
-            string CmdString = "select Id, WorkStatus, WorkmanSL, FullName, Fathername, Payment_Bank, Payment_Account, Payment_IFSC, BankBranch from tbl_Employee_Mustertable where WorkRegion = '" + Session["REGION"].ToString() + "' and WorkCompany='" + Session["COMPANY_CODE"].ToString() + "' and WorkStatus='Active' order by Id desc";
+            string CmdString = "select Id, WorkStatus, WorkmanSL, FullName, Fathername, Payment_Bank, Payment_Account, Payment_IFSC, BankBranch from tbl_Employee_Mustertable where WorkState='" + state + "' and WorkRegion = '" + region + "' and WorkCompany='" + comp + "' and WorkStatus='Active' order by Id desc";
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             SqlCommand cmd = new SqlCommand(CmdString, dbcl.Conn);
@@ -88,18 +110,18 @@ namespace WebApplication1.bussiness.production
         protected void GridView1_RowEditing(object sender, GridViewEditEventArgs e)
         {
             GridView1.EditIndex = e.NewEditIndex;
-            BindGrid();
+            BindGrid(state, region, comp);
         }
 
         protected void GridView1_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e)
         {
             GridView1.EditIndex = -1;
-            BindGrid();
+            BindGrid(state, region, comp);
         }
 
         protected void GridView1_RowDeleting(object sender, GridViewDeleteEventArgs e)
         {
-            BindGrid();
+            BindGrid(state, region, comp);
         }
 
         protected void GridView1_RowUpdating(object sender, GridViewUpdateEventArgs e)
@@ -139,7 +161,7 @@ namespace WebApplication1.bussiness.production
             }
 
             GridView1.EditIndex = -1;
-            BindGrid();
+            BindGrid(state, region, comp);
         }
 
 

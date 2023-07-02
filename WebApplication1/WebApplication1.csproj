@@ -225,6 +225,7 @@
     <Content Include="bussiness\production\attach_manpower.aspx" />
     <Content Include="bussiness\production\blank_page.aspx" />
     <Content Include="bussiness\production\create_supplymemo.aspx" />
+    <Content Include="bussiness\production\css\loader.css" />
     <Content Include="bussiness\production\css\Site.css" />
     <Content Include="bussiness\production\emp_payroll_wages.aspx" />
     <Content Include="bussiness\production\emp_profilepic.aspx" />
@@ -256,7 +257,6 @@
     <Content Include="bussiness\production\manage_profile.aspx" />
     <Content Include="bussiness\production\pyrl_deductionlist.aspx" />
     <Content Include="bussiness\production\pyrl_deductions.aspx" />
-    <Content Include="bussiness\production\pyrl_gnrtdashbrd.aspx" />
     <Content Include="bussiness\production\pyrl_managedashbrd.aspx" />
     <Content Include="bussiness\production\rpts\A4.css" />
     <Content Include="bussiness\production\rpts\rpt_CombinedF16.aspx" />
@@ -691,13 +691,6 @@
     </Compile>
     <Compile Include="bussiness\production\pyrl_deductions.aspx.designer.cs">
       <DependentUpon>pyrl_deductions.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="bussiness\production\pyrl_gnrtdashbrd.aspx.cs">
-      <DependentUpon>pyrl_gnrtdashbrd.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="bussiness\production\pyrl_gnrtdashbrd.aspx.designer.cs">
-      <DependentUpon>pyrl_gnrtdashbrd.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\pyrl_managedashbrd.aspx.cs">
       <DependentUpon>pyrl_managedashbrd.aspx</DependentUpon>
