@@ -9,6 +9,7 @@ namespace WebApplication1.bussiness.production
     public partial class login : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
+        UserActivity UActivity = new UserActivity();
         DataTable dt = new DataTable();
 
         static string User_Photo = string.Empty;
@@ -156,5 +157,23 @@ namespace WebApplication1.bussiness.production
         }
 
 
+    }
+
+    public class UserActivity
+    {
+        private string UserID { get; set; }
+        private string Region { get; set; }
+        private string State { get; set; }
+        private string Company { get; set; }
+        private string Workman { get; set; }
+        private string User_FirstName { get; set; }
+        private string User_FullName { get; set; }
+        private string User_Type { get; set; }
+        private string User_Permission { get; set; }
+        private string User_Worksite { get; set; }
+        private string User_WRKSTCode { get; set; }
+        private string User_Skill { get; set; }
+        private string User_Desg { get; set; }
+        private string User_Photo { get; set; }
     }
 }

@@ -9,6 +9,7 @@ using System.Data;
 using ClosedXML.Excel;
 using System.Configuration;
 using System.IO;
+using System.Drawing;
 
 namespace WebApplication1.bussiness.production
 {
@@ -16,6 +17,9 @@ namespace WebApplication1.bussiness.production
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
         public static string Query = string.Empty;
+        public static string state = string.Empty;
+        public static string region = string.Empty;
+        public static string comp = string.Empty;
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -26,10 +30,26 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-                    string CmdString2 = "select Category_Type, Category_DB from tlb_payroll_category where Country_Code = 'IN' and State_Code='"+ Session["STATE"] + "' and WorkRegion_Code='" + Session["REGION"].ToString() + "' and Company_Code='" + Session["COMPANY_CODE"].ToString() + "' order by Id desc";
+                    if (Session["Changer"] != null)
+                    {
+                        string[] retrievedArray = (string[])Session["Changer"];
+                        region = retrievedArray[1].ToString();
+                        comp = retrievedArray[2].ToString();
+                        state = retrievedArray[0].ToString();
+
+                        Session["Changer"]= null;
+                    }
+                    else
+                    {
+                        region = Session["REGION"].ToString();
+                        comp = Session["COMPANY_CODE"].ToString();
+                        state = Session["STATE"].ToString();
+                    }
+                   
+                    string CmdString2 = "select Category_Type, Category_DB from tlb_payroll_category where Country_Code = 'IN' and State_Code='"+ state + "' and WorkRegion_Code='" + region + "' and Company_Code='" + comp + "' order by Id desc";
                     BindSkillCategory(CmdString2);
 
-                    string CmdString3 = "select Id, WorkmanSL, FullName, SkillCategory, F16_YesNo,F17_YesNo, FixedSalary_YesNo, FixedAmount,WorkHours, OTFactor, OTMultiplier, OT_Divisibility, DA_VDA, HRA, Conv_Allowance, Medical_Allowance, ATT_Allowance, SPCL_Allowance,Misc_Earnings,Washing_Allowance from tbl_Employee_Mustertable where WorkRegion = '" + Session["REGION"].ToString() + "' and WorkCompany='" + Session["COMPANY_CODE"].ToString() + "' and WorkStatus='Active' order by Id desc";
+                    string CmdString3 = "select Id, WorkmanSL, FullName, SkillCategory, F16_YesNo,F17_YesNo, FixedSalary_YesNo, FixedAmount,WorkHours, OTFactor, OTMultiplier, OT_Divisibility, DA_VDA, HRA, Conv_Allowance, Medical_Allowance, ATT_Allowance, SPCL_Allowance,Misc_Earnings,Washing_Allowance from tbl_Employee_Mustertable where WorkRegion = '" + region + "' and WorkCompany='" + comp + "' and WorkStatus='Active' order by Id desc";
                     BindGrid(CmdString3);
 
                     DDL_EmpWorkStatus.SelectedIndex = 2;
@@ -43,7 +63,7 @@ namespace WebApplication1.bussiness.production
             string constr = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
             using (SqlConnection con = new SqlConnection(constr))
             {
-                using (SqlCommand cmd = new SqlCommand("select Id, WorkmanSL, FullName, SkillCategory, FixedSalary_YesNo, FixedAmount,WorkHours, OTFactor, OTMultiplier, OT_Divisibility, DA_VDA, HRA, Conv_Allowance, Medical_Allowance, ATT_Allowance, SPCL_Allowance,Misc_Earnings,Washing_Allowance from tbl_Employee_Mustertable where WorkRegion = '" + Session["REGION"].ToString() + "' and WorkCompany='" + Session["COMPANY_CODE"].ToString() + "' and WorkStatus='Active' order by Id"))
+                using (SqlCommand cmd = new SqlCommand("select Id, WorkmanSL, FullName, SkillCategory, FixedSalary_YesNo, FixedAmount,WorkHours, OTFactor, OTMultiplier, OT_Divisibility, DA_VDA, HRA, Conv_Allowance, Medical_Allowance, ATT_Allowance, SPCL_Allowance,Misc_Earnings,Washing_Allowance from tbl_Employee_Mustertable where WorkRegion = '" + region + "' and WorkCompany='" + comp + "' and WorkStatus='Active' order by Id"))
                 {
                     using (SqlDataAdapter sda = new SqlDataAdapter())
                     {
@@ -117,28 +137,28 @@ namespace WebApplication1.bussiness.production
             {
                 if (DDL_SkillCategory.SelectedIndex == 0 && DDL_Form17YesNo.SelectedIndex == 0 && DDL_FixedYesNo.SelectedIndex == 0)
                 {
-                    string CmdString3 = "select Id, WorkmanSL, FullName, SkillCategory, F16_YesNo,F17_YesNo, FixedSalary_YesNo, FixedAmount,WorkHours, OTFactor, OTMultiplier, OT_Divisibility, DA_VDA, HRA, Conv_Allowance, Medical_Allowance, ATT_Allowance, SPCL_Allowance,Misc_Earnings,Washing_Allowance from tbl_Employee_Mustertable where WorkRegion = '" + Session["REGION"].ToString() + "' and WorkCompany='" + Session["COMPANY_CODE"].ToString() + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' order by Id desc";
+                    string CmdString3 = "select Id, WorkmanSL, FullName, SkillCategory, F16_YesNo,F17_YesNo, FixedSalary_YesNo, FixedAmount,WorkHours, OTFactor, OTMultiplier, OT_Divisibility, DA_VDA, HRA, Conv_Allowance, Medical_Allowance, ATT_Allowance, SPCL_Allowance,Misc_Earnings,Washing_Allowance from tbl_Employee_Mustertable where WorkRegion = '" + region + "' and WorkCompany='" + comp + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' order by Id desc";
                     BindGrid(CmdString3);
                 }
                 else if (DDL_SkillCategory.SelectedIndex != 0 && DDL_Form17YesNo.SelectedIndex == 0 && DDL_FixedYesNo.SelectedIndex == 0)
                 {
-                    string CmdString3 = "select Id, WorkmanSL, FullName, SkillCategory, F16_YesNo,F17_YesNo, FixedSalary_YesNo, FixedAmount,WorkHours, OTFactor, OTMultiplier, OT_Divisibility, DA_VDA, HRA, Conv_Allowance, Medical_Allowance, ATT_Allowance, SPCL_Allowance,Misc_Earnings,Washing_Allowance from tbl_Employee_Mustertable where WorkRegion = '" + Session["REGION"].ToString() + "' and WorkCompany='" + Session["COMPANY_CODE"].ToString() + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and SkillCategoryDB='" + DDL_SkillCategory.SelectedValue.ToString() + "' order by Id desc";
+                    string CmdString3 = "select Id, WorkmanSL, FullName, SkillCategory, F16_YesNo,F17_YesNo, FixedSalary_YesNo, FixedAmount,WorkHours, OTFactor, OTMultiplier, OT_Divisibility, DA_VDA, HRA, Conv_Allowance, Medical_Allowance, ATT_Allowance, SPCL_Allowance,Misc_Earnings,Washing_Allowance from tbl_Employee_Mustertable where WorkRegion = '" + region + "' and WorkCompany='" + comp + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and SkillCategoryDB='" + DDL_SkillCategory.SelectedValue.ToString() + "' order by Id desc";
                     BindGrid(CmdString3);
                 }
                 else if (DDL_SkillCategory.SelectedIndex != 0 && DDL_Form17YesNo.SelectedIndex != 0 && DDL_FixedYesNo.SelectedIndex == 0)
                 {
-                    string CmdString3 = "select Id, WorkmanSL, FullName, SkillCategory, F16_YesNo,F17_YesNo, FixedSalary_YesNo, FixedAmount,WorkHours, OTFactor, OTMultiplier, OT_Divisibility, DA_VDA, HRA, Conv_Allowance, Medical_Allowance, ATT_Allowance, SPCL_Allowance,Misc_Earnings,Washing_Allowance from tbl_Employee_Mustertable where WorkRegion = '" + Session["REGION"].ToString() + "' and WorkCompany='" + Session["COMPANY_CODE"].ToString() + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and SkillCategoryDB='" + DDL_SkillCategory.SelectedValue.ToString() + "' and F17_YesNo='" + DDL_Form17YesNo.SelectedItem.Text.ToString() + "' order by Id desc";
+                    string CmdString3 = "select Id, WorkmanSL, FullName, SkillCategory, F16_YesNo,F17_YesNo, FixedSalary_YesNo, FixedAmount,WorkHours, OTFactor, OTMultiplier, OT_Divisibility, DA_VDA, HRA, Conv_Allowance, Medical_Allowance, ATT_Allowance, SPCL_Allowance,Misc_Earnings,Washing_Allowance from tbl_Employee_Mustertable where WorkRegion = '" + region + "' and WorkCompany='" + comp + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and SkillCategoryDB='" + DDL_SkillCategory.SelectedValue.ToString() + "' and F17_YesNo='" + DDL_Form17YesNo.SelectedItem.Text.ToString() + "' order by Id desc";
                     BindGrid(CmdString3);
                 }
                 else if (DDL_SkillCategory.SelectedIndex != 0 && DDL_Form17YesNo.SelectedIndex != 0 && DDL_FixedYesNo.SelectedIndex != 0)
                 {
-                    string CmdString3 = "select Id, WorkmanSL, FullName, SkillCategory, F16_YesNo,F17_YesNo, FixedSalary_YesNo, FixedAmount,WorkHours, OTFactor, OTMultiplier, OT_Divisibility, DA_VDA, HRA, Conv_Allowance, Medical_Allowance, ATT_Allowance, SPCL_Allowance,Misc_Earnings,Washing_Allowance from tbl_Employee_Mustertable where WorkRegion = '" + Session["REGION"].ToString() + "' and WorkCompany='" + Session["COMPANY_CODE"].ToString() + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and SkillCategoryDB='" + DDL_SkillCategory.SelectedValue.ToString() + "' and F17_YesNo='" + DDL_Form17YesNo.SelectedItem.Text.ToString() + "' and FixedSalary_YesNo = '" + DDL_FixedYesNo.SelectedItem.Text.ToString() + "' order by Id desc";
+                    string CmdString3 = "select Id, WorkmanSL, FullName, SkillCategory, F16_YesNo,F17_YesNo, FixedSalary_YesNo, FixedAmount,WorkHours, OTFactor, OTMultiplier, OT_Divisibility, DA_VDA, HRA, Conv_Allowance, Medical_Allowance, ATT_Allowance, SPCL_Allowance,Misc_Earnings,Washing_Allowance from tbl_Employee_Mustertable where WorkRegion = '" + region + "' and WorkCompany='" + comp + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and SkillCategoryDB='" + DDL_SkillCategory.SelectedValue.ToString() + "' and F17_YesNo='" + DDL_Form17YesNo.SelectedItem.Text.ToString() + "' and FixedSalary_YesNo = '" + DDL_FixedYesNo.SelectedItem.Text.ToString() + "' order by Id desc";
                     BindGrid(CmdString3);
                 }
 
                 else if (DDL_SkillCategory.SelectedIndex != 0 && DDL_Form17YesNo.SelectedIndex == 0 && DDL_FixedYesNo.SelectedIndex != 0)
                 {
-                    string CmdString3 = "select Id, WorkmanSL, FullName, SkillCategory, F16_YesNo,F17_YesNo, FixedSalary_YesNo, FixedAmount,WorkHours, OTFactor, OTMultiplier, OT_Divisibility, DA_VDA, HRA, Conv_Allowance, Medical_Allowance, ATT_Allowance, SPCL_Allowance,Misc_Earnings,Washing_Allowance from tbl_Employee_Mustertable where WorkRegion = '" + Session["REGION"].ToString() + "' and WorkCompany='" + Session["COMPANY_CODE"].ToString() + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and SkillCategoryDB='" + DDL_SkillCategory.SelectedValue.ToString() + "' and FixedSalary_YesNo = '" + DDL_FixedYesNo.SelectedItem.Text.ToString() + "' order by Id desc";
+                    string CmdString3 = "select Id, WorkmanSL, FullName, SkillCategory, F16_YesNo,F17_YesNo, FixedSalary_YesNo, FixedAmount,WorkHours, OTFactor, OTMultiplier, OT_Divisibility, DA_VDA, HRA, Conv_Allowance, Medical_Allowance, ATT_Allowance, SPCL_Allowance,Misc_Earnings,Washing_Allowance from tbl_Employee_Mustertable where WorkRegion = '" + region + "' and WorkCompany='" + comp + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and SkillCategoryDB='" + DDL_SkillCategory.SelectedValue.ToString() + "' and FixedSalary_YesNo = '" + DDL_FixedYesNo.SelectedItem.Text.ToString() + "' order by Id desc";
                     BindGrid(CmdString3);
                 }
             }

@@ -6,6 +6,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data.SqlClient;
 using System.Data;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace WebApplication1.bussiness.production
 {
@@ -16,6 +17,7 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsPostBack)
             {
+                //ClientScript.RegisterStartupScript(this.GetType(), "Popup", "Loader();", true);
                 if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
                     Response.Redirect("login.aspx");
