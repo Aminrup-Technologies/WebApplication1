@@ -104,6 +104,7 @@ namespace WebApplication1.bussiness.production
                                 Session["User_Photo"] = "No_Image.jpg";
                             }
                         }
+                        dbcl.WriteToFile("User " + User_FullName + " Logined Successfully");
                         Response.Redirect("homepage.aspx");
                     }
                     else

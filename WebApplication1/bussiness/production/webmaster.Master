@@ -82,10 +82,11 @@
 </head>
 <body class="nav-md footer_fixed" onload="ShowCurrentTime()">
     <form id="form1" runat="server">
-        <div id="page-loader">
+        <%-- Page loader removed on 03-07-2023, upon request from users --%>
+        <%--<div id="page-loader">
             <!-- Your page loader content goes here -->
             <img src="../../erp_images/Hourglass.gif" alt="loadergif" />
-        </div>
+        </div>--%>
 
 
         <div class="container body">
@@ -353,7 +354,7 @@
         </footer>
         <!-- /footer content -->
 
-        <script type="text/javascript">
+        <%--<script type="text/javascript">
             window.addEventListener('load', function () {
                 var pageLoader = document.getElementById('page-loader');
                 pageLoader.classList.add('active');
@@ -362,16 +363,7 @@
                     pageLoader.style.display = 'none';
                 }, 2000); // Duration in milliseconds (5 seconds)
             });
-
-            //function Loader() {
-            //    var pageLoader = document.getElementById('page-loader');
-            //    pageLoader.classList.add('active');
-
-            //    setTimeout(function () {
-            //        pageLoader.style.display = 'none';
-            //    }, 4000); // Duration in milliseconds (5 seconds)
-            //}
-        </script>
+        </script>--%>
 
         <!-- jQuery -->
         <script src="../vendors/jquery/dist/jquery.min.js"></script>
