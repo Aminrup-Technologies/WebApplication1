@@ -363,6 +363,7 @@ namespace WebApplication1.gentelella_master.production
 
         protected void btn_lgout_Click(object sender, EventArgs e)
         {
+            dbcl.WriteToFile("User " + Session["USERNAME"].ToString() + " Logined Successfully");
             //Update loginstatus and Last Login Information i.e. date
             dbcl.UPDT_EmpMuster_LogoutInfo(Session["WORKMAN"].ToString(), Session["USERID"].ToString());
 

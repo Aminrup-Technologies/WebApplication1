@@ -5,11 +5,13 @@ using System.Web;
 using System.Data.SqlClient;
 using System.Data;
 using System.Web.UI.WebControls;
+using System.IO;
 
 namespace WebApplication1.bussiness.production
 {
     public class DB_Utility_OH4Y
     {
+        public static string Logs = @"D:\RnD\OH4Y_19Jun23\WebApplication1\WebApplication1\bussiness\production\WindowsServiceLog\";
         public SqlConnection Conn;
         public SqlDataReader dr;
         public SqlCommand cmd;
@@ -26,6 +28,22 @@ namespace WebApplication1.bussiness.production
             Conn = new SqlConnection(cnnString);
             flag = 1;
             return flag;
+        }
+
+        public void WriteToFile(string text)
+        {
+            string path = Logs + DateTime.Now.ToString("ddMMyyyy");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            path = path + @"\" + "ServiceLog.txt";
+            using (StreamWriter writer = new StreamWriter(path, true))
+            {
+                writer.WriteLine(DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt") + " : " + text);
+                writer.WriteLine();
+                writer.Close();
+            }
         }
 
         public void executeRdr(String SqlString)
@@ -320,7 +338,7 @@ namespace WebApplication1.bussiness.production
         //This function is used to return name aganist a workman number
         public void FindEmployeeDataforInPunch(string workman, ref string name, ref string workhours, ref string worksitename, ref string worksitecode, ref string category, ref string categorycode, ref string designation, ref string designationcode, ref string gatepassno, ref string gpexp, ref string sftyno, ref string sftyexp, ref string pvexp)
         {
-            string cmdString = "select FullName, WorkSite, Worksite_Code, WorkHours, SkillCategory,SkillCategoryDB, SkillDesignation,SkillDesignationDB, GatePassNo, GatePassExpiry,SafetyPassNo, SafetyPassExpiry, PVExpiry from tbl_Employee_Mustertable where WorkmanSL='" + workman+ "'";
+            string cmdString = "select FullName, WorkSite, Worksite_Code, WorkHours, SkillCategory,SkillCategoryDB, SkillDesignation,SkillDesignationDB, GatePassNo, GatePassExpiry,SafetyPassNo, SafetyPassExpiry, PVExpiry from tbl_Employee_Mustertable where WorkmanSL='" + workman + "'";
             Sqlconnection();
             ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdString, Conn);
@@ -545,7 +563,7 @@ namespace WebApplication1.bussiness.production
 
 
             totalmin = daysmin + hrstomin + min;
-            Hours = Math.Round(Convert.ToDecimal(totalmin) / 60,2);
+            Hours = Math.Round(Convert.ToDecimal(totalmin) / 60, 2);
         }
 
         public void Findworktime1(string emp_intime, string emp_outtime, ref Int32 totalmin)
@@ -652,7 +670,7 @@ namespace WebApplication1.bussiness.production
             //emp_calOThrs = emp_calOTMins;
             result = emp_calOTMins / 60;
 
-            emp_calOThrs = Math.Round(result,2);
+            emp_calOThrs = Math.Round(result, 2);
         }
 
         public void calmonth(DropDownList cmbM1)
