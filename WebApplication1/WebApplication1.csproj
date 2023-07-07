@@ -250,6 +250,7 @@
     <Content Include="bussiness\production\images\Triangle.gif" />
     <Content Include="bussiness\production\images\user.png" />
     <Content Include="bussiness\production\images\visa.png" />
+    <Content Include="bussiness\production\jobstatus_flow.ascx" />
     <Content Include="bussiness\production\js\jquery-1.9.1.js" />
     <Content Include="bussiness\production\manage_profile.aspx" />
     <Content Include="bussiness\production\pyrl_deductionlist.aspx" />
@@ -668,6 +669,13 @@
     </Compile>
     <Compile Include="bussiness\production\gen_ninl_f17.aspx.designer.cs">
       <DependentUpon>gen_ninl_f17.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\jobstatus_flow.ascx.cs">
+      <DependentUpon>jobstatus_flow.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\jobstatus_flow.ascx.designer.cs">
+      <DependentUpon>jobstatus_flow.ascx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\manage_profile.aspx.cs">
       <DependentUpon>manage_profile.aspx</DependentUpon>
