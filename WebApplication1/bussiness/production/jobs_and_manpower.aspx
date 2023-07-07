@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="jobs_and_manpower.aspx.cs" Inherits="WebApplication1.bussiness.production.jobs_and_manpower" %>
+<%@ Register Src="~/bussiness/production/jobstatus_flow.ascx" TagName="jobflow" TagPrefix="jf" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
@@ -21,6 +22,23 @@
                 <div class="col-md-12">
                     <div class="x_panel">
                         <div class="x_title">
+                            <h2>JOBID : <asp:Label ID="lbl_activejobid" runat="server" Text="Label" ForeColor="Blue" Font-Bold="true"></asp:Label>&nbsp; Real-Time Flow</h2>
+                            <ul class="nav navbar-right panel_toolbox">
+                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                </li>
+                            </ul>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <jf:jobflow ID="jobstatusflow" runat="server" />
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <div class="x_panel">
+                        <div class="x_title">
                             <h2>Daily JOB  Management</h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
@@ -35,21 +53,6 @@
                                 <i class="fa fa-edit"></i>Create ID
 
                             </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-12">
-                    <div class="x_panel">
-                        <div class="x_title">
-                            <h2>Manage Manpower & Permits</h2>
-                            <ul class="nav navbar-right panel_toolbox">
-                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                                </li>
-                            </ul>
-                            <div class="clearfix"></div>
-                        </div>
-                        <div class="x_content">
                             <a class="btn btn-app" href="job_inpunch.aspx">
                                 <span class="badge bg-orange">
                                     <asp:Label ID="lbl_inpunchcount" runat="server" Text="Label"></asp:Label></span>
@@ -70,7 +73,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-12">
+                <div class="col-md-6">
                     <div class="x_panel">
                         <div class="x_title">
                             <h2>Memo & Biliing</h2>
