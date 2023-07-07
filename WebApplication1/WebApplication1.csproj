@@ -322,7 +322,6 @@
     <Content Include="bussiness\production\vw_sopapproval.aspx" />
     <Content Include="bussiness\production\vw_tbtforapproval.aspx" />
     <Content Include="bussiness\production\vw_tbt_masterapproval.aspx" />
-    <Content Include="bussiness\production\WindowsServiceLog\ServiceLog.txt" />
     <Content Include="bussiness\production\workcompany_dept.aspx" />
     <Content Include="bussiness\production\workcomp_deptheads.aspx" />
     <Content Include="bussiness\production\workcomp_dept_locations.aspx" />
