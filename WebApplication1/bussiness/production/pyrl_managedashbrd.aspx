@@ -61,7 +61,12 @@
                                 <asp:Label ID="lbl_bankdatastatus" runat="server" Text="N/A" Visible="false"></asp:Label>
                             </div>
                             <i class="fa fa-users"></i>Bank Details
-
+                        </a>
+                        <a class="btn btn-app" href="vw_emp_paymentbankdetails.aspx">
+                            <div id="div4" class="badge bg-green" runat="server">
+                                <asp:Label ID="Label13" runat="server" Text="N/A" Visible="false"></asp:Label>
+                            </div>
+                            <i class="fa fa-users"></i>Uplaod Bank Data
                         </a>
                     </div>
                 </div>
@@ -91,6 +96,20 @@
                             </div>
                             <i class="fa fa-users"></i>View / Manage
                         </a>
+
+                        <a class="btn btn-app" href="#">
+                            <div id="div2" class="badge bg-orange" runat="server">
+                                <asp:Label ID="Label2" runat="server" Text="0" Visible="false"></asp:Label>
+                            </div>
+                            <i class="fa fa-users"></i>Clear All
+                        </a>
+
+                        <a class="btn btn-app" href="#">
+                            <div id="div3" class="badge bg-orange" runat="server">
+                                <asp:Label ID="Label12" runat="server" Text="0" Visible="false"></asp:Label>
+                            </div>
+                            <i class="fa fa-users"></i>Upload Deductions
+                        </a>
                     </div>
                 </div>
             </div>
@@ -107,6 +126,9 @@
                     </div>
                     <div class="x_content">
                         <a class="btn btn-app" href="generate_siteatdncsheet.aspx">
+                            <div id="div_activeworksites" class="badge bg-orange" runat="server">
+                                <asp:Label ID="lbl_activeworksites" runat="server" Text="0" Visible="false"></asp:Label>
+                            </div>
                             <i class="fa fa-edit"></i>Worksite
 
                         </a>
