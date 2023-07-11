@@ -30,17 +30,17 @@
                         <div class="x_content">
                             <div class="row">
 
-                                <div class="col-md-2 col-sm-6  form-group">
+                                <div class="col-md-2 col-sm-6  form-group" id="div_lblworkregion" runat="server" visible="false">
                                     <label>Work Region <span class="text text-danger">*</span></label>
                                 </div>
-                                <div class="col-md-2 col-sm-6  form-group">
+                                <div class="col-md-2 col-sm-6  form-group" id="div_ddlworkregion" runat="server" visible="false">
                                     <asp:DropDownList ID="DDL_Region" runat="server" CssClass="form-control form-control-sm rounded" AutoPostBack="true" OnSelectedIndexChanged="DDL_Region_SelectedIndexChanged"></asp:DropDownList>
                                 </div>
 
-                                <div class="col-md-2 col-sm-6  form-group">
+                                <div class="col-md-2 col-sm-6  form-group" id="div_lblworkcomp" runat="server" visible="false">
                                     <label>Select Company <span class="text text-danger">*</span></label>
                                 </div>
-                                <div class="col-md-2 col-sm-6  form-group">
+                                <div class="col-md-2 col-sm-6  form-group" id="div_ddlworkcomp" runat="server" visible="false">
                                     <asp:DropDownList ID="DDL_Company" runat="server" CssClass="form-control form-control-sm rounded" AutoPostBack="true" OnSelectedIndexChanged="DDL_Company_SelectedIndexChanged"></asp:DropDownList>
                                 </div>
 
