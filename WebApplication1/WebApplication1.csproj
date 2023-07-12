@@ -254,6 +254,7 @@
     <Content Include="bussiness\production\jobstatus_flow.ascx" />
     <Content Include="bussiness\production\js\jquery-1.9.1.js" />
     <Content Include="bussiness\production\manage_profile.aspx" />
+    <Content Include="bussiness\production\pyrl_approvedeductions.aspx" />
     <Content Include="bussiness\production\pyrl_deductionlist.aspx" />
     <Content Include="bussiness\production\pyrl_deductions.aspx" />
     <Content Include="bussiness\production\pyrl_managedashbrd.aspx" />
@@ -683,6 +684,13 @@
     </Compile>
     <Compile Include="bussiness\production\manage_profile.aspx.designer.cs">
       <DependentUpon>manage_profile.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\pyrl_approvedeductions.aspx.cs">
+      <DependentUpon>pyrl_approvedeductions.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\pyrl_approvedeductions.aspx.designer.cs">
+      <DependentUpon>pyrl_approvedeductions.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\pyrl_deductionlist.aspx.cs">
       <DependentUpon>pyrl_deductionlist.aspx</DependentUpon>
@@ -1280,6 +1288,8 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="bussiness\production\WindowsServiceLog\11072023\" />
+    <Folder Include="bussiness\production\WindowsServiceLog\12072023\" />
     <Folder Include="landing_page\vendor\jquery.cookie\test\" />
   </ItemGroup>
   <PropertyGroup>

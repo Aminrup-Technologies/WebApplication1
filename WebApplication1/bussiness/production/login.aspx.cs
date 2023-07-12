@@ -16,7 +16,6 @@ namespace WebApplication1.bussiness.production
         // Default folder
         static readonly string rootFolder = @"C:\atswork.in\wwwroot\erp_images\ProfilePhoto";
         static readonly string localFolder = @"D:\RnD\OH4Y_19May23\WebApplication1\WebApplication1\erp_images\ProfilePhoto";
-
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -131,21 +130,10 @@ namespace WebApplication1.bussiness.production
         {
             if (File.Exists(Path.Combine(rootFolder, User_Photo)))
             {
-                //Response.Clear();
-                //Response.ContentType = "application/octect-stream";
-                //Response.AppendHeader("content-disposition", "filename=" + User_Photo);
-                //Response.TransmitFile(Server.MapPath(@"\erp_images\ProfilePhoto\") + User_Photo);
-                //Response.End();
                 return true;
-
             }
             else if (File.Exists(Path.Combine(localFolder, User_Photo)))
             {
-                //.Clear();
-                //Response.ContentType = "application/octect-stream";
-                //Response.AppendHeader("content-disposition", "filename=" + User_Photo);
-                //Response.TransmitFile(Server.MapPath(@"\erp_images\ProfilePhoto\") + User_Photo);
-                //Response.End();
                 return true;
             }
             else
