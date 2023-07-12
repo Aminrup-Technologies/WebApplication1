@@ -33,6 +33,9 @@
                         <div id="RegionComSelector" runat="server" visible="false" class="col-md-2 col-sm-6  form-group">
                             <asp:DropDownList ID="DDL_Company" runat="server" CssClass="form-control form-control-sm rounded" AutoPostBack="true" OnSelectedIndexChanged="DDL_Company_SelectedIndexChanged"></asp:DropDownList>
                         </div>
+                        <div id="DataLocker" runat="server" visible="true" class="col-md-2 col-sm-6  form-group">
+                            <asp:Button ID="btn_datalocker" runat="server" Text="Lock" CssClass="btn btn-success btn-sm" OnClick="btn_datalocker_Click" />
+                        </div>
                         <div class="clearfix"></div>
                     </div>
                 </div>
@@ -62,9 +65,9 @@
                             </div>
                             <i class="fa fa-users"></i>Bank Details
                         </a>
-                        <a class="btn btn-app" href="vw_emp_paymentbankdetails.aspx">
-                            <div id="div4" class="badge bg-green" runat="server">
-                                <asp:Label ID="Label13" runat="server" Text="N/A" Visible="false"></asp:Label>
+                        <a class="btn btn-app" href="#">
+                            <div id="div4" class="badge bg-red" runat="server">
+                                <asp:Label ID="Label13" runat="server" Text="WIP" Visible="true"></asp:Label>
                             </div>
                             <i class="fa fa-users"></i>Uplaod Bank Data
                         </a>
@@ -98,15 +101,15 @@
                         </a>
 
                         <a class="btn btn-app" href="#">
-                            <div id="div2" class="badge bg-orange" runat="server">
-                                <asp:Label ID="Label2" runat="server" Text="0" Visible="false"></asp:Label>
+                            <div id="div2" class="badge bg-red" runat="server">
+                                <asp:Label ID="Label2" runat="server" Text="WIP" Visible="true"></asp:Label>
                             </div>
                             <i class="fa fa-users"></i>Clear All
                         </a>
 
                         <a class="btn btn-app" href="#">
-                            <div id="div3" class="badge bg-orange" runat="server">
-                                <asp:Label ID="Label12" runat="server" Text="0" Visible="false"></asp:Label>
+                            <div id="div3" class="badge bg-red" runat="server">
+                                <asp:Label ID="Label12" runat="server" Text="WIP" Visible="true"></asp:Label>
                             </div>
                             <i class="fa fa-users"></i>Upload Deductions
                         </a>
@@ -175,14 +178,17 @@
                         <a class="btn btn-app" href="gen_ats_f17.aspx" id="ATS_F17" runat="server">
                             <span class="badge bg-green">New</span><i class="fa fa-edit"></i>ATS Global F17</a>
 
-                        <a class="btn btn-app" href="#">
-                            <asp:Label ID="Label23" runat="server" Text="0" Visible="false"></asp:Label>
+                        <a class="btn btn-app" href="pyrl_approvedeductions.aspx">
+                            <div id="div5" class="badge bg-red" runat="server">
+                                <asp:Label ID="Label14" runat="server" Text="WIP" Visible="true"></asp:Label>
+                            </div>
                             <i class="fa fa-users"></i>Approve Deductions
-
                         </a>
                         <a class="btn btn-app" href="#">
-                            <asp:Label ID="Label24" runat="server" Text="0" Visible="false"></asp:Label>
-                            <i class="fa fa-users"></i>Final 17
+                            <div id="div6" class="badge bg-red" runat="server">
+                                <asp:Label ID="Label15" runat="server" Text="WIP" Visible="true"></asp:Label>
+                            </div>
+                            <i class="fa fa-users"></i>Final F17
                         </a>
                     </div>
                 </div>

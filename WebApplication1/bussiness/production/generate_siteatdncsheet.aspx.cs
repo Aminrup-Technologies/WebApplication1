@@ -47,7 +47,7 @@ namespace WebApplication1.bussiness.production
                         comp = retrievedArray[2].ToString();
                         state = retrievedArray[0].ToString();
 
-                        Session["Changer"] = null;
+                        //Session["Changer"] = null;
                     }
                     else
                     {
