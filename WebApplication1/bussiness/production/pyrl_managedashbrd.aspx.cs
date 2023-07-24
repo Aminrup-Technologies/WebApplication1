@@ -435,6 +435,16 @@ namespace WebApplication1.bussiness.production
                 lbl_bankdatastatus.Text = "Ok";
                 div_bankdatastatus.Attributes["class"] = "badge bg-green";
             }
+
+
+            if (PayrollFactorStatus == 1 && BankFactorStatus == 1)
+            {
+                ATS_F17.Disabled = false;
+            }
+            else
+            {
+                ATS_F17.Disabled = true;
+            }
         }
 
         protected void DDL_WorkStates_SelectedIndexChanged(object sender, EventArgs e)

@@ -1,0 +1,11 @@
+22-07-2023 12:31:54 PM : User ANUPAM SHARMA[ATS002112] Logined Successfully
+22-07-2023 12:34:45 PM : User :ANUPAM SHARMA Singout Successfully
+22-07-2023 12:35:03 PM : User ASHOK KUMAR SAHOO[ATS00444] Logined Successfully
+22-07-2023 12:35:20 PM : User :ASHOK KUMAR SAHOO Singout Successfully
+22-07-2023 12:35:38 PM : User DEBADUTTA JENA[ATS001556] Logined Successfully
+22-07-2023 12:35:55 PM : User :DEBADUTTA JENA Singout Successfully
+22-07-2023 12:36:22 PM : User AJAY KUMAR SINGH[ATS002083] Logined Successfully
+22-07-2023 12:36:36 PM : User :AJAY KUMAR SINGH Singout Successfully
+22-07-2023 12:36:47 PM : User ANUPAM SHARMA[ATS002112] Logined Successfully
+22-07-2023 12:37:46 PM : User :ANUPAM SHARMA Singout Successfully
+22-07-2023 12:38:12 PM : User KULAMANI DAS[ATS00418] Logined Successfully
