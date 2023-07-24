@@ -1288,8 +1288,7 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="bussiness\production\WindowsServiceLog\11072023\" />
-    <Folder Include="bussiness\production\WindowsServiceLog\12072023\" />
+    <Folder Include="bussiness\production\WindowsServiceLog\" />
     <Folder Include="landing_page\vendor\jquery.cookie\test\" />
   </ItemGroup>
   <PropertyGroup>

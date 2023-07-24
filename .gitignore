@@ -361,7 +361,3 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/WebApplication1/bussiness/production/WindowsServiceLog/13072023
-/WebApplication1/bussiness/production/WindowsServiceLog/14072023
-/WebApplication1/bussiness/production/WindowsServiceLog/18072023
-*.txt
