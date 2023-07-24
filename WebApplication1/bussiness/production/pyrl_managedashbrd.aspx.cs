@@ -18,7 +18,12 @@ namespace WebApplication1.bussiness.production
         public static Int32 BankFactorStatus = 0;
         public static Int32 activeDedEmpCount = 0;
         public static Int32 inactiveDedEmpCount = 0;
-        
+        public static Int32 worksiteCount = 0;
+
+        public static string state = string.Empty;
+        public static string region = string.Empty;
+        public static string comp = string.Empty;
+        public static string datalock = string.Empty;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -34,29 +39,82 @@ namespace WebApplication1.bussiness.production
                     lbl_bankdatastatus.Text = "***";
                     lbl_activedeductions.Text = "***";
                     lbl_inactivedeductions.Text = "***";
+                    lbl_activeworksites.Text = "***";
 
-                    string CmdString3 = "select State_Name, State_Code from tlb_work_state";
-                    BindCountryState(CmdString3);
+                    if (Session["Changer"] != null)
+                    {
+                        string[] retrievedArray = (string[])Session["Changer"];
+                        region = retrievedArray[1].ToString();
+                        comp = retrievedArray[2].ToString();
+                        state = retrievedArray[0].ToString();
+                        datalock = retrievedArray[3].ToString();
+                        //Session["Changer"] = null;
+
+                        if (datalock == "1")
+                        {
+                            btn_datalocker.Text = "Un-Lock";
+                            btn_datalocker.CssClass = "btn btn-danger btn-sm";
+                        }
+                        else
+                        {
+                            btn_datalocker.Text = "Lock";
+                            btn_datalocker.CssClass = "btn btn-success btn-sm";
+                        }
+                    }
+                    else
+                    {
+                        region = Session["REGION"].ToString();
+                        comp = Session["COMPANY_CODE"].ToString();
+                        state = Session["STATE"].ToString();
+                        datalock = "0";
+                    }
 
                     if (Session["WORKMAN"].ToString() == "J8")
                     {
                         AGL_F17.Visible = false; KPO_F17.Visible = false; NINL_F17.Visible = false; JSR_F17.Visible = false; ATS_F17.Visible = true;
-                        StateSelector.Visible = true;
-                        CheckforUser();
+                        StateSelector.Visible = true; RegionSelector.Visible = true; RegionComSelector.Visible = true;
+                        //CheckforUser();
                     }
                     else
                     {
                         AGL_F17.Visible = false; KPO_F17.Visible = false; NINL_F17.Visible = false; JSR_F17.Visible = false; ATS_F17.Visible = false;
-
-                        StateSelector.Visible = false;
-                        DDL_WorkStates.Enabled = false;
+                        StateSelector.Visible = false; DDL_WorkStates.Enabled = false;
                     }
-                    PayrollFactorsInputs_Checker(Session["STATE"].ToString(), Session["REGION"].ToString(), Session["COMPANY_CODE"].ToString());
-                    BindSP_GetEmpBankFactor_Status(Session["STATE"].ToString(), Session["REGION"].ToString(), Session["COMPANY_CODE"].ToString());
-                    BindDeductionStatus(Session["STATE"].ToString(), Session["REGION"].ToString(), Session["COMPANY_CODE"].ToString());
-                    Indicator();
+
+                    PageLoaderData();   
                 }
             }
+        }
+
+        private void PageLoaderData()
+        {
+            string CmdString3 = "select State_Name, State_Code from tlb_work_state";
+            BindCountryState(CmdString3);
+
+            string CmdString1 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region order by Id";
+            BindWorkRegion(CmdString1);
+
+            string CmdString2 = "select Company_Name, Company_Code from tlb_workregion_company order by Id";
+            BindCompany(CmdString2);
+
+            PayrollFactorsInputs_Checker(state, region, comp);
+            BindSP_GetEmpBankFactor_Status(state, region, comp);
+            BindDeductionStatus(state, region, comp);
+            GetWorksiteCount("IN", state, region, comp);
+            Indicator();
+
+            DDL_WorkRegion.SelectedValue = region;
+            DDL_WorkRegion.Enabled = false;
+
+            DDL_WorkStates.SelectedValue = state;
+            DDL_WorkStates.Enabled = true;
+
+            DDL_Company.SelectedValue = comp;
+            DDL_Company.Enabled = false;
+
+            string[] Bindervalue = { state, region, comp, "1"};
+            Session["Changer"] = null;
+            Session["Changer"] = Bindervalue;
         }
 
         private void BindCountryState(string CmdString)
@@ -76,8 +134,13 @@ namespace WebApplication1.bussiness.production
         private void CheckforUser()
         {
             DDL_WorkRegion.SelectedValue = Session["REGION"].ToString();
-            //DDL_Company.SelectedValue = Session["COMPANY_CODE"].ToString();
-            DDL_WorkRegion.Enabled = true;
+            DDL_WorkRegion.Enabled = false;
+
+            DDL_WorkStates.SelectedValue = Session["STATE"].ToString();
+            DDL_WorkStates.Enabled = true;
+
+            DDL_Company.SelectedValue = Session["COMPANY_CODE"].ToString();
+            DDL_Company.Enabled = false;
         }
 
         private void BindWorkRegion(string CmdString)
@@ -100,6 +163,7 @@ namespace WebApplication1.bussiness.production
             lbl_bankdatastatus.Text = "***";
             lbl_activedeductions.Text = "***";
             lbl_inactivedeductions.Text = "***";
+            lbl_activeworksites.Text = "***";
 
             string DDL_String = DDL_WorkRegion.SelectedItem.Text.ToString();
             string DDL_Value = DDL_WorkRegion.SelectedValue.ToString();
@@ -107,6 +171,7 @@ namespace WebApplication1.bussiness.production
             string CmdString2 = "select Company_Name, Company_Code from tlb_workregion_company where Work_Region_Code='" + DDL_Value + "' order by Id";
             BindCompany(CmdString2);
 
+            DDL_Company.Enabled = true;
             RegionComSelector.Visible = true;
         }
 
@@ -134,14 +199,20 @@ namespace WebApplication1.bussiness.production
             lbl_bankdatastatus.Text = "***";
             lbl_activedeductions.Text = "***";
             lbl_inactivedeductions.Text = "***";
+            lbl_activeworksites.Text = "***";
 
             PayrollFactorsInputs_Checker(DDL_StateValue, DDL_Value, DDL_CompValue);
             BindSP_GetEmpBankFactor_Status(DDL_StateValue, DDL_Value, DDL_CompValue);
             BindDeductionStatus(DDL_StateValue, DDL_Value, DDL_CompValue);
+            GetWorksiteCount("IN", DDL_StateValue, DDL_Value, DDL_CompValue);
             Indicator();
 
-            string[] Bindervalue = { DDL_StateValue, DDL_Value, DDL_CompValue };
+            string[] Bindervalue = { DDL_StateValue, DDL_Value, DDL_CompValue, "1" };
+            Session["Changer"] = null;
             Session["Changer"] = Bindervalue;
+
+            DataLocker.Visible = true;
+            btn_datalocker.Enabled = true;
         }
 
 
@@ -294,6 +365,49 @@ namespace WebApplication1.bussiness.production
             // or use them for further processing
         }
 
+        public void GetWorksiteCount(string countryCode, string stateCode, string workRegionCode, string companyCode)
+        {
+            //int worksiteCount = 0;
+
+            string connectionString = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand("GetWorksiteCount", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+
+                        // Input parameters
+                        command.Parameters.AddWithValue("@CountryCode", countryCode);
+                        command.Parameters.AddWithValue("@StateCode", stateCode);
+                        command.Parameters.AddWithValue("@WorkRegionCode", workRegionCode);
+                        command.Parameters.AddWithValue("@CompanyCode", companyCode);
+
+                        // Output parameter
+                        SqlParameter worksiteCountParam = new SqlParameter("@WorksiteCount", SqlDbType.Int);
+                        worksiteCountParam.Direction = ParameterDirection.Output;
+                        command.Parameters.Add(worksiteCountParam);
+
+                        command.ExecuteNonQuery();
+
+                        worksiteCount = (int)command.Parameters["@WorksiteCount"].Value;
+                        lbl_activeworksites.Visible = true;
+                        lbl_activeworksites.Text = worksiteCount.ToString();
+                        div_activeworksites.Attributes["class"] = "badge bg-blue";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Handle any exceptions here
+                    Console.WriteLine("Error: " + ex.Message);
+                }
+            }
+
+            //return worksiteCount;
+        }
         private void Indicator()
         {
             if (PayrollFactorStatus == 1)
@@ -329,6 +443,38 @@ namespace WebApplication1.bussiness.production
             BindWorkRegion(CmdString1);
 
             RegionSelector.Visible= true;
+            DDL_WorkRegion.Enabled = true;
+
+            //DDL_WorkRegion.Enabled = false;
+            DDL_Company.Enabled = false;
+        }
+
+        protected void btn_datalocker_Click(object sender, EventArgs e)
+        {
+            string DDL_StateValue = DDL_WorkStates.SelectedValue.ToString();
+            string DDL_Value = DDL_WorkRegion.SelectedValue.ToString();
+            string DDL_CompValue = DDL_Company.SelectedValue.ToString();
+
+            if (btn_datalocker.Text=="Lock")
+            {
+                string[] Bindervalue = { DDL_StateValue, DDL_Value, DDL_CompValue, "1" };
+                Session["Changer"] = null;
+                Session["Changer"] = Bindervalue;
+
+                DataLocker.Visible = true;
+                btn_datalocker.Text = "Un-Lock";
+                btn_datalocker.CssClass = "btn btn-danger btn-sm";
+            }
+            else if (btn_datalocker.Text == "Un-Lock")
+            {
+                string[] Bindervalue = { DDL_StateValue, DDL_Value, DDL_CompValue, "0" };
+                Session["Changer"] = null;
+                Session["Changer"] = Bindervalue;
+
+                DataLocker.Visible = true;
+                btn_datalocker.Text = "Lock";
+                btn_datalocker.CssClass = "btn btn-success btn-sm";
+            }
         }
     }
 }

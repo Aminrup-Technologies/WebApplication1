@@ -6,12 +6,15 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Web.UI.WebControls;
 using System.IO;
+using Org.BouncyCastle.Math.EC.Multiplier;
 
 namespace WebApplication1.bussiness.production
 {
     public class DB_Utility_OH4Y
     {
-        public static string Logs = @"D:\RnD\OH4Y_19Jun23\WebApplication1\WebApplication1\bussiness\production\WindowsServiceLog\";
+        public static string Logs = @"C:\atswork.in\wwwroot\bussiness\production\WindowsServiceLog\";
+        //public static string Logs = @"C:\atswebuat\bussiness\production\WindowsServiceLog\";
+        //public static string Logs = @"D:\RnD\OH4Y_19Jun23\WebApplication1\WebApplication1\bussiness\production\WindowsServiceLog\";
         public SqlConnection Conn;
         public SqlDataReader dr;
         public SqlCommand cmd;
@@ -1485,6 +1488,40 @@ namespace WebApplication1.bussiness.production
             {
 
             }
+        }
+
+        public Int32 Find_CreatedJOBID(string workman)
+        {
+            string cmdString = "";
+            Sqlconnection();
+            ConnectDb();
+            cmdString = "select COUNT(JOBID) from tbl_jobs where Creator_Workman=@Creator_Workman and JOBID_Status='Active' and YEAR(CreatedDate)='" + DateTime.Now.Year + "' and MONTH(CreatedDate)='" + DateTime.Now.Month + "'";
+            SqlCommand cmd = new SqlCommand(cmdString,Conn);
+            cmd.CommandType = CommandType.Text;
+            cmd.Parameters.AddWithValue("@Creator_Workman", workman);
+            Int32 count = Convert.ToInt32(cmd.ExecuteScalar());
+            Conn.Close();
+            return count;
+        }
+
+        public string Find_JOBIDMasterCode(string workman)
+        {
+            string mastercode = string.Empty;
+            string jobid = string.Empty;
+            string cmdString = "select JOBID,MasterStatusCode from tbl_jobs where Creator_Workman=@Creator_Workman and JOBID_Status='Active' and YEAR(CreatedDate)='" + DateTime.Now.Year + "' and MONTH(CreatedDate)='" + DateTime.Now.Month + "'";
+            Sqlconnection();
+            ConnectDb();
+            SqlCommand cmd = new SqlCommand(cmdString, Conn);
+            cmd.Parameters.AddWithValue("@Creator_Workman", workman);
+            SqlDataReader Rdr;
+            Rdr = cmd.ExecuteReader();
+            if (Rdr.Read())
+            {
+                jobid = Rdr["JOBID"].ToString();
+                mastercode = Rdr["MasterStatusCode"].ToString();
+            }
+            Conn.Close();
+            return jobid + "/" + mastercode  ;
         }
     }
 }

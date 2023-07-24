@@ -15,6 +15,24 @@ namespace WebApplication1.bussiness.production
     {
 
         /// <summary>
+        /// div_lblworkregion control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl div_lblworkregion;
+
+        /// <summary>
+        /// div_ddlworkregion control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl div_ddlworkregion;
+
+        /// <summary>
         /// DDL_Region control.
         /// </summary>
         /// <remarks>
@@ -22,6 +40,24 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList DDL_Region;
+
+        /// <summary>
+        /// div_lblworkcomp control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl div_lblworkcomp;
+
+        /// <summary>
+        /// div_ddlworkcomp control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl div_ddlworkcomp;
 
         /// <summary>
         /// DDL_Company control.

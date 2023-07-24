@@ -4,6 +4,7 @@ using System.Data;
 using DocumentFormat.OpenXml.Spreadsheet;
 using System.Linq;
 using DocumentFormat.OpenXml.Bibliography;
+using System.Drawing;
 
 namespace WebApplication1.bussiness.production
 {
@@ -22,6 +23,11 @@ namespace WebApplication1.bussiness.production
         DataTable dt_ot = new DataTable();
         DataTable dt_presentot = new DataTable();
 
+        public static string state = string.Empty;
+        public static string region = string.Empty;
+        public static string comp = string.Empty;
+
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -32,8 +38,26 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-                    string CmdString1 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = 'IN' and State_Code ='"+ Session["STATE"].ToString() + "' order by Id ";
+                    if (Session["Changer"] != null)
+                    {
+                        string[] retrievedArray = (string[])Session["Changer"];
+                        region = retrievedArray[1].ToString();
+                        comp = retrievedArray[2].ToString();
+                        state = retrievedArray[0].ToString();
+
+                        Session["Changer"] = null;
+                    }
+                    else
+                    {
+                        region = Session["REGION"].ToString();
+                        comp = Session["COMPANY_CODE"].ToString();
+                        state = Session["STATE"].ToString();
+                    }
+
+                    string CmdString1 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = 'IN' and State_Code ='"+ state + "' order by Id ";
                     BindRegions(CmdString1);
+
+                    DDL_Region.SelectedValue = region;
 
                     dbcl.CalDateCombo1(DDL_Day, DDL_Month, DDL_Year);
                     dbcl.CalDateCombo1(DDL_D2, DDL_M2, DDL_Y2);
@@ -50,7 +74,7 @@ namespace WebApplication1.bussiness.production
         {
             DDL_Region.SelectedValue = Session["REGION"].ToString();
             DDL_Region.Enabled = false;
-            string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = 'IN' and State_Code ='"+ Session["STATE"].ToString() + "' and Work_Region_Code = '" + Session["REGION"].ToString() + "' order by Id ";
+            string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = 'IN' and State_Code ='"+ state + "' and Work_Region_Code = '" + region + "' order by Id ";
             BindCompany(CmdString3);
         }
 

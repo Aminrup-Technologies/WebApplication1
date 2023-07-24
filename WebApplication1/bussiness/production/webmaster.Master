@@ -347,8 +347,8 @@
 					<asp:Label ID="lblTime1" runat="server" Text="N/A" Font-Bold="true" ForeColor="IndianRed" Visible="true"></asp:Label>
                 || Time :
 					<asp:Label ID="lblTime" runat="server" Text="N/A" Font-Bold="true" ForeColor="Black" Visible="true"></asp:Label>
-                || © 2021-22 <span style="font-weight: bold; color: darkred;">ATS</span>
-                || Powered by <a href="https://www.ourhelp4you.net/" target="_blank"><span style="font-weight: bold; color: blue;">OH4Y</span></a>
+                || © 2021-23 <span style="font-weight: bold; color: darkred;">ATS</span>
+                || Powered by <a href="#" target="_blank"><span style="font-weight: bold; color: blue;">Aminrup Technologies, JSR</span></a>
             </div>
             <div class="clearfix"></div>
         </footer>

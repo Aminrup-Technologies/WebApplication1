@@ -6,11 +6,11 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data.SqlClient;
 using System.Data;
-using System.Drawing;
+using System.Configuration;
 
 namespace WebApplication1.bussiness.production
 {
-    public partial class pyrl_deductionlist : System.Web.UI.Page
+    public partial class pyrl_approvedeductions : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
 
@@ -52,21 +52,39 @@ namespace WebApplication1.bussiness.production
 
         private void PageLoader()
         {
-            string CmdString2 = "select Id, WorkmanSL, FullName, Advance,Rem_Advance, Cur_Advance, Fines, Rem_Fines, Cur_Fines, Others, Rem_Others, Cur_Others from tbl_Employee_Mustertable where WorkState='" + state + "' and WorkRegion='" + region + "' and WorkCompany='" + comp + "' and WorkStatus='Active' and (Advance > 0 or Fines > 0 or Others > 0) order by Id desc";
-            BindGrid(CmdString2);
-        }
+            // Set the connection string to your database
+            string connectionString = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
 
-        private void BindGrid(string cmdString)
-        {
-            dbcl.Sqlconnection();
-            dbcl.ConnectDb();
-            SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
-            SqlDataAdapter ad = new SqlDataAdapter(cmd);
-            DataSet ds = new DataSet();
-            ad.Fill(ds);
-            GridView1.DataSource = ds;
-            GridView1.DataBind();
-            dbcl.Conn.Close();
+            // Create a new SqlConnection using the connection string
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                // Create a new SqlCommand with the stored procedure name and connection
+                using (SqlCommand command = new SqlCommand("GetPayrollData", connection))
+                {
+                    // Set the command type as stored procedure
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // Add the required parameters and their values
+                    command.Parameters.AddWithValue("@Region", region);
+                    command.Parameters.AddWithValue("@Company", comp);
+                    //command.Parameters.AddWithValue("@Year", );
+                    //command.Parameters.AddWithValue("@SalaryMonth", 7);
+
+                    // Open the connection
+                    connection.Open();
+
+                    // Create a new SqlDataAdapter to execute the command and fill the result in a DataTable
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                    {
+                        DataTable dataTable = new DataTable();
+                        adapter.Fill(dataTable);
+
+                        // Bind the DataTable to the GridView
+                        GridView1.DataSource = dataTable;
+                        GridView1.DataBind();
+                    }
+                }
+            }
         }
     }
 }

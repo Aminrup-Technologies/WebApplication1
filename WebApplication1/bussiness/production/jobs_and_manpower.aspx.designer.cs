@@ -15,6 +15,24 @@ namespace WebApplication1.bussiness.production
     {
 
         /// <summary>
+        /// lbl_activejobid control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_activejobid;
+
+        /// <summary>
+        /// jobstatusflow control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::WebApplication1.bussiness.production.jobstatus_flow jobstatusflow;
+
+        /// <summary>
         /// lbl_activejobcount control.
         /// </summary>
         /// <remarks>
