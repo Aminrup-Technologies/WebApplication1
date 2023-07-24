@@ -9,6 +9,9 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.Threading;
 using System.IO;
+using System.Configuration;
+using System.Net.Mail;
+using System.Net;
 
 namespace WebApplication1.bussiness.production
 {
@@ -17,7 +20,7 @@ namespace WebApplication1.bussiness.production
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
         Payroll_OH4Y PayRoll = new Payroll_OH4Y();
 
-        
+
 
         public static string UserPass = "";
         DataTable dt = new DataTable();
@@ -32,7 +35,7 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-                    
+
                     ProfilePic_3.Src = "../../erp_images/ProfilePhoto/" + Session["User_Photo"].ToString() + "";
                     // Perform the login action here, such as prompting the user for credentials and validating them
                     lbl_username.Text = Session["USERNAME"].ToString();
@@ -45,7 +48,7 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-        
+
 
         private void EmployeeDataLoader()
         {
@@ -94,7 +97,7 @@ namespace WebApplication1.bussiness.production
                     lbl_doj.Text = DateBinder(doj);
 
                     string mobile = dt.Rows[0]["MobileNo"].ToString();
-                    //lbl_mobile.Text = mobile;
+                    lbl_oldmobileno.Text = mobile;
                     lbl_desg.Text = User_Desg;
                     lbl_skillcat.Text = User_Skill;
 
@@ -196,6 +199,30 @@ namespace WebApplication1.bussiness.production
 
                     //Update loginstatus and Last Login Information i.e. date
                     dbcl.UPDT_EmpMuster_LoginInfo(Workman, UserID);
+
+
+                    string email = dt.Rows[0]["Email"].ToString();
+                    lbl_oldemailadd.Text = email;
+
+                    if (email == "" && mobile == "") 
+                    {
+                        btn_cancel_contactdata.Enabled = false;
+                    }
+                    else
+                    {
+                        btn_cancel_contactdata.Enabled = true;
+                    }
+
+                    txt_nwmobileno.Text = "";
+                    txt_nwemailadd.Text = "";
+
+                    int contactUpdateStatus = GetContactUpdateStatus(Workman);
+                    if (contactUpdateStatus == 0)
+                    {
+                        btn_cancel_contactdata.Enabled = false;
+                        btn_sv_contactdata.Enabled = true;
+                        ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowContactModal();", true);
+                    }
                 }
                 else
                 {
@@ -775,6 +802,323 @@ namespace WebApplication1.bussiness.production
 
             Session.Abandon();
             Response.Redirect("login.aspx");
+        }
+
+        public int GetContactUpdateStatus(string workmanSL)
+        {
+            string connectionString = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand("GetContactUpdateStatus", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.Add("@WorkmanSL", SqlDbType.VarChar, 10).Value = workmanSL;
+
+                        SqlParameter outputParameter = new SqlParameter();
+                        outputParameter.ParameterName = "@ContactUpdateStatus";
+                        outputParameter.SqlDbType = SqlDbType.Int;
+                        outputParameter.Direction = ParameterDirection.Output;
+                        command.Parameters.Add(outputParameter);
+
+                        command.ExecuteNonQuery();
+
+                        // Get the output value
+                        if (outputParameter.Value != DBNull.Value)
+                        {
+                            int contactUpdateStatus = Convert.ToInt32(outputParameter.Value);
+                            return contactUpdateStatus;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    string title = "Notifications :";
+                    string body = ex.Message.ToString();
+                    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                }
+            }
+
+            return -1; // Default value if the stored procedure did not return a valid result
+        }
+
+
+        protected void btn_sv_contactdata_Click(object sender, EventArgs e)
+        {
+            if (btn_sv_contactdata.Text == "Make Changes")
+            {
+                InputMob1.Visible = true; InputMob2.Visible = true;
+                InputEmail1.Visible = true; InputEmail2.Visible = true;
+
+                btn_sv_contactdata.Text = "Save Changes";
+                btn_cancel_contactdata.Enabled = false;
+                btn_sv_contactdata.Enabled = false;
+
+                ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowContactModal();", true);
+            }
+            else if (btn_sv_contactdata.Text == "Save Changes")
+            {
+                string workmanSL = txt_atsworkmenno.Text.ToString();
+                string mobileNo = txt_nwmobileno.Text.ToString();
+                string email = txt_nwemailadd.Text.ToString();
+
+                UpdateEmployeeContactInfo(workmanSL, mobileNo, email);
+
+                string title = "Notifications :";
+                string body = "Contact details SAVED successfully...!";
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+
+                InputMob1.Visible = false; InputMob2.Visible = false;
+                InputEmail1.Visible = false; InputEmail2.Visible = false;
+            }
+        }
+
+        public void UpdateEmployeeContactInfo(string workmanSL, string mobileNo, string email)
+        {
+            string connectionString = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    using (SqlCommand command = new SqlCommand("UpdateEmployeeContactInfo", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+
+                        // Add parameters to the stored procedure
+                        command.Parameters.AddWithValue("@WorkmanSL", workmanSL);
+                        command.Parameters.AddWithValue("@MobileNo", mobileNo);
+                        command.Parameters.AddWithValue("@Email", email);
+
+                        connection.Open();
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string title = "Notifications :";
+                string body = ex.Message.ToString();
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+            }
+        }
+
+        protected void btn_cancel_contactdata_Click(object sender, EventArgs e)
+        {
+            UpdateContactStatus(txt_atsworkmenno.Text.ToString());
+        }
+
+        public void UpdateContactStatus(string workmanSL)
+        {
+            string connectionString = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (SqlCommand command = new SqlCommand("UpdateContactStatus", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+
+                        // Add the parameter for the stored procedure
+                        command.Parameters.AddWithValue("@WorkmanSL", workmanSL);
+
+                        // Execute the stored procedure
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string title = "Notifications :";
+                string body = ex.Message.ToString();
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+            }
+        }
+
+
+        public string GenerateOTP()
+        {
+            Random random = new Random();
+            int otpValue = random.Next(100000, 999999);
+            return otpValue.ToString();
+        }
+
+        public void SendOTPByEmail(string email, string otp)
+        {
+            string smtpServer = "smtp.gmail.com";
+            int smtpPort = 587;
+            string smtpUsername = "it_helpdesk@atswork.in";
+            string smtpPassword = "wpdcbssoxcfovwmj";
+
+            using (SmtpClient client = new SmtpClient(smtpServer, smtpPort))
+            {
+                client.UseDefaultCredentials = false;
+                client.Credentials = new NetworkCredential(smtpUsername, smtpPassword);
+                client.EnableSsl = true;
+
+                MailMessage message = new MailMessage();
+                message.From = new MailAddress(smtpUsername);
+                message.To.Add(email);
+                message.Subject = "ATS || OTP for Email Validation";
+                message.Body = "Your OTP is: " + otp;
+
+                client.Send(message);
+            }
+        }
+
+        protected void btn_SendOTP_Click(object sender, EventArgs e)
+        {
+            if (btn_SendOTP.Text == "Send OTP")
+            {
+                // Step 1: Generate OTP
+                string otp = GenerateOTP();
+
+                // Step 2: Send OTP via Email
+                string email = txt_nwemailadd.Text.ToString(); // Replace with the email provided by the user
+                if (email!=null || email != string.Empty)
+                {
+                    SendOTPEmail(email, otp);
+                }
+                else
+                {
+                    lbl_mailermsg.Text = "Enter valid email address" ;
+                }
+
+                // Store the generated OTP and email in session or database for later validation
+                Session["GeneratedOTP"] = otp;
+                Session["RecipientEmail"] = email;
+
+                btn_cancel_contactdata.Enabled = false;
+
+                ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowContactModal();", true);
+
+                OTP_2.Visible = true;
+                btn_SendOTP.Text = "Confirm OTP";
+            }
+            else
+            {
+                // Step 3: Validate OTP
+                string userEnteredOTP = TextBoxEnteredOTP.Text;
+                string generatedOTP = Session["GeneratedOTP"] as string;
+                string recipientEmail = Session["RecipientEmail"] as string;
+
+                if (userEnteredOTP == generatedOTP && recipientEmail == txt_nwemailadd.Text)
+                {
+                    // OTP validation successful
+                    btn_sv_contactdata.Enabled = true;
+                    btn_SendOTP.Enabled = false;
+                    ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowContactModal();", true);
+                    
+                }
+                else
+                {
+                    // Invalid OTP or email
+                    string title = "Notifications :";
+                    string body = "Invalid OTP or Email Address....! Re-try....!";
+                    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+
+                    ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowContactModal();", true);
+                }
+            }
+        }
+
+
+        private string GetEmailBodyTemplate()
+        {
+            // Read the email body template from a file, database, or hardcode it as a string
+            // Here we are hardcoding it for simplicity
+            return @"<!DOCTYPE html>
+            <html>
+            <head>
+                <title>OTP Email</title>
+            </head>
+            <body>
+                <div style=""font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6;"">
+                    <p>Hello,</p>
+                    <p>Your OTP for email verification is: <strong>{{OTP_CODE}}</strong></p>
+                    <p>Please enter this OTP to verify your email address.</p>
+                    <p>If you didn't request this OTP, you can ignore this email.</p>
+                    <p>Thank you.</p>
+                </div>
+            </body>
+            </html>";
+        }
+
+        protected void SendOTPEmail(string recipientEmail, string otp)
+        {
+            string smtpServer = "smtp.gmail.com";
+            int smtpPort = 587;
+            string smtpUsername = "it_helpdesk@atswork.in";
+            string smtpPassword = "wpdcbssoxcfovwmj";
+
+            try
+            {
+                using (SmtpClient client = new SmtpClient(smtpServer, smtpPort))
+                {
+                    client.UseDefaultCredentials = false;
+                    client.Credentials = new NetworkCredential(smtpUsername, smtpPassword);
+                    client.EnableSsl = true;
+
+                    MailMessage message = new MailMessage();
+                    message.From = new MailAddress(smtpUsername);
+                    message.To.Add(recipientEmail);
+                    message.Subject = "ATS || OTP for Email Verification";
+
+                    // Replace {{OTP_CODE}} with the actual OTP value before sending the email
+                    string emailBody = GetEmailBodyTemplate().Replace("{{OTP_CODE}}", otp);
+                    message.Body = emailBody;
+                    message.IsBodyHtml = true;
+
+                    client.Send(message);
+
+                    //string title = "Notifications :";
+                    //string body = "OTP sent successfully!";
+                    //ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                }
+            }
+            catch (Exception ex)
+            {
+                lbl_mailermsg.Text = ex.Message;
+                //string title = "Notifications :";
+                //string body = "Invalid OTP or Email Address....! Re-try....!";
+                //ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+            }
+        }
+
+        protected void txt_nwemailadd_TextChanged(object sender, EventArgs e)
+        {
+            // Step 1: Generate OTP
+            string otp = GenerateOTP();
+
+            // Step 2: Send OTP via Email
+            string email = txt_nwemailadd.Text.ToString(); // Replace with the email provided by the user
+            if (email != null || email != string.Empty)
+            {
+                SendOTPEmail(email, otp);
+                lbl_mailermsg.Text = "OTP Sent";
+            }
+            else
+            {
+                lbl_mailermsg.Text = "Enter valid email address";
+            }
+
+            // Store the generated OTP and email in session or database for later validation
+            Session["GeneratedOTP"] = otp;
+            Session["RecipientEmail"] = email;
+
+            btn_cancel_contactdata.Enabled = false;
+
+            ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowContactModal();", true);
+            OTP_1.Visible = true;
+            OTP_2.Visible = true;
+            btn_sv_contactdata.Enabled = false;
+            btn_cancel_contactdata.Enabled = false;
+            btn_SendOTP.Text = "Confirm OTP";
+            lbl_mailermsg.Text = "Enter & Confirm OTP";
         }
     }
 }
