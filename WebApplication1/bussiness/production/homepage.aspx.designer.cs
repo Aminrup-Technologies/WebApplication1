@@ -951,6 +951,15 @@ namespace WebApplication1.bussiness.production
         protected global::System.Web.UI.WebControls.Button btn_cancel_contactdata;
 
         /// <summary>
+        /// btn_cancel1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btn_cancel1;
+
+        /// <summary>
         /// txt_atsloginid control.
         /// </summary>
         /// <remarks>

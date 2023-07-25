@@ -462,6 +462,79 @@
 		</div>
 		<%--- Up-loader Modal -------- END --%>
 
+        <%--- Contact Details Modal ---------START----%>
+        <div class="modal fade" id="myModal4" data-backdrop="static">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Update Contact Details</h4>
+                        <%--<button type="button" class="close" data-dismiss="modal">&times;</button>--%>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+
+                                    <div class="col-md-6 col-sm-12 form-group">
+                                        <label>Mobile No :<span class="text text-danger"></span></label>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12 form-group">
+                                        <asp:Label ID="lbl_oldmobileno" runat="server" Text="N/A" CssClass="form-control form-control-sm rounded" BackColor="#e6e6e6"></asp:Label>
+                                    </div>
+
+                                    <div class="col-md-6 col-sm-12 form-group" id="InputMob1" runat="server" visible="false">
+                                        <label style="font-weight: bold; color: darkblue;">Confirm Mobile No :<span class="text text-danger"></span></label>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12 form-group" id="InputMob2" runat="server" visible="false">
+                                        <asp:TextBox ID="txt_nwmobileno" runat="server" CssClass="form-control form-control-sm rounded" BorderColor="Blue" BorderWidth="2px"></asp:TextBox>
+                                        <asp:RequiredFieldValidator ID="MobileFieldValidator" runat="server" ValidationGroup="ContData" ErrorMessage="Input Required" ControlToValidate="txt_nwmobileno" InitialValue="" ForeColor="Red" Display="Dynamic"></asp:RequiredFieldValidator>
+                                        <asp:RegularExpressionValidator ID="MobileValidator" runat="server" ControlToValidate="txt_nwmobileno"
+                                            ErrorMessage="Invalid mobile number" ValidationExpression="^[0-9]{10}$"
+                                            ForeColor="Red" Display="Dynamic" SetFocusOnError="true" ValidationGroup="ContData"></asp:RegularExpressionValidator>
+                                    </div>
+
+                                    <div class="col-md-6 col-sm-12 form-group">
+                                        <label>Email Address :<span class="text text-danger"></span></label>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12 form-group">
+                                        <asp:Label ID="lbl_oldemailadd" runat="server" Text="N/A" CssClass="form-control form-control-sm rounded" BackColor="#e6e6e6"></asp:Label>
+                                    </div>
+
+                                    <div class="col-md-6 col-sm-12 form-group" id="InputEmail1" runat="server" visible="false">
+                                        <label style="font-weight: bold; color: darkblue;">Confirm Email Address :<span class="text text-danger"></span></label>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12 form-group" id="InputEmail2" runat="server" visible="false">
+                                        <asp:TextBox ID="txt_nwemailadd" runat="server" CssClass="form-control form-control-sm rounded" BorderColor="Blue" BorderWidth="2px" AutoCompleteType="Disabled"></asp:TextBox>
+                                        <asp:RequiredFieldValidator ID="EmailFieldValidator" runat="server" ControlToValidate="txt_nwemailadd" ErrorMessage="Input Required" InitialValue="" ValidationGroup="ContData" ForeColor="Red" Display="Dynamic"></asp:RequiredFieldValidator>
+                                        <asp:RegularExpressionValidator ID="EmailValidator" runat="server" ControlToValidate="txt_nwemailadd"
+                                            ErrorMessage="Invalid email address" ValidationExpression="\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
+                                            ForeColor="Red" Display="Dynamic" SetFocusOnError="true" ValidationGroup="ContData"></asp:RegularExpressionValidator>
+                                    </div>
+
+                                    <div class="col-md-6 col-sm-12 form-group" id="OTP_1" runat="server" visible="false">
+                                        <asp:Button ID="btn_SendOTP" runat="server" Text="Send OTP" CausesValidation="true" ValidationGroup="ContData" CssClass="btn btn-info btn-sm" OnClick="btn_SendOTP_Click" />
+                                    </div>
+                                    <div class="col-md-6 col-sm-12 form-group" id="OTP_2" runat="server" visible="false">
+                                        <asp:TextBox ID="TextBoxEnteredOTP" runat="server" CssClass="form-control form-control-sm rounded" BorderColor="Blue" BorderWidth="2px"></asp:TextBox>
+                                    </div>
+
+                                    <div class="col-md-6 col-sm-12 form-group" id="Div1" runat="server" visible="false">
+                                        <asp:Label ID="lbl_mailermsg" runat="server" Text="" Style="font-weight: bold; color:darkred;"></asp:Label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <asp:Button ID="btn_sv_contactdata" runat="server" Text="Make Changes" CssClass="btn btn-info btn-sm" OnClick="btn_sv_contactdata_Click" />
+                        <asp:Button ID="btn_cancel_contactdata" runat="server" CausesValidation="false" Text="Confirm" CssClass="btn btn-warning btn-sm" OnClick="btn_cancel_contactdata_Click" />
+                        <asp:Button ID="btn_cancel1" runat="server" CausesValidation="false" Text="CANCEL" CssClass="btn btn-danger btn-sm" OnClick="btn_cancel1_Click"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <%--- Up-loader Modal -------- END --%>
+
         <!-- Large modal : Password Change Popup-------START------>
         <div class="modal fade bs-pass-modal-lg" id="myModal3" data-backdrop="static">
             <div class="modal-dialog modal-lg">
