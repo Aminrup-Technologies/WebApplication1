@@ -7,6 +7,8 @@ using System.Data;
 using System.Web.UI.WebControls;
 using System.IO;
 using Org.BouncyCastle.Math.EC.Multiplier;
+using System.Net.Mail;
+using System.Net;
 
 namespace WebApplication1.bussiness.production
 {
@@ -15,7 +17,7 @@ namespace WebApplication1.bussiness.production
         //public static string Logs = @"C:\atswork.in\wwwroot\bussiness\production\WindowsServiceLog\";
         //public static string Logs = @"C:\atswebuat\bussiness\production\WindowsServiceLog\";
         //public static string Logs = @"D:\RnD\OH4Y_19Jun23\WebApplication1\WebApplication1\bussiness\production\WindowsServiceLog\";
-        public static string Logs = @"\production\WindowsServiceLog\";
+        //public static string Logs = @"\production\WindowsServiceLog\";
         public SqlConnection Conn;
         public SqlDataReader dr;
         public SqlCommand cmd;
@@ -34,21 +36,83 @@ namespace WebApplication1.bussiness.production
             return flag;
         }
 
+        //public void WriteToFile(string text)
+        //{
+        //    string path = Logs + DateTime.Now.ToString("ddMMyyyy");
+        //    if (!Directory.Exists(path))
+        //    {
+        //        Directory.CreateDirectory(path);
+        //    }
+        //    path = path + @"\" + "ServiceLog.txt";
+        //    using (StreamWriter writer = new StreamWriter(path, true))
+        //    {
+        //        writer.WriteLine(DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt") + " : " + text);
+        //        //writer.WriteLine();
+        //        writer.Close();
+        //    }
+        //}
+
         public void WriteToFile(string text)
         {
-            string path = Logs + DateTime.Now.ToString("ddMMyyyy");
-            if (!Directory.Exists(path))
+            string path1 = @"C:\atswork.in\wwwroot\bussiness\production\WindowsServiceLog\";
+            string path2 = @"D:\RnD\OH4Y_19Jun23\WebApplication1\WebApplication1\bussiness\production\WindowsServiceLog\";
+
+            string selectedPath = Directory.Exists(path1) ? path1 : Directory.Exists(path2) ? path2 : null;
+
+            if (selectedPath != null)
             {
-                Directory.CreateDirectory(path);
+                selectedPath = Path.Combine(selectedPath, DateTime.Now.ToString("ddMMyyyy"));
+
+                if (!Directory.Exists(selectedPath))
+                {
+                    Directory.CreateDirectory(selectedPath);
+                }
+
+                string logFilePath = Path.Combine(selectedPath, "ServiceLog.txt");
+
+                using (StreamWriter writer = new StreamWriter(logFilePath, true))
+                {
+                    writer.WriteLine(DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt") + " : " + text);
+                    writer.Close();
+                }
             }
-            path = path + @"\" + "ServiceLog.txt";
-            using (StreamWriter writer = new StreamWriter(path, true))
+            else
             {
-                writer.WriteLine(DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt") + " : " + text);
-                //writer.WriteLine();
-                writer.Close();
+                SendEmail("it_helpdesk@atswork.in", "Error: Log directory not found in both paths.");
             }
         }
+
+        protected void SendEmail(string recipientEmail, string emailBody)
+        {
+            string smtpServer = "smtp.gmail.com";
+            int smtpPort = 587;
+            string smtpUsername = "it_helpdesk@atswork.in";
+            string smtpPassword = "wpdcbssoxcfovwmj";
+
+            try
+            {
+                using (SmtpClient client = new SmtpClient(smtpServer, smtpPort))
+                {
+                    client.UseDefaultCredentials = false;
+                    client.Credentials = new NetworkCredential(smtpUsername, smtpPassword);
+                    client.EnableSsl = true;
+
+                    MailMessage message = new MailMessage();
+                    message.From = new MailAddress(smtpUsername);
+                    message.To.Add(recipientEmail);
+                    message.Subject = "ATS || OTP for Email Verification";
+                    message.Body = emailBody;
+                    message.IsBodyHtml = true;
+
+                    client.Send(message);
+                }
+            }
+            catch (Exception ex)
+            {
+                WriteToFile("87 :Mailer Failed to execute" + ex.Message + "");
+            }
+        }
+
 
         public void executeRdr(String SqlString)
         {
