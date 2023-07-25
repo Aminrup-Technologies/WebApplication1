@@ -1092,5 +1092,15 @@ namespace WebApplication1.bussiness.production
             btn_SendOTP.Text = "Confirm OTP";
             lbl_mailermsg.Text = "Enter & Confirm OTP";
         }
+
+        protected void btn_cancel1_Click(object sender, EventArgs e)
+        {
+            dbcl.WriteToFile("User :" + Session["USERNAME"].ToString() + " Singout Successfully");
+            //Update loginstatus and Last Login Information i.e. date
+            dbcl.UPDT_EmpMuster_LogoutInfo(Session["WORKMAN"].ToString(), Session["USERID"].ToString());
+
+            Session.Abandon();
+            Response.Redirect("login.aspx");
+        }
     }
 }
