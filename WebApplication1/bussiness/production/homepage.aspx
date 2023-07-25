@@ -528,6 +528,7 @@
                     <div class="modal-footer">
                         <asp:Button ID="btn_sv_contactdata" runat="server" Text="Make Changes" CssClass="btn btn-info btn-sm" OnClick="btn_sv_contactdata_Click" />
                         <asp:Button ID="btn_cancel_contactdata" runat="server" CausesValidation="false" Text="Confirm" CssClass="btn btn-warning btn-sm" OnClick="btn_cancel_contactdata_Click" />
+                        <asp:Button ID="btn_cancel1" runat="server" CausesValidation="false" Text="CANCEL" CssClass="btn btn-danger btn-sm" OnClick="btn_cancel1_Click"/>
                     </div>
                 </div>
             </div>
