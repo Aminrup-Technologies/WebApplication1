@@ -42,7 +42,7 @@
 
             <div class="row">
                 <div class="card-box col-md-12 col-sm-12" style="width: 100%; height: 450px; overflow: scroll;">
-                    <asp:GridView ID="GridView1" runat="server" Width="100%" class="table table-striped table-hover table-bordered table-responsive table-sm dt-responsive" AutoGenerateColumns="false" ShowHeaderWhenEmpty="true" EmptyDataText="No Data Found">
+                    <asp:GridView ID="GridView1" runat="server" Width="100%" class="table table-striped table-hover table-bordered table-sm" AutoGenerateColumns="false" ShowHeaderWhenEmpty="true" EmptyDataText="No Data Found">
                         <Columns>
                             <asp:TemplateField HeaderText="SL" Visible="True" HeaderStyle-Width="2%">
                                 <ItemTemplate>
@@ -58,49 +58,63 @@
                                 <ItemStyle CssClass="text text-center" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="DBID" HeaderStyle-Width="10%" Visible="true">
+                            <asp:TemplateField HeaderText="Employee" HeaderStyle-Width="12%" Visible="true">
                                 <ItemTemplate>
-                                    <asp:Label ID="lbl_WorkmanSL" runat="server" Text='<%# Eval("WorkmanSL") %>' />
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
-                            </asp:TemplateField>
-
-                            <asp:TemplateField HeaderText="Full Name" HeaderStyle-Width="20%">
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_FullName" runat="server" Text='<%# Eval("FullName") %>' />
+                                    <asp:Label ID="lbl_FullName" runat="server" Text='<%# Eval("FullName") %>' /><br />
+                                    <asp:Label ID="lbl_WorkmanSL" runat="server" Text='<%# Eval("WorkmanSL") %>' /><br />
+                                    P :<asp:Label ID="lbl_Present" runat="server" Text='<%# Eval("Present") %>' /><br />
+                                    OT :<asp:Label ID="lbl_OverTime" runat="server" Text='<%# Eval("OverTime") %>' />
                                 </ItemTemplate>
                                 <ItemStyle CssClass="text text-center small" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Skill Category" HeaderStyle-Width="15%">
+                            <%--<asp:TemplateField HeaderText="Employee Name" HeaderStyle-Width="20%">
+                                <ItemTemplate>
+                                    <asp:Label ID="lbl_FullName" runat="server" Text='<%# Eval("FullName") %>' />
+                                </ItemTemplate>
+                                <ItemStyle CssClass="text text-center small" />
+                            </asp:TemplateField>--%>
+
+                            <asp:TemplateField HeaderText="Skill Category" HeaderStyle-Width="15%" Visible="false">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_SkillCategory" runat="server" Text='<%# Eval("SkillCategory") %>' />
                                 </ItemTemplate>
                                 <ItemStyle CssClass="text text-center small" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Skill Designation" HeaderStyle-Width="15%">
+                            <asp:TemplateField HeaderText="Skill Designation" HeaderStyle-Width="15%" Visible="false">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_SkillDesignation" runat="server" Text='<%# Eval("SkillDesignation") %>' />
                                 </ItemTemplate>
                                 <ItemStyle CssClass="text text-center small" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Present" HeaderStyle-Width="15%">
+                            <%--<asp:TemplateField HeaderText="Present & OT" HeaderStyle-Width="5%">
                                 <ItemTemplate>
-                                    <asp:Label ID="lbl_Present" runat="server" Text='<%# Eval("Present") %>' />
+                                    P :<asp:Label ID="lbl_Present" runat="server" Text='<%# Eval("Present") %>' />
+                                    OT :<asp:Label ID="lbl_OverTime" runat="server" Text='<%# Eval("OverTime") %>' />
                                 </ItemTemplate>
                                 <ItemStyle CssClass="text text-center small" />
-                            </asp:TemplateField>
+                            </asp:TemplateField>--%>
 
-                            <asp:TemplateField HeaderText="Over Time" HeaderStyle-Width="15%">
+                            <%--<asp:TemplateField HeaderText="Over Time" HeaderStyle-Width="15%">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_OverTime" runat="server" Text='<%# Eval("OverTime") %>' />
                                 </ItemTemplate>
                                 <ItemStyle CssClass="text text-center small" />
+                            </asp:TemplateField>--%>
+
+                            <asp:TemplateField HeaderText="Earnings" HeaderStyle-Width="18%">
+                                <ItemTemplate>
+                                    Basic :<asp:Label ID="lbl_BasicSalary" runat="server" Text='<%# Eval("BasicSalary") %>' /> <br />
+                                    Gross :<asp:Label ID="lbl_ActualGross" runat="server" Text='<%# Eval("ActualGross") %>' /> <br />
+                                    ESICGross :<asp:Label ID="lbl_ESICGross" runat="server" Text='<%# Eval("ESICGross") %>' /> <br />
+                                    NetPay1 :<asp:Label ID="lbl_NetPay1" runat="server" Text='<%# Eval("NetPay1") %>' Font-Bold="true" ForeColor="Green" />
+                                </ItemTemplate>
+                                <ItemStyle CssClass="text text-center" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Basic Salary" HeaderStyle-Width="15%">
+                            <%--<asp:TemplateField HeaderText="Basic Salary" HeaderStyle-Width="15%">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_BasicSalary" runat="server" Text='<%# Eval("BasicSalary") %>' />
                                 </ItemTemplate>
@@ -121,49 +135,59 @@
                                 <ItemStyle CssClass="text text-center small" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="ESIC Gross" HeaderStyle-Width="15%">
+                            <asp:TemplateField HeaderText="ESIC Gross" HeaderStyle-Width="15%" Visible="true">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_ESICGross" runat="server" Text='<%# Eval("ESICGross") %>' />
                                 </ItemTemplate>
                                 <ItemStyle CssClass="text text-center small" />
-                            </asp:TemplateField>
+                            </asp:TemplateField>--%>
 
-                            <asp:TemplateField HeaderText="PF Pay" HeaderStyle-Width="15%">
+                            <%--<asp:TemplateField HeaderText="PF Pay" HeaderStyle-Width="15%" Visible="false">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_PFPay" runat="server" Text='<%# Eval("PFPay") %>' />
                                 </ItemTemplate>
                                 <ItemStyle CssClass="text text-center small" />
-                            </asp:TemplateField>
+                            </asp:TemplateField>--%>
 
-                            <asp:TemplateField HeaderText="ESIC Pay" HeaderStyle-Width="15%">
+                            <%--<asp:TemplateField HeaderText="ESIC Pay" HeaderStyle-Width="15%" Visible="false">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_ESICPay" runat="server" Text='<%# Eval("ESICPay") %>' />
                                 </ItemTemplate>
                                 <ItemStyle CssClass="text text-center small" />
-                            </asp:TemplateField>
+                            </asp:TemplateField>--%>
 
-                            <asp:TemplateField HeaderText="Net Pay1" HeaderStyle-Width="15%">
+                            <%--<asp:TemplateField HeaderText="Net Pay1" HeaderStyle-Width="15%">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_NetPay1" runat="server" Text='<%# Eval("NetPay1") %>' />
                                 </ItemTemplate>
                                 <ItemStyle CssClass="text text-center small" />
+                            </asp:TemplateField>--%>
+
+                            <asp:TemplateField HeaderText="Advance_Section" HeaderStyle-Width="15%">
+                                <ItemTemplate>
+                                    Approved :<asp:Label ID="lbl_Approved_Advance" runat="server" Font-Bold="true" Text='<%# Eval("Approved_Advance") %>' /><br />
+                                    Remaining :<asp:Label ID="lbl_Remaining_Advance" runat="server" Text='<%# Eval("Remaining_Advance") %>' /><br />
+                                    Current :<asp:Label ID="lbl_CurrentMonth_Advance" runat="server" Text='<%# Eval("CurrentMonth_Advance") %>' /><br />
+                                    Deducted :<asp:Label ID="lbl_Deducted_Advance" runat="server" Text='<%# Eval("Deducted_Advance") %>' Font-Bold="true" ForeColor="Red" />
+                                </ItemTemplate>
+                                <ItemStyle CssClass="text text-center" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Advance" HeaderStyle-Width="8%">
+                            <%--<asp:TemplateField HeaderText="Advance" HeaderStyle-Width="8%">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_Approved_Advance" runat="server" Font-Bold="true" Text='<%# Eval("Approved_Advance") %>' />
                                 </ItemTemplate>
                                 <ItemStyle CssClass="text text-center" />
-                            </asp:TemplateField>
+                            </asp:TemplateField>--%>
 
-                            <asp:TemplateField HeaderText="Rem Advance" Visible="true">
+                            <%--<asp:TemplateField HeaderText="Rem Advance" Visible="true">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_Remaining_Advance" runat="server" Text='<%# Eval("Remaining_Advance") %>' />
                                 </ItemTemplate>
                                 <ItemStyle CssClass="text text-center" />
-                            </asp:TemplateField>
+                            </asp:TemplateField>--%>
 
-                            <asp:TemplateField HeaderText="Cur Advance" HeaderStyle-Width="3%">
+                            <%--<asp:TemplateField HeaderText="Cur Advance" HeaderStyle-Width="3%">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_CurrentMonth_Advance" runat="server" Text='<%# Eval("CurrentMonth_Advance") %>' />
                                 </ItemTemplate>
@@ -174,38 +198,58 @@
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_Deducted_Advance" runat="server" Text='<%# Eval("Deducted_Advance") %>' />
                                 </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" BackColor="OrangeRed" />
+                                <ItemStyle CssClass="text text-center" />
+                            </asp:TemplateField>--%>
+
+                            <asp:TemplateField HeaderText="Fine_Section" HeaderStyle-Width="15%">
+                                <ItemTemplate>
+                                    Approved :<asp:Label ID="lbl_Approved_Fines" runat="server" Text='<%# Eval("Approved_Fines") %>' /><br />
+                                    Remaining :<asp:Label ID="lbl_Remaining_Fines" runat="server" Font-Bold="true" Text='<%# Eval("Remaining_Fines") %>' /><br />
+                                    Current :<asp:Label ID="lbl_CurrentMonth_Fines" runat="server" Text='<%# Eval("CurrentMonth_Fines") %>' /><br />
+                                    Deducted :<asp:Label ID="lbl_Deducted_Fines" runat="server" Text='<%# Eval("Deducted_Fines") %>' Font-Bold="true" ForeColor="Red" />
+                                </ItemTemplate>
+                                <ItemStyle CssClass="text text-center" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Approved Fines" HeaderStyle-Width="7%">
+                            <%--<asp:TemplateField HeaderText="Approved Fines" HeaderStyle-Width="7%">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_Approved_Fines" runat="server" Text='<%# Eval("Approved_Fines") %>' />
                                 </ItemTemplate>
                                 <ItemStyle CssClass="text text-center" />
-                            </asp:TemplateField>
+                            </asp:TemplateField>--%>
 
-                            <asp:TemplateField HeaderText="Remaining Fines" HeaderStyle-Width="5%">
+                            <%--<asp:TemplateField HeaderText="Remaining Fines" HeaderStyle-Width="5%">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_Remaining_Fines" runat="server" Font-Bold="true" Text='<%# Eval("Remaining_Fines") %>' />
                                 </ItemTemplate>
                                 <ItemStyle CssClass="text text-center" />
-                            </asp:TemplateField>
+                            </asp:TemplateField>--%>
 
-                            <asp:TemplateField HeaderText="CurrentMonth Fines" Visible="true">
+                            <%--<asp:TemplateField HeaderText="CurrentMonth Fines" Visible="true">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_CurrentMonth_Fines" runat="server" Text='<%# Eval("CurrentMonth_Fines") %>' />
                                 </ItemTemplate>
                                 <ItemStyle CssClass="text text-center" />
-                            </asp:TemplateField>
+                            </asp:TemplateField>--%>
 
-                            <asp:TemplateField HeaderText="Deducted Fines" Visible="true">
+                            <%--<asp:TemplateField HeaderText="Deducted Fines" Visible="true">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_Deducted_Fines" runat="server" Text='<%# Eval("Deducted_Fines") %>' />
                                 </ItemTemplate>
                                 <ItemStyle CssClass="text text-center" BackColor="OrangeRed" />
+                            </asp:TemplateField>--%>
+
+                            <asp:TemplateField HeaderText="Others_Section" HeaderStyle-Width="15%">
+                                <ItemTemplate>
+                                    Approved :<asp:Label ID="lbl_Approved_Others" runat="server" Text='<%# Eval("Approved_Others") %>' /><br />
+                                    Remaining :<asp:Label ID="lbl_Remaining_Others" runat="server" Font-Bold="true" Text='<%# Eval("Remaining_Others") %>' /><br />
+                                    Current :<asp:Label ID="lbl_CurrentMonth_Others" runat="server" Text='<%# Eval("CurrentMonth_Others") %>' /><br />
+                                    Deducted :<asp:Label ID="lbl_Deducted_Others" runat="server" Text='<%# Eval("Deducted_Others") %>' Font-Bold="true" ForeColor="Red" />
+                                </ItemTemplate>
+                                <ItemStyle CssClass="text text-center" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Approved Others" HeaderStyle-Width="7%" Visible="true">
+                            <%--<asp:TemplateField HeaderText="Approved Others" HeaderStyle-Width="7%" Visible="true">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_Approved_Others" runat="server" Text='<%# Eval("Approved_Others") %>' />
                                 </ItemTemplate>
@@ -217,9 +261,9 @@
                                     <asp:Label ID="lbl_Remaining_Others" runat="server" Font-Bold="true" Text='<%# Eval("Remaining_Others") %>' />
                                 </ItemTemplate>
                                 <ItemStyle CssClass="text text-center" />
-                            </asp:TemplateField>
+                            </asp:TemplateField>--%>
 
-                            <asp:TemplateField HeaderText="CurrentMonth Others" Visible="true">
+                            <%--<asp:TemplateField HeaderText="CurrentMonth Others" Visible="true">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_CurrentMonth_Others" runat="server" Text='<%# Eval("CurrentMonth_Others") %>' />
                                 </ItemTemplate>
@@ -231,35 +275,39 @@
                                     <asp:Label ID="lbl_Deducted_Others" runat="server" Text='<%# Eval("Deducted_Others") %>' />
                                 </ItemTemplate>
                                 <ItemStyle CssClass="text text-center" BackColor="OrangeRed" />
-                            </asp:TemplateField>
+                            </asp:TemplateField>--%>
 
-                            <asp:TemplateField HeaderText="Total Deduction" Visible="true">
+                            <asp:TemplateField HeaderText="Total Deduction" Visible="true" HeaderStyle-Width="13%">
                                 <ItemTemplate>
-                                    <asp:Label ID="lbl_TotalDeduction" runat="server" Text='<%# Eval("TotalDeduction") %>' />
+                                    PF :<asp:Label ID="lbl_PFPay" runat="server" Text='<%# Eval("PFPay") %>' /><br />
+                                    ESIC :<asp:Label ID="lbl_ESICPay" runat="server" Text='<%# Eval("ESICPay") %>' /><br />
+                                    Ded. :<asp:Label ID="lbl_TotalDeduction" runat="server" Text='<%# Eval("TotalDeduction") %>' Font-Bold="true" ForeColor="IndianRed" />
                                 </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" BackColor="IndianRed" />
+                                <ItemStyle CssClass="text text-center" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="NetPay Final" Visible="true">
+                            <asp:TemplateField HeaderText="NetPay Final" Visible="true" HeaderStyle-Width="15%">
                                 <ItemTemplate>
-                                    <asp:Label ID="lbl_NetPayFinal" runat="server" Text='<%# Eval("NetPayFinal") %>' />
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" BackColor="LightGreen" />
-                            </asp:TemplateField>
-
-                            <asp:TemplateField HeaderText="Net Pay2" Visible="true">
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_NetPay2" runat="server" Text='<%# Eval("NetPay2") %>' />
+                                    NetPay1 :<asp:Label ID="lbl_NetPayFinal" runat="server" Text='<%# Eval("NetPayFinal") %>' /><br />
+                                    NetPay2 :<asp:Label ID="lbl_NetPay2" runat="server" Text='<%# Eval("NetPay2") %>' /><br />
+                                    TotalPay :<asp:Label ID="lbl_Total_Pay" runat="server" Text='<%# Eval("Total_Pay") %>' />
                                 </ItemTemplate>
                                 <ItemStyle CssClass="text text-center" BackColor="LightGreen" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Total Pay" Visible="true">
+                            <%--<asp:TemplateField HeaderText="Net Pay2" Visible="true">
+                                <ItemTemplate>
+                                    NetPay2 :<asp:Label ID="lbl_NetPay2" runat="server" Text='<%# Eval("NetPay2") %>' />
+                                </ItemTemplate>
+                                <ItemStyle CssClass="text text-center" BackColor="LightGreen" />
+                            </asp:TemplateField>--%>
+
+                            <%--<asp:TemplateField HeaderText="Total Pay" Visible="true">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_Total_Pay" runat="server" Text='<%# Eval("Total_Pay") %>' />
                                 </ItemTemplate>
                                 <ItemStyle CssClass="text text-center" BackColor="Green" />
-                            </asp:TemplateField>
+                            </asp:TemplateField>--%>
                         </Columns>
                         <HeaderStyle CssClass="text text-center" />
                         <EmptyDataTemplate>

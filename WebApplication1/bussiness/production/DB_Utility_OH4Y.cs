@@ -12,9 +12,9 @@ namespace WebApplication1.bussiness.production
 {
     public class DB_Utility_OH4Y
     {
-        public static string Logs = @"C:\atswork.in\wwwroot\bussiness\production\WindowsServiceLog\";
+        //public static string Logs = @"C:\atswork.in\wwwroot\bussiness\production\WindowsServiceLog\";
         //public static string Logs = @"C:\atswebuat\bussiness\production\WindowsServiceLog\";
-        //public static string Logs = @"D:\RnD\OH4Y_19Jun23\WebApplication1\WebApplication1\bussiness\production\WindowsServiceLog\";
+        public static string Logs = @"D:\RnD\OH4Y_19Jun23\WebApplication1\WebApplication1\bussiness\production\WindowsServiceLog\";
         public SqlConnection Conn;
         public SqlDataReader dr;
         public SqlCommand cmd;
@@ -44,7 +44,7 @@ namespace WebApplication1.bussiness.production
             using (StreamWriter writer = new StreamWriter(path, true))
             {
                 writer.WriteLine(DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt") + " : " + text);
-                writer.WriteLine();
+                //writer.WriteLine();
                 writer.Close();
             }
         }
