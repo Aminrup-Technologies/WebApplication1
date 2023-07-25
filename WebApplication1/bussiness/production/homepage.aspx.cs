@@ -851,6 +851,7 @@ namespace WebApplication1.bussiness.production
         {
             if (btn_sv_contactdata.Text == "Make Changes")
             {
+                OTP_1.Visible = true; btn_SendOTP.Visible = true; btn_SendOTP.Enabled = true;
                 InputMob1.Visible = true; InputMob2.Visible = true;
                 InputEmail1.Visible = true; InputEmail2.Visible = true;
 
@@ -974,30 +975,7 @@ namespace WebApplication1.bussiness.production
         {
             if (btn_SendOTP.Text == "Send OTP")
             {
-                // Step 1: Generate OTP
-                string otp = GenerateOTP();
-
-                // Step 2: Send OTP via Email
-                string email = txt_nwemailadd.Text.ToString(); // Replace with the email provided by the user
-                if (email!=null || email != string.Empty)
-                {
-                    SendOTPEmail(email, otp);
-                }
-                else
-                {
-                    lbl_mailermsg.Text = "Enter valid email address" ;
-                }
-
-                // Store the generated OTP and email in session or database for later validation
-                Session["GeneratedOTP"] = otp;
-                Session["RecipientEmail"] = email;
-
-                btn_cancel_contactdata.Enabled = false;
-
-                ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowContactModal();", true);
-
-                OTP_2.Visible = true;
-                btn_SendOTP.Text = "Confirm OTP";
+                OTP_Sender();                
             }
             else
             {
@@ -1011,6 +989,7 @@ namespace WebApplication1.bussiness.production
                     // OTP validation successful
                     btn_sv_contactdata.Enabled = true;
                     btn_SendOTP.Enabled = false;
+                    TextBoxEnteredOTP.ReadOnly = true;
                     ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowContactModal();", true);
                     
                 }
@@ -1074,22 +1053,15 @@ namespace WebApplication1.bussiness.production
                     message.IsBodyHtml = true;
 
                     client.Send(message);
-
-                    //string title = "Notifications :";
-                    //string body = "OTP sent successfully!";
-                    //ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
                 }
             }
             catch (Exception ex)
             {
                 lbl_mailermsg.Text = ex.Message;
-                //string title = "Notifications :";
-                //string body = "Invalid OTP or Email Address....! Re-try....!";
-                //ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
 
-        protected void txt_nwemailadd_TextChanged(object sender, EventArgs e)
+        private void OTP_Sender()
         {
             // Step 1: Generate OTP
             string otp = GenerateOTP();

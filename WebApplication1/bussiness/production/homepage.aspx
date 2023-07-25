@@ -487,6 +487,7 @@
                                     </div>
                                     <div class="col-md-6 col-sm-12 form-group" id="InputMob2" runat="server" visible="false">
                                         <asp:TextBox ID="txt_nwmobileno" runat="server" CssClass="form-control form-control-sm rounded" BorderColor="Blue" BorderWidth="2px"></asp:TextBox>
+                                        <asp:RequiredFieldValidator ID="MobileFieldValidator" runat="server" ValidationGroup="ContData" ErrorMessage="Input Required" ControlToValidate="txt_nwmobileno" InitialValue="" ForeColor="Red" Display="Dynamic"></asp:RequiredFieldValidator>
                                         <asp:RegularExpressionValidator ID="MobileValidator" runat="server" ControlToValidate="txt_nwmobileno"
                                             ErrorMessage="Invalid mobile number" ValidationExpression="^[0-9]{10}$"
                                             ForeColor="Red" Display="Dynamic" SetFocusOnError="true" ValidationGroup="ContData"></asp:RegularExpressionValidator>
@@ -503,14 +504,15 @@
                                         <label style="font-weight: bold; color: darkblue;">Confirm Email Address :<span class="text text-danger"></span></label>
                                     </div>
                                     <div class="col-md-6 col-sm-12 form-group" id="InputEmail2" runat="server" visible="false">
-                                        <asp:TextBox ID="txt_nwemailadd" runat="server" CssClass="form-control form-control-sm rounded" BorderColor="Blue" BorderWidth="2px" OnTextChanged="txt_nwemailadd_TextChanged" AutoPostBack="true" AutoCompleteType="Disabled"></asp:TextBox>
+                                        <asp:TextBox ID="txt_nwemailadd" runat="server" CssClass="form-control form-control-sm rounded" BorderColor="Blue" BorderWidth="2px" AutoCompleteType="Disabled"></asp:TextBox>
+                                        <asp:RequiredFieldValidator ID="EmailFieldValidator" runat="server" ControlToValidate="txt_nwemailadd" ErrorMessage="Input Required" InitialValue="" ValidationGroup="ContData" ForeColor="Red" Display="Dynamic"></asp:RequiredFieldValidator>
                                         <asp:RegularExpressionValidator ID="EmailValidator" runat="server" ControlToValidate="txt_nwemailadd"
                                             ErrorMessage="Invalid email address" ValidationExpression="\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
                                             ForeColor="Red" Display="Dynamic" SetFocusOnError="true" ValidationGroup="ContData"></asp:RegularExpressionValidator>
                                     </div>
 
                                     <div class="col-md-6 col-sm-12 form-group" id="OTP_1" runat="server" visible="false">
-                                        <asp:Button ID="btn_SendOTP" runat="server" Text="Send OTP" CssClass="btn btn-info btn-sm" OnClick="btn_SendOTP_Click"  />
+                                        <asp:Button ID="btn_SendOTP" runat="server" Text="Send OTP" CausesValidation="true" ValidationGroup="ContData" CssClass="btn btn-info btn-sm" OnClick="btn_SendOTP_Click" />
                                     </div>
                                     <div class="col-md-6 col-sm-12 form-group" id="OTP_2" runat="server" visible="false">
                                         <asp:TextBox ID="TextBoxEnteredOTP" runat="server" CssClass="form-control form-control-sm rounded" BorderColor="Blue" BorderWidth="2px"></asp:TextBox>
@@ -524,7 +526,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <asp:Button ID="btn_sv_contactdata" runat="server" CausesValidation="true" ValidationGroup="ContData" Text="Make Changes" CssClass="btn btn-info btn-sm" OnClick="btn_sv_contactdata_Click" />
+                        <asp:Button ID="btn_sv_contactdata" runat="server" Text="Make Changes" CssClass="btn btn-info btn-sm" OnClick="btn_sv_contactdata_Click" />
                         <asp:Button ID="btn_cancel_contactdata" runat="server" CausesValidation="false" Text="Confirm" CssClass="btn btn-warning btn-sm" OnClick="btn_cancel_contactdata_Click" />
                     </div>
                 </div>

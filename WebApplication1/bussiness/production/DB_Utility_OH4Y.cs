@@ -12,10 +12,7 @@ namespace WebApplication1.bussiness.production
 {
     public class DB_Utility_OH4Y
     {
-        public static string Logs = @"C:\atswork.in\wwwroot\bussiness\production\WindowsServiceLog\";
-        //public static string Logs = @"C:\atswebuat\bussiness\production\WindowsServiceLog\";
-        //public static string Logs = @"D:\RnD\OH4Y_19Jun23\WebApplication1\WebApplication1\bussiness\production\WindowsServiceLog\";
-        //public static string Logs = @"\production\WindowsServiceLog\";
+        public static string Logs = @"\production\WindowsServiceLog\";
         public SqlConnection Conn;
         public SqlDataReader dr;
         public SqlCommand cmd;
@@ -1497,7 +1494,7 @@ namespace WebApplication1.bussiness.production
             Sqlconnection();
             ConnectDb();
             cmdString = "select COUNT(JOBID) from tbl_jobs where Creator_Workman=@Creator_Workman and JOBID_Status='Active' and YEAR(CreatedDate)='" + DateTime.Now.Year + "' and MONTH(CreatedDate)='" + DateTime.Now.Month + "'";
-            SqlCommand cmd = new SqlCommand(cmdString,Conn);
+            SqlCommand cmd = new SqlCommand(cmdString, Conn);
             cmd.CommandType = CommandType.Text;
             cmd.Parameters.AddWithValue("@Creator_Workman", workman);
             Int32 count = Convert.ToInt32(cmd.ExecuteScalar());
@@ -1522,7 +1519,7 @@ namespace WebApplication1.bussiness.production
                 mastercode = Rdr["MasterStatusCode"].ToString();
             }
             Conn.Close();
-            return jobid + "/" + mastercode  ;
+            return jobid + "/" + mastercode;
         }
     }
 }

@@ -807,6 +807,15 @@ namespace WebApplication1.bussiness.production
         protected global::System.Web.UI.WebControls.TextBox txt_nwmobileno;
 
         /// <summary>
+        /// MobileFieldValidator control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator MobileFieldValidator;
+
+        /// <summary>
         /// MobileValidator control.
         /// </summary>
         /// <remarks>
@@ -850,6 +859,15 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txt_nwemailadd;
+
+        /// <summary>
+        /// EmailFieldValidator control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator EmailFieldValidator;
 
         /// <summary>
         /// EmailValidator control.
