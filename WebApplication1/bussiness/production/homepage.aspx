@@ -462,26 +462,26 @@
 		</div>
 		<%--- Up-loader Modal -------- END --%>
 
-		<!-- Large modal : Password Change Popup-------START------>
-		<div class="modal fade bs-pass-modal-lg" id="myModal3" data-backdrop="static">
-			<div class="modal-dialog modal-lg">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h4 class="modal-title">Change Login Credentails</h4>
-						<button type="button" class="close" data-dismiss="modal" disabled="disabled">
-							&times;
-						</button>
-					</div>
-					<div class="modal-body">
-						<div class="container-fluid">
-							<div class="col-md-12 col-sm-12 col-xs-12">
-								<div class="form-group">
-									<div class="col-md-2 col-sm-6 col-xs-6 form-group">
-										<label>Login ID:<span class="text text-danger">*</span></label>
-									</div>
-									<div class="col-md-4 col-sm-6 col-xs-6 form-group">
-										<asp:TextBox ID="txt_atsloginid" runat="server" class="form-control form-control-sm rounded" Text="N/A" Font-Bold="true" ForeColor="Blue" ReadOnly="true"></asp:TextBox>
-									</div>
+        <!-- Large modal : Password Change Popup-------START------>
+        <div class="modal fade bs-pass-modal-lg" id="myModal3" data-backdrop="static">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Change Login Credentails</h4>
+                        <button type="button" class="close" data-dismiss="modal" disabled="disabled">
+                            &times;
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container-fluid">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group">
+                                    <div class="col-md-2 col-sm-6 col-xs-6 form-group">
+                                        <label>Login ID:<span class="text text-danger">*</span></label>
+                                    </div>
+                                    <div class="col-md-4 col-sm-6 col-xs-6 form-group">
+                                        <asp:TextBox ID="txt_atsloginid" runat="server" class="form-control form-control-sm rounded" Text="N/A" Font-Bold="true" ForeColor="Blue" ReadOnly="true"></asp:TextBox>
+                                    </div>
 
 									<div class="col-md-2 form-group">
 										<label>Workmen Sl:<span class="text text-danger">*</span></label>
@@ -586,8 +586,8 @@
 			$("#myModal2").modal("show");
 		}
 
-		function ShowPasswordModal() {
-			$("#myModal3").modal("show");
-		}
-	</script>
+        function ShowPasswordModal() {
+            $("#myModal3").modal("show");
+        }
+    </script>
 </asp:Content>
