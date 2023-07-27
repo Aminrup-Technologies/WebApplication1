@@ -22,6 +22,7 @@ namespace WebApplication1.bussiness.production.rpts
 
         DataTable dt_emps = new DataTable();
         DataTable dt_firsthalf = new DataTable();
+        DataTable dt_present = new DataTable();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -31,6 +32,7 @@ namespace WebApplication1.bussiness.production.rpts
 
 
             Binder(Year, Month, Region);
+            Binder2(Year, Month, Region);
             CheckforMonthDay(Year, Month, Region, ref CalMonthDays, ref StartDay, ref EndDay);
             BindDefaultHeaderYES(Year, Month, Region, CalMonthDays);
             BindSecondHeader(Year, Month, CalMonthDays, StartDay, EndDay);
@@ -42,15 +44,25 @@ namespace WebApplication1.bussiness.production.rpts
         {
             DbCL.Sqlconnection();
             DbCL.ConnectDb();
-            string cmdString2 = "select a.FullName, b.GatePassNo, b.Fathername, FORMAT (b.DOB, 'dd-MM-yyyy') as dob, a.SkillCategory, a.SkillDesignation, FORMAT (b.DOJ, 'dd-MM-yyyy') as doj, b.ESICNo, b.UANNo, a.Present, a.OverTime, a.BasicSalary,a.OTSalary,a.OthersPay,a.HRAPay,a.ConvPay,a.WashPay, a.ActualGross,a.ESICGross, a.PFPay,a.ESICPay,a.NetPay1,a.NetPay2, a.Advance,a.Fines,a.Others,a.TotalDeduction,a.NetPayFinal, a.Date from tbl_trialpayroll a, tbl_Employee_Mustertable b where a.SalaryYear='" + Year + "' and a.SalaryMonth='" + Month + "' and a.Region='" + Region + "' and b.WorkmanSL=a.WorkmanSL order by a.Id";
+            string cmdString2 = "select a.WorkmanSL, a.FullName, b.GatePassNo, b.Fathername, FORMAT (b.DOB, 'dd-MM-yyyy') as dob, a.SkillCategory, a.SkillDesignation, FORMAT (b.DOJ, 'dd-MM-yyyy') as doj, b.ESICNo, b.UANNo, a.Present, a.OverTime, a.BasicSalary,a.OTSalary,a.OthersPay,a.HRAPay,a.ConvPay,a.WashPay, a.ActualGross,a.ESICGross, a.PFPay,a.ESICPay,a.NetPay1,a.NetPay2, a.Advance,a.Fines,a.Others,a.TotalDeduction,a.NetPayFinal, a.Date from tbl_trialpayroll a, tbl_Employee_Mustertable b where a.SalaryYear='" + Year + "' and a.SalaryMonth='" + Month + "' and a.Region='" + Region + "' and b.WorkmanSL=a.WorkmanSL order by a.Id";
             SqlCommand cmd2 = new SqlCommand(cmdString2, DbCL.Conn);
-            //cmd2.CommandType = CommandType.Text;
             SqlDataAdapter da2 = new SqlDataAdapter(cmd2);
             da2.Fill(dt_firsthalf);
             DbCL.Sqlconnection(); DbCL.ConnectDb();
         }
 
-        private void BindDefaultHeaderYES(string Year, string Month, string Region, Int32 CalMonthDays)
+        private void Binder2(string Year, string Month, string Region)
+        {
+            DbCL.Sqlconnection();
+            DbCL.ConnectDb();
+            string cmdString2 = "select CreatedDate, EmployeeWrk,EmployeeName, AttendanceStatus,AttendanceCode, SUM(ProvidedOT) as ProvidedOT from tbl_attendance where YEAR(CreatedDate)='" + Year + "' and  MONTH(CreatedDate)='" + Month + "' and SiteIncharge_Approval='Approved' and JOB_Region='" + Region + "' Group by CreatedDate, EmployeeWrk,EmployeeName, AttendanceStatus,AttendanceCode order by CreatedDate";
+            SqlCommand cmd2 = new SqlCommand(cmdString2, DbCL.Conn);
+            SqlDataAdapter da2 = new SqlDataAdapter(cmd2);
+            da2.Fill(dt_present);
+            DbCL.Sqlconnection(); DbCL.ConnectDb();
+        }
+
+        public void BindDefaultHeaderYES(string Year, string Month, string Region, Int32 CalMonthDays)
         {
             Int32 Multi = CalMonthDays;
             str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>1</td>";

@@ -6,14 +6,30 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data;
 using System.Data.SqlClient;
+using DocumentFormat.OpenXml.Bibliography;
+using System.Drawing;
+using WebApplication1.bussiness.production.rpts;
 
 namespace WebApplication1.bussiness.production
 {
     public partial class generate_f29sheet : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
+        f29 f29 = new f29();
 
         string str = string.Empty;
+        Int32 CalMonthDays = 0;
+        Int32 StartDay = 0;
+        Int32 EndDay = 0;
+
+        public static string state = string.Empty;
+        public static string region = string.Empty;
+        public static string comp = string.Empty;
+
+        DataTable dt_emps = new DataTable();
+        DataTable dt_firsthalf = new DataTable();
+        DataTable dt_present = new DataTable();
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -24,8 +40,30 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-                    string CmdString1 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = 'IN' and State_Code ='"+ Session["STATE"].ToString() + "' order by Id ";
+                    if (Session["Changer"] != null)
+                    {
+                        string[] retrievedArray = (string[])Session["Changer"];
+                        region = retrievedArray[1].ToString();
+                        comp = retrievedArray[2].ToString();
+                        state = retrievedArray[0].ToString();
+
+                        //Session["Changer"] = null;
+                    }
+                    else
+                    {
+                        region = Session["REGION"].ToString();
+                        comp = Session["COMPANY_CODE"].ToString();
+                        state = Session["STATE"].ToString();
+                    }
+
+                    string CmdString1 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = 'IN' and State_Code ='"+ state + "' order by Id ";
                     BindRegions(CmdString1);
+
+                    string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = 'IN' and State_Code ='" + state + "' and Work_Region_Code = '" + region + "' order by Id ";
+                    BindCompany(CmdString3);
+
+                    DDL_Region.SelectedValue = region;
+                    DDL_Company.SelectedValue = comp;
 
                     dbcl.CalDateCombo1(DDL_Day, DDL_Month, DDL_Year);
                     dbcl.CalDateCombo1(DDL_D2, DDL_M2, DDL_Y2);
@@ -42,7 +80,7 @@ namespace WebApplication1.bussiness.production
         {
             DDL_Region.SelectedValue = Session["REGION"].ToString();
             DDL_Region.Enabled = false;
-            string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = 'IN' and State_Code ='" + Session["STATE"].ToString() + "' and Work_Region_Code = '" + Session["REGION"].ToString() + "' order by Id ";
+            string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = 'IN' and State_Code ='" + state + "' and Work_Region_Code = '" + region + "' order by Id ";
             BindCompany(CmdString3);
         }
 
@@ -82,6 +120,9 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_submit_Click(object sender, EventArgs e)
         {
+            DateTime stamp1 = DateTime.Now;
+            Label1.Text = stamp1.ToString();
+
             //string strtday = "01";
             string strtday = DDL_Day.SelectedItem.Text.ToString();
             Int32 minday = Convert.ToInt32(strtday);
@@ -92,11 +133,400 @@ namespace WebApplication1.bussiness.production
 
             string current_year = DDL_Year.SelectedItem.Text.ToString();
             string current_month1 = DDL_Month.SelectedItem.Text.ToString();
-            string region = DDL_Region.SelectedValue.ToString();
+            string Region = DDL_Region.SelectedValue.ToString();
+
+            string F17_TrialStatus = string.Empty;
+            string FinalStatus = string.Empty;
+            string FinalF17_Status = string.Empty;
+            
+            CheckforMonthDay(current_year, current_month1, Region, ref CalMonthDays, ref StartDay, ref EndDay, ref F17_TrialStatus, ref FinalStatus, ref FinalF17_Status);
+
+            if (F17_TrialStatus == "Yes" && FinalF17_Status == "Settled")
+            {
+                Binder(current_year, current_month1, Region);
+                Binder2(current_year, current_month1, Region);
+                BindDefaultHeaderYES(current_year, current_month1, Region, CalMonthDays);
+                BindSecondHeader(current_year, current_month1, CalMonthDays, StartDay, EndDay);
+                BindEMployeeData(current_year, current_month1, Region, CalMonthDays, StartDay, EndDay);
+
+                //Response.Write("<script>window.open ('/bussiness/production/rpts/f29.aspx?Year=" + current_year + "&Month=" + current_month1 + "&Region=" + region + "','_blank');</script>");
+                btnExport.Enabled = true;
+            }
+            else
+            {
+                string title = "Notifications :";
+                string body = "Payroll NOT Generated...!!!";
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+            }
+
+            DateTime stamp2 = DateTime.Now;
+            Label2.Text = stamp2.ToString();
+            Label3.Text = CalculateReportTime(stamp1, stamp2);
+        }
+
+        public void Binder(string Year, string Month, string Region)
+        {
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
+            string cmdString2 = "select a.WorkmanSL, a.FullName, b.GatePassNo, b.Fathername, FORMAT (b.DOB, 'dd-MM-yyyy') as dob, a.SkillCategory, a.SkillDesignation, FORMAT (b.DOJ, 'dd-MM-yyyy') as doj, b.ESICNo, b.UANNo, a.Present, a.OverTime, a.BasicSalary,a.OTSalary,a.OthersPay,a.HRAPay,a.ConvPay,a.WashPay, a.ActualGross,a.ESICGross, a.PFPay,a.ESICPay,a.NetPay1,a.NetPay2, a.Advance,a.Fines,a.Others,a.TotalDeduction,a.NetPayFinal, a.Date from tbl_trialpayroll a, tbl_Employee_Mustertable b where a.SalaryYear='" + Year + "' and a.SalaryMonth='" + Month + "' and a.Region='" + Region + "' and b.WorkmanSL=a.WorkmanSL order by a.Id";
+            SqlCommand cmd2 = new SqlCommand(cmdString2, dbcl.Conn);
+            SqlDataAdapter da2 = new SqlDataAdapter(cmd2);
+            da2.Fill(dt_firsthalf);
+            dbcl.Sqlconnection(); dbcl.ConnectDb();
+        }
+
+        public void Binder2(string Year, string Month, string Region)
+        {
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
+            string cmdString2 = "select CreatedDate, EmployeeWrk,EmployeeName, AttendanceStatus,AttendanceCode, SUM(ProvidedOT) as ProvidedOT from tbl_attendance where YEAR(CreatedDate)='" + Year + "' and  MONTH(CreatedDate)='" + Month + "' and SiteIncharge_Approval='Approved' and JOB_Region='" + Region + "' Group by CreatedDate, EmployeeWrk,EmployeeName, AttendanceStatus,AttendanceCode order by CreatedDate";
+            SqlCommand cmd2 = new SqlCommand(cmdString2, dbcl.Conn);
+            SqlDataAdapter da2 = new SqlDataAdapter(cmd2);
+            da2.Fill(dt_present);
+            dbcl.Sqlconnection(); dbcl.ConnectDb();
+        }
+
+        public void BindDefaultHeaderYES(string Year, string Month, string Region, Int32 CalMonthDays)
+        {
+            Int32 Multi = CalMonthDays;
+            str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>1</td>";
+            str = str + "<td width='5%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>2</td>";
+            str = str + "<td width='5%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>2A</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>3</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>4</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>5</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>6</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>7</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>7A</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>8</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>9</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>10</td>";
+            str = str + "<td colspan=" + CalMonthDays + " width=" + Multi + "  style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Attendance Sheet (Unit of Workdone)</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>12</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>12A</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>13</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>14</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>15</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>16</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>17</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>18</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>19</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>20</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>21</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>22</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>23</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>24</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>24A</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>25</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>26</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>27</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>28</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>29</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>30</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>31</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>32</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>33</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>34</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>35</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>36</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>37</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>37A</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>38</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>39</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>40</td></tr>";
+            lblTotalData.Text = str;
+        }
+
+        public void CheckforMonthDay(string Year, string Month, string Region, ref Int32 CalMonthDays, ref Int32 StartDay, ref Int32 EndDay, ref string F17_TrialStatus, ref string FinalStatus, ref string FinalF17_Status)
+        {
+            string cmdString = "select F17_TrialStatus,FinalStatus, FinalF17_Status, PayrrollMonthDays,PayrollStartDay,PayrollEndDay from tbl_MonthlyPayrollStatus where PayrollYear='" + Year + "' and PayrollMonth = '" + Month + "' and PayrollRegion = '" + Region + "'";
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
+            SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
+            SqlDataReader Rdr;
+            Rdr = cmd.ExecuteReader();
+            if (Rdr.Read())
+            {
+                F17_TrialStatus = Rdr["F17_TrialStatus"].ToString();
+                FinalStatus = Rdr["FinalStatus"].ToString();
+                FinalF17_Status = Rdr["FinalF17_Status"].ToString();
+
+                CalMonthDays = Convert.ToInt32(Rdr["PayrrollMonthDays"].ToString());
+                StartDay = Convert.ToInt32(Rdr["PayrollStartDay"].ToString());
+                EndDay = Convert.ToInt32(Rdr["PayrollEndDay"].ToString());
+            }
+            dbcl.Conn.Close();
+        }
+
+        public void BindSecondHeader(string Year, string Month, Int32 CalMonthDays, Int32 StartDay, Int32 EndDay)
+        {
+            str = str + "<tr><td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>SL. No.</td>";
+            str = str + "<td width='5%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Name of Workman</td>";
+            str = str + "<td width='5%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Gatepass</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Father Name</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>SEX (M/F)</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>DOB</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Emp. No/ Sl No. in register of Employees</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Skill.</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Desig.</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>DOJ</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>ESIC IP NO.</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>PF NO.</td>";
 
 
-            Response.Write("<script>window.open ('/bussiness/production/rpts/f29.aspx?Year=" + current_year + "&Month=" + current_month1 + "&Region=" + region + "','_blank');</script>");
-            btnExport.Enabled = false;
+            for (int i = StartDay; i <= EndDay; i++)
+            {
+                str = str + "<td width='1%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>" + i + "</td>";
+            }
+
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>No of Payable days /Total Work done</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>OT</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Name of N&FH for Which Wages have been Paid</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Basic Wages</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>D.A/ VDA</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>HRA</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Conv. Allowance</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Med.Allow</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Wash. Allowance </td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>ATT/Allow. Bonous</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Spl. Allowance</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>OT Wages</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Misc. Earnings</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Others</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Actual Gross</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>ESIC Gross</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>ESI Pay</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>PF Pay</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Socy.</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Insurance</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Sal. Adv</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>PT</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>TDS</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Advance</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Fine</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Others</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Total Ded.</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Net Payable 1</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Net Payable 1 Final</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Net Payable 2</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Date Of Payment</td>";
+            str = str + "<td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Signature /Thumb Impression</td></tr>";
+
+            lblTotalData.Text = str;
+            //str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='100%' style='font:normal 16px/16px Century Gothic; padding:5px 20px 5px 20px;' align='center'></td></tr></table>";
+        }
+
+        public void BindEMployeeData(string Year, string Month, string Region, Int32 CalMonthDays, Int32 StartDay, Int32 EndDay)
+        {
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
+            string cmdString = "select WorkmanSL from tbl_trialpayroll where SalaryYear='" + Year + "' and SalaryMonth='" + Month + "' and Region='" + Region + "' order by Id";
+            SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
+            cmd.CommandType = CommandType.Text;
+            int Sl = 1;
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            da.Fill(dt_emps);
+            dbcl.Sqlconnection(); dbcl.ConnectDb();
+
+            if ((dt_emps != null) && (dt_emps.Rows.Count > 0))
+            {
+                string EmpWrk = string.Empty;
+
+                for (int i = 0; i < dt_emps.Rows.Count; i++)
+                {
+                    EmpWrk = dt_emps.Rows[i][0].ToString();
+                    str = str + "<tr><td height='70' width='3%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>" + Sl + "</td>";
+                    //FindFirstHalfData(Year, Month, Region, CalMonthDays, StartDay, EndDay, EmpWrk);
+                    BindFirstHalfData(Year, Month, Region, CalMonthDays, StartDay, EndDay, EmpWrk);
+                    Sl = Sl + 1;
+                    lblTotalData.Text = str;
+                }
+            }
+        }
+
+        public void BindFirstHalfData(string Year, string Month, string Region, Int32 CalMonthDays, Int32 StartDay, Int32 EndDay, string workman)
+        {
+            // Assuming you have the desired WorkmanSL value stored in a variable called "desiredWorkmanSL"
+            string desiredWorkmanSL = workman; // Replace this with the actual value you want to search for
+
+            // Use LINQ to filter the DataTable based on the WorkmanSL value
+            DataRow[] matchingRows = dt_firsthalf.Select($"WorkmanSL = '{desiredWorkmanSL}'");
+
+            // Check if any records are found
+            if (matchingRows.Length > 0)
+            {
+                // Retrieve the first matching record (you can loop through matchingRows for multiple matches)
+                DataRow row = matchingRows[0];
+
+                // Retrieve values from the DataRow and bind them to the label or other controls
+                // Assuming you have the DataRow named "row" containing the data
+                //string workmanSL = row["WorkmanSL"].ToString();
+                //string fullName = row["FullName"].ToString();
+
+                str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>" + row["FullName"].ToString() + "</td>";
+                str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>" + row["GatePassNo"].ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>" + row["Fathername"].ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Male</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>" + row["dob"].ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>" + workman + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>" + row["SkillCategory"].ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>" + row["SkillDesignation"].ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>" + row["doj"].ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>'" + row["ESICNo"].ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>'" + row["UANNo"].ToString() + "</td>";
+
+                Int32 daycount = 0;
+                Int32 day = StartDay;
+                for (int j = StartDay; j <= EndDay; j++)
+                {
+                    string days = "";
+                    if (day <= 9)
+                    {
+                        days = "0" + day.ToString();
+                    }
+                    else
+                    {
+                        days = day.ToString();
+                    }
+                    FindAttendanceRev(days, Month, Year, workman, ref daycount, Region);
+                    day = day + 1;
+                }
+
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + row["Present"].ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + row["OverTime"].ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>-</td>";
+
+                decimal basicsal = Convert.ToDecimal(row["BasicSalary"].ToString());
+                decimal basicotpay = Convert.ToDecimal(row["OTSalary"].ToString());
+                decimal otherspay = Convert.ToDecimal(row["OthersPay"].ToString());
+
+                decimal pf = Convert.ToDecimal(row["PFPay"].ToString());
+                decimal esi = Convert.ToDecimal(row["ESICPay"].ToString());
+                decimal netpay = Convert.ToDecimal(row["NetPay1"].ToString());
+
+                decimal Advance = Convert.ToDecimal(row["Advance"].ToString());
+                decimal Fines = Convert.ToDecimal(row["Fines"].ToString());
+                decimal Others = Convert.ToDecimal(row["Others"].ToString());
+                decimal ded = Convert.ToDecimal(row["TotalDeduction"].ToString());
+                decimal NetPayFinal = Convert.ToDecimal(row["NetPayFinal"].ToString());
+
+                decimal gross1 = basicsal + basicotpay + otherspay;
+                decimal gross2 = netpay + esi + pf + ded;
+
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + basicsal + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>-</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + row["HRAPay"].ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + row["ConvPay"].ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>-</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + row["WashPay"].ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>-</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>-</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + basicotpay + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>-</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + row["OthersPay"].ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + row["ActualGross"].ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + row["ESICGross"].ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + esi + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + pf + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>-</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>-</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>0.00</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>-</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>-</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + Advance.ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + Fines.ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + Others.ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + ded + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + netpay.ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + NetPayFinal.ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + row["NetPay2"].ToString() + "</td>";
+                string dt = row["Date"].ToString();
+                DateTime oDate = Convert.ToDateTime(dt);
+                string date = oDate.Day + "/" + oDate.Month + "/" + oDate.Year;
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + date + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'></td>";
+                lblTotalData.Text = str;
+            }
+            else
+            {
+                // No matching record found for the given WorkmanSL
+            }
+
+        }
+
+
+        private void FindAttendanceRev(string day, string month, string year, string wrk, ref Int32 dayss, string region)
+        {
+
+            string date = year + "-" + month + "-" + day;
+            DataRow[] result = new DataRow[0];
+            DataTable dtTemp = new DataTable();
+
+            if ((dt_present != null) && (dt_present.Rows.Count > 0))
+            {
+                result = dt_present.Select("CreatedDate = #" + date + "# AND EmployeeWrk = '" + wrk + "'");
+
+                if (result.Length > 0)
+                {
+                    dtTemp = result.CopyToDataTable();
+                    for (int i = 0; i < dtTemp.Rows.Count; i++)
+                    {
+                        string present = dtTemp.Rows[i][3].ToString();
+                        string status = dtTemp.Rows[i][4].ToString();
+
+                        if (present == "Present")
+                        {
+                            switch (status)
+                            {
+                                case "P":
+                                    dayss = dayss + 1;
+                                    str = str + "<td width='2%' style='background-color: #91ee3a; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + status + "</td>";
+                                    break;
+
+                                case "NH":
+                                    dayss = dayss + 1;
+                                    str = str + "<td width='2%' style='background-color: #00cbf3; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + status + "</td>";
+                                    break;
+
+                                case "FL":
+                                    dayss = dayss + 1;
+                                    str = str + "<td width='2%' style='background-color: #00cbf3; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + status + "</td>";
+                                    break;
+
+                                case "OD":
+                                    str = str + "<td width='2%' style='background-color: #c4ff0e; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + status + "</td>";
+                                    break;
+
+                                default:
+                                    str = str + "<td width='2%' style='background-color: #ff6c6c; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>A</td>";
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            str = str + "<td width='2%' style='background-color: #ff6c6c; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>A</td>";
+                        }
+                    }
+                    dtTemp.Clear();
+                }
+                else
+                {
+                    str = str + "<td width='2%' style='background-color: #ff6c6c; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>A</td>";
+                }
+            }
+            else
+            {
+                str = str + "<td width='2%' style='background-color: #ff6c6c; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>A</td>";
+            }
+        }
+
+
+        private static string CalculateReportTime(DateTime DT1, DateTime DT2)
+        {
+            int Hours = DT2.Subtract(DT1).Hours;
+            int Minutes = DT2.Subtract(DT1).Minutes;
+            int Seconds = DT2.Subtract(DT1).Seconds;
+            return String.Format("{0} Hour(s) {1} Minute(s) {2} Second(s)", Hours, Minutes, Seconds);
         }
 
 
