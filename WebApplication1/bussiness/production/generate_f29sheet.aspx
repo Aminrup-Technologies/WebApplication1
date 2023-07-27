@@ -51,20 +51,20 @@
                                     <asp:DropDownList ID="DDL_Month" CssClass="form-control form-control-sm rounded" runat="server"></asp:DropDownList>
                                 </div>
 
-                                <div class="col-md-3 col-sm-12  form-group">
+                                <div class="col-md-3 col-sm-12  form-group" id="startday1" runat="server" visible="false">
                                     <label>Select START Day <span class="text text-danger">*</span></label>
                                 </div>
-                                <div class="col-md-3 col-sm-12  form-group">
+                                <div class="col-md-3 col-sm-12  form-group" id="startday2" runat="server" visible="false">
                                     <asp:DropDownList ID="DDL_Day" CssClass="form-control form-control-sm rounded" runat="server" Visible="true"></asp:DropDownList>
                                 </div>
 
-                                <div class="col-md-3 col-sm-12  form-group">
+                                <div class="col-md-3 col-sm-12  form-group" id="endday1" runat="server" visible="false">
                                     <label>Select END Day <span class="text text-danger">*</span></label>
                                 </div>
-                                <div class="col-md-3 col-sm-12  form-group">
+                                <div class="col-md-3 col-sm-12  form-group" id="endday2" runat="server" visible="false">
                                     <asp:DropDownList ID="DDL_Y2" CssClass="form-control form-control-sm rounded" runat="server" Visible="false"></asp:DropDownList>
                                     <asp:DropDownList ID="DDL_M2" CssClass="form-control form-control-sm rounded" runat="server" Visible="false"></asp:DropDownList>
-                                    <asp:DropDownList ID="DDL_D2" CssClass="form-control form-control-sm rounded" runat="server" Visible="true"></asp:DropDownList>
+                                    <asp:DropDownList ID="DDL_D2" CssClass="form-control form-control-sm rounded" runat="server" Visible="false"></asp:DropDownList>
                                 </div>
 
 
@@ -131,6 +131,20 @@
                 </div>
 
                 <div class="col-md-12 col-sm-12  ">
+                    <div>
+                        Start Time :
+                        <asp:Label ID="Label1" runat="server" Text="Label"></asp:Label>
+                        &nbsp;
+                        End time  :
+                        <asp:Label ID="Label2" runat="server" Text="Label"></asp:Label>
+                        &nbsp;
+                        Total time  :
+                        <asp:Label ID="Label3" runat="server" Text="Label" Font-Bold="true"></asp:Label>
+                        &nbsp;
+                    </div>
+                </div>
+
+                <div class="col-md-12 col-sm-12  ">
                     <div>&nbsp;</div>
                 </div>
             </div>
@@ -160,6 +174,12 @@
             if (document.getElementById('<%=DDL_Year.ClientID%>').selectedIndex == 0) {
                 document.getElementById('<%=DDL_Year.ClientID%>').focus();
                 ShowPopup("Error :", "Calender Year selection required...!");
+                return false;
+            }
+
+            if (document.getElementById('<%=DDL_Month.ClientID%>').selectedIndex == 0) {
+                document.getElementById('<%=DDL_Month.ClientID%>').focus();
+                ShowPopup("Error :", "Calender Month selection required...!");
                 return false;
             }
         }

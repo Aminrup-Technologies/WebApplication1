@@ -17,7 +17,7 @@
                                 <tr>
                                     <td style="border: 1px solid #595959; background-color: white; width:50%; border-right:none; padding:3px;" align="center">
                                         <span>
-                                            <img src="../../images/ueshortlogo.jpg" alt="Unique Enigeers Logo"/>
+                                            <img src="" alt="Company Logo"/>
                                         </span>
                                     </td>
                                     <td style="border: 1px solid #595959; background-color: white; width:50%;" align="center">
