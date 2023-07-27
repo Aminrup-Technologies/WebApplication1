@@ -82,7 +82,7 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-        protected void SendEmail(string recipientEmail, string emailBody)
+        public void SendEmail(string recipientEmail, string emailBody)
         {
             string smtpServer = "smtp.gmail.com";
             int smtpPort = 587;
@@ -937,6 +937,7 @@ namespace WebApplication1.bussiness.production
             {
                 cmbY1.Items.Add((yyend + i).ToString());
             }
+            cmbM1.Items.Add("-MM-");
             cmbM1.Items.Add("01");
             cmbM1.Items.Add("02");
             cmbM1.Items.Add("03");
