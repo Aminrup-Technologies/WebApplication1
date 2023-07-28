@@ -662,5 +662,9 @@
 		function ShowPasswordModal() {
 			$("#myModal3").modal("show");
 		}
-	</script>
+
+		function ShowContactModal() {
+			$("#myModal4").modal("show");
+		}
+    </script>
 </asp:Content>

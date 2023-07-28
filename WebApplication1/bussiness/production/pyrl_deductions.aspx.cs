@@ -19,7 +19,7 @@ namespace WebApplication1.bussiness.production
         DB_Utility_OH4Y DbCL = new DB_Utility_OH4Y();
         Payroll_OH4Y PayRoll = new Payroll_OH4Y();
 
-        public static decimal GorssBreaker = 0;
+        public static decimal GorssBreaker = 20500;
 
         DataTable dt = new DataTable();
 
@@ -177,7 +177,6 @@ namespace WebApplication1.bussiness.production
         protected void btn_cancel_Click(object sender, EventArgs e)
         {
             Response.Redirect("homepage.aspx");
-
         }
 
 
@@ -220,7 +219,6 @@ namespace WebApplication1.bussiness.production
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
-
         private void AdvanceDeductions_Calculator(string emp_workmen)
         {
             //-------------The below variables fetch the inputted values from the HR --------------//
@@ -339,8 +337,6 @@ namespace WebApplication1.bussiness.production
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
-
-
         private void FineAmountLoader(string emp_workmen)
         {
             //--------The below variables fetch the live db values --------------//
@@ -376,7 +372,6 @@ namespace WebApplication1.bussiness.production
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
-
         private void FinesDeductions_Calculator(string emp_workmen)
         {
             //-------------The below variables fetch the inputted values from the HR --------------//
@@ -457,7 +452,6 @@ namespace WebApplication1.bussiness.production
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
-
         private void OtherDeductionsLoader(string emp_workmen)
         {
             //--------The below variables fetch the live db values --------------//
@@ -488,7 +482,6 @@ namespace WebApplication1.bussiness.production
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
-
         private void OthersDeductions_Calculator(string emp_workmen)
         {
             //-------------The below variables fetch the inputted values from the HR --------------//
@@ -687,15 +680,15 @@ namespace WebApplication1.bussiness.production
 
             finalized.Visible = false;
             realtime.Visible = true;
-            AttendanceDataBinder(Year, Month, MonthName);
+            PaymentDataBinder(Year, Month, MonthName);
         }
 
-        private void AttendanceDataBinder(string Year, string Month, string Monthname)
+        private void PaymentDataBinder(string Year, string Month, string Monthname)
         {
             realtime.Visible = true;
             finalized.Visible = false;
-            Int32 int_month = Convert.ToInt32(Month);
 
+            Int32 int_month = Convert.ToInt32(Month);
             lbl_calmonth.Text = lbl_paymonth.Text = Monthname;
 
             Int32 int_year = Convert.ToInt32(Year);
@@ -705,17 +698,6 @@ namespace WebApplication1.bussiness.production
             string empskill = "";
             string empregion = "";
             PayRoll.FindEmployeeSkillType(empwrk, ref empskill, ref empregion);
-
-
-            if (empregion == "KPO")
-            {
-                GorssBreaker = 18500;
-            }
-            else if (empregion == "AGL")
-            {
-                GorssBreaker = 20500;
-            }
-
 
             //----------------- Function call to find out the Daily Pay Rate aganist the Employee Skill Category----------------//
             decimal dailyrate = 0.0m;
@@ -794,7 +776,7 @@ namespace WebApplication1.bussiness.production
                 fnlfdr = Math.Round(fxdrt, 2);
 
                 //------------ Wage of Fixed rate ---------------   ( FixedAmount / CalenderDays ) x  PresentDays
-                FixRateSalary = Math.Round(fnlfdr * ttl_p,0);
+                FixRateSalary = Math.Round(fnlfdr * ttl_p, 0);
             }
 
             decimal DaVdaPay = .0m;

@@ -78,11 +78,11 @@ namespace WebApplication1.bussiness.production
             }
             else
             {
-                SendEmail("it_helpdesk@atswork.in", "Error: Log directory not found in both paths.");
+                SendEmail("it_helpdesk@atswork.in", "ATS - Utility Module || Log Writer", "Error: Log directory not found in both paths.");
             }
         }
 
-        public void SendEmail(string recipientEmail, string emailBody)
+        public void SendEmail(string recipientEmail, string mailSubject, string emailBody)
         {
             string smtpServer = "smtp.gmail.com";
             int smtpPort = 587;
@@ -100,10 +100,44 @@ namespace WebApplication1.bussiness.production
                     MailMessage message = new MailMessage();
                     message.From = new MailAddress(smtpUsername);
                     message.To.Add(recipientEmail);
-                    message.Subject = "ATS || OTP for Email Verification";
-                    message.Body = emailBody;
+                    message.Subject = mailSubject;
+                    string signature = "\n\nBest regards,\nATS - IT";
+                    message.Body = emailBody + signature;
                     message.IsBodyHtml = true;
+                    message.Priority = MailPriority.Normal;
+                    client.Send(message);
+                }
+            }
+            catch (Exception ex)
+            {
+                WriteToFile("87 :Mailer Failed to execute" + ex.Message + "");
+            }
+        }
 
+        public void SendEmailCC(string recipientEmail, string ccEmail, string mailSubject, string emailBody)
+        {
+            string smtpServer = "smtp.gmail.com";
+            int smtpPort = 587;
+            string smtpUsername = "it_helpdesk@atswork.in";
+            string smtpPassword = "wpdcbssoxcfovwmj";
+
+            try
+            {
+                using (SmtpClient client = new SmtpClient(smtpServer, smtpPort))
+                {
+                    client.UseDefaultCredentials = false;
+                    client.Credentials = new NetworkCredential(smtpUsername, smtpPassword);
+                    client.EnableSsl = true;
+
+                    MailMessage message = new MailMessage();
+                    message.From = new MailAddress(smtpUsername);
+                    message.To.Add(recipientEmail);
+                    message.CC.Add(ccEmail);
+                    message.Subject = mailSubject;
+                    string signature = "\n\nBest regards,\nATS - IT";
+                    message.Body = emailBody + signature;
+                    message.IsBodyHtml = true;
+                    message.Priority = MailPriority.Normal;
                     client.Send(message);
                 }
             }

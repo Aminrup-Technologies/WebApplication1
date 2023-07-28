@@ -8,6 +8,7 @@ using System.Data.SqlClient;
 using System.Configuration;
 using System.Data;
 using System.Drawing;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace WebApplication1.bussiness.production
 {
@@ -485,6 +486,61 @@ namespace WebApplication1.bussiness.production
                 btn_datalocker.Text = "Lock";
                 btn_datalocker.CssClass = "btn btn-success btn-sm";
             }
+        }
+
+        protected void Clear_Deductions()
+        {
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = dbcl.Conn;
+                string CmdString = "UPDATE tbl_Employee_Mustertable set Advance=@Advance, Rem_Advance=@Rem_Advance, Cur_Advance=@Cur_Advance, Rem_Fines=@Rem_Fines, Cur_Fines=@Cur_Fines,Others=@Others, Rem_Others=@Rem_Others, Cur_Others=@Cur_Others,Fines=@Fines where WorkState=@WorkState and WorkRegion=@WorkRegion and WorkCompany=@WorkCompany and WorkStatus='Active'";
+                cmd.CommandText = CmdString;
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@Advance", 0);
+                cmd.Parameters.AddWithValue("@Rem_Advance", 0);
+                cmd.Parameters.AddWithValue("@Cur_Advance", 0);
+                cmd.Parameters.AddWithValue("@Fines", 0);
+                cmd.Parameters.AddWithValue("@Rem_Fines", 0);
+                cmd.Parameters.AddWithValue("@Cur_Fines", 0);
+                cmd.Parameters.AddWithValue("@Others", 0);
+                cmd.Parameters.AddWithValue("@Rem_Others", 0);
+                cmd.Parameters.AddWithValue("@Cur_Others", 0);
+                cmd.Parameters.AddWithValue("@WorkState", state);
+                cmd.Parameters.AddWithValue("@WorkRegion", region);
+                cmd.Parameters.AddWithValue("@WorkCompany", comp);
+                int rowsAffected = cmd.ExecuteNonQuery();
+                if (rowsAffected > 0)
+                {
+                    string msg = "User : " + Session["USERNAME"].ToString() + " [" + Session["WORKMAN"].ToString() + "]" + " Cleared " + rowsAffected + " records from Region = " + region + ", Company = " + comp + ".<br/>Thank You";
+                    dbcl.WriteToFile(msg);
+                    dbcl.SendEmailCC("anupam.sharma@atswork.in", "it_helpdesk@atswork.in", "ATS - Payroll Module : Manual Deduction Clear", msg);
+
+                    string title = "Notifications : Success ";
+                    string body = "Please note, That Total [" +rowsAffected + "] deductions records has been cleared...!!";
+                    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);                   
+                }
+                else
+                {
+                    string title = "Notifications : Error ";
+                    string body = "Failed";
+                    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                }
+                cmd.Dispose();      
+            }
+            catch (Exception ex)
+            {
+                string title = "Notifications :";
+                string body = "Error : " + ex.Message;
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+            }
+        }
+
+        protected void btn_clrded_Click(object sender, EventArgs e)
+        {
+            Clear_Deductions();
         }
     }
 }

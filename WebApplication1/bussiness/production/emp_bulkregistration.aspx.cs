@@ -256,8 +256,6 @@ namespace WebApplication1.bussiness.production
 
         private string GetValue(SpreadsheetDocument doc, Cell cell)
         {
-
-
             string value = cell.CellValue.InnerText;
             if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
             {
