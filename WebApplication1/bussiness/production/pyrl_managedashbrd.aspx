@@ -100,20 +100,76 @@
                             <i class="fa fa-users"></i>View / Manage
                         </a>
 
-                        <a class="btn btn-app" href="#">
-                            <div id="div2" class="badge bg-red" runat="server">
-                                <asp:Label ID="Label2" runat="server" Text="WIP" Visible="true"></asp:Label>
+                        <a class="btn btn-app" href="#" data-toggle="modal" data-target="#Deductiondel_modal">
+                            <div id="div2" class="badge bg-green" runat="server">
+                                <asp:Label ID="Label2" runat="server" Text="Ok" Visible="true"></asp:Label>
                             </div>
                             <i class="fa fa-users"></i>Clear All
-                        </a>
+                        </a>        
 
-                        <a class="btn btn-app" href="#">
-                            <div id="div3" class="badge bg-red" runat="server">
-                                <asp:Label ID="Label12" runat="server" Text="WIP" Visible="true"></asp:Label>
+                        <a class="btn btn-app" href="pyrl_upldadvc.aspx">
+                            <div id="div3" class="badge bg-green" runat="server">
+                                <asp:Label ID="Label12" runat="server" Text="Ok" Visible="true"></asp:Label>
                             </div>
                             <i class="fa fa-users"></i>Upload Deductions
                         </a>
                     </div>
+
+                    <!-- Large modal : Confirm to Clear all deductions-------START------>
+                    <div class="modal fade bs-pass-modal-sm" id="Deductiondel_modal" data-backdrop="static">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="myModalLabel2A">Acknowledge Confirmation</h4>
+                                    <button type="button" class="close" data-dismiss="modal">
+                                        <span aria-hidden="true">×</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="container-fluid">
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <div class="form-group">
+                                                <div class="col-md-12 form-group">
+                                                    <span class="text text-danger">
+                                                        <asp:Label ID="Label4" runat="server" Text="Please confirm,<br /> If you want to clear all deductions against the selcted State, Work Region and Work Company Employees.<br />Thank You" Font-Bold="true" ForeColor="IndianRed"></asp:Label>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">CANCEL</button>
+                                    <asp:Button ID="btn_clrded" runat="server" Text="CONFIRM" CausesValidation="false" CssClass="btn btn-success btn-sm" OnClick="btn_clrded_Click" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Large modal : Personal Information-------END------>
+
+                    <!-- Small modal -->
+                    <asp:Button ID="ShowPopup" runat="server" Text="Button" class="btn btn-primary" Visible="false" data-toggle="modal" data-target=".bs-example-modal-sm" />
+                    <div id="MyPopup" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog modal-sm">
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="myModalLabel2"></h4>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">×</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Small Modal - END---->
+
                 </div>
             </div>
 
@@ -205,18 +261,25 @@
                         <div class="clearfix"></div>
                     </div>
                     <div class="x_content">
-                        <a class="btn btn-app" href="generate_trialform17.aspx">
-                            <asp:Label ID="Label3" runat="server" Text="0" Visible="false"></asp:Label>
+                        <a class="btn btn-app" href="#">
+                            <div id="div8" class="badge bg-red" runat="server">
+                                <asp:Label ID="Label3" runat="server" Text="N/A" Visible="true"></asp:Label>
+                            </div>
                             <i class="fa fa-edit"></i>Form-17
 
                         </a>
-                        <a class="btn btn-app" href="generate_f29sheet.aspx">
-                            <asp:Label ID="Label4" runat="server" Text="0" Visible="false"></asp:Label>
-                            <i class="fa fa-users"></i>Form-29
 
+                        <a class="btn btn-app" href="generate_f29sheet.aspx">
+                            <div id="div7" class="badge bg-green" runat="server">
+                                <asp:Label ID="Label16" runat="server" Text="New" Visible="true"></asp:Label>
+                            </div>
+                            <i class="fa fa-users"></i>Form-29
                         </a>
+
                         <a class="btn btn-app" href="generate_banksheets.aspx">
-                            <asp:Label ID="Label5" runat="server" Text="0" Visible="false"></asp:Label>
+                            <div id="div9" class="badge bg-green" runat="server">
+                                <asp:Label ID="Label5" runat="server" Text="Ok" Visible="true"></asp:Label>
+                            </div>
                             <i class="fa fa-users"></i>Bank Sheets
                         </a>
                     </div>
@@ -251,4 +314,19 @@
             </div>
         </div>
     </div>
+    <script type="text/javascript">
+        function ShowPopup(title, body) {
+            $("#MyPopup .modal-title").html(title);
+            $("#MyPopup .modal-body").html(body);
+            $("#MyPopup").modal("show");
+        }
+
+        function ShowPopup1() {
+            $("#myModal").modal("show");
+        }
+
+        function ShowPasswordModal() {
+            $("#Deductiondel_modal").modal("show");
+        }
+    </script>
 </asp:Content>

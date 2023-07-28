@@ -258,6 +258,7 @@
     <Content Include="bussiness\production\pyrl_deductionlist.aspx" />
     <Content Include="bussiness\production\pyrl_deductions.aspx" />
     <Content Include="bussiness\production\pyrl_managedashbrd.aspx" />
+    <Content Include="bussiness\production\pyrl_upldadvc.aspx" />
     <Content Include="bussiness\production\rpts\A4.css" />
     <Content Include="bussiness\production\rpts\rpt_CombinedF16.aspx" />
     <Content Include="bussiness\production\rpts\supplymemo.aspx" />
@@ -712,6 +713,13 @@
     </Compile>
     <Compile Include="bussiness\production\pyrl_managedashbrd.aspx.designer.cs">
       <DependentUpon>pyrl_managedashbrd.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\pyrl_upldadvc.aspx.cs">
+      <DependentUpon>pyrl_upldadvc.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\pyrl_upldadvc.aspx.designer.cs">
+      <DependentUpon>pyrl_upldadvc.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\rpts\rpt_CombinedF16.aspx.cs">
       <DependentUpon>rpt_CombinedF16.aspx</DependentUpon>
@@ -1287,7 +1295,9 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Analyzer Include="..\packages\Microsoft Chart Controls\Assemblies\System.Web.DataVisualization.dll" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
