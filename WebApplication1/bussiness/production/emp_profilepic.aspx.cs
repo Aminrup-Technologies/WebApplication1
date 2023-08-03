@@ -4,24 +4,7 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Configuration;
-using System;
-using System.Collections;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.HtmlControls;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Xml.Linq;
-using System.Data.SqlClient;
-using System.Text;
-using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.IO;
 
 namespace WebApplication1.bussiness.production
 {

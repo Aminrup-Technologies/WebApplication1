@@ -11,7 +11,7 @@ namespace WebApplication1.bussiness.production
 {
 
 
-    public partial class generate_f29sheet
+    public partial class pyrl_generate_f29
     {
 
         /// <summary>

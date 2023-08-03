@@ -514,7 +514,7 @@ namespace WebApplication1.bussiness.production
                 int rowsAffected = cmd.ExecuteNonQuery();
                 if (rowsAffected > 0)
                 {
-                    string msg = "User : " + Session["USERNAME"].ToString() + " [" + Session["WORKMAN"].ToString() + "]" + " Cleared " + rowsAffected + " records from Region = " + region + ", Company = " + comp + ".<br/>Thank You";
+                    string msg = "User : " + Session["USERNAME"].ToString() + " [" + Session["WORKMAN"].ToString() + "]" + " Cleared " + rowsAffected + " records from Region = " + region + ", Company = " + comp + ". Thank You";
                     dbcl.WriteToFile(msg);
                     dbcl.SendEmailCC("anupam.sharma@atswork.in", "it_helpdesk@atswork.in", "ATS - Payroll Module : Manual Deduction Clear", msg);
 
