@@ -9,6 +9,8 @@ using System.Data;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using System.IO;
+using System.Configuration;
+using DocumentFormat.OpenXml.Office.Word;
 
 namespace WebApplication1.bussiness.production
 {
@@ -78,8 +80,13 @@ namespace WebApplication1.bussiness.production
 
                     if (type != String.Empty)
                     {
+                        // Get the current date
+                        DateTime currentDate = DateTime.Now;
+
+                        // Convert the date to the desired format
+                        string formattedDate = currentDate.ToString("yyyyMMdd");
                         //Save the uploaded Excel file.
-                        string filePath = Server.MapPath("~/erp_images/ManualDedUpld/") + Path.GetFileName(FileUpload1.PostedFile.FileName);
+                        string filePath = Server.MapPath("~/erp_images/ManualDedUpld/") + formattedDate + "_" + region+ "_" + state+ "_" + comp + "_" + Path.GetFileName(FileUpload1.PostedFile.FileName);
                         FileUpload1.SaveAs(filePath);
 
                         //Open the Excel file in Read Mode using OpenXml.
@@ -129,9 +136,9 @@ namespace WebApplication1.bussiness.production
                                     }
                                 }
                             }
-                            //ViewState["AgendaDetails"] = dt;
-                            //GridView1.DataSource = dt;
-                            //GridView1.DataBind();
+                            ViewState["DeductionDetails"] = dt;
+                            GridView1.DataSource = dt;
+                            GridView1.DataBind();
 
                             lbl_msg.ForeColor = System.Drawing.Color.Green;
                             lbl_msg.Text = "Excel Sheet Data uploaded successfully, Click SUBMIT to Save";
@@ -176,6 +183,81 @@ namespace WebApplication1.bussiness.production
             return value;
         }
 
+        protected void btn_submit_Click(object sender, EventArgs e)
+        {
+            DataTable dt1;
+            dt1 = (DataTable)ViewState["DeductionDetails"];
+            if (dt1 != null)
+            {
+                foreach (GridViewRow gvadd in GridView1.Rows)
+                {
+                    string workmanSL = gvadd.Cells[0].Text.ToString();
+                    int curr_advc = Convert.ToInt32(gvadd.Cells[1].Text.ToString());
+                    int curr_fines = Convert.ToInt32(gvadd.Cells[2].Text.ToString());
+                    int curr_others = Convert.ToInt32(gvadd.Cells[3].Text.ToString());
 
+                    if (UpdateEmployeeRecord(workmanSL, state, region, comp, curr_advc, curr_fines, curr_others, curr_advc, curr_advc, curr_fines, curr_fines, curr_others, curr_others) != true)
+                    {
+                        break;
+                    }
+                }
+
+            }
+            else
+            {
+                string title = "Notifications :";
+                string body = "No data in Memory...!! ";
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+            }
+        }
+
+        public bool UpdateEmployeeRecord(string workmanSL, string WorkState, string WorkRegion, string WorkCompany, int advance, int fines, int others, int remAdvance, int curAdvance, int remFines, int curFines, int remOthers, int curOthers)
+        {
+            //Code to Insert values into the DB goes here
+            int flag = 0;
+            bool flag2 = false;
+
+            string connectionString = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = new SqlCommand("sp_UpdateEmployeeDeductions", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    command.Parameters.AddWithValue("@WorkmanSL", workmanSL);
+                    command.Parameters.AddWithValue("@WorkState", WorkState);
+                    command.Parameters.AddWithValue("@WorkRegion", WorkRegion);
+                    command.Parameters.AddWithValue("@WorkCompany", WorkCompany);
+                    command.Parameters.AddWithValue("@Advance", advance);
+                    command.Parameters.AddWithValue("@Fines", fines);
+                    command.Parameters.AddWithValue("@Others", others);
+                    command.Parameters.AddWithValue("@Rem_Advance", remAdvance);
+                    command.Parameters.AddWithValue("@Cur_Advance", curAdvance);
+                    command.Parameters.AddWithValue("@Rem_Fines", remFines);
+                    command.Parameters.AddWithValue("@Cur_Fines", curFines);
+                    command.Parameters.AddWithValue("@Rem_Others", remOthers);
+                    command.Parameters.AddWithValue("@Cur_Others", curOthers);
+
+                    connection.Open();
+                    flag = command.ExecuteNonQuery();
+                    if (flag != 0)
+                    {
+                        flag2 = true;
+                        lbl_msg.Visible = true;
+                        lbl_msg.Text = "Record Inserted Succesfully..!";
+                        lbl_msg.ForeColor = System.Drawing.Color.DarkGreen;
+                    }
+                    else
+                    {
+                        flag2 = false;
+                        string title = "Notifications :";
+                        string body = "Records Connot be Inserted into the Database...!! ";
+                        ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                    }
+                    connection.Close();
+                }
+            }
+            return flag2;
+        }
     }
 }

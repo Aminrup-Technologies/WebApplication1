@@ -560,7 +560,7 @@
 						</div>
 					</div>
 					<div class="modal-footer">
-						<asp:Button ID="btn_closecvpass" runat="server" Text="Close" CausesValidation="false" class="btn btn-danger btn-sm" data-dismiss="modal" Enabled="true" />
+						<asp:Button ID="btn_closecvpass" runat="server" Text="Close" Visible="false" CausesValidation="false" class="btn btn-danger btn-sm" data-dismiss="modal" Enabled="true" />
 						<asp:Button ID="btn_discardsvpass" runat="server" Text="Discard Changes" CausesValidation="false" CssClass="btn btn-warning btn-sm" OnClick="btn_discardsvpass_Click" />
 						<asp:Button ID="btn_svpass" runat="server" CssClass="btn btn-success btn-sm" Text="Save Changes" Enabled="false" OnClick="btn_svpass_Click" CausesValidation="true" ValidationGroup="ChnagePassword" />
 					</div>

@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="generate_f29sheet.aspx.cs" Inherits="WebApplication1.bussiness.production.generate_f29sheet" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="pyrl_generate_f29.aspx.cs" Inherits="WebApplication1.bussiness.production.pyrl_generate_f29" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -6,7 +6,7 @@
         <div class="">
             <div class="page-title">
                 <div class="title_left">
-                    <h5>Generate Form 29 Report</h5>
+                    <h5>Generate Work Region Form 29 Report</h5>
                 </div>
 
                 <div class="title_right">
@@ -17,7 +17,7 @@
             <div class="clearfix"></div>
 
             <div class="row">
-                <div class="col-md-12 col-sm-12s">
+                <div class="col-md-12 col-sm-12  ">
                     <div class="x_panel">
                         <div class="x_title">
                             <h2>Report View Parameters</h2>
@@ -73,8 +73,6 @@
                                     <asp:DropDownList ID="DDL_M2" CssClass="form-control form-control-sm rounded" runat="server" Visible="false"></asp:DropDownList>
                                     <asp:DropDownList ID="DDL_D2" CssClass="form-control form-control-sm rounded" runat="server" Visible="false"></asp:DropDownList>
                                 </div>
-
-
                             </div>
 
                             <%--button   start--%>
@@ -87,7 +85,7 @@
                                     <div class="col-md-6 col-sm-12">
                                         <button type="button" class="btn btn-danger btn-sm collapse-link">Cancel</button>
                                         <button type="reset" class="btn btn-warning btn-sm">Reset</button>
-                                        <asp:Button ID="btn_submit" runat="server" Text="Submit" CssClass="btn btn-success btn-sm" OnClientClick="return ValidateFormField()" OnClick="btn_submit_Click"/>
+                                        <asp:Button ID="btn_submit" runat="server" Text="Submit" CssClass="btn btn-success btn-sm" OnClientClick="return ValidateFormField()" OnClick="btn_submit_Click" />
                                     </div>
                                 </div>
                             </div>
@@ -176,13 +174,12 @@
 
             if (document.getElementById('<%=DDL_Year.ClientID%>').selectedIndex == 0) {
                 document.getElementById('<%=DDL_Year.ClientID%>').focus();
-                ShowPopup("Error :", "Calender Year selection required...!");
+                ShowPopup("Error :", "Work Site selection required...!");
                 return false;
             }
-
             if (document.getElementById('<%=DDL_Month.ClientID%>').selectedIndex == 0) {
+                ShowPopup("Error :", "Report Selection required");
                 document.getElementById('<%=DDL_Month.ClientID%>').focus();
-                ShowPopup("Error :", "Calender Month selection required...!");
                 return false;
             }
         }

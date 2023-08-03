@@ -257,6 +257,7 @@
     <Content Include="bussiness\production\pyrl_approvedeductions.aspx" />
     <Content Include="bussiness\production\pyrl_deductionlist.aspx" />
     <Content Include="bussiness\production\pyrl_deductions.aspx" />
+    <Content Include="bussiness\production\pyrl_generate_f29.aspx" />
     <Content Include="bussiness\production\pyrl_managedashbrd.aspx" />
     <Content Include="bussiness\production\pyrl_upldadvc.aspx" />
     <Content Include="bussiness\production\rpts\A4.css" />
@@ -278,7 +279,6 @@
     <Content Include="bussiness\production\csm_incidentreporting.aspx" />
     <Content Include="bussiness\production\generate_banksheets.aspx" />
     <Content Include="bussiness\production\generate_esicsheets.aspx" />
-    <Content Include="bussiness\production\generate_f29sheet.aspx" />
     <Content Include="bussiness\production\generate_pfsheets.aspx" />
     <Content Include="bussiness\production\generate_siteatdncsheet.aspx" />
     <Content Include="bussiness\production\generate_trialform17.aspx" />
@@ -483,6 +483,7 @@
     <Content Include="landing_page\css\style.violet.min.css.map" />
     <Content Include="landing_page\vendor\jquery.cookie\component.json" />
     <Content Include="landing_page\vendor\jquery.cookie\cookie.jquery.json" />
+    <Content Include="bussiness\production\templates\DeductionUploader.xlsx" />
     <None Include="Properties\PublishProfiles\deploy.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -707,6 +708,13 @@
     <Compile Include="bussiness\production\pyrl_deductions.aspx.designer.cs">
       <DependentUpon>pyrl_deductions.aspx</DependentUpon>
     </Compile>
+    <Compile Include="bussiness\production\pyrl_generate_f29.aspx.cs">
+      <DependentUpon>pyrl_generate_f29.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\pyrl_generate_f29.aspx.designer.cs">
+      <DependentUpon>pyrl_generate_f29.aspx</DependentUpon>
+    </Compile>
     <Compile Include="bussiness\production\pyrl_managedashbrd.aspx.cs">
       <DependentUpon>pyrl_managedashbrd.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -846,13 +854,6 @@
     </Compile>
     <Compile Include="bussiness\production\generate_esicsheets.aspx.designer.cs">
       <DependentUpon>generate_esicsheets.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="bussiness\production\generate_f29sheet.aspx.cs">
-      <DependentUpon>generate_f29sheet.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="bussiness\production\generate_f29sheet.aspx.designer.cs">
-      <DependentUpon>generate_f29sheet.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\generate_pfsheets.aspx.cs">
       <DependentUpon>generate_pfsheets.aspx</DependentUpon>

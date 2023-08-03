@@ -35,17 +35,27 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
+                    //Bind the Security Question DDL
+                    string CmdString1 = "select Security_Questions, QNo from tlb_security_questions where Category = '1' order by Id ";
+                    BindSecurityQ1(CmdString1);
+
+                    string CmdString2 = "select Security_Questions, QNo from tlb_security_questions where Category = '2' order by Id ";
+                    BindSecurityQ2(CmdString2);
 
                     ProfilePic_3.Src = "../../erp_images/ProfilePhoto/" + Session["User_Photo"].ToString() + "";
                     // Perform the login action here, such as prompting the user for credentials and validating them
                     lbl_username.Text = Session["USERNAME"].ToString();
-                    LoadLoginDetails();
-                    EmployeeDataLoader();
-                    AttendanceDataBinder();
-
-                    EmployeeDeductionsBinder();
+                    PageDataLoader();
                 }
             }
+        }
+
+        private void PageDataLoader()
+        {
+            LoadLoginDetails();
+            EmployeeDataLoader();
+            AttendanceDataBinder();
+            EmployeeDeductionsBinder();
         }
 
 
@@ -493,8 +503,6 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_cancel_Click(object sender, EventArgs e)
         {
-
-
             nwgprow1.Visible = false;
             nwgprow2.Visible = false;
 
@@ -515,7 +523,6 @@ namespace WebApplication1.bussiness.production
 
 
         //The function to update the gatepass related changes in DB
-
         private void ReflectNewGPData()
         {
             string nwgpno = txt_nwgpno.Text.ToString();
@@ -568,10 +575,8 @@ namespace WebApplication1.bussiness.production
 
 
         //------------ Added on 05-07-2022----------------//
-
         private void LoadLoginDetails()
         {
-
             string query = "select * from tbl_Employee_Mustertable where WorkmanSL=@WorkmanSL and LoginID=@LoginID";
             SqlParameter[] pram = {
                                           new SqlParameter("@WorkmanSL",Session["WORKMAN"].ToString()),
@@ -591,8 +596,6 @@ namespace WebApplication1.bussiness.production
                     txt_atsworkmenno.Text = Workman;
 
                     UserPass = dt.Rows[0]["LoginPassword"].ToString();
-
-
                 }
                 else
                 {
@@ -607,13 +610,6 @@ namespace WebApplication1.bussiness.production
 
             if (UserPass == inputoldpass)
             {
-                //Bind the Security Question DDL
-                string CmdString1 = "select Security_Questions, QNo from tlb_security_questions where Category = '1' order by Id ";
-                BindSecurityQ1(CmdString1);
-
-                string CmdString2 = "select Security_Questions, QNo from tlb_security_questions where Category = '2' order by Id ";
-                BindSecurityQ2(CmdString2);
-
                 txt_newpass1.ReadOnly = false;
                 txt_newpass2.ReadOnly = false;
 

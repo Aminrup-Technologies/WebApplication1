@@ -109,7 +109,7 @@
                                     <div class="col-md-6 col-sm-12">
                                         <button type="button" id="cancelButton" class="btn btn-danger btn-sm" onclick="redirectToHomepage()">Cancel</button>
                                         <button type="reset" class="btn btn-warning btn-sm">Reset</button>
-                                        <asp:Button ID="btn_submit" runat="server" Text="SAVE" CssClass="btn btn-success btn-sm"/>
+                                        <asp:Button ID="btn_submit" runat="server" Text="SAVE" CssClass="btn btn-success btn-sm" OnClick="btn_submit_Click" />
                                     </div>
                                 </div>
                             </div>
@@ -154,7 +154,14 @@
                         <div class="x_content">
                             <div class="row">
                                 <div class="col-md-12 col-sm-12">
-                                    <div class="card-box table-responsive"></div>
+                                    <div class="card-box table-responsive">
+                                        <p class="text-muted font-13 m-b-30">Click on the above SUBMIT button to save the uploaded data</p>
+                                        <asp:GridView ID="GridView1" runat="server" Width="100%" class="table table-striped table-hover table-bordered table-responsive table-sm dt-responsive nowrap">
+                                            <EmptyDataTemplate>
+                                                <div class="grid">No Data Found</div>
+                                            </EmptyDataTemplate>
+                                        </asp:GridView>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -176,6 +183,12 @@
             document.getElementById("overlay").style.display = "block";
             setTimeout(function () {
                 window.location.href = "pyrl_managedashbrd.aspx";
+            }, 2000);
+        }
+        function redirectToSamepage() {
+            document.getElementById("overlay").style.display = "block";
+            setTimeout(function () {
+                window.location.href = "pyrl_upldadvc.aspx";
             }, 2000);
         }
         function ShowUploaderModal() {

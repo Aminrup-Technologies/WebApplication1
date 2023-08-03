@@ -71,6 +71,9 @@
 										<i class="fa fa-plus-circle"></i> Import Excel
 									</button>
 								</div>
+                                <div class="col-md-3 col-sm-12 form-group">
+									<asp:Button ID="btn_dwn_dedexcel" runat="server" Text="Template Downlaod" CssClass="btn btn-sm btn-warning" OnClick="btn_dwn_dedexcel_Click" />
+                                </div>
 
 								<div class="modal fade" id="myModal">
 									<div class="modal-dialog">

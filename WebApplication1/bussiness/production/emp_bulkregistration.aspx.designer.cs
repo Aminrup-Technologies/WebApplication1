@@ -7,11 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WebApplication1.bussiness.production {
-    
-    
-    public partial class emp_bulkregistration {
-        
+namespace WebApplication1.bussiness.production
+{
+
+
+    public partial class emp_bulkregistration
+    {
+
         /// <summary>
         /// DDL_WorkCountry control.
         /// </summary>
@@ -20,7 +22,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList DDL_WorkCountry;
-        
+
         /// <summary>
         /// RequiredFieldValidator5 control.
         /// </summary>
@@ -29,7 +31,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator5;
-        
+
         /// <summary>
         /// DDL_WorkStates control.
         /// </summary>
@@ -38,7 +40,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList DDL_WorkStates;
-        
+
         /// <summary>
         /// RequiredFieldValidator10 control.
         /// </summary>
@@ -47,7 +49,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator10;
-        
+
         /// <summary>
         /// DDL_WorkRegion control.
         /// </summary>
@@ -56,7 +58,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList DDL_WorkRegion;
-        
+
         /// <summary>
         /// RequiredFieldValidator11 control.
         /// </summary>
@@ -65,7 +67,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator11;
-        
+
         /// <summary>
         /// DDL_Company control.
         /// </summary>
@@ -74,7 +76,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList DDL_Company;
-        
+
         /// <summary>
         /// RequiredFieldValidator13 control.
         /// </summary>
@@ -83,7 +85,16 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator13;
-        
+
+        /// <summary>
+        /// btn_dwn_dedexcel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btn_dwn_dedexcel;
+
         /// <summary>
         /// FileUpload1 control.
         /// </summary>
@@ -92,7 +103,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.FileUpload FileUpload1;
-        
+
         /// <summary>
         /// btnUpload control.
         /// </summary>
@@ -101,7 +112,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnUpload;
-        
+
         /// <summary>
         /// lblMessage control.
         /// </summary>
@@ -110,7 +121,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblMessage;
-        
+
         /// <summary>
         /// lbl_msg control.
         /// </summary>
@@ -119,7 +130,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_msg;
-        
+
         /// <summary>
         /// btn_submit control.
         /// </summary>
@@ -128,7 +139,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btn_submit;
-        
+
         /// <summary>
         /// GridView1 control.
         /// </summary>
