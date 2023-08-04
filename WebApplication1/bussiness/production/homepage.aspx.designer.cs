@@ -798,6 +798,24 @@ namespace WebApplication1.bussiness.production
         protected global::System.Web.UI.WebControls.TextBox txt_oldpass;
 
         /// <summary>
+        /// RequiredFieldValidator6 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator6;
+
+        /// <summary>
+        /// btn_validateoldpassword control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btn_validateoldpassword;
+
+        /// <summary>
         /// newpwd_row1 control.
         /// </summary>
         /// <remarks>
