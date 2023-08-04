@@ -616,9 +616,6 @@ namespace WebApplication1.bussiness.production
                 txt_SQAns2.ReadOnly = false;
 
                 txt_oldpass.BorderColor = System.Drawing.Color.Green;
-
-                ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPasswordModal();", true);
-
                 txt_oldpass.ReadOnly = true;
 
                 DDL_SQ1.SelectedIndex = 0;
@@ -641,10 +638,11 @@ namespace WebApplication1.bussiness.production
 
                 btn_validateoldpassword.Enabled = false;
 
+                ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPasswordModal();", true);
             }
             else
             {
-                ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPasswordModal();", true);
+                
 
                 txt_oldpass.Text = "";
                 txt_oldpass.Focus();
@@ -666,6 +664,8 @@ namespace WebApplication1.bussiness.production
                 DDL_SQ2.SelectedIndex = 0;
 
                 btn_svpass.Enabled = false;
+
+                ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPasswordModal();", true);
             }
         }
 

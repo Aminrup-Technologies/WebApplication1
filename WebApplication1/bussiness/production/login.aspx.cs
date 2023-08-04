@@ -74,6 +74,7 @@ namespace WebApplication1.bussiness.production
                         //string User_PhotoPath = dt.Rows[0]["PrfPicPath"].ToString();
 
                         Session["USERID"] = UserID;
+                        Session["Password"] = pass;
                         Session["WORKMAN"] = Workman;
                         Session["USERFNAME"] = User_FirstName;
                         Session["USERNAME"] = User_FullName;

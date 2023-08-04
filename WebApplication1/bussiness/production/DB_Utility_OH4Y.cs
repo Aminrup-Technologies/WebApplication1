@@ -52,35 +52,76 @@ namespace WebApplication1.bussiness.production
         //    }
         //}
 
+        //public void WriteToFile(string text)
+        //{
+        //    string path1 = @"C:\atswork.in\wwwroot\bussiness\production\WindowsServiceLog\";
+        //    string path2 = @"D:\RnD\OH4Y_Aug23\WebApplication1\WebApplication1\bussiness\production\WindowsServiceLog\";
+
+        //    string selectedPath = Directory.Exists(path1) ? path1 : Directory.Exists(path2) ? path2 : null;
+
+        //    if (selectedPath != null)
+        //    {
+        //        selectedPath = Path.Combine(selectedPath, DateTime.Now.ToString("ddMMyyyy"));
+
+        //        if (!Directory.Exists(selectedPath))
+        //        {
+        //            Directory.CreateDirectory(selectedPath);
+        //        }
+
+        //        string logFilePath = Path.Combine(selectedPath, "ServiceLog.txt");
+
+        //        using (StreamWriter writer = new StreamWriter(logFilePath, true))
+        //        {
+        //            writer.WriteLine(DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt") + " : " + text);
+        //            writer.Close();
+        //        }
+        //    }
+        //    else
+        //    {
+        //        SendEmail("it_helpdesk@atswork.in", "ATS - Utility Module || Log Writer", "Error: Log directory not found in both paths.");
+        //    }
+        //}
+
         public void WriteToFile(string text)
         {
-            string path1 = @"C:\atswork.in\wwwroot\bussiness\production\WindowsServiceLog\";
-            string path2 = @"D:\RnD\OH4Y_Aug23\WebApplication1\WebApplication1\bussiness\production\WindowsServiceLog\";
+            string basePath1 = @"C:\atswork.in\wwwroot\bussiness\production\";
+            string basePath2 = @"D:\RnD\OH4Y_Aug23\WebApplication1\WebApplication1\bussiness\production\";
 
-            string selectedPath = Directory.Exists(path1) ? path1 : Directory.Exists(path2) ? path2 : null;
+            string selectedPath = null;
 
-            if (selectedPath != null)
+            // Check if the first path exists, and if not, try the second path
+            if (Directory.Exists(basePath1))
             {
-                selectedPath = Path.Combine(selectedPath, DateTime.Now.ToString("ddMMyyyy"));
-
-                if (!Directory.Exists(selectedPath))
-                {
-                    Directory.CreateDirectory(selectedPath);
-                }
-
-                string logFilePath = Path.Combine(selectedPath, "ServiceLog.txt");
-
-                using (StreamWriter writer = new StreamWriter(logFilePath, true))
-                {
-                    writer.WriteLine(DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt") + " : " + text);
-                    writer.Close();
-                }
+                selectedPath = Path.Combine(basePath1, "WindowsServiceLog");
             }
-            else
+            else if (Directory.Exists(basePath2))
             {
-                SendEmail("it_helpdesk@atswork.in", "ATS - Utility Module || Log Writer", "Error: Log directory not found in both paths.");
+                selectedPath = Path.Combine(basePath2, "WindowsServiceLog");
+            }
+
+            // If selectedPath is still null, it means both paths do not exist, so create the log directory in the first base path
+            if (selectedPath == null)
+            {
+                selectedPath = Path.Combine(basePath1, "WindowsServiceLog");
+                Directory.CreateDirectory(selectedPath);
+            }
+
+            selectedPath = Path.Combine(selectedPath, DateTime.Now.ToString("ddMMyyyy"));
+
+            if (!Directory.Exists(selectedPath))
+            {
+                Directory.CreateDirectory(selectedPath);
+            }
+
+            string logFilePath = Path.Combine(selectedPath, "ServiceLog.txt");
+
+            using (StreamWriter writer = new StreamWriter(logFilePath, true))
+            {
+                writer.WriteLine(DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt") + " : " + text);
+                writer.Close();
             }
         }
+
 
         public void SendEmail(string recipientEmail, string mailSubject, string emailBody)
         {
