@@ -604,10 +604,9 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-        protected void txt_oldpass_TextChanged(object sender, EventArgs e)
+        private void ValidateOldPassword()
         {
             string inputoldpass = txt_oldpass.Text.TrimEnd().ToString();
-
             if (UserPass == inputoldpass)
             {
                 txt_newpass1.ReadOnly = false;
@@ -640,6 +639,8 @@ namespace WebApplication1.bussiness.production
                 newpwd_row9.Visible = true; newpwd_row10.Visible = true;
                 newpwd_row11.Visible = true; newpwd_row12.Visible = true;
 
+                btn_validateoldpassword.Enabled = false;
+
             }
             else
             {
@@ -667,6 +668,7 @@ namespace WebApplication1.bussiness.production
                 btn_svpass.Enabled = false;
             }
         }
+
         private void BindSecurityQ1(string CmdString)
         {
             dbcl.Sqlconnection();
@@ -1097,6 +1099,11 @@ namespace WebApplication1.bussiness.production
 
             Session.Abandon();
             Response.Redirect("login.aspx");
+        }
+
+        protected void btn_validateoldpassword_Click(object sender, EventArgs e)
+        {
+            ValidateOldPassword();
         }
     }
 }

@@ -16,7 +16,7 @@ namespace WebApplication1.bussiness.production
     {
         //public static string Logs = @"C:\atswork.in\wwwroot\bussiness\production\WindowsServiceLog\";
         //public static string Logs = @"C:\atswebuat\bussiness\production\WindowsServiceLog\";
-        //public static string Logs = @"D:\RnD\OH4Y_19Jun23\WebApplication1\WebApplication1\bussiness\production\WindowsServiceLog\";
+        //public static string Logs = @"D:\RnD\OH4Y_Aug23\WebApplication1\WebApplication1\bussiness\production\WindowsServiceLog\";
         //public static string Logs = @"\production\WindowsServiceLog\";
         public SqlConnection Conn;
         public SqlDataReader dr;
@@ -55,7 +55,7 @@ namespace WebApplication1.bussiness.production
         public void WriteToFile(string text)
         {
             string path1 = @"C:\atswork.in\wwwroot\bussiness\production\WindowsServiceLog\";
-            string path2 = @"D:\RnD\OH4Y_19Jun23\WebApplication1\WebApplication1\bussiness\production\WindowsServiceLog\";
+            string path2 = @"D:\RnD\OH4Y_Aug23\WebApplication1\WebApplication1\bussiness\production\WindowsServiceLog\";
 
             string selectedPath = Directory.Exists(path1) ? path1 : Directory.Exists(path2) ? path2 : null;
 
