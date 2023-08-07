@@ -252,6 +252,7 @@
     <Content Include="bussiness\production\images\user.png" />
     <Content Include="bussiness\production\images\visa.png" />
     <Content Include="bussiness\production\jobstatus_flow.ascx" />
+    <Content Include="bussiness\production\jobs_approverdash.aspx" />
     <Content Include="bussiness\production\js\jquery-1.9.1.js" />
     <Content Include="bussiness\production\manage_profile.aspx" />
     <Content Include="bussiness\production\pyrl_approvedeductions.aspx" />
@@ -259,7 +260,6 @@
     <Content Include="bussiness\production\pyrl_deductions.aspx" />
     <Content Include="bussiness\production\pyrl_generate_f29.aspx" />
     <Content Include="bussiness\production\pyrl_managedashbrd.aspx" />
-    <Content Include="bussiness\production\pyrl_upldadvc.aspx" />
     <Content Include="bussiness\production\rpts\A4.css" />
     <Content Include="bussiness\production\rpts\rpt_CombinedF16.aspx" />
     <Content Include="bussiness\production\rpts\supplymemo.aspx" />
@@ -680,6 +680,13 @@
     <Compile Include="bussiness\production\jobstatus_flow.ascx.designer.cs">
       <DependentUpon>jobstatus_flow.ascx</DependentUpon>
     </Compile>
+    <Compile Include="bussiness\production\jobs_approverdash.aspx.cs">
+      <DependentUpon>jobs_approverdash.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\jobs_approverdash.aspx.designer.cs">
+      <DependentUpon>jobs_approverdash.aspx</DependentUpon>
+    </Compile>
     <Compile Include="bussiness\production\manage_profile.aspx.cs">
       <DependentUpon>manage_profile.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -721,13 +728,6 @@
     </Compile>
     <Compile Include="bussiness\production\pyrl_managedashbrd.aspx.designer.cs">
       <DependentUpon>pyrl_managedashbrd.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="bussiness\production\pyrl_upldadvc.aspx.cs">
-      <DependentUpon>pyrl_upldadvc.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="bussiness\production\pyrl_upldadvc.aspx.designer.cs">
-      <DependentUpon>pyrl_upldadvc.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\rpts\rpt_CombinedF16.aspx.cs">
       <DependentUpon>rpt_CombinedF16.aspx</DependentUpon>
