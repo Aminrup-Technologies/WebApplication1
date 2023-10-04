@@ -153,10 +153,12 @@
 									<label class="col-form-label col-md-3 col-sm-3 label-align">Gatepass No & Validty <span class="required text-danger">*</span></label>
 									<div class="col-md-4 col-sm-4">
 										[<asp:Label ID="lbl_gpno" runat="server" Text="" Visible="true" ForeColor="Brown" Font-Bold="true"></asp:Label>]&nbsp;:&nbsp;
-										<asp:Label ID="lbl_gpvalidty" runat="server" Text="" Visible="true" Font-Bold="true"></asp:Label>&nbsp;(<asp:Label ID="lbl_gpdays" runat="server" Text="" Font-Bold="true"></asp:Label> Days)
-										&nbsp;<br /><asp:Image ID="Image1" runat="server" ImageUrl="~/erp_images/rightarrow.gif" Width="80px" Height="70px" />
+										<asp:Label ID="lbl_gpvalidty" runat="server" Text="" Visible="true" Font-Bold="true"></asp:Label>&nbsp;(<asp:Label ID="lbl_gpdays" runat="server" Text="" Font-Bold="true"></asp:Label>
+										Days)
+										&nbsp;<br />
+										<asp:Image ID="Image1" runat="server" ImageUrl="~/erp_images/rightarrow.gif" Width="80px" Height="70px" />
 										<asp:Label ID="lbl_sftyno" runat="server" Text="" Visible="false" ForeColor="Brown" Font-Bold="true"></asp:Label>
-										<button type="button" class="btn btn-warning btn-sm" id="btnShowPopup2" data-toggle="modal" data-target="#myModal2" runat="server" visible="false" >Update</button>
+										<button type="button" class="btn btn-warning btn-sm" id="btnShowPopup2" data-toggle="modal" data-target="#myModal2" runat="server" visible="false">Update</button>
 									</div>
 								</div>
 
@@ -267,7 +269,7 @@
 												</ItemTemplate>
 												<HeaderStyle CssClass="grid" />
 											</asp:TemplateField>
-                                            <asp:TemplateField HeaderText="Hours" Visible="false">
+											<asp:TemplateField HeaderText="Hours" Visible="false">
 												<ItemTemplate>
 													<asp:Label ID="lbl_categorycode" runat="server" Text='<%# Bind("categorycode") %>'></asp:Label>
 												</ItemTemplate>
@@ -295,7 +297,7 @@
 												<HeaderStyle CssClass="grid" />
 											</asp:TemplateField>
 
-                                            <asp:TemplateField HeaderText="Hours" Visible="false">
+											<asp:TemplateField HeaderText="Hours" Visible="false">
 												<ItemTemplate>
 													<asp:Label ID="lbl_designationcode" runat="server" Text='<%# Bind("designationcode") %>'></asp:Label>
 												</ItemTemplate>
@@ -364,10 +366,10 @@
 							<%--button start--%>
 							<div class="col-md-6 center-margin" id="inpunched_buttons" runat="server" visible="false">
 								<div class="ln_solid"></div>
-								<div class="col-md-12 col-sm-12 center" style="text-align:center;">
-									<asp:Button ID="btn_tbtpage" runat="server" Text="Online TBT" CssClass="btn btn-primary btn-sm" Visible="false" OnClick="btn_tbtpage_Click"/>
-									<asp:Button ID="btn_soppage" runat="server" Text="Online SOP" CssClass="btn btn-primary btn-sm" Visible="false" PostBackUrl="~/bussiness/production/csm_soptraining.aspx"/>
-									<asp:Button ID="btn_hmpg" runat="server" Text="Home" CssClass="btn btn-primary btn-sm" Visible="true" OnClick="btn_hmpg_Click"/>
+								<div class="col-md-12 col-sm-12 center" style="text-align: center;">
+									<asp:Button ID="btn_tbtpage" runat="server" Text="Online TBT" CssClass="btn btn-primary btn-sm" Visible="false" OnClick="btn_tbtpage_Click" />
+									<asp:Button ID="btn_soppage" runat="server" Text="Online SOP" CssClass="btn btn-primary btn-sm" Visible="false" PostBackUrl="~/bussiness/production/csm_soptraining.aspx" />
+									<asp:Button ID="btn_hmpg" runat="server" Text="Home" CssClass="btn btn-primary btn-sm" Visible="true" OnClick="btn_hmpg_Click" />
 								</div>
 							</div>
 							<%--button end--%>

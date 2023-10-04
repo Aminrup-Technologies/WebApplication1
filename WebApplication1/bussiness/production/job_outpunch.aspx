@@ -137,8 +137,7 @@
 								<div class="field item form-group" id="OTRow" runat="server" visible="false">
 									<label class="col-form-label col-md-3 col-sm-3  label-align">Over Time (Hours)<span class="required">*</span></label>
 									<div class="col-md-6 col-sm-6">
-										<asp:TextBox ID="txt_ot" runat="server" CssClass="form-control form-control-sm rounded" MaxLength="2" TextMode="Number"></asp:TextBox>
-										<asp:RequiredFieldValidator ID="RequiredFieldValidator3" ValidationGroup="PunchOUT_Button" runat="server" ErrorMessage="Reqired" ControlToValidate="txt_ot" Display="Dynamic" CssClass="text text-warning" SetFocusOnError="True"></asp:RequiredFieldValidator>
+										<asp:TextBox ID="txt_ot" runat="server" CssClass="form-control form-control-sm rounded" MaxLength="2" TextMode="Number"></asp:TextBox> <asp:RequiredFieldValidator ID="RequiredFieldValidator3" ValidationGroup="PunchOUT_Button" runat="server" ErrorMessage="Required" ControlToValidate="txt_ot" Display="Dynamic" CssClass="text text-warning" SetFocusOnError="True"></asp:RequiredFieldValidator> <asp:CustomValidator ID="CustomValidator1" runat="server" ValidationGroup="PunchOUT_Button" ControlToValidate="txt_ot" ErrorMessage="Value must be less than or equal to 16" Display="Dynamic" ClientValidationFunction="validateInput" ForeColor="Red"></asp:CustomValidator>
 									</div>
 								</div>
 							</div>
@@ -153,7 +152,7 @@
 									<div class="col-md-6 col-sm-12">
 										<asp:Button ID="btn_cancel" runat="server" Text="Cancel" CssClass="btn btn-danger btn-sm" CausesValidation="false" OnClick="btn_cancel_Click" />
 										<button type="reset" class="btn btn-warning btn-sm">Reset</button>
-										<asp:Button ID="btn_punchout" runat="server" Text="Punch OUT" ValidationGroup="PunchOUT_Button" CssClass="btn btn-success btn-sm" OnClick="btn_punchout_Click" />
+										<asp:Button ID="btn_punchout" runat="server" Text="Punch OUT" CausesValidation="true" ValidationGroup="PunchOUT_Button" CssClass="btn btn-success btn-sm" OnClick="btn_punchout_Click" />
 									</div>
 								</div>
 							</div>
@@ -260,11 +259,15 @@
 			</div>
 		</div>
 	</div>
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script type="text/javascript">
 		function ShowPopup(title, body) {
 			$("#MyPopup .modal-title").html(title);
 			$("#MyPopup .modal-body").html(body);
 			$("#MyPopup").modal("show");
 		}
+
+		function validateInput(sender, args) { var inputValue = $("#<%= txt_ot.ClientID %>").val(); if (inputValue.trim() !== '') { var numericValue = parseInt(inputValue); if (isNaN(numericValue) || numericValue > 16) { args.IsValid = false; } else { args.IsValid = true; } } else { args.IsValid = false; } }
 	</script>
 </asp:Content>
