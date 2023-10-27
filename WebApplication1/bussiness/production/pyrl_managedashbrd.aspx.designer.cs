@@ -7,13 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WebApplication1.bussiness.production
-{
-
-
-    public partial class pyrl_managedashbrd
-    {
-
+namespace WebApplication1.bussiness.production {
+    
+    
+    public partial class pyrl_managedashbrd {
+        
         /// <summary>
         /// Supvkpirow control.
         /// </summary>
@@ -22,7 +20,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl Supvkpirow;
-
+        
         /// <summary>
         /// StateSelector control.
         /// </summary>
@@ -31,7 +29,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl StateSelector;
-
+        
         /// <summary>
         /// DDL_WorkStates control.
         /// </summary>
@@ -40,7 +38,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList DDL_WorkStates;
-
+        
         /// <summary>
         /// RegionSelector control.
         /// </summary>
@@ -49,7 +47,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl RegionSelector;
-
+        
         /// <summary>
         /// DDL_WorkRegion control.
         /// </summary>
@@ -58,7 +56,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList DDL_WorkRegion;
-
+        
         /// <summary>
         /// RegionComSelector control.
         /// </summary>
@@ -67,7 +65,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl RegionComSelector;
-
+        
         /// <summary>
         /// DDL_Company control.
         /// </summary>
@@ -76,7 +74,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList DDL_Company;
-
+        
         /// <summary>
         /// DataLocker control.
         /// </summary>
@@ -85,7 +83,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl DataLocker;
-
+        
         /// <summary>
         /// btn_datalocker control.
         /// </summary>
@@ -94,7 +92,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btn_datalocker;
-
+        
         /// <summary>
         /// Div1 control.
         /// </summary>
@@ -103,7 +101,25 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl Div1;
-
+        
+        /// <summary>
+        /// div_payrollwages control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl div_payrollwages;
+        
+        /// <summary>
+        /// Label17 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label Label17;
+        
         /// <summary>
         /// div_factorsstatus control.
         /// </summary>
@@ -112,7 +128,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl div_factorsstatus;
-
+        
         /// <summary>
         /// lbl_factorsstatus control.
         /// </summary>
@@ -121,7 +137,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_factorsstatus;
-
+        
         /// <summary>
         /// div_bankdatastatus control.
         /// </summary>
@@ -130,7 +146,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl div_bankdatastatus;
-
+        
         /// <summary>
         /// lbl_bankdatastatus control.
         /// </summary>
@@ -139,7 +155,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_bankdatastatus;
-
+        
         /// <summary>
         /// div4 control.
         /// </summary>
@@ -148,7 +164,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl div4;
-
+        
         /// <summary>
         /// Label13 control.
         /// </summary>
@@ -157,7 +173,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label13;
-
+        
         /// <summary>
         /// Deductions control.
         /// </summary>
@@ -166,7 +182,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl Deductions;
-
+        
         /// <summary>
         /// div_inactivedeductions control.
         /// </summary>
@@ -175,7 +191,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl div_inactivedeductions;
-
+        
         /// <summary>
         /// lbl_inactivedeductions control.
         /// </summary>
@@ -184,7 +200,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_inactivedeductions;
-
+        
         /// <summary>
         /// div_activedeductions control.
         /// </summary>
@@ -193,7 +209,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl div_activedeductions;
-
+        
         /// <summary>
         /// lbl_activedeductions control.
         /// </summary>
@@ -202,7 +218,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_activedeductions;
-
+        
         /// <summary>
         /// div2 control.
         /// </summary>
@@ -211,7 +227,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl div2;
-
+        
         /// <summary>
         /// Label2 control.
         /// </summary>
@@ -220,7 +236,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label2;
-
+        
         /// <summary>
         /// div3 control.
         /// </summary>
@@ -229,7 +245,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl div3;
-
+        
         /// <summary>
         /// Label12 control.
         /// </summary>
@@ -238,7 +254,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label12;
-
+        
         /// <summary>
         /// Label4 control.
         /// </summary>
@@ -247,7 +263,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label4;
-
+        
         /// <summary>
         /// btn_clrded control.
         /// </summary>
@@ -256,7 +272,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btn_clrded;
-
+        
         /// <summary>
         /// ShowPopup control.
         /// </summary>
@@ -265,7 +281,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button ShowPopup;
-
+        
         /// <summary>
         /// f16_row control.
         /// </summary>
@@ -274,7 +290,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl f16_row;
-
+        
         /// <summary>
         /// div_activeworksites control.
         /// </summary>
@@ -283,7 +299,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl div_activeworksites;
-
+        
         /// <summary>
         /// lbl_activeworksites control.
         /// </summary>
@@ -292,7 +308,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_activeworksites;
-
+        
         /// <summary>
         /// Label1 control.
         /// </summary>
@@ -301,7 +317,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label1;
-
+        
         /// <summary>
         /// f17_row control.
         /// </summary>
@@ -310,7 +326,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl f17_row;
-
+        
         /// <summary>
         /// KPO_F17 control.
         /// </summary>
@@ -319,7 +335,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlAnchor KPO_F17;
-
+        
         /// <summary>
         /// Label22 control.
         /// </summary>
@@ -328,7 +344,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label22;
-
+        
         /// <summary>
         /// AGL_F17 control.
         /// </summary>
@@ -337,7 +353,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlAnchor AGL_F17;
-
+        
         /// <summary>
         /// Label9 control.
         /// </summary>
@@ -346,7 +362,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label9;
-
+        
         /// <summary>
         /// JSR_F17 control.
         /// </summary>
@@ -355,7 +371,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlAnchor JSR_F17;
-
+        
         /// <summary>
         /// Label11 control.
         /// </summary>
@@ -364,7 +380,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label11;
-
+        
         /// <summary>
         /// NINL_F17 control.
         /// </summary>
@@ -373,7 +389,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlAnchor NINL_F17;
-
+        
         /// <summary>
         /// Label10 control.
         /// </summary>
@@ -382,7 +398,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label10;
-
+        
         /// <summary>
         /// ATS_F17 control.
         /// </summary>
@@ -391,7 +407,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlAnchor ATS_F17;
-
+        
         /// <summary>
         /// div5 control.
         /// </summary>
@@ -400,7 +416,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl div5;
-
+        
         /// <summary>
         /// Label14 control.
         /// </summary>
@@ -409,7 +425,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label14;
-
+        
         /// <summary>
         /// div6 control.
         /// </summary>
@@ -418,7 +434,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl div6;
-
+        
         /// <summary>
         /// Label15 control.
         /// </summary>
@@ -427,7 +443,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label15;
-
+        
         /// <summary>
         /// rpts_row control.
         /// </summary>
@@ -436,7 +452,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl rpts_row;
-
+        
         /// <summary>
         /// div8 control.
         /// </summary>
@@ -445,7 +461,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl div8;
-
+        
         /// <summary>
         /// Label3 control.
         /// </summary>
@@ -454,7 +470,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label3;
-
+        
         /// <summary>
         /// div7 control.
         /// </summary>
@@ -463,7 +479,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl div7;
-
+        
         /// <summary>
         /// Label16 control.
         /// </summary>
@@ -472,7 +488,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label16;
-
+        
         /// <summary>
         /// div9 control.
         /// </summary>
@@ -481,7 +497,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl div9;
-
+        
         /// <summary>
         /// Label5 control.
         /// </summary>
@@ -490,7 +506,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label5;
-
+        
         /// <summary>
         /// emp_comprow control.
         /// </summary>
@@ -499,7 +515,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl emp_comprow;
-
+        
         /// <summary>
         /// Label6 control.
         /// </summary>
@@ -508,7 +524,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label6;
-
+        
         /// <summary>
         /// Label7 control.
         /// </summary>
@@ -517,7 +533,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label7;
-
+        
         /// <summary>
         /// Label8 control.
         /// </summary>
