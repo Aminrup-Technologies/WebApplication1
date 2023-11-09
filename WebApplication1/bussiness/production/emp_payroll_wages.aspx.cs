@@ -416,12 +416,21 @@ namespace WebApplication1.bussiness.production
             }
             finally
             {
+                txt_WagesRate.Text = "";
+                txt_VDARate.Text = "";
+                txt_totalRate.Text = "";
+                txt_effdt.Text = "";
+               //the above lines are to clear the data within the input boxex
+
                 // Close the connection and command in the finally block to ensure proper cleanup.
                 if (command != null)
                 {
                     command.Dispose();
                 }
                 dbcl.DisconnectDb();
+
+                string CmdString2 = "select * from tlb_payroll_wages where Country_Code='IN' and State_Code='" + state + "' and WorkRegion_Code='" + region + "' and Company_Code='" + comp + "' and Status='Active' order by Id";
+                BindGrid(CmdString2);
             }
         }
 

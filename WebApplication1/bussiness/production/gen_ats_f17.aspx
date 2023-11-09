@@ -197,7 +197,7 @@
                                 <ItemStyle CssClass="grid" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Designation" Visible="false">
+                            <asp:TemplateField HeaderText="Designation" Visible="true">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_SkillDesignation" runat="server" Text='<%# Bind("SkillDesignation") %>' />
                                 </ItemTemplate>
