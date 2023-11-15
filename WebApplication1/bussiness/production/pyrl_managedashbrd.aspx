@@ -52,6 +52,12 @@
                         <div class="clearfix"></div>
                     </div>
                     <div class="x_content">
+                        <a class="btn btn-app" href="emp_payroll_wages.aspx">
+                            <div id="div_payrollwages" class="badge bg-green" runat="server">
+                                <asp:Label ID="Label17" runat="server" Text="Ok" Visible="true"></asp:Label>
+                            </div>
+                            <i class="fa fa-edit"></i>Payroll Wages
+                        </a>
                         <a class="btn btn-app" href="viewupdate_emppayrolldata.aspx">
                             <div id="div_factorsstatus" class="badge bg-green" runat="server">
                                 <asp:Label ID="lbl_factorsstatus" runat="server" Text="***" Visible="false"></asp:Label>
@@ -105,7 +111,7 @@
                                 <asp:Label ID="Label2" runat="server" Text="Ok" Visible="true"></asp:Label>
                             </div>
                             <i class="fa fa-users"></i>Clear All
-                        </a>        
+                        </a>
 
                         <a class="btn btn-app" href="pyrl_upldadvc.aspx">
                             <div id="div3" class="badge bg-green" runat="server">

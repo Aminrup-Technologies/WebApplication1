@@ -5,18 +5,18 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 	<div class="right_col" role="main">
 		<div class="">
-			<div class="page-title">
+			<%--<div class="page-title">
 				<div class="title_left">
 					<h3>JOB Manpower Entry</h3>
 				</div>
-			</div>
+			</div>--%>
 			<div class="clearfix"></div>
 
 			<div class="row">
 				<div class="col-md-12 col-sm-12">
 					<div class="x_panel">
 						<div class="x_title">
-							<h2>In-Punch Page<small>(Manpower Attendance)</small></h2>
+							<h2>JOB Manpower In-Punch Page<small>(Manpower Attendance)</small></h2>
 							<ul class="nav navbar-right panel_toolbox">
 								<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
 							</ul>
@@ -35,7 +35,7 @@
 								</div>
 
 								<div class="field item form-group" id="JOBIDDetails_Row" runat="server" visible="false">
-									<label class="col-form-label col-md-3 col-sm-3">Selected JOBID Details</label>
+									<label class="col-form col-md-3 col-sm-3 label-align">Selected JOBID Details</label>
 									<div class="col-md-6 col-sm-6">
 										JOB_ID :<asp:Label ID="lbl_jobid" runat="server" Text="Label" ForeColor="Black" Font-Bold="true"></asp:Label>;
 									JOB Date :<asp:Label ID="lbl_jobiddate" runat="server" Text="Label"></asp:Label>;

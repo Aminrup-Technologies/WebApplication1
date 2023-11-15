@@ -39,7 +39,7 @@ namespace WebApplication1.bussiness.production
             if (Activejobcount > 0)
             {
 
-                dbcl.FillCombo(DDL_JOBID, "select JOBID from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and JOBID_Status='Active' order by CreatedDate desc ");
+                dbcl.FillCombo(DDL_JOBID, "select TOP 3 JOBID from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and JOBID_Status='Active' order by CreatedDate desc ");
 
                 AddDefaultFirstRecord();
 

@@ -65,7 +65,7 @@ namespace WebApplication1.bussiness.production
             {
                 if (flag == true)
                 {
-                    string title = "Notifications 49 :";
+                    string title = "Notifications [PL] :";
                     string body = "Data updated succesfully";
                     ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
                 }
@@ -214,6 +214,7 @@ namespace WebApplication1.bussiness.production
 
                         if (jobidstatus == "Blocked" && uploadstatus == "Yes" && approvalstatus == "Approved" && entryexitstatus == "Exit" && JOB_Status == "Level1MemoCreated")
                         {
+                            this.GridView2.Columns[20].Visible = false;
                             btn_crtspm.Text = "Print Memo";
                             btn_crtspm.CssClass = "btn btn-success btn-sm";
                             btn_crtspm.ToolTip = "Click to print Supply Memo";
@@ -253,7 +254,7 @@ namespace WebApplication1.bussiness.production
                         string title = "Notifications 253 :";
                         string body = "Selected JOB is NOT a Manpower Supply JOB.....!!";
                         ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
-                    }   
+                    }
                 }
             }
             catch (Exception ex)
@@ -367,60 +368,114 @@ namespace WebApplication1.bussiness.production
             //DataColumn GatePassExpiry = new DataColumn("GatePassExpiry", typeof(DateTime));
             //Dt1.Columns.Add(GatePassExpiry);
 
-            for (int i = 0; i <= dt1.Rows.Count - 1; i++)
+            try
             {
-                Int32 _Id = (Int32)FirstDatatable.Rows[i][0];
-                string _JOBID = (String)FirstDatatable.Rows[i][1];
-                DateTime _CreatedDate = (DateTime)FirstDatatable.Rows[i][2];
-                string _JOB_Region = (String)FirstDatatable.Rows[i][3];
-                string _JOB_Company = (String)FirstDatatable.Rows[i][4];
-                string _EmployeeWrk = (String)FirstDatatable.Rows[i][5];
-                string _EmployeeName = (String)FirstDatatable.Rows[i][6];
-                string _EmpCategory = (String)FirstDatatable.Rows[i][7];
-                string _PO_SkillCategory = (String)FirstDatatable.Rows[i][8];
-                string _PO_EmpDesignation = (string)FirstDatatable.Rows[i][9];
-                string _Employee_Worksite = (string)FirstDatatable.Rows[i][10];
-                string _Employee_WorksiteCode = (string)FirstDatatable.Rows[i][11];
-                DateTime _Inpunch_Time = (DateTime)FirstDatatable.Rows[i][12];
-                DateTime _Outpunch_Time = (DateTime)FirstDatatable.Rows[i][13];
-                decimal _WorkedHours = (decimal)FirstDatatable.Rows[i][14];
-                Int32 _WourkHours = (Int32)FirstDatatable.Rows[i][15];
-                string _LunchFactor = (String)FirstDatatable.Rows[i][16];
-                decimal _ProvidedOT = (decimal)FirstDatatable.Rows[i][17];
-                string _AttendanceStatus = (String)FirstDatatable.Rows[i][18];
-                string _AttendanceCode = (String)FirstDatatable.Rows[i][19];
-                string _GatePassNo = (String)FirstDatatable.Rows[i][20];
-                decimal _ShiftCalc = (decimal)FirstDatatable.Rows[i][22];
-                string _SafetyPassNo = (String)FirstDatatable.Rows[i][21];
-                //DateTime _GatePassExpiry = (DateTime)FirstDatatable.Rows[i][20];
+                for (int i = 0; i <= dt1.Rows.Count - 1; i++)
+                {
+                    Int32 _Id = (Int32)FirstDatatable.Rows[i][0];
+                    string _JOBID = (String)FirstDatatable.Rows[i][1];
+                    DateTime _CreatedDate = (DateTime)FirstDatatable.Rows[i][2];
+                    string _JOB_Region = (String)FirstDatatable.Rows[i][3];
+                    string _JOB_Company = (String)FirstDatatable.Rows[i][4];
+                    string _EmployeeWrk = (String)FirstDatatable.Rows[i][5];
+                    string _EmployeeName = (String)FirstDatatable.Rows[i][6];
+                    string _EmpCategory = (String)FirstDatatable.Rows[i][7];
+                    string _PO_SkillCategory = (String)FirstDatatable.Rows[i][8];
+                    string _PO_EmpDesignation = (string)FirstDatatable.Rows[i][9];
+                    string _Employee_Worksite = (string)FirstDatatable.Rows[i][10];
+                    string _Employee_WorksiteCode = (string)FirstDatatable.Rows[i][11];
+                    DateTime _Inpunch_Time = (DateTime)FirstDatatable.Rows[i][12];
+                    DateTime _Outpunch_Time = (DateTime)FirstDatatable.Rows[i][13];
+                    decimal _WorkedHours = (decimal)FirstDatatable.Rows[i][14];
+                    Int32 _WourkHours = (Int32)FirstDatatable.Rows[i][15];
+                    string _LunchFactor = (String)FirstDatatable.Rows[i][16];
+                    decimal _ProvidedOT = (decimal)FirstDatatable.Rows[i][17];
+                    string _AttendanceStatus = (String)FirstDatatable.Rows[i][18];
+                    string _AttendanceCode = (String)FirstDatatable.Rows[i][19];
+                    string _GatePassNo = (String)FirstDatatable.Rows[i][20];
+                    decimal _ShiftCalc = (decimal)FirstDatatable.Rows[i][22];
+                    //string _SafetyPassNo = (String)FirstDatatable.Rows[i][21];
 
-                dr = Dt1.NewRow();
-                dr["Id"] = _Id.ToString();
-                dr["JOBID"] = _JOBID.ToString();
-                dr["CreatedDate"] = _CreatedDate.ToString();
-                dr["JOB_Region"] = _JOB_Region.ToString();
-                dr["JOB_Company"] = _JOB_Company.ToString();
-                dr["EmployeeWrk"] = _EmployeeWrk.ToString();
-                dr["EmployeeName"] = _EmployeeName.ToString();
-                dr["EmpCategory"] = _EmpCategory.ToString();
-                dr["PO_SkillCategory"] = _PO_SkillCategory.ToString();
-                dr["PO_EmpDesignation"] = _PO_EmpDesignation.ToString();
-                dr["Employee_Worksite"] = _Employee_Worksite.ToString();
-                dr["Employee_WorksiteCode"] = _Employee_WorksiteCode.ToString();
-                dr["Inpunch_Time"] = _Inpunch_Time.ToString();
-                dr["Outpunch_Time"] = _Outpunch_Time.ToString();
-                dr["WorkedHours"] = _WorkedHours.ToString();
-                dr["WourkHours"] = _WourkHours.ToString();
-                dr["LunchFactor"] = _LunchFactor.ToString();
-                dr["ProvidedOT"] = _ProvidedOT.ToString();
-                dr["AttendanceStatus"] = _AttendanceStatus.ToString();
-                dr["AttendanceCode"] = _AttendanceCode.ToString();
-                dr["GatePassNo"] = _GatePassNo.ToString();
-                //dr["GatePassExpiry"] = _GatePassExpiry.ToString();
-                dr["ShiftCalc"] = _ShiftCalc.ToString();
-                dr["SafetyPassNo"] = _SafetyPassNo.ToString();
-                Dt1.Rows.Add(dr);
+                    string _SafetyPassNo = string.Empty;
+
+                    object value = FirstDatatable.Rows[i][21];
+                    if (value != DBNull.Value)
+                    {
+                        _SafetyPassNo = (string)value;
+                        // Now you can work with _SafetyPassNo as a string.
+                    }
+                    else
+                    {
+                        // Handle the case where the value is DBNull.
+                        // You can assign a default value or take some other action as needed.
+
+                        try
+                        {
+                            dbcl.Sqlconnection();
+                            dbcl.ConnectDb();
+                            string updateQuery = "update tbl_attendance set tbl_attendance.SafetyPassNo = tbl_Employee_Mustertable.SafetyPassNo from tbl_Employee_Mustertable where tbl_Employee_Mustertable.WorkmanSL=tbl_attendance.EmployeeWrk and tbl_attendance.SafetyPassNo is NULL";
+                            SqlCommand command = new SqlCommand(updateQuery, dbcl.Conn);
+                            command.CommandType = CommandType.Text;
+                            int rowsAffected = command.ExecuteNonQuery();
+                            // Check the number of rows affected to determine if the update was successful
+                            if (rowsAffected > 0)
+                            {
+                                BindGrid2();
+                                //Console.WriteLine("Update successful. Rows affected: " + rowsAffected);
+                            }
+                            else
+                            {
+                                dbcl.SendEmail("kaushik@atswork.in", "Supply Memo Creation", "Failed to update the Manpower Details");
+                            }
+                            dbcl.DisconnectDb();
+                        }
+                        catch (Exception ex)
+                        {
+                            dbcl.SendEmail("kaushik@atswork.in", "Supply Memo Creation", "Failed to load or update the Manpower Details :: " + ex.Message + ".");
+
+                            throw;
+                        }
+                    }
+
+                    //DateTime _GatePassExpiry = (DateTime)FirstDatatable.Rows[i][20];
+
+                    dr = Dt1.NewRow();
+                    dr["Id"] = _Id.ToString();
+                    dr["JOBID"] = _JOBID.ToString();
+                    dr["CreatedDate"] = _CreatedDate.ToString();
+                    dr["JOB_Region"] = _JOB_Region.ToString();
+                    dr["JOB_Company"] = _JOB_Company.ToString();
+                    dr["EmployeeWrk"] = _EmployeeWrk.ToString();
+                    dr["EmployeeName"] = _EmployeeName.ToString();
+                    dr["EmpCategory"] = _EmpCategory.ToString();
+                    dr["PO_SkillCategory"] = _PO_SkillCategory.ToString();
+                    dr["PO_EmpDesignation"] = _PO_EmpDesignation.ToString();
+                    dr["Employee_Worksite"] = _Employee_Worksite.ToString();
+                    dr["Employee_WorksiteCode"] = _Employee_WorksiteCode.ToString();
+                    dr["Inpunch_Time"] = _Inpunch_Time.ToString();
+                    dr["Outpunch_Time"] = _Outpunch_Time.ToString();
+                    dr["WorkedHours"] = _WorkedHours.ToString();
+                    dr["WourkHours"] = _WourkHours.ToString();
+                    dr["LunchFactor"] = _LunchFactor.ToString();
+                    dr["ProvidedOT"] = _ProvidedOT.ToString();
+                    dr["AttendanceStatus"] = _AttendanceStatus.ToString();
+                    dr["AttendanceCode"] = _AttendanceCode.ToString();
+                    dr["GatePassNo"] = _GatePassNo.ToString();
+                    //dr["GatePassExpiry"] = _GatePassExpiry.ToString();
+                    dr["ShiftCalc"] = _ShiftCalc.ToString();
+                    dr["SafetyPassNo"] = _SafetyPassNo.ToString();
+                    Dt1.Rows.Add(dr);
+                }
             }
+            catch (Exception ex)
+            {
+                dbcl.SendEmail("kaushik@atswork.in", "Supply Memo Creation", "Failed to load or update the Manpower Details");
+                string title = "Error :";
+                string body = "Manpower details cannot be loaded...!!";
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                //throw;
+            }
+
             ViewState["Manpower"] = Dt1;
             GridView2.Visible = true;
             GridView2.Visible = true;
@@ -1241,7 +1296,7 @@ namespace WebApplication1.bussiness.production
         {
             if (viewid == "1")
             {
-                Response.Redirect("vw_inchsupmem.aspx?y="+yr+"&m="+mnt+"");
+                Response.Redirect("vw_inchsupmem.aspx?y=" + yr + "&m=" + mnt + "");
             }
             else if (viewid == "2")
             {
@@ -1261,7 +1316,7 @@ namespace WebApplication1.bussiness.production
             //-----2 . Update the Memo Creation Status in JOB table with SMID as input to the JOB table
             //-----3 . Create the PDF and Download option
 
-            if (btn_crtspm.Text=="Save")
+            if (btn_crtspm.Text == "Save")
             {
                 //Function 1 --------- SAVE the MEMO Details into the DB
                 CollectDetailFromDT();
@@ -1315,14 +1370,14 @@ namespace WebApplication1.bussiness.production
                         string shiftcalc = ((Label)GridView2.Rows[i].FindControl("lbl_ShiftCalc")).Text;
 
                         //-----------------------------------------2
-                        ExeMsg = InsertIntoDB2(ref sqlTrans, SuppluMemoIDNo,  RefDBID,  RefJOBID,  RefJOBdate,  EmpWrk,  EmpName,  PO_SC_name,  PO_DG_name,  shiftcalc);
+                        ExeMsg = InsertIntoDB2(ref sqlTrans, SuppluMemoIDNo, RefDBID, RefJOBID, RefJOBdate, EmpWrk, EmpName, PO_SC_name, PO_DG_name, shiftcalc);
                     }
 
                     //-----------------------------------------3
                     string CmdString = "UPDATE tbl_jobs set Level1_BillingCode=@Level1_BillingCode, JOB_Status=@JOB_Status where JOBID=@JOBID";
                     StatusChanged = UpdateJOBTableStatus(ref sqlTrans, SuppluMemoIDNo, txt_jobid.Text.ToString(), CmdString);
 
-                    if (ExeMsg.Equals("Done") && ExeValue == -1 && StatusChanged=="Yes")
+                    if (ExeMsg.Equals("Done") && ExeValue == -1 && StatusChanged == "Yes")
                     {
                         sqlTrans.Commit();
                         string title = "Success :";
@@ -1425,7 +1480,7 @@ namespace WebApplication1.bussiness.production
                 decimal count2 = Convert.ToDecimal(lbl_S_ShiftCount.Text.ToString());
                 decimal count3 = Convert.ToDecimal(lbl_SS_ShiftCount.Text.ToString());
                 decimal count4 = Convert.ToDecimal(lbl_US_ShiftCount.Text.ToString());
-                decimal totalshift = count1  + count2 + count3 + count4;
+                decimal totalshift = count1 + count2 + count3 + count4;
 
                 cmdSPDetails.Parameters.Clear();
                 cmdSPDetails.CommandType = CommandType.StoredProcedure;
@@ -1457,7 +1512,7 @@ namespace WebApplication1.bussiness.production
             return Count;
         }
 
-        private string InsertIntoDB2(ref SqlTransaction sqlTran,string SuppluMemoIDNo, string RefDBID, string RefJOBID, string RefJOBdate, string EmpWrk, string EmpName, string PO_SC_name, string PO_DG_name, string shiftcalc)
+        private string InsertIntoDB2(ref SqlTransaction sqlTran, string SuppluMemoIDNo, string RefDBID, string RefJOBID, string RefJOBdate, string EmpWrk, string EmpName, string PO_SC_name, string PO_DG_name, string shiftcalc)
         {
             string msg = string.Empty;
             using (SqlCommand cmdSPManpower = new SqlCommand("SP_InsertInto_SupplyManpower", dbcl.Conn, sqlTran))
@@ -1509,7 +1564,7 @@ namespace WebApplication1.bussiness.production
                         string Order_Quantity = (row.Cells[8].FindControl("lbl_Order_Quantity") as Label).Text;
                         string Rate = (row.Cells[9].FindControl("lbl_Rate") as Label).Text;
                         string PerUnit_Value = (row.Cells[10].FindControl("lbl_PerUnit_Value") as Label).Text;
-                        dt_selectedrows.Rows.Add(Id, WODB_Code, WOI_DBCode,ItemNO, LineNumber, ServiceNumber, Service_Description, Order_Quantity, Rate, PerUnit_Value);
+                        dt_selectedrows.Rows.Add(Id, WODB_Code, WOI_DBCode, ItemNO, LineNumber, ServiceNumber, Service_Description, Order_Quantity, Rate, PerUnit_Value);
                     }
                 }
             }
