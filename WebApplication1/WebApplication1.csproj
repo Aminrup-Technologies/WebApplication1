@@ -215,6 +215,7 @@
     <Content Include="bussiness\production\add_expenses.aspx" />
     <Content Include="bussiness\production\add_expense_heads.aspx" />
     <Content Include="bussiness\production\add_expense_subheads.aspx" />
+    <Content Include="bussiness\production\add_nwhelpdsk.aspx" />
     <Content Include="bussiness\production\add_workorderdata.aspx" />
     <Content Include="bussiness\production\add_workorders.aspx" />
     <Content Include="bussiness\production\add_wo_skillcategory.aspx" />
@@ -561,6 +562,13 @@
     </Compile>
     <Compile Include="bussiness\production\add_expense_subheads.aspx.designer.cs">
       <DependentUpon>add_expense_subheads.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\add_nwhelpdsk.aspx.cs">
+      <DependentUpon>add_nwhelpdsk.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\add_nwhelpdsk.aspx.designer.cs">
+      <DependentUpon>add_nwhelpdsk.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\add_workorderdata.aspx.cs">
       <DependentUpon>add_workorderdata.aspx</DependentUpon>

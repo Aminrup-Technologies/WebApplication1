@@ -7,11 +7,7 @@
         <div class="">
             <div class="page-title">
                 <div class="title_left">
-                    <h3>Contractor Safety Management (CSM) Dashboard</h3>
-                </div>
-
-                <div class="title_right">
-                    <div class="col-md-5 col-sm-5 form-group row pull-right top_search"></div>
+                    <h2>Contractor Safety Management (CSM)</h2>
                 </div>
             </div>
 
@@ -21,7 +17,7 @@
                 <div class="col-md-12" id="Supvkpirow" runat="server" visible="true">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Supervisor - KPI Documentation</h2>
+                            <h2>Supervisor - KPI</h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                                 </li>
@@ -54,7 +50,7 @@
                 <div class="col-md-12" id="SafetySupvKPIrow" runat="server" visible="true">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Safety Supervisor : KPI Documentation</h2>
+                            <h2>Safety Supervisor : KPI</h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                                 </li>
@@ -138,7 +134,7 @@
                 <div class="col-md-12" id="StoreKPIrow" runat="server" visible="true">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Store Keeper : KPI Documentation</h2>
+                            <h2>Store Keeper : KPI</h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                                 </li>
@@ -159,7 +155,7 @@
                 <div class="col-md-12" id="SafetyOfficerKPIrow" runat="server" visible="true">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Safety Officer : KPI Documentation</h2>
+                            <h2>Safety Officer : KPI</h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                                 </li>
@@ -200,7 +196,7 @@
                 <div class="col-md-12" id="siteinchargekpirow" runat="server" visible="true">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Site-Incharge : KPI Documentation</h2>
+                            <h2>Site-Incharge : KPI</h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                                 </li>
@@ -227,7 +223,7 @@
                 <div class="col-md-12" id="GeneralKPI" runat="server" visible="true">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Other : KPI Documentation</h2>
+                            <h2>Other : KPI</h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                                 </li>

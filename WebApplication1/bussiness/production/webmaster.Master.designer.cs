@@ -7,13 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WebApplication1.gentelella_master.production
-{
-
-
-    public partial class webmaster
-    {
-
+namespace WebApplication1.gentelella_master.production {
+    
+    
+    public partial class webmaster {
+        
         /// <summary>
         /// head control.
         /// </summary>
@@ -22,7 +20,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.ContentPlaceHolder head;
-
+        
         /// <summary>
         /// form1 control.
         /// </summary>
@@ -31,7 +29,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
-
+        
         /// <summary>
         /// Image1 control.
         /// </summary>
@@ -40,7 +38,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Image Image1;
-
+        
         /// <summary>
         /// ProfilePic_1 control.
         /// </summary>
@@ -49,7 +47,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlImage ProfilePic_1;
-
+        
         /// <summary>
         /// lbl_loginusername1 control.
         /// </summary>
@@ -58,7 +56,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_loginusername1;
-
+        
         /// <summary>
         /// HomePage control.
         /// </summary>
@@ -67,7 +65,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl HomePage;
-
+        
         /// <summary>
         /// Home1 control.
         /// </summary>
@@ -76,7 +74,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl Home1;
-
+        
         /// <summary>
         /// AttendnaceCal control.
         /// </summary>
@@ -85,7 +83,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl AttendnaceCal;
-
+        
         /// <summary>
         /// DataMastering control.
         /// </summary>
@@ -94,7 +92,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl DataMastering;
-
+        
         /// <summary>
         /// Works control.
         /// </summary>
@@ -103,7 +101,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl Works;
-
+        
         /// <summary>
         /// WorkCountry control.
         /// </summary>
@@ -112,7 +110,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl WorkCountry;
-
+        
         /// <summary>
         /// WorkState control.
         /// </summary>
@@ -121,7 +119,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl WorkState;
-
+        
         /// <summary>
         /// WorkRegion control.
         /// </summary>
@@ -130,7 +128,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl WorkRegion;
-
+        
         /// <summary>
         /// Clients control.
         /// </summary>
@@ -139,7 +137,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl Clients;
-
+        
         /// <summary>
         /// WorkCompany control.
         /// </summary>
@@ -148,7 +146,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl WorkCompany;
-
+        
         /// <summary>
         /// CompanyDept control.
         /// </summary>
@@ -157,7 +155,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl CompanyDept;
-
+        
         /// <summary>
         /// DeptHeads control.
         /// </summary>
@@ -166,7 +164,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl DeptHeads;
-
+        
         /// <summary>
         /// DeptLocations control.
         /// </summary>
@@ -175,7 +173,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl DeptLocations;
-
+        
         /// <summary>
         /// WorkOrder control.
         /// </summary>
@@ -184,7 +182,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl WorkOrder;
-
+        
         /// <summary>
         /// AddWorkorder control.
         /// </summary>
@@ -193,7 +191,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl AddWorkorder;
-
+        
         /// <summary>
         /// AddWO_SkillCategory control.
         /// </summary>
@@ -202,7 +200,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl AddWO_SkillCategory;
-
+        
         /// <summary>
         /// AddItemNo control.
         /// </summary>
@@ -211,7 +209,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl AddItemNo;
-
+        
         /// <summary>
         /// AddLineItems control.
         /// </summary>
@@ -220,7 +218,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl AddLineItems;
-
+        
         /// <summary>
         /// UploadLineItems control.
         /// </summary>
@@ -229,7 +227,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl UploadLineItems;
-
+        
         /// <summary>
         /// Payroll control.
         /// </summary>
@@ -238,7 +236,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl Payroll;
-
+        
         /// <summary>
         /// PayrollSkills control.
         /// </summary>
@@ -247,7 +245,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl PayrollSkills;
-
+        
         /// <summary>
         /// PayrollWages control.
         /// </summary>
@@ -256,7 +254,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl PayrollWages;
-
+        
         /// <summary>
         /// PayrollDesg control.
         /// </summary>
@@ -265,7 +263,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl PayrollDesg;
-
+        
         /// <summary>
         /// ATSSItes control.
         /// </summary>
@@ -274,7 +272,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl ATSSItes;
-
+        
         /// <summary>
         /// Worksites control.
         /// </summary>
@@ -283,7 +281,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl Worksites;
-
+        
         /// <summary>
         /// SiteIncharges control.
         /// </summary>
@@ -292,7 +290,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl SiteIncharges;
-
+        
         /// <summary>
         /// HRSection control.
         /// </summary>
@@ -301,7 +299,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl HRSection;
-
+        
         /// <summary>
         /// AddEmployee control.
         /// </summary>
@@ -310,7 +308,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl AddEmployee;
-
+        
         /// <summary>
         /// BulkRegistration control.
         /// </summary>
@@ -319,7 +317,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl BulkRegistration;
-
+        
         /// <summary>
         /// ViewMasterData control.
         /// </summary>
@@ -328,7 +326,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl ViewMasterData;
-
+        
         /// <summary>
         /// UpdateEmpMasterData control.
         /// </summary>
@@ -337,7 +335,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl UpdateEmpMasterData;
-
+        
         /// <summary>
         /// Analytics control.
         /// </summary>
@@ -346,7 +344,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl Analytics;
-
+        
         /// <summary>
         /// monthlysummary control.
         /// </summary>
@@ -355,7 +353,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl monthlysummary;
-
+        
         /// <summary>
         /// dailysummary control.
         /// </summary>
@@ -364,7 +362,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl dailysummary;
-
+        
         /// <summary>
         /// empsummary control.
         /// </summary>
@@ -373,7 +371,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl empsummary;
-
+        
         /// <summary>
         /// swapjobdate control.
         /// </summary>
@@ -382,7 +380,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl swapjobdate;
-
+        
         /// <summary>
         /// PayrollReports control.
         /// </summary>
@@ -391,7 +389,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl PayrollReports;
-
+        
         /// <summary>
         /// mng_pyrl control.
         /// </summary>
@@ -400,7 +398,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl mng_pyrl;
-
+        
         /// <summary>
         /// gnrt_pyrl control.
         /// </summary>
@@ -409,7 +407,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl gnrt_pyrl;
-
+        
         /// <summary>
         /// JOBManpower control.
         /// </summary>
@@ -418,7 +416,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl JOBManpower;
-
+        
         /// <summary>
         /// CreateJOBS control.
         /// </summary>
@@ -427,7 +425,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl CreateJOBS;
-
+        
         /// <summary>
         /// ManageJOBS control.
         /// </summary>
@@ -436,7 +434,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl ManageJOBS;
-
+        
         /// <summary>
         /// RejectedJOBS_Supv control.
         /// </summary>
@@ -445,7 +443,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl RejectedJOBS_Supv;
-
+        
         /// <summary>
         /// EmpSearch control.
         /// </summary>
@@ -454,7 +452,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl EmpSearch;
-
+        
         /// <summary>
         /// JOBApproval control.
         /// </summary>
@@ -463,7 +461,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl JOBApproval;
-
+        
         /// <summary>
         /// vwatten control.
         /// </summary>
@@ -472,7 +470,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl vwatten;
-
+        
         /// <summary>
         /// ViewJobforApp control.
         /// </summary>
@@ -481,7 +479,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl ViewJobforApp;
-
+        
         /// <summary>
         /// lbl_jobspendingcount control.
         /// </summary>
@@ -490,7 +488,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_jobspendingcount;
-
+        
         /// <summary>
         /// ApprovedJOBS control.
         /// </summary>
@@ -499,7 +497,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl ApprovedJOBS;
-
+        
         /// <summary>
         /// lbl_approvedjobs control.
         /// </summary>
@@ -508,7 +506,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_approvedjobs;
-
+        
         /// <summary>
         /// RejectedJOBS_inch control.
         /// </summary>
@@ -517,7 +515,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl RejectedJOBS_inch;
-
+        
         /// <summary>
         /// lbl_rejectedjobs control.
         /// </summary>
@@ -526,7 +524,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_rejectedjobs;
-
+        
         /// <summary>
         /// Memo_Billing control.
         /// </summary>
@@ -535,7 +533,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl Memo_Billing;
-
+        
         /// <summary>
         /// crt_spm control.
         /// </summary>
@@ -544,7 +542,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl crt_spm;
-
+        
         /// <summary>
         /// crt_lim control.
         /// </summary>
@@ -553,7 +551,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl crt_lim;
-
+        
         /// <summary>
         /// crt_memosum control.
         /// </summary>
@@ -562,7 +560,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl crt_memosum;
-
+        
         /// <summary>
         /// CSM control.
         /// </summary>
@@ -571,7 +569,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl CSM;
-
+        
         /// <summary>
         /// csms_mainview control.
         /// </summary>
@@ -580,7 +578,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl csms_mainview;
-
+        
         /// <summary>
         /// csm_approvals control.
         /// </summary>
@@ -589,7 +587,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl csm_approvals;
-
+        
         /// <summary>
         /// csm_reports control.
         /// </summary>
@@ -598,7 +596,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl csm_reports;
-
+        
         /// <summary>
         /// Reltab control.
         /// </summary>
@@ -607,7 +605,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl Reltab;
-
+        
         /// <summary>
         /// budget control.
         /// </summary>
@@ -616,7 +614,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl budget;
-
+        
         /// <summary>
         /// add_exphd control.
         /// </summary>
@@ -625,7 +623,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl add_exphd;
-
+        
         /// <summary>
         /// add_expsbhd control.
         /// </summary>
@@ -634,7 +632,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl add_expsbhd;
-
+        
         /// <summary>
         /// add_exp control.
         /// </summary>
@@ -643,7 +641,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl add_exp;
-
+        
         /// <summary>
         /// mng_exp control.
         /// </summary>
@@ -652,7 +650,34 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl mng_exp;
-
+        
+        /// <summary>
+        /// Helpdesk control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Helpdesk;
+        
+        /// <summary>
+        /// hlpdsk_new control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl hlpdsk_new;
+        
+        /// <summary>
+        /// hlpdsk_view control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl hlpdsk_view;
+        
         /// <summary>
         /// ProfilePic_2 control.
         /// </summary>
@@ -661,7 +686,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlImage ProfilePic_2;
-
+        
         /// <summary>
         /// lbl_loginusername2 control.
         /// </summary>
@@ -670,7 +695,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_loginusername2;
-
+        
         /// <summary>
         /// ContentPlaceHolder1 control.
         /// </summary>
@@ -679,7 +704,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.ContentPlaceHolder ContentPlaceHolder1;
-
+        
         /// <summary>
         /// btn_lgout control.
         /// </summary>
@@ -688,7 +713,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btn_lgout;
-
+        
         /// <summary>
         /// iprow control.
         /// </summary>
@@ -697,7 +722,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl iprow;
-
+        
         /// <summary>
         /// lbl_IPAddress control.
         /// </summary>
@@ -706,7 +731,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_IPAddress;
-
+        
         /// <summary>
         /// lblTime1 control.
         /// </summary>
@@ -715,7 +740,7 @@ namespace WebApplication1.gentelella_master.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblTime1;
-
+        
         /// <summary>
         /// lblTime control.
         /// </summary>
