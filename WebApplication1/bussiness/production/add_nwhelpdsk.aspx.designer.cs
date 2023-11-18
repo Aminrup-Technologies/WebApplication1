@@ -31,6 +31,33 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.DropDownList DDL_ChildCategory;
         
         /// <summary>
+        /// DDL_Subject control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList DDL_Subject;
+        
+        /// <summary>
+        /// DDL_HelpLevel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList DDL_HelpLevel;
+        
+        /// <summary>
+        /// txt_descp control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txt_descp;
+        
+        /// <summary>
         /// lbl_msg control.
         /// </summary>
         /// <remarks>

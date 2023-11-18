@@ -1,6 +1,6 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="add_nwhelpdsk.aspx.cs" Inherits="WebApplication1.bussiness.production.add_nwhelpdsk" %>
-<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="right_col" role="main">
@@ -29,16 +29,36 @@
                                     <label>Select Support Category<span class="text text-danger">*</span></label>
                                 </div>
                                 <div class="col-md-3 col-sm-12  form-group">
-                                    <asp:DropDownList ID="DDL_RootCategory" CssClass="form-control form-control-sm rounded" runat="server" AutoPostBack="true"></asp:DropDownList>
+                                    <asp:DropDownList ID="DDL_RootCategory" CssClass="form-control form-control-sm rounded" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DDL_RootCategory_SelectedIndexChanged"></asp:DropDownList>
                                 </div>
 
                                 <div class="col-md-3 col-sm-12  form-group">
                                     <label>Select Support Topic<span class="text text-danger">*</span></label>
                                 </div>
                                 <div class="col-md-3 col-sm-12  form-group">
-                                    <asp:DropDownList ID="DDL_ChildCategory" CssClass="form-control form-control-sm rounded" runat="server"></asp:DropDownList>
+                                    <asp:DropDownList ID="DDL_ChildCategory" CssClass="form-control form-control-sm rounded" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DDL_ChildCategory_SelectedIndexChanged"></asp:DropDownList>
                                 </div>
 
+                                <div class="col-md-3 col-sm-12  form-group">
+                                    <label>Select Subject<span class="text text-danger">*</span></label>
+                                </div>
+                                <div class="col-md-3 col-sm-12  form-group">
+                                    <asp:DropDownList ID="DDL_Subject" CssClass="form-control form-control-sm rounded" runat="server"></asp:DropDownList>
+                                </div>
+
+                                <div class="col-md-3 col-sm-12  form-group">
+                                    <label>Support Level<span class="text text-danger">*</span></label>
+                                </div>
+                                <div class="col-md-3 col-sm-12  form-group">
+                                    <asp:DropDownList ID="DDL_HelpLevel" CssClass="form-control form-control-sm rounded" runat="server"></asp:DropDownList>
+                                </div>
+
+                                <div class="col-md-3 col-sm-12  form-group">
+                                    <label>Description<span class="text text-danger">*</span></label>
+                                </div>
+                                <div class="col-md-9 col-sm-12  form-group">
+                                    <asp:TextBox ID="txt_descp" runat="server" class="form-control form-control-sm rounded" TextMode="MultiLine" Rows="3" Text="N/A"></asp:TextBox>
+                                </div>
 
                             </div>
 
@@ -52,7 +72,7 @@
                                     </div>
                                     <div class="col-md-6 col-sm-12">
                                         <asp:Button ID="btn_cancel" runat="server" class="btn btn-danger btn-sm collapse-link" Text="Cancel" PostBackUrl="~/bussiness/production/homepage.aspx" />
-                                        <asp:Button ID="btn_reset" runat="server" class="btn btn-warning btn-sm" Text="Reset" PostBackUrl="~/bussiness/production/add_nwhelpdsk.aspx" />
+                                        <asp:Button ID="btn_reset" runat="server" class="btn btn-warning btn-sm" Text="Reset" OnClientClick="reloadPage(); return false;" />
                                         <asp:Button ID="btn_submit" runat="server" Text="Submit" CssClass="btn btn-success btn-sm" OnClientClick="return ValidateFormField()" />
                                     </div>
                                 </div>
@@ -109,11 +129,4 @@
             </div>
         </div>
     </div>
-    <script type="text/javascript">
-        function ShowPopup(title, body) {
-            $("#MyPopup .modal-title").html(title);
-            $("#MyPopup .modal-body").html(body);
-            $("#MyPopup").modal("show");
-        }
-    </script>
 </asp:Content>

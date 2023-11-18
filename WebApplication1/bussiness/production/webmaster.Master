@@ -78,6 +78,10 @@
 			document.getElementById("lblTime").innerHTML = dt.toLocaleTimeString();
 			window.setTimeout("ShowTime()", 800000); // Here 1000(milliseconds) means one 1 Sec
 		}
+
+		function reloadPage() {
+		    location.reload();
+		}
 	</script>
 </head>
 <body class="nav-md footer_fixed" onload="ShowCurrentTime()">
@@ -418,6 +422,7 @@
 
 		<!-- Custom Theme Scripts -->
 		<script src="../build/js/custom.js"></script>
+
 	</form>
 </body>
 </html>

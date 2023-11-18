@@ -8,6 +8,7 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Globalization;
 using System.Drawing;
+
 namespace WebApplication1.bussiness.production
 {
     public partial class job_inpunch : System.Web.UI.Page

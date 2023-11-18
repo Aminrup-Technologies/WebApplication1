@@ -18,7 +18,7 @@ namespace WebApplication1.bussiness.production
         //public static string Logs = @"C:\atswebuat\bussiness\production\WindowsServiceLog\";
         //public static string Logs = @"D:\RnD\OH4Y_Aug23\WebApplication1\WebApplication1\bussiness\production\WindowsServiceLog\";
         //public static string Logs = @"\production\WindowsServiceLog\";
-        public SqlConnection Conn;
+        //public SqlConnection Conn;
         public SqlDataReader dr;
         public SqlCommand cmd;
         public SqlDataAdapter da;
@@ -26,7 +26,18 @@ namespace WebApplication1.bussiness.production
         public DataSet ds;
         public static string cnnString = System.Configuration.ConfigurationManager.ConnectionStrings["DbConn"].ToString();
 
-        int flag = 0;
+        private int flag = 0;
+
+        //public int Sqlconnection()
+        //{
+        //    string cnnString = System.Configuration.ConfigurationManager.ConnectionStrings["DbConn"].ToString();
+        //    Conn = new SqlConnection(cnnString);
+        //    flag = 1;
+        //    return flag;
+        //}
+
+        public SqlConnection Conn { get; private set; }
+        //private int flag;
 
         public int Sqlconnection()
         {
