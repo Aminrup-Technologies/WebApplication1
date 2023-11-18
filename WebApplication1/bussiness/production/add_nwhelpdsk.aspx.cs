@@ -167,8 +167,8 @@ namespace WebApplication1.bussiness.production
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
                             DDL_Subject.DataSource = reader;
-                            DDL_Subject.DataTextField = "root3_name";
-                            DDL_Subject.DataValueField = "Id";
+                            DDL_Subject.DataTextField = "Work_Region_Name";
+                            DDL_Subject.DataValueField = "Work_Region_Code";
                             DDL_Subject.DataBind();
                         }
                     }
