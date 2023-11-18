@@ -17,7 +17,7 @@
                 <div class="col-md-12 col-sm-12  ">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Raise New Support Request</h2>
+                            <h2>Raise New Grievances Request</h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                             </ul>
@@ -25,39 +25,43 @@
                         </div>
                         <div class="x_content">
                             <div class="row">
-                                <div class="col-md-3 col-sm-12  form-group">
-                                    <label>Select Support Category<span class="text text-danger">*</span></label>
+                                <div class="col-md-3 col-sm-6  form-group">
+                                    <label>Support Category<span class="text text-danger">*</span></label>
                                 </div>
-                                <div class="col-md-3 col-sm-12  form-group">
+                                <div class="col-md-3 col-sm-6  form-group">
                                     <asp:DropDownList ID="DDL_RootCategory" CssClass="form-control form-control-sm rounded" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DDL_RootCategory_SelectedIndexChanged"></asp:DropDownList>
+                                    <asp:RequiredFieldValidator ID="RFV_1" ValidationGroup="Submit" runat="server" CssClass="text text-warning" Display="Dynamic" ErrorMessage="This field is required" ForeColor="Red" ControlToValidate="DDL_RootCategory" SetFocusOnError="true" InitialValue="Please Select Option" ToolTip="Kindly select value"></asp:RequiredFieldValidator>
                                 </div>
 
-                                <div class="col-md-3 col-sm-12  form-group">
-                                    <label>Select Support Topic<span class="text text-danger">*</span></label>
+                                <div class="col-md-3 col-sm-6  form-group">
+                                    <label>Grievances Topic<span class="text text-danger">*</span></label>
                                 </div>
-                                <div class="col-md-3 col-sm-12  form-group">
+                                <div class="col-md-3 col-sm-6  form-group">
                                     <asp:DropDownList ID="DDL_ChildCategory" CssClass="form-control form-control-sm rounded" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DDL_ChildCategory_SelectedIndexChanged"></asp:DropDownList>
+                                    <asp:RequiredFieldValidator ID="RFV_2" ValidationGroup="Submit" runat="server" CssClass="text text-warning" Display="Dynamic" ErrorMessage="This field is required" ForeColor="Red" ControlToValidate="DDL_ChildCategory" SetFocusOnError="true" InitialValue="Please Select Option" ToolTip="Kindly select value"></asp:RequiredFieldValidator>
                                 </div>
 
-                                <div class="col-md-3 col-sm-12  form-group">
-                                    <label>Select Subject<span class="text text-danger">*</span></label>
+                                <div class="col-md-3 col-sm-6  form-group">
+                                    <label>Select Subject</label>
                                 </div>
-                                <div class="col-md-3 col-sm-12  form-group">
+                                <div class="col-md-3 col-sm-6  form-group">
                                     <asp:DropDownList ID="DDL_Subject" CssClass="form-control form-control-sm rounded" runat="server"></asp:DropDownList>
                                 </div>
 
-                                <div class="col-md-3 col-sm-12  form-group">
-                                    <label>Support Level<span class="text text-danger">*</span></label>
+                                <div class="col-md-3 col-sm-6  form-group">
+                                    <label>Support Level</label>
                                 </div>
-                                <div class="col-md-3 col-sm-12  form-group">
+                                <div class="col-md-3 col-sm-6  form-group">
                                     <asp:DropDownList ID="DDL_HelpLevel" CssClass="form-control form-control-sm rounded" runat="server"></asp:DropDownList>
+                                    <asp:RequiredFieldValidator ID="RFV_3" ValidationGroup="Submit" runat="server" CssClass="text text-warning" Display="Dynamic" ErrorMessage="This field is required" ForeColor="Red" ControlToValidate="DDL_HelpLevel" SetFocusOnError="true" InitialValue="Please Select Option" ToolTip="Kindly select value"></asp:RequiredFieldValidator>
                                 </div>
 
-                                <div class="col-md-3 col-sm-12  form-group">
+                                <div class="col-md-3 col-sm-6  form-group">
                                     <label>Description<span class="text text-danger">*</span></label>
                                 </div>
-                                <div class="col-md-9 col-sm-12  form-group">
+                                <div class="col-md-9 col-sm-6  form-group">
                                     <asp:TextBox ID="txt_descp" runat="server" class="form-control form-control-sm rounded" TextMode="MultiLine" Rows="3" Text="N/A"></asp:TextBox>
+                                    <asp:RequiredFieldValidator ID="RFV_4" ValidationGroup="Submit" runat="server" CssClass="text text-warning" Display="Dynamic" ErrorMessage="This field is required" ForeColor="Red" ControlToValidate="txt_descp" SetFocusOnError="true" InitialValue="N/A" ToolTip="Kindly select value"></asp:RequiredFieldValidator>
                                 </div>
 
                             </div>
@@ -71,9 +75,9 @@
                                         <asp:Label ID="lbl_msg" runat="server" Text="Click SUBMIT to Save Data!!"></asp:Label>
                                     </div>
                                     <div class="col-md-6 col-sm-12">
-                                        <asp:Button ID="btn_cancel" runat="server" class="btn btn-danger btn-sm collapse-link" Text="Cancel" PostBackUrl="~/bussiness/production/homepage.aspx" />
-                                        <asp:Button ID="btn_reset" runat="server" class="btn btn-warning btn-sm" Text="Reset" OnClientClick="reloadPage(); return false;" />
-                                        <asp:Button ID="btn_submit" runat="server" Text="Submit" CssClass="btn btn-success btn-sm" OnClientClick="return ValidateFormField()" />
+                                        <asp:Button ID="btn_cancel" runat="server" class="btn btn-danger btn-sm collapse-link" CausesValidation="false" Text="Cancel" PostBackUrl="~/bussiness/production/homepage.aspx" />
+                                        <asp:Button ID="btn_reset" runat="server" class="btn btn-warning btn-sm" Text="Reset" CausesValidation="false" OnClientClick="reloadPage(); return false;" />
+                                        <asp:Button ID="btn_submit" runat="server" Text="Submit" CssClass="btn btn-success btn-sm" OnClick="btn_submit_Click" ValidationGroup="Submit" CausesValidation="true"/>
                                     </div>
                                 </div>
                             </div>
@@ -129,4 +133,11 @@
             </div>
         </div>
     </div>
+    <script type="text/javascript">
+        function ShowPopup(title, body) {
+            $("#MyPopup .modal-title").html(title);
+            $("#MyPopup .modal-body").html(body);
+            $("#MyPopup").modal("show");
+        }
+    </script>
 </asp:Content>

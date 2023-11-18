@@ -22,6 +22,15 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.DropDownList DDL_RootCategory;
         
         /// <summary>
+        /// RFV_1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator RFV_1;
+        
+        /// <summary>
         /// DDL_ChildCategory control.
         /// </summary>
         /// <remarks>
@@ -29,6 +38,15 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList DDL_ChildCategory;
+        
+        /// <summary>
+        /// RFV_2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator RFV_2;
         
         /// <summary>
         /// DDL_Subject control.
@@ -49,6 +67,15 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.DropDownList DDL_HelpLevel;
         
         /// <summary>
+        /// RFV_3 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator RFV_3;
+        
+        /// <summary>
         /// txt_descp control.
         /// </summary>
         /// <remarks>
@@ -56,6 +83,15 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txt_descp;
+        
+        /// <summary>
+        /// RFV_4 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator RFV_4;
         
         /// <summary>
         /// lbl_msg control.
