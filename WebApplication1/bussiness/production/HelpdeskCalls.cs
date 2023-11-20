@@ -79,6 +79,7 @@ namespace WebApplication1.bussiness.production
                         // Add recipient email addresses
                         mail.To.Add("kaushik@atswork.in");
                         mail.To.Add("anupam.sharma@atswork.in");
+                        mail.CC.Add("office@atswork.in");
                         // Set email subject and body
                         mail.Subject = "Grivance Ticket Created # "+ hlpdskid + " with Priority Level : " + priorityLevel + "!";
                         //mail.Body = $"Ticket ID: {hlpdskid}\n\nCreated By: {createdByName}[{createdByWorkman}]\nWorking At:{creatorRegion}[{creatorComp}]\n\nGrievances Category: {root1Value}\nSupport Topic: {root2Value}\n\nDetailed Description:{description}\n\n\n\nThank You\nATS Portal";

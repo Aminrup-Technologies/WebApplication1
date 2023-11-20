@@ -17,7 +17,7 @@
                 <div class="col-md-12 col-sm-12  ">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Raise New Grievances Request</h2>
+                            <h2>Raise New Grievance Request</h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                             </ul>
@@ -113,7 +113,7 @@
                 <div class="col-md-12 col-sm-12">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>View and Manage : Work Order Data</h2>
+                            <h2>View and Manage : Grievances</h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                             </ul>
@@ -123,7 +123,7 @@
                             <div class="row">
                                 <div class="col-md-12 col-sm-12">
                                     <div class="card-box table-responsive">
-                                        <span>Hello, How are you?</span>
+                                        <span>Work in progress.....!!!</span>
                                     </div>
                                 </div>
                             </div>
