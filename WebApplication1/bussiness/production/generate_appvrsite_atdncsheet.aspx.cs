@@ -26,10 +26,10 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-                    string CmdString1 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = 'IN' and State_Code ='OD' order by Id ";
+                    string CmdString1 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = 'IN' and State_Code ='" + Session["STATE"].ToString() + "' order by Id ";
                     BindRegions(CmdString1);
 
-                    string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = 'IN' and State_Code ='OD' and Work_Region_Code = '" + Session["REGION"].ToString() + "' order by Id ";
+                    string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = 'IN' and State_Code ='"+ Session["STATE"].ToString() + "' and Work_Region_Code = '" + Session["REGION"].ToString() + "' order by Id ";
                     BindCompany(CmdString3);
                     DDL_Company.SelectedValue = Session["COMPANY_CODE"].ToString();
 
@@ -52,7 +52,7 @@ namespace WebApplication1.bussiness.production
         {
             DDL_Region.SelectedValue = Session["REGION"].ToString();
             DDL_Region.Enabled = false;
-            string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = 'IN' and State_Code ='OD' and Work_Region_Code = '" + Session["REGION"].ToString() + "' order by Id ";
+            string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = 'IN' and State_Code ='" + Session["STATE"].ToString() + "' and Work_Region_Code = '" + Session["REGION"].ToString() + "' order by Id ";
             BindCompany(CmdString3);
         }
 
