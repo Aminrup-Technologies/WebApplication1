@@ -7,13 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WebApplication1.bussiness.production
-{
-
-
-    public partial class viewupdate_emppayrolldata
-    {
-
+namespace WebApplication1.bussiness.production {
+    
+    
+    public partial class viewupdate_emppayrolldata {
+        
         /// <summary>
         /// Button1 control.
         /// </summary>
@@ -22,7 +20,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button Button1;
-
+        
         /// <summary>
         /// DDL_EmpWorkStatus control.
         /// </summary>
@@ -31,7 +29,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList DDL_EmpWorkStatus;
-
+        
         /// <summary>
         /// DDL_SkillCategory control.
         /// </summary>
@@ -40,7 +38,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList DDL_SkillCategory;
-
+        
         /// <summary>
         /// DDL_Form17YesNo control.
         /// </summary>
@@ -49,7 +47,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList DDL_Form17YesNo;
-
+        
         /// <summary>
         /// DDL_FixedYesNo control.
         /// </summary>
@@ -58,7 +56,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList DDL_FixedYesNo;
-
+        
         /// <summary>
         /// lbl_msg control.
         /// </summary>
@@ -67,7 +65,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_msg;
-
+        
         /// <summary>
         /// btn_submit control.
         /// </summary>
@@ -76,7 +74,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btn_submit;
-
+        
         /// <summary>
         /// ShowPopup control.
         /// </summary>
@@ -85,7 +83,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button ShowPopup;
-
+        
         /// <summary>
         /// GridView1 control.
         /// </summary>

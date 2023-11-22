@@ -9,9 +9,9 @@
         }
 
         function openWhatsApp() {
-			// collet the user input
-			//var value = $("input[name=message]").val();
-			//var value = document.getElementById('<%=txt_permitno.ClientID %>').outerText;
+            // collet the user input
+            //var value = $("input[name=message]").val();
+            //var value = document.getElementById('<%=txt_permitno.ClientID %>').outerText;
             // JavaScript function to open URL in new window
 
             var whatsappMessage = $('#' + '<%=HF_Msg.ClientID%>').val();
@@ -21,7 +21,7 @@
             whatsappMessage = window.encodeURIComponent(whatsappMessage)
             window.open("whatsapp://send?text=" + whatsappMessage, '_blank');
 
-		    //var value = "Hi, How are you..?"+"\r\n"+"Your Permit Number is" + document.getElementById('<%=txt_permitno.ClientID %>').outerText + "";
+            //var value = "Hi, How are you..?"+"\r\n"+"Your Permit Number is" + document.getElementById('<%=txt_permitno.ClientID %>').outerText + "";
             //window.open("whatsapp://send?text=" + value, '_blank');
         }
     </script>
@@ -427,10 +427,12 @@
                                                         <asp:Label ID="lbl_ProvidedOT" runat="server" Text='<%# Bind("ProvidedOT") %>'></asp:Label>
                                                     </ItemTemplate>
                                                     <EditItemTemplate>
-                                                        <asp:TextBox ID="txt_ProvidedOT" runat="server" class="form-control form-control-sm rounded" Text='<%# DataBinder.Eval(Container.DataItem,"ProvidedOT") %> ' Width="100%"></asp:TextBox>
+                                                        <asp:TextBox ID="txt_ProvidedOT" runat="server" class="form-control form-control-sm rounded" Text='<%# DataBinder.Eval(Container.DataItem,"ProvidedOT") %>' Width="100%"></asp:TextBox>
+                                                        <asp:CustomValidator ID="CustomValidator2" runat="server" ControlToValidate="txt_ProvidedOT" Display="Dynamic" ErrorMessage="Value must be less than or equal to 16" ClientValidationFunction="validateProvidedOT"></asp:CustomValidator>
                                                     </EditItemTemplate>
                                                     <ItemStyle CssClass="text text-center" />
                                                 </asp:TemplateField>
+
 
                                                 <asp:TemplateField HeaderText="Atten Status" HeaderStyle-Width="3%" Visible="false">
                                                     <ItemTemplate>
@@ -496,11 +498,30 @@
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script type="text/javascript">
         function ShowPopup(title, body) {
             $("#MyPopup .modal-title").html(title);
             $("#MyPopup .modal-body").html(body);
             $("#MyPopup").modal("show");
+        }
+    </script>
+
+    <script>
+        function validateProvidedOT(sender, args) {
+            var textBox = $("#" + sender.controltovalidate);
+            var inputValue = textBox.val();
+            if (inputValue.trim() !== '') {
+                var numericValue = parseInt(inputValue);
+                if (isNaN(numericValue) || numericValue > 16) {
+                    args.IsValid = false;
+                } else {
+                    args.IsValid = true;
+                }
+            } else {
+                args.IsValid = false;
+            }
         }
     </script>
 </asp:Content>

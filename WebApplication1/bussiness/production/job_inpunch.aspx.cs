@@ -18,6 +18,8 @@ namespace WebApplication1.bussiness.production
         DataTable dt = new DataTable();
         DataTable FirstDatatable = new DataTable();
         public static Boolean jhanda = false;
+
+        public static string JOBID = string.Empty;
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -99,7 +101,7 @@ namespace WebApplication1.bussiness.production
                             else
                             {
                                 //Find PJOBIDrevious OUT Punch Pending Details and display to the USER
-                                string JOBID = "";
+                                //string JOBID = ""; Commented bcoz a global variable is declared
                                 string jobdate = "";
                                 string submittername = "";
                                 Pull_PendingOUTDetails(entered_workman, ref JOBID, ref jobdate, ref submittername);
@@ -262,6 +264,11 @@ namespace WebApplication1.bussiness.production
 
                 if (flag1 == true)
                 {
+                    string Subject = "Missing PO and Skill Category Mapping : Region='"+ lbl_jobrgn.Text.ToString() + "' || Company= '"+ lbl_jobcompay.Text.ToString()+ "' || Workorder='"+ lbl_wrkordr.Text.ToString() + "'";
+                    string EmailBody = "Dear ATS Team, Please note that one of your ATS Portal has created a JOBID :'" + lbl_jobid.Text.ToString() + "', Where he/she is trying to add manpower with Designation : '"+ designation.ToString() + "' and Skill Category : '"+ category.ToString() + "' but finding issues as the manpower Skill Category is NOT mapped with P.O. or Workorder Skill Category, Which is required while generating Daily Supply Memo. Kindly map the follwoing for further smooth processing.--- Thank You";
+                    //Send a mail to HR regarding missing mapping record between PO / WO Skill and Employee SKill
+                    dbcl.SendEmailCC("anupam.sharma@atswork.in", "kaushik@atswork.in", Subject, EmailBody);
+
                     string title = "Notifications :";
                     string body = "No Mapped PO Skill Category Found";
                     ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
