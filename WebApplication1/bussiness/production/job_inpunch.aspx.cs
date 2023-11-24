@@ -8,6 +8,8 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Globalization;
 using System.Drawing;
+using System.Net.Mail;
+using System.Net;
 
 namespace WebApplication1.bussiness.production
 {
@@ -20,6 +22,7 @@ namespace WebApplication1.bussiness.production
         public static Boolean jhanda = false;
 
         public static string JOBID = string.Empty;
+        DataTable maildataTable = new DataTable();
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -264,10 +267,31 @@ namespace WebApplication1.bussiness.production
 
                 if (flag1 == true)
                 {
-                    string Subject = "Missing PO and Skill Category Mapping : Region='"+ lbl_jobrgn.Text.ToString() + "' || Company= '"+ lbl_jobcompay.Text.ToString()+ "' || Workorder='"+ lbl_wrkordr.Text.ToString() + "'";
-                    string EmailBody = "Dear ATS Team, Please note that one of your ATS Portal has created a JOBID :'" + lbl_jobid.Text.ToString() + "', Where he/she is trying to add manpower with Designation : '"+ designation.ToString() + "' and Skill Category : '"+ category.ToString() + "' but finding issues as the manpower Skill Category is NOT mapped with P.O. or Workorder Skill Category, Which is required while generating Daily Supply Memo. Kindly map the follwoing for further smooth processing.--- Thank You";
-                    //Send a mail to HR regarding missing mapping record between PO / WO Skill and Employee SKill
-                    dbcl.SendEmailCC("anupam.sharma@atswork.in", "kaushik@atswork.in", Subject, EmailBody);
+                    //string jobregion = lbl_jobrgn.Text.ToString();
+                    //string jobcomp = lbl_jobcompay.Text.ToString();
+                    //string wono = lbl_wrkordr.Text.ToString();
+                    //string EmpDesg = designation.ToString();
+                    //string EmpSkill = category.ToString();
+
+                    maildataTable.Columns.Add("JobRegion", typeof(string));
+                    maildataTable.Columns.Add("JobCompany", typeof(string));
+                    maildataTable.Columns.Add("WorkOrderNo", typeof(string));
+                    maildataTable.Columns.Add("EmployeeDesignation", typeof(string));
+                    maildataTable.Columns.Add("EmployeeCategory", typeof(string));
+
+                    DataRow newRow = maildataTable.NewRow();
+                    newRow["JobRegion"] = lbl_jobrgn.Text.ToString();
+                    newRow["JobCompany"] = lbl_jobcompay.Text.ToString();
+                    newRow["WorkOrderNo"] = lbl_wrkordr.Text.ToString();
+                    newRow["EmployeeDesignation"] = designation.ToString();
+                    newRow["EmployeeCategory"] = category.ToString();
+
+                    maildataTable.Rows.Add(newRow);
+
+                    
+                    //string EmailBody = "Dear ATS Team, Please note that one of your ATS Portal has created a JOBID :'" + lbl_jobid.Text.ToString() + "', Where he/she is trying to add manpower with Designation : '"+ EmpDesg + "' and Skill Category : '"+ EmpSkill + "' but finding issues as the manpower Skill Category is NOT mapped with P.O. or Workorder Skill Category, Which is required while generating Daily Supply Memo. Kindly map the follwoing for further smooth processing.--- Thank You";
+                    ////Send a mail to HR regarding missing mapping record between PO / WO Skill and Employee SKill
+                    //dbcl.SendEmailCC("anupam.sharma@atswork.in", "kaushik@atswork.in", Subject, EmailBody);
 
                     string title = "Notifications :";
                     string body = "No Mapped PO Skill Category Found";
@@ -704,6 +728,32 @@ namespace WebApplication1.bussiness.production
                 }
                 btn_tbtpage.Visible = true;
                 btn_soppage.Visible = true;
+
+                // Now you can use the dataTable to format the data in tabular format for the email body
+                string emailBody = DataTableToHtml(maildataTable);
+
+                // Send email
+                if (lbl_jobrgn.Text.ToString() == "JSR")
+                {
+                    string Subject = "Missing PO and Skill Category Mapping : Region='" + lbl_jobrgn.Text.ToString() + "' || Company= '" + lbl_jobcompay.Text.ToString() + "' || Workorder='" + lbl_wrkordr.Text.ToString() + "' || JOBID='" + JOBID + "'";
+                    dbcl.SendEmail("anupam.sharma@atswork.in", Subject, emailBody);
+                }
+                else if (lbl_jobrgn.Text.ToString() == "KPO")
+                {
+                    string Subject = "Missing PO and Skill Category Mapping : Region='" + lbl_jobrgn.Text.ToString() + "' || Company= '" + lbl_jobcompay.Text.ToString() + "' || Workorder='" + lbl_wrkordr.Text.ToString() + "' || JOBID='" + JOBID + "'";
+                    dbcl.SendEmail("kulamanidas1977@gmail.com", Subject, emailBody);
+                }
+                else if (lbl_jobrgn.Text.ToString() == "NINL")
+                {
+                    string Subject = "Missing PO and Skill Category Mapping : Region='" + lbl_jobrgn.Text.ToString() + "' || Company= '" + lbl_jobcompay.Text.ToString() + "' || Workorder='" + lbl_wrkordr.Text.ToString() + "' || JOBID='" + JOBID + "'";
+                    dbcl.SendEmail("debduttajena1980@gmail.com", Subject, emailBody);
+                }
+                else if (lbl_jobrgn.Text.ToString() == "AGL")
+                {
+                    string Subject = "Missing PO and Skill Category Mapping : Region='" + lbl_jobrgn.Text.ToString() + "' || Company= '" + lbl_jobcompay.Text.ToString() + "' || Workorder='" + lbl_wrkordr.Text.ToString() + "' || JOBID='" + JOBID + "'";
+                    dbcl.SendEmail("sonuvittu111@gmail.com", Subject, emailBody);
+                }
+                
             }
             else
             {
@@ -714,6 +764,53 @@ namespace WebApplication1.bussiness.production
                 InpunchPanel_Row.Visible = true;
             }
 
+        }
+
+        static string DataTableToHtml(DataTable dataTable)
+        {
+            // Now you have the data in the DataTable, you can use it to create a tabular format for your email.
+            string htmlTable = "<html><body><table border='1'>";
+            htmlTable += "<tr>";
+            foreach (DataColumn column in dataTable.Columns)
+            {
+                htmlTable += "<th>" + column.ColumnName + "</th>";
+            }
+            htmlTable += "</tr>";
+
+            foreach (DataRow row in dataTable.Rows)
+            {
+                htmlTable += "<tr>";
+                foreach (var item in row.ItemArray)
+                {
+                    htmlTable += "<td>" + item.ToString() + "</td>";
+                }
+                htmlTable += "</tr>";
+            }
+
+            htmlTable += "</table></body></html>";
+
+            return htmlTable;
+        }
+
+        static void SendEmail(string body)
+        {
+            // Example of sending an email using System.Net.Mail
+            using (MailMessage mail = new MailMessage())
+            {
+                mail.From = new MailAddress("your_email@gmail.com");
+                mail.To.Add("client_email@example.com");
+                mail.Subject = "Job Details";
+                mail.Body = body;
+                mail.IsBodyHtml = true;
+
+                using (SmtpClient smtp = new SmtpClient("smtp.gmail.com"))
+                {
+                    smtp.Port = 587;
+                    smtp.Credentials = new NetworkCredential("your_email@gmail.com", "your_password");
+                    smtp.EnableSsl = true;
+                    smtp.Send(mail);
+                }
+            }
         }
 
         protected Boolean CheckSDuplicateEntry()
