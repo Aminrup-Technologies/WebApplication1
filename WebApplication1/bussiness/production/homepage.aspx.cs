@@ -214,7 +214,7 @@ namespace WebApplication1.bussiness.production
                     string email = dt.Rows[0]["Email"].ToString();
                     lbl_oldemailadd.Text = email;
 
-                    if (email == "" && mobile == "") 
+                    if (email == "" && mobile == "")
                     {
                         btn_cancel_contactdata.Enabled = false;
                     }
@@ -642,7 +642,7 @@ namespace WebApplication1.bussiness.production
             }
             else
             {
-                
+
 
                 txt_oldpass.Text = "";
                 txt_oldpass.Focus();
@@ -951,7 +951,7 @@ namespace WebApplication1.bussiness.production
             string smtpServer = "smtp.gmail.com";
             int smtpPort = 587;
             string smtpUsername = "it_helpdesk@atswork.in";
-            string smtpPassword = "wpdcbssoxcfovwmj";
+            string smtpPassword = "W4rqD>Vq5>g25jS$";
 
             using (SmtpClient client = new SmtpClient(smtpServer, smtpPort))
             {
@@ -973,7 +973,7 @@ namespace WebApplication1.bussiness.production
         {
             if (btn_SendOTP.Text == "Send OTP")
             {
-                OTP_Sender();                
+                OTP_Sender();
             }
             else
             {
@@ -989,7 +989,7 @@ namespace WebApplication1.bussiness.production
                     btn_SendOTP.Enabled = false;
                     TextBoxEnteredOTP.ReadOnly = true;
                     ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowContactModal();", true);
-                    
+
                 }
                 else
                 {
@@ -1030,7 +1030,7 @@ namespace WebApplication1.bussiness.production
             string smtpServer = "smtp.gmail.com";
             int smtpPort = 587;
             string smtpUsername = "it_helpdesk@atswork.in";
-            string smtpPassword = "wpdcbssoxcfovwmj";
+            string smtpPassword = "W4rqD>Vq5>g25jS$";
 
             try
             {
