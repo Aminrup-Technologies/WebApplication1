@@ -327,7 +327,7 @@
 													<ItemStyle CssClass="text text-center" />
 												</asp:TemplateField>
 
-												<asp:TemplateField HeaderText="JOBID" Visible="true">
+												<asp:TemplateField HeaderText="JOBID" Visible="false">
 													<ItemTemplate>
 														<asp:Label ID="lbl_JOBID" runat="server" Text='<%# Bind("JOBID") %>'></asp:Label>
 													</ItemTemplate>
@@ -341,16 +341,11 @@
 													<ItemStyle CssClass="text text-center" />
 												</asp:TemplateField>
 
-												<asp:TemplateField HeaderText="Work Man" HeaderStyle-Width="2%">
-													<ItemTemplate>
-														<asp:Label ID="lbl_EmployeeWrk" runat="server" Text='<%# Bind("EmployeeWrk") %>'></asp:Label>
-													</ItemTemplate>
-													<ItemStyle CssClass="text text-center" />
-												</asp:TemplateField>
-
 												<asp:TemplateField HeaderText="Employee Name" HeaderStyle-Width="12%">
 													<ItemTemplate>
-														<asp:Label ID="lbl_EmployeeName" runat="server" Text='<%# Bind("EmployeeName") %>'></asp:Label>
+														<asp:Label ID="lbl_EmployeeName" runat="server" Text='<%# Bind("EmployeeName") %>'></asp:Label><br />
+														[<asp:Label ID="lbl_EmployeeWrk" runat="server" Text='<%# Bind("EmployeeWrk") %>'></asp:Label>]
+														[<asp:Label ID="lbl_EmpDesignation" runat="server" Text='<%# Bind("EmpDesignation") %>'></asp:Label>]
 													</ItemTemplate>
 													<ItemStyle CssClass="text text-left" />
 												</asp:TemplateField>
@@ -362,13 +357,6 @@
 													<%--<EditItemTemplate>
 														<asp:DropDownList ID="DropDownList1" class="form-control form-control-sm rounded" runat="server"></asp:DropDownList>
 													</EditItemTemplate>--%>
-													<ItemStyle CssClass="text text-center small" />
-												</asp:TemplateField>
-
-												<asp:TemplateField HeaderText="Designation" HeaderStyle-Width="8%">
-													<ItemTemplate>
-														<asp:Label ID="lbl_EmpDesignation" runat="server" Text='<%# Bind("EmpDesignation") %>'></asp:Label>
-													</ItemTemplate>
 													<ItemStyle CssClass="text text-center small" />
 												</asp:TemplateField>
 
@@ -433,12 +421,13 @@
 													<ItemStyle CssClass="text text-center" />
 												</asp:TemplateField>
 
-												<asp:TemplateField HeaderText="P OT" HeaderStyle-Width="4%">
+												<asp:TemplateField HeaderText="P OT" HeaderStyle-Width="6%">
 													<ItemTemplate>
 														<asp:Label ID="lbl_ProvidedOT" runat="server" Text='<%# Bind("ProvidedOT") %>'></asp:Label>
 													</ItemTemplate>
 													<EditItemTemplate>
-														<asp:TextBox ID="txt_ProvidedOT" runat="server" class="form-control form-control-sm rounded" Text='<%# DataBinder.Eval(Container.DataItem,"ProvidedOT") %> ' Width="100%"></asp:TextBox>
+														<asp:TextBox ID="txt_ProvidedOT" runat="server" TextMode="MultiLine" Rows="1" Columns="5" class="form-control form-control-sm rounded" Text='<%# DataBinder.Eval(Container.DataItem,"ProvidedOT") %>' Width="100%"></asp:TextBox>
+														<asp:CustomValidator ID="CustomValidator2" runat="server" ControlToValidate="txt_ProvidedOT" Display="Dynamic" ErrorMessage="Value must be less than or equal to 16" ForeColor="IndianRed" ValidationGroup="Update" ClientValidationFunction="validateProvidedOT"></asp:CustomValidator>
 													</EditItemTemplate>
 													<ItemStyle CssClass="text text-center" />
 												</asp:TemplateField>
@@ -465,8 +454,8 @@
 
 												<asp:TemplateField HeaderText="Action" HeaderStyle-Width="3%">
 													<EditItemTemplate>
-														<asp:ImageButton ID="btnupdate" runat="server" CommandName="Update" Height="15px" ImageUrl="~/erp_images/fi-sr-disk.svg" Width="15px" ToolTip="Save" ImageAlign="Middle" />
-														<asp:ImageButton ID="Btncancale" runat="server" CommandName="Cancel" Height="15px" ImageUrl="~/erp_images/fi-sr-cross-circle.svg" Width="15px" ToolTip="Cancel Update" ImageAlign="Middle" />
+														<asp:ImageButton ID="btnupdate" runat="server" CommandName="Update" Height="15px" ImageUrl="~/erp_images/fi-sr-disk.svg" Width="15px" ToolTip="Save" ImageAlign="Middle" ValidationGroup="Update" CausesValidation="true" />
+														<asp:ImageButton ID="Btncancale" runat="server" CommandName="Cancel" Height="15px" ImageUrl="~/erp_images/fi-sr-cross-circle.svg" Width="15px" ToolTip="Cancel Update" CausesValidation="false" ImageAlign="Middle" />
 													</EditItemTemplate>
 													<ItemTemplate>
 														<asp:ImageButton ID="btnedit" runat="server" Visible="true" CommandName="Edit" Height="15px" ImageUrl="~/erp_images/fi-sr-pencil.svg" Width="15px" ToolTip="Update" ImageAlign="Middle" />
@@ -512,7 +501,7 @@
 									<asp:Label ID="Label2" runat="server" Text="">Click to Attach Manpower</asp:Label>
 								</div>
 
-								<div class="col-md-3 col-sm-12"  id="addattenrow2" runat="server" visible="false">
+								<div class="col-md-3 col-sm-12" id="addattenrow2" runat="server" visible="false">
 									<asp:Button ID="Button1" runat="server" Text="Attach Manpower" CssClass="btn btn-success btn-sm" Enabled="true" OnClick="btn_attachmanpower_Click" />
 								</div>
 
@@ -561,6 +550,23 @@
 	<script>
 		if (window.history.replaceState) {
 			window.history.replaceState(null, null, window.location.href);
+		}
+	</script>
+
+	<script>
+		function validateProvidedOT(sender, args) {
+			var textBox = $("#" + sender.controltovalidate);
+			var inputValue = textBox.val();
+			if (inputValue.trim() !== '') {
+				var numericValue = parseInt(inputValue);
+				if (isNaN(numericValue) || numericValue > 16) {
+					args.IsValid = false;
+				} else {
+					args.IsValid = true;
+				}
+			} else {
+				args.IsValid = false;
+			}
 		}
 	</script>
 </asp:Content>

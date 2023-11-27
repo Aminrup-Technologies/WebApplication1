@@ -24,7 +24,7 @@ namespace WebApplication1.bussiness.production
         DataTable dt = new DataTable();
 
         static string message = "";
-        
+
         // Default folder
         static readonly string rootFolder = @"C:\atswork.in\wwwroot\erp_images\Permits";
 
@@ -45,7 +45,7 @@ namespace WebApplication1.bussiness.production
                     string jobid = Request.QueryString["JOBID"];
                     Bind_JOBIDDetails(jobid);
                     Checker();
-                }  
+                }
             }
         }
 
@@ -146,7 +146,7 @@ namespace WebApplication1.bussiness.production
                         txt_jobid.ForeColor = Color.Blue;
                     }
 
-                    
+
                     txt_worksitename.Text = dt.Rows[0]["JOB_Site"].ToString() + " [" + dt.Rows[0]["JOB_SiteCode"].ToString() + "]";
                     lbl_worksitedbcode.Text = dt.Rows[0]["JOB_SiteCode"].ToString();
 
@@ -217,7 +217,7 @@ namespace WebApplication1.bussiness.production
                         txt_inchargename.ForeColor = Color.Red;
                     }
 
-                    
+
                     //txt_approverrmrks.Text = dt.Rows[0]["JOB_Title"].ToString();
                     txt_approverrmrks.Text = "N/A";
 

@@ -757,7 +757,7 @@ namespace WebApplication1.bussiness.production
                 else if (lbl_jobrgn.Text.ToString() == "NINL")
                 {
                     string Subject = "Missing PO and Skill Category Mapping : Region='" + lbl_jobrgn.Text.ToString() + "' || Company= '" + lbl_jobcompay.Text.ToString() + "' || Workorder='" + lbl_wrkordr.Text.ToString() + "' || JOBID='" + lbl_jobid.Text.ToString() + "'";
-                    dbcl.SendEmail("debduttajena1980@gmail.com", Subject, emailBody);
+                    dbcl.SendEmail("debaduttajena1980@gmail.com", Subject, emailBody);
                 }
                 else if (lbl_jobrgn.Text.ToString() == "AGL")
                 {

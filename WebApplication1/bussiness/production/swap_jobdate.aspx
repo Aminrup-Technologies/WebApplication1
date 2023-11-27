@@ -1,6 +1,6 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="swap_jobdate.aspx.cs" Inherits="WebApplication1.bussiness.production.swap_jobdate" %>
-<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 	<div class="right_col" role="main">
@@ -59,9 +59,9 @@
 										<asp:Label ID="lbl_msg" runat="server" Text="Click SUBMIT to Fetch Data!!"></asp:Label>
 									</div>
 									<div class="col-md-6 col-sm-12">
-										<asp:Button ID="btn_search" runat="server" Text="SEARCH" CssClass="btn btn-success btn-sm" OnClick="btn_search_Click"/>
-										<asp:Button ID="btn_cancel" runat="server" Text="Cancel" CssClass="btn btn-danger btn-sm" OnClick="btn_cancel_Click"/>
-										<asp:Button ID="btn_reset" runat="server" Text="Reset" CssClass="btn btn-warning btn-sm" OnClick="btn_reset_Click"/>
+										<asp:Button ID="btn_search" runat="server" Text="SEARCH" CssClass="btn btn-success btn-sm" OnClick="btn_search_Click" />
+										<asp:Button ID="btn_cancel" runat="server" Text="Cancel" CssClass="btn btn-danger btn-sm" OnClick="btn_cancel_Click" />
+										<asp:Button ID="btn_reset" runat="server" Text="Reset" CssClass="btn btn-warning btn-sm" OnClick="btn_reset_Click" />
 									</div>
 								</div>
 							</div>
@@ -98,7 +98,7 @@
 								</div>
 
 								<div class="col-md-3 col-sm-12  form-group" id="swapdate1" runat="server" visible="false">
-									<label style="color:blue; font-weight:bold; background-color:aquamarine;">Select New JOB DATE</label>
+									<label style="color: blue; font-weight: bold; background-color: aquamarine;">Select New JOB DATE</label>
 								</div>
 								<div class="col-md-3 col-sm-12  form-group" id="swapdate2" runat="server" visible="false">
 									<asp:TextBox ID="txt_date" runat="server" CssClass="form-control form-control-sm rounded" class='date' type="date" name="date"></asp:TextBox>
@@ -127,7 +127,7 @@
 								</div>
 
 								<div class="col-md-3 col-sm-12 form-group" id="worksite_row1" runat="server" visible="false">
-									<label style="color:blue; font-weight:bold; background-color:aquamarine;">Select New Work-Site<span class="text text-danger">*</span></label>
+									<label style="color: blue; font-weight: bold; background-color: aquamarine;">Select New Work-Site<span class="text text-danger">*</span></label>
 								</div>
 								<div class="col-md-3 col-sm-12 form-group" id="worksite_row2" runat="server" visible="false">
 									<asp:DropDownList ID="DDL_Worksite" runat="server" CssClass="form-control form-control-sm rounded" AutoPostBack="true" OnSelectedIndexChanged="DDL_Worksite_SelectedIndexChanged"></asp:DropDownList>
@@ -143,7 +143,7 @@
 								</div>
 
 								<div class="col-md-3 col-sm-12 form-group" id="approver_row1" runat="server" visible="false">
-									<label style="color:blue; font-weight:bold; background-color:aquamarine;">Select New Approver<span class="text text-danger">*</span></label>
+									<label style="color: blue; font-weight: bold; background-color: aquamarine;">Select New Approver<span class="text text-danger">*</span></label>
 								</div>
 								<div class="col-md-3 col-sm-12 form-group" id="approver_row2" runat="server" visible="false">
 									<asp:DropDownList ID="DDL_Approver" runat="server" CssClass="form-control form-control-sm rounded"></asp:DropDownList>
@@ -226,9 +226,9 @@
 								<div class="item form-group row">
 									<div class="col-md-6 col-sm-12">
 										<asp:Button ID="btn_update" runat="server" Text="Update" CssClass="btn btn-success btn-sm" Enabled="false" OnClick="btn_update_Click" />
-										<asp:Button ID="btn_updatedate" runat="server" Text="Swap Date" CssClass="btn btn-primary btn-sm" Enabled="true" Visible="true" OnClick="btn_updatedate_Click"/>
+										<asp:Button ID="btn_updatedate" runat="server" Text="Swap Date" CssClass="btn btn-primary btn-sm" Enabled="true" Visible="true" OnClick="btn_updatedate_Click" />
 										<asp:Button ID="btn_cancelupdate" runat="server" Text="Cancel" CssClass="btn btn-danger btn-sm" Enabled="false" Visible="false" OnClick="btn_cancelupdate_Click" />
-										<asp:Button ID="btn_clear" runat="server" Text="Reset" CssClass="btn btn-warning btn-sm" Enabled="true" Visible="true" OnClick="btn_clear_Click"/>
+										<asp:Button ID="btn_clear" runat="server" Text="Reset" CssClass="btn btn-warning btn-sm" Enabled="true" Visible="true" OnClick="btn_clear_Click" />
 									</div>
 
 									<div class="col-md-6 col-sm-12">
@@ -254,8 +254,10 @@
 							<div class="row">
 								<div class="col-md-12 col-sm-12">
 									<div class="card-box table-responsive">
-										<p class="text-muted font-13 m-b-30">Last attached permit file deleted on :
-											<asp:Label ID="lbl_permitdeleteddate" runat="server" Text=""></asp:Label>, by <asp:Label ID="lbl_permitdeletedby" runat="server" Text=""></asp:Label>
+										<p class="text-muted font-13 m-b-30">
+											Last attached permit file deleted on :
+											<asp:Label ID="lbl_permitdeleteddate" runat="server" Text=""></asp:Label>, by
+											<asp:Label ID="lbl_permitdeletedby" runat="server" Text=""></asp:Label>
 										</p>
 										<asp:GridView ID="GridView1" runat="server" Width="100%" class="table table-striped table-hover table-bordered table-responsive table-sm dt-responsive nowrap" AutoGenerateColumns="false" ShowHeaderWhenEmpty="true" EmptyDataText="No Data Found" OnRowDeleting="GridView1_RowDeleting">
 											<Columns>
@@ -346,7 +348,7 @@
 													<ItemStyle CssClass="text text-center" />
 												</asp:TemplateField>
 
-												<asp:TemplateField HeaderText="JOBID" Visible="true" HeaderStyle-Width="5%">
+												<asp:TemplateField HeaderText="JOBID" Visible="false" HeaderStyle-Width="5%">
 													<ItemTemplate>
 														<asp:Label ID="lbl_JOBID" runat="server" Text='<%# Bind("JOBID") %>'></asp:Label>
 													</ItemTemplate>
@@ -360,16 +362,10 @@
 													<ItemStyle CssClass="text text-center" />
 												</asp:TemplateField>
 
-												<asp:TemplateField HeaderText="Work Man" HeaderStyle-Width="2%">
-													<ItemTemplate>
-														<asp:Label ID="lbl_EmployeeWrk" runat="server" Text='<%# Bind("EmployeeWrk") %>'></asp:Label>
-													</ItemTemplate>
-													<ItemStyle CssClass="text text-center" />
-												</asp:TemplateField>
-
 												<asp:TemplateField HeaderText="Employee Name" HeaderStyle-Width="12%">
 													<ItemTemplate>
 														<asp:Label ID="lbl_EmployeeName" runat="server" Text='<%# Bind("EmployeeName") %>'></asp:Label>
+														[<asp:Label ID="lbl_EmployeeWrk" runat="server" Text='<%# Bind("EmployeeWrk") %>'></asp:Label>]
 													</ItemTemplate>
 													<ItemStyle CssClass="text text-left" />
 												</asp:TemplateField>
@@ -457,7 +453,8 @@
 														<asp:Label ID="lbl_ProvidedOT" runat="server" Text='<%# Bind("ProvidedOT") %>'></asp:Label>
 													</ItemTemplate>
 													<EditItemTemplate>
-														<asp:TextBox ID="txt_ProvidedOT" runat="server" class="form-control form-control-sm rounded" Text='<%# DataBinder.Eval(Container.DataItem,"ProvidedOT") %> ' Width="100%"></asp:TextBox>
+														<asp:TextBox ID="txt_ProvidedOT" runat="server" TextMode="MultiLine" Rows="1" Columns="5" class="form-control form-control-sm rounded" Text='<%# DataBinder.Eval(Container.DataItem,"ProvidedOT") %>' Width="100%"></asp:TextBox>
+														<asp:CustomValidator ID="CustomValidator2" runat="server" ControlToValidate="txt_ProvidedOT" Display="Dynamic" ErrorMessage="Value must be less than or equal to 16" ForeColor="IndianRed" ValidationGroup="Update" ClientValidationFunction="validateProvidedOT"></asp:CustomValidator>
 													</EditItemTemplate>
 													<ItemStyle CssClass="text text-center" />
 												</asp:TemplateField>
@@ -514,6 +511,23 @@
 			$("#MyPopup .modal-title").html(title);
 			$("#MyPopup .modal-body").html(body);
 			$("#MyPopup").modal("show");
+		}
+	</script>
+
+	<script>
+		function validateProvidedOT(sender, args) {
+			var textBox = $("#" + sender.controltovalidate);
+			var inputValue = textBox.val();
+			if (inputValue.trim() !== '') {
+				var numericValue = parseInt(inputValue);
+				if (isNaN(numericValue) || numericValue > 16) {
+					args.IsValid = false;
+				} else {
+					args.IsValid = true;
+				}
+			} else {
+				args.IsValid = false;
+			}
 		}
 	</script>
 </asp:Content>
