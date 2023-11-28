@@ -318,6 +318,30 @@
                     </div>
                 </div>
             </div>
+
+            <div class="col-md-6" id="control_panel" runat="server" visible="false">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Payroll Controller</h2>
+                        <ul class="nav navbar-right panel_toolbox">
+                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                            </li>
+                        </ul>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <a class="btn btn-app" href="#">
+                            <asp:Label ID="Label18" runat="server" Text="0" Visible="true"></asp:Label>
+                            <i class="fa fa-edit"></i>Rollback
+                        </a>
+                        <a class="btn btn-app" href="#">
+                            <asp:Label ID="Label19" runat="server" Text="0" Visible="true"></asp:Label>
+                            <i class="fa fa-users"></i>Paroll Visibility
+                        </a>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
     <script type="text/javascript">

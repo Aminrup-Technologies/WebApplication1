@@ -275,6 +275,7 @@
     <Content Include="bussiness\production\vw_emp_attencal.aspx" />
     <Content Include="bussiness\production\vw_inchsupmem.aspx" />
     <Content Include="bussiness\production\vw_lineitemjobs.aspx" />
+    <Content Include="bussiness\production\vw_manpowerusage.aspx" />
     <Content Include="bussiness\production\vw_supplyjobs.aspx" />
     <Content Include="bussiness\production\csms_mainview.aspx" />
     <Content Include="bussiness\production\csm_approvals.aspx" />
@@ -799,6 +800,13 @@
     </Compile>
     <Compile Include="bussiness\production\vw_lineitemjobs.aspx.designer.cs">
       <DependentUpon>vw_lineitemjobs.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\vw_manpowerusage.aspx.cs">
+      <DependentUpon>vw_manpowerusage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\vw_manpowerusage.aspx.designer.cs">
+      <DependentUpon>vw_manpowerusage.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\vw_supplyjobs.aspx.cs">
       <DependentUpon>vw_supplyjobs.aspx</DependentUpon>

@@ -740,29 +740,33 @@ namespace WebApplication1.bussiness.production
                 btn_tbtpage.Visible = true;
                 btn_soppage.Visible = true;
 
-                // Now you can use the dataTable to format the data in tabular format for the email body
-                string emailBody = DataTableToHtml(maildataTable);
+                //If you want to exclude the header row from the count, you can use Rows.Count - 1. Here's an example:
+                if (maildataTable.Rows.Count > 1)
+                {
+                    // Now you can use the dataTable to format the data in tabular format for the email body
+                    string emailBody = DataTableToHtml(maildataTable);
 
-                // Send email
-                if (lbl_jobrgn.Text.ToString() == "JSR")
-                {
-                    string Subject = "Missing PO and Skill Category Mapping : Region='" + lbl_jobrgn.Text.ToString() + "' || Company= '" + lbl_jobcompay.Text.ToString() + "' || Workorder='" + lbl_wrkordr.Text.ToString() + "' || JOBID='" + lbl_jobid.Text.ToString() + "'";
-                    dbcl.SendEmail("anupam.sharma@atswork.in", Subject, emailBody);
-                }
-                else if (lbl_jobrgn.Text.ToString() == "KPO")
-                {
-                    string Subject = "Missing PO and Skill Category Mapping : Region='" + lbl_jobrgn.Text.ToString() + "' || Company= '" + lbl_jobcompay.Text.ToString() + "' || Workorder='" + lbl_wrkordr.Text.ToString() + "' || JOBID='" + lbl_jobid.Text.ToString() + "'";
-                    dbcl.SendEmail("kulamanidas1977@gmail.com", Subject, emailBody);
-                }
-                else if (lbl_jobrgn.Text.ToString() == "NINL")
-                {
-                    string Subject = "Missing PO and Skill Category Mapping : Region='" + lbl_jobrgn.Text.ToString() + "' || Company= '" + lbl_jobcompay.Text.ToString() + "' || Workorder='" + lbl_wrkordr.Text.ToString() + "' || JOBID='" + lbl_jobid.Text.ToString() + "'";
-                    dbcl.SendEmail("debaduttajena1980@gmail.com", Subject, emailBody);
-                }
-                else if (lbl_jobrgn.Text.ToString() == "AGL")
-                {
-                    string Subject = "Missing PO and Skill Category Mapping : Region='" + lbl_jobrgn.Text.ToString() + "' || Company= '" + lbl_jobcompay.Text.ToString() + "' || Workorder='" + lbl_wrkordr.Text.ToString() + "' || JOBID='" + lbl_jobid.Text.ToString() + "'";
-                    dbcl.SendEmail("sonuvittu111@gmail.com", Subject, emailBody);
+                    // Send email
+                    if (lbl_jobrgn.Text.ToString() == "JSR")
+                    {
+                        string Subject = "Missing PO and Skill Category Mapping : Region='" + lbl_jobrgn.Text.ToString() + "' || Company= '" + lbl_jobcompay.Text.ToString() + "' || Workorder='" + lbl_wrkordr.Text.ToString() + "' || JOBID='" + lbl_jobid.Text.ToString() + "'";
+                        dbcl.SendEmail("anupam.sharma@atswork.in", Subject, emailBody);
+                    }
+                    else if (lbl_jobrgn.Text.ToString() == "KPO")
+                    {
+                        string Subject = "Missing PO and Skill Category Mapping : Region='" + lbl_jobrgn.Text.ToString() + "' || Company= '" + lbl_jobcompay.Text.ToString() + "' || Workorder='" + lbl_wrkordr.Text.ToString() + "' || JOBID='" + lbl_jobid.Text.ToString() + "'";
+                        dbcl.SendEmail("kulamanidas1977@gmail.com", Subject, emailBody);
+                    }
+                    else if (lbl_jobrgn.Text.ToString() == "NINL")
+                    {
+                        string Subject = "Missing PO and Skill Category Mapping : Region='" + lbl_jobrgn.Text.ToString() + "' || Company= '" + lbl_jobcompay.Text.ToString() + "' || Workorder='" + lbl_wrkordr.Text.ToString() + "' || JOBID='" + lbl_jobid.Text.ToString() + "'";
+                        dbcl.SendEmail("debaduttajena1980@gmail.com", Subject, emailBody);
+                    }
+                    else if (lbl_jobrgn.Text.ToString() == "AGL")
+                    {
+                        string Subject = "Missing PO and Skill Category Mapping : Region='" + lbl_jobrgn.Text.ToString() + "' || Company= '" + lbl_jobcompay.Text.ToString() + "' || Workorder='" + lbl_wrkordr.Text.ToString() + "' || JOBID='" + lbl_jobid.Text.ToString() + "'";
+                        dbcl.SendEmail("sonuvittu111@gmail.com", Subject, emailBody);
+                    }
                 }
 
             }

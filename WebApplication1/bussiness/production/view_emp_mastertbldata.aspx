@@ -1,6 +1,26 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" MaintainScrollPositionOnPostback="true" CodeBehind="view_emp_mastertbldata.aspx.cs" Inherits="WebApplication1.bussiness.production.view_emp_mastertbldata" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+    <style>
+    .thumbnail {
+        position: relative;
+        overflow: hidden;
+        width: 100px; /* Set the initial width of the thumbnail */
+        height: 100px; /* Set the initial height of the thumbnail */
+        transition: width 0.3s, height 0.3s; /* Add smooth transition effect */
+    }
+
+    .thumbnail:hover {
+        width: 150px; /* Set the enlarged width on hover */
+        height: 150px; /* Set the enlarged height on hover */
+    }
+
+    .thumbnail-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Ensure the image covers the entire container */
+    }
+</style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -77,8 +97,24 @@
                                 <ItemStyle CssClass="grid" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Status" HeaderStyle-Width="5%">
+                            <asp:TemplateField HeaderText="Login_Details" HeaderStyle-Width="10%">
                                 <ItemTemplate>
+                                    Login:<asp:Label ID="lbl_LoginID" runat="server" Text='<%# Eval("LoginID") %>' />
+                                    <br />
+                                    PWD:<asp:Label ID="lbl_LoginPassword" runat="server" Text='<%# Eval("LoginPassword") %>' />
+                                    <br />
+                                    ActiveOn:<asp:Label ID="lbl_LastLogin" runat="server" Text='<%# Eval("LastLogin") %>' />
+                                    
+                                </ItemTemplate>
+                                <HeaderStyle CssClass="GridHeaderText-Center" />
+                                <ItemStyle CssClass="grid" />
+                            </asp:TemplateField>
+
+                            <asp:TemplateField HeaderText="Work_Status" HeaderStyle-Width="3%">
+                                <ItemTemplate>
+                                    <asp:Button ID="btn_viewdetails" runat="server" Text='<%# Eval("WorkmanSL") %>' Font-Size="Smaller" CssClass="btn btn-sm btn-info" CommandName="View_Details" CommandArgument="<%# Container.DataItemIndex %>" />
+                                    <asp:Label ID="lbl_WorkmanSL" runat="server" Text='<%# Eval("WorkmanSL") %>' Visible="false" />
+                                    <br />
                                     <asp:Button ID="btn_workstatus" runat="server" Text='<%# Eval("WorkStatus") %>' Font-Size="Smaller" CssClass="btn btn-sm btn-info" CommandName="Swap_WorkStatus" CommandArgument="<%# Container.DataItemIndex %>" />
                                     <asp:Label ID="lbl_WorkStatus" runat="server" Text='<%# Eval("WorkStatus") %>' Visible="false" />
                                 </ItemTemplate>
@@ -86,90 +122,52 @@
                                 <ItemStyle CssClass="grid" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="User ID" HeaderStyle-Width="5%">
+                            <asp:TemplateField HeaderText="Photo" HeaderStyle-Width="10%">
                                 <ItemTemplate>
-                                    <asp:Label ID="lbl_LoginID" runat="server" Text='<%# Eval("LoginID") %>' />
+                                    <!-- Replace "YourImagePathField" with the actual field name containing the image path in your data source -->
+                                    <%--<asp:Image ID="imgPhoto" runat="server" ImageUrl='<%# Eval("PrfPicPath") %>' Height="70" Width="70" />--%>
+                                    <div class="thumbnail">
+                                        <asp:Image ID="Image1" runat="server" ImageUrl='<%# Eval("PrfPicPath") %>' CssClass="thumbnail-image"/>
+                                    </div>
+                                </ItemTemplate>
+                            </asp:TemplateField>
+
+                            <asp:TemplateField HeaderText="Employee Name" HeaderStyle-Width="20%">
+                                <ItemTemplate>
+                                    Name:<asp:Label ID="lbl_FullName" runat="server" Text='<%# Eval("FullName") %>' Font-Bold="true" /><br />
+                                    Grade:<asp:Label ID="lbl_SkillCategory" runat="server" Text='<%# Eval("SkillCategory") %>' /><br />
+                                    Desg:<asp:Label ID="lbl_SkillDesignation" runat="server" Text='<%# Eval("SkillDesignation") %>' /><br />
+                                    Father_Name:<asp:Label ID="lbl_Fathername" runat="server" Text='<%# Eval("Fathername") %>' />
                                 </ItemTemplate>
                                 <HeaderStyle CssClass="GridHeaderText-Center" />
                                 <ItemStyle CssClass="grid" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Password" HeaderStyle-Width="5%">
+                            <asp:TemplateField HeaderText="Imp Dates" HeaderStyle-Width="10%">
                                 <ItemTemplate>
-                                    <asp:Label ID="lbl_LoginPassword" runat="server" Text='<%# Eval("LoginPassword") %>' />
+                                    DOR:<asp:Label ID="lbl_DOR" runat="server" Text='<%# Eval("DOR", "{0:dd-MM-yyyy}") %>' /><br />
+                                    DOJ:<asp:Label ID="lbl_DOJ" runat="server" Text='<%# Eval("DOJ", "{0:dd-MM-yyyy}") %>' /><br />
+                                    DOE:<asp:Label ID="lbl_DOE" runat="server" Text="N/A" />
                                 </ItemTemplate>
                                 <HeaderStyle CssClass="GridHeaderText-Center" />
                                 <ItemStyle CssClass="grid" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Workman" HeaderStyle-Width="5%">
+                            <asp:TemplateField HeaderText="Contact" HeaderStyle-Width="7%">
                                 <ItemTemplate>
-                                    <asp:Button ID="btn_viewdetails" runat="server" Text='<%# Eval("WorkmanSL") %>' Font-Size="Smaller" CssClass="btn btn-sm btn-info" CommandName="View_Details" CommandArgument="<%# Container.DataItemIndex %>" />
-                                    <asp:Label ID="lbl_WorkmanSL" runat="server" Text='<%# Eval("WorkmanSL") %>' Visible="false" />
+                                    Mob:<asp:Label ID="lbl_MobileNo" runat="server" Text='<%# Eval("MobileNo") %>' /><br />
+                                    Email:<asp:Label ID="lbl_Email" runat="server" Text='<%# Eval("Email") %>' />
                                 </ItemTemplate>
                                 <HeaderStyle CssClass="GridHeaderText-Center" />
                                 <ItemStyle CssClass="grid" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Employee Name" HeaderStyle-Width="10%">
+                            <asp:TemplateField HeaderText="Working Details" HeaderStyle-Width="10%">
                                 <ItemTemplate>
-                                    <asp:Label ID="lbl_FullName" runat="server" Text='<%# Eval("FullName") %>' />
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="GridHeaderText-Center" />
-                                <ItemStyle CssClass="grid" />
-                            </asp:TemplateField>
-
-                            <asp:TemplateField HeaderText="Father Name" HeaderStyle-Width="10%">
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_Fathername" runat="server" Text='<%# Eval("Fathername") %>' />
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="GridHeaderText-Center" />
-                                <ItemStyle CssClass="grid" />
-                            </asp:TemplateField>
-
-                            <asp:TemplateField HeaderText="Mobile" HeaderStyle-Width="10%">
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_MobileNo" runat="server" Text='<%# Eval("MobileNo") %>' />
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="GridHeaderText-Center" />
-                                <ItemStyle CssClass="grid" />
-                            </asp:TemplateField>
-
-                            <asp:TemplateField HeaderText="Work Site" HeaderStyle-Width="10%">
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_WorkSite" runat="server" Text='<%# Eval("WorkSite") %>' />
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="GridHeaderText-Center" />
-                                <ItemStyle CssClass="grid" />
-                            </asp:TemplateField>
-
-                            <asp:TemplateField HeaderText="Skill Category" HeaderStyle-Width="10%">
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_SkillCategory" runat="server" Text='<%# Eval("SkillCategory") %>' />
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="GridHeaderText-Center" />
-                                <ItemStyle CssClass="grid" />
-                            </asp:TemplateField>
-
-                            <asp:TemplateField HeaderText="Designation" HeaderStyle-Width="10%">
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_SkillDesignation" runat="server" Text='<%# Eval("SkillDesignation") %>' />
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="GridHeaderText-Center" />
-                                <ItemStyle CssClass="grid" />
-                            </asp:TemplateField>
-
-                            <asp:TemplateField HeaderText="Safety PassNo" HeaderStyle-Width="10%">
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_SafetyPassNo" runat="server" Text='<%# Eval("SafetyPassNo") %>' />
-                                </ItemTemplate>
-                                <HeaderStyle CssClass="GridHeaderText-Center" />
-                                <ItemStyle CssClass="grid" />
-                            </asp:TemplateField>
-
-                            <asp:TemplateField HeaderText="Gate PassNo" HeaderStyle-Width="10%">
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_GatePassNo" runat="server" Text='<%# Eval("GatePassNo") %>' />
+                                    Site:<asp:Label ID="lbl_WorkSite" runat="server" Text='<%# Eval("WorkSite") %>' Font-Bold="true" /><br />
+                                    SP:<asp:Label ID="lbl_SafetyPassNo" runat="server" Text='<%# Eval("SafetyPassNo") %>' Font-Bold="true"  />
+                                    <br />
+                                    GP:<asp:Label ID="lbl_GatePassNo" runat="server" Text='<%# Eval("GatePassNo") %>' Font-Bold="true"  />
                                 </ItemTemplate>
                                 <HeaderStyle CssClass="GridHeaderText-Center" />
                                 <ItemStyle CssClass="grid" />
