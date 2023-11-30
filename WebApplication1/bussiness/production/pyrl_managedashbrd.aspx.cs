@@ -15,6 +15,8 @@ namespace WebApplication1.bussiness.production
     public partial class pyrl_managedashbrd : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
+        
+
         public static Int32 PayrollFactorStatus = 0;
         public static Int32 BankFactorStatus = 0;
         public static Int32 activeDedEmpCount = 0;
@@ -42,33 +44,78 @@ namespace WebApplication1.bussiness.production
                     lbl_inactivedeductions.Text = "***";
                     lbl_activeworksites.Text = "***";
 
+                    //if (Session["Changer"] != null)
+                    //{
+                    //    string[] retrievedArray = (string[])Session["Changer"];
+                    //    region = retrievedArray[1].ToString();
+                    //    comp = retrievedArray[2].ToString();
+                    //    state = retrievedArray[0].ToString();
+                    //    datalock = retrievedArray[3].ToString();
+                    //    //Session["Changer"] = null;
+
+                    //    if (datalock == "1")
+                    //    {
+                    //        btn_datalocker.Text = "Un-Lock";
+                    //        btn_datalocker.CssClass = "btn btn-danger btn-sm";
+                    //    }
+                    //    else
+                    //    {
+                    //        btn_datalocker.Text = "Lock";
+                    //        btn_datalocker.CssClass = "btn btn-success btn-sm";
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    region = Session["REGION"].ToString();
+                    //    comp = Session["COMPANY_CODE"].ToString();
+                    //    state = Session["STATE"].ToString();
+                    //    datalock = "0";
+                    //}
+
+                    // Retrieving from session only if it has a value
                     if (Session["Changer"] != null)
                     {
-                        string[] retrievedArray = (string[])Session["Changer"];
-                        region = retrievedArray[1].ToString();
-                        comp = retrievedArray[2].ToString();
-                        state = retrievedArray[0].ToString();
-                        datalock = retrievedArray[3].ToString();
-                        //Session["Changer"] = null;
+                        //MyData retrievedDataObject = (MyData)Session["MyDataObject"];
+                        LoginUserData retrievedContext = (LoginUserData)Session["Changer"];
+
+                        // Continue processing with retrievedContext
+                        region = retrievedContext.Value;
+                        comp = retrievedContext.CompValue;
+                        state = retrievedContext.State;
+                        datalock = retrievedContext.Datalock;
 
                         if (datalock == "1")
                         {
                             btn_datalocker.Text = "Un-Lock";
                             btn_datalocker.CssClass = "btn btn-danger btn-sm";
+
+                            DDL_WorkRegion.SelectedValue = retrievedContext.Value;
+                            DDL_Company.SelectedValue = retrievedContext.CompValue;
+                            DDL_WorkStates.SelectedValue = retrievedContext.State;
                         }
                         else
                         {
                             btn_datalocker.Text = "Lock";
                             btn_datalocker.CssClass = "btn btn-success btn-sm";
                         }
+                        Session["Changer"] = retrievedContext;
                     }
                     else
                     {
+                        // Set data manually if session value is not available or not of type LoginUserData
                         region = Session["REGION"].ToString();
                         comp = Session["COMPANY_CODE"].ToString();
                         state = Session["STATE"].ToString();
                         datalock = "0";
+
+                        LoginUserData userContext = new LoginUserData();
+                        userContext.State = state;
+                        userContext.Value = region;
+                        userContext.CompValue = comp;
+                        userContext.Datalock = "1";
+                        Session["Changer"] = userContext;
                     }
+
 
                     if (Session["WORKMAN"].ToString() == "J8")
                     {
@@ -464,30 +511,66 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_datalocker_Click(object sender, EventArgs e)
         {
+
+
+            //if (btn_datalocker.Text=="Lock")
+            //{
+            //    string[] Bindervalue = { DDL_StateValue, DDL_Value, DDL_CompValue, "1" };
+            //    Session["Changer"] = null;
+            //    Session["Changer"] = Bindervalue;
+
+            //    DataLocker.Visible = true;
+            //    btn_datalocker.Text = "Un-Lock";
+            //    btn_datalocker.CssClass = "btn btn-danger btn-sm";
+            //}
+            //else if (btn_datalocker.Text == "Un-Lock")
+            //{
+            //    string[] Bindervalue = { DDL_StateValue, DDL_Value, DDL_CompValue, "0" };
+            //    Session["Changer"] = null;
+            //    Session["Changer"] = Bindervalue;
+
+            //    DataLocker.Visible = true;
+            //    btn_datalocker.Text = "Lock";
+            //    btn_datalocker.CssClass = "btn btn-success btn-sm";
+            //}
+
             string DDL_StateValue = DDL_WorkStates.SelectedValue.ToString();
             string DDL_Value = DDL_WorkRegion.SelectedValue.ToString();
             string DDL_CompValue = DDL_Company.SelectedValue.ToString();
 
-            if (btn_datalocker.Text=="Lock")
+            LoginUserData userContext = new LoginUserData();
+
+            if (btn_datalocker.Text == "Lock")
             {
-                string[] Bindervalue = { DDL_StateValue, DDL_Value, DDL_CompValue, "1" };
-                Session["Changer"] = null;
-                Session["Changer"] = Bindervalue;
+                // Setting values
+                userContext.State = DDL_StateValue;
+                userContext.Value = DDL_Value;
+                userContext.CompValue = DDL_CompValue;
+                userContext.Datalock = "1";
 
                 DataLocker.Visible = true;
                 btn_datalocker.Text = "Un-Lock";
                 btn_datalocker.CssClass = "btn btn-danger btn-sm";
             }
-            else if (btn_datalocker.Text == "Un-Lock")
+            else
             {
-                string[] Bindervalue = { DDL_StateValue, DDL_Value, DDL_CompValue, "0" };
-                Session["Changer"] = null;
-                Session["Changer"] = Bindervalue;
+                // Setting values
+                userContext.State = string.Empty;
+                userContext.Value = string.Empty;
+                userContext.CompValue = string.Empty;
+                userContext.Datalock = "0";
 
                 DataLocker.Visible = true;
                 btn_datalocker.Text = "Lock";
                 btn_datalocker.CssClass = "btn btn-success btn-sm";
             }
+
+
+            // Storing in session
+            Session["Changer"] = userContext;
+
+            //Response.Redirect("pyrl_managedashbrd.aspx");
+
         }
 
         protected void Clear_Deductions()

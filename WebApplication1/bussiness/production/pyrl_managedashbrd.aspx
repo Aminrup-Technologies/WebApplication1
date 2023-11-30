@@ -16,7 +16,7 @@
             </div>
         </div>--%>
 
-        <div class="clearfix"></div>
+       <%-- <div class="clearfix"></div>--%>
 
         <div class="row">
             <div class="col-md-12" id="Supvkpirow" runat="server" visible="true">

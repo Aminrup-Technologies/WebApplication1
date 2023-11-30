@@ -703,6 +703,7 @@
     <Compile Include="bussiness\production\jobs_approverdash.aspx.designer.cs">
       <DependentUpon>jobs_approverdash.aspx</DependentUpon>
     </Compile>
+    <Compile Include="bussiness\production\LoginUserData.cs" />
     <Compile Include="bussiness\production\manage_profile.aspx.cs">
       <DependentUpon>manage_profile.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

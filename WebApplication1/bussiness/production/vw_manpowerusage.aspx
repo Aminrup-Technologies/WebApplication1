@@ -1,17 +1,17 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="vw_manpowerusage.aspx.cs" Inherits="WebApplication1.bussiness.production.vw_manpowerusage" %>
-<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="right_col" role="main">
         <div class="container">
-            <div class="page-title">
+            <%--<div class="page-title">
                 <div class="title_left">
                     <h5>Main Heading</h5>
                 </div>
-            </div>
+            </div>--%>
 
-            <div class="clearfix"></div>
+            <%--<div class="clearfix"></div>--%>
 
             <div class="row">
                 <div class="col-md-12 col-sm-12  ">
@@ -88,7 +88,7 @@
                 <div class="col-md-12 col-sm-12">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>View and Manage : Work Order Data</h2>
+                            <h2>View and Manage : Manpower Utilization / Duplicasy</h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                             </ul>
@@ -98,7 +98,22 @@
                             <div class="row">
                                 <div class="col-md-12 col-sm-12">
                                     <div class="card-box table-responsive">
-                                        <span>Hello, How are you?</span>
+                                        <div class="card-box col-md-12 col-sm-12 small" style="width: 100%; height: 450px; overflow: scroll">
+                                            <asp:GridView ID="GridView1" runat="server" Width="100%" class="table table-striped table-hover table-bordered table-responsive table-sm dt-responsive nowrap" AutoGenerateColumns="false" ShowHeaderWhenEmpty="true" EmptyDataText="No Data Found">
+                                                <Columns>
+                                                    <asp:TemplateField HeaderText="SL" Visible="True" HeaderStyle-Width="2%">
+                                                        <ItemTemplate>
+                                                            <asp:Label ID="lbl_slno" runat="server" Text="<%# Container.DataItemIndex + 1 %>"></asp:Label>
+                                                        </ItemTemplate>
+                                                        <ItemStyle CssClass="text text-center" />
+                                                    </asp:TemplateField>
+                                                </Columns>
+
+                                                <EmptyDataTemplate>
+                                                    <div class="grid">No Data Found</div>
+                                                </EmptyDataTemplate>
+                                            </asp:GridView>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -107,12 +122,11 @@
                 </div>
             </div>
         </div>
-    </div>
-    <script type="text/javascript">
-        function ShowPopup(title, body) {
-            $("#MyPopup .modal-title").html(title);
-            $("#MyPopup .modal-body").html(body);
-            $("#MyPopup").modal("show");
-        }
-    </script>
+        <script type="text/javascript">
+            function ShowPopup(title, body) {
+                $("#MyPopup .modal-title").html(title);
+                $("#MyPopup .modal-body").html(body);
+                $("#MyPopup").modal("show");
+            }
+        </script>
 </asp:Content>

@@ -16,6 +16,7 @@ namespace WebApplication1.bussiness.production
     public partial class vw_emp_paymentbankdetails : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
+        LoginUserData retrievedContext = new LoginUserData();
 
         public static string state = string.Empty;
         public static string region = string.Empty;
@@ -32,21 +33,31 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
+                    // Retrieving from session only if it has a value
                     if (Session["Changer"] != null)
                     {
-                        string[] retrievedArray = (string[])Session["Changer"];
-                        region = retrievedArray[1].ToString();
-                        comp = retrievedArray[2].ToString();
-                        state = retrievedArray[0].ToString();
-                        datalock = retrievedArray[3].ToString();
-                        //Session["Changer"] = null;
+                        LoginUserData retrievedContext = (LoginUserData)Session["Changer"];
+
+                        // Continue processing with retrievedContext
+                        region = retrievedContext.Value;
+                        comp = retrievedContext.CompValue;
+                        state = retrievedContext.State;
+                        datalock = retrievedContext.Datalock;
                     }
                     else
                     {
+                        // Set data manually if session value is not available or not of type LoginUserData
                         region = Session["REGION"].ToString();
                         comp = Session["COMPANY_CODE"].ToString();
                         state = Session["STATE"].ToString();
                         datalock = "0";
+
+                        LoginUserData userContext = new LoginUserData();
+                        userContext.State = state;
+                        userContext.Value = region;
+                        userContext.CompValue = comp;
+                        userContext.Datalock = "1";
+                        Session["Changer"] = userContext;
                     }
 
                     BindGrid(state, region, comp);
@@ -62,7 +73,7 @@ namespace WebApplication1.bussiness.production
             string constr = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
             using (SqlConnection con = new SqlConnection(constr))
             {
-                using (SqlCommand cmd = new SqlCommand("select Id, WorkStatus, WorkmanSL, FullName, Fathername, Payment_Bank, Payment_Account, Payment_IFSC, BankBranch from tbl_Employee_Mustertable where WorkState ='"+ state + "' and WorkRegion = '" + region + "' and WorkCompany='" + comp + "' and WorkStatus='Active' order by Id desc"))
+                using (SqlCommand cmd = new SqlCommand("select Id, WorkStatus, WorkmanSL, FullName, Fathername, Payment_Bank, Payment_Account, Payment_IFSC, BankBranch from tbl_Employee_Mustertable where WorkState ='" + state + "' and WorkRegion = '" + region + "' and WorkCompany='" + comp + "' and WorkStatus='Active' order by Id desc"))
                 {
                     using (SqlDataAdapter sda = new SqlDataAdapter())
                     {
