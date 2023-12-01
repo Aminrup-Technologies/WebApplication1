@@ -116,70 +116,146 @@ namespace WebApplication1.bussiness.production
             BindGridView1(query);
         }
 
+        //private void BindGridView1(string query)
+        //{
+        //    dbcl.Sqlconnection();
+        //    dbcl.ConnectDb();
+        //    SqlCommand cmd = new SqlCommand(query, dbcl.Conn);
+        //    SqlDataAdapter ad = new SqlDataAdapter(cmd);
+        //    cmd.CommandTimeout = 0;
+        //    DataTable dt = new DataTable();
+        //    ad.Fill(dt);
+        //    GridView1.DataSource = dt;
+        //    GridView1.DataBind();
+
+        //    Int32 total_org = 0;
+        //    Int32 ttlmnpr_org = 0;
+        //    decimal ttlot_org = 0.0m;
+        //    Int32 idlejobs_org = 0;
+        //    Int32 openjobs_org = 0;
+        //    Int32 closedjobs_org = 0;
+        //    Int32 pendingjobs_org = 0;
+        //    Int32 returnedjobs_org = 0;
+        //    Int32 rejectedjobs_org = 0;
+        //    Int32 approvedjobs_org = 0;
+        //    Int32 manpowerjobs_org = 0;
+        //    Int32 lineitemjobs_org = 0;
+        //    Int32 unassignedjobs_org = 0;
+        //    Int32 nonbillingjobs_org = 0;
+
+        //    Int32 total = dt.AsEnumerable().Sum(row => row.Field<Int32>("total_count"));
+        //    Int32 ttlmnpr = dt.AsEnumerable().Sum(row => row.Field<Int32>("total_manpower"));
+        //    decimal ttlot = dt.AsEnumerable().Sum(row => row.Field<decimal>("total_overtime"));
+        //    Int32 idlejobs = dt.AsEnumerable().Sum(row => row.Field<Int32>("Idlejob_count"));
+        //    Int32 openjobs = dt.AsEnumerable().Sum(row => row.Field<Int32>("openjobs_count"));
+        //    Int32 closedjobs = dt.AsEnumerable().Sum(row => row.Field<Int32>("closedjobs_count"));
+        //    Int32 pendingjobs = dt.AsEnumerable().Sum(row => row.Field<Int32>("pending_count"));
+        //    Int32 returnedjobs = dt.AsEnumerable().Sum(row => row.Field<Int32>("returned_count"));
+        //    Int32 rejectedjobs = dt.AsEnumerable().Sum(row => row.Field<Int32>("rejected_count"));
+        //    Int32 approvedjobs = dt.AsEnumerable().Sum(row => row.Field<Int32>("approved_count"));
+        //    Int32 manpowerjobs = dt.AsEnumerable().Sum(row => row.Field<Int32>("manpowerjobs"));
+        //    Int32 lineitemjobs = dt.AsEnumerable().Sum(row => row.Field<Int32>("lineitemjobs"));
+        //    Int32 unassignedjobs = dt.AsEnumerable().Sum(row => row.Field<Int32>("notassigned"));
+        //    Int32 nonbillingjobs = dt.AsEnumerable().Sum(row => row.Field<Int32>("nonbillingjobs"));
+        //    //Int32 pendingmeno = dt.AsEnumerable().Sum(row => row.Field<Int32>("pendingmemo"));
+        //    //Int32 memocreated = dt.AsEnumerable().Sum(row => row.Field<Int32>("createdmemo"));
+
+        //    GridView1.FooterRow.Cells[0].Text = "Total";
+        //    GridView1.FooterRow.Cells[1].HorizontalAlign = HorizontalAlign.Right;
+        //    GridView1.FooterRow.Cells[2].Text = total.ToString("D");
+        //    GridView1.FooterRow.Cells[3].Text = ttlmnpr.ToString("D");
+        //    GridView1.FooterRow.Cells[4].Text = ttlot.ToString("F");
+        //    GridView1.FooterRow.Cells[5].Text = idlejobs.ToString("D");
+        //    GridView1.FooterRow.Cells[6].Text = openjobs.ToString("D");
+        //    GridView1.FooterRow.Cells[7].Text = closedjobs.ToString("D");
+        //    GridView1.FooterRow.Cells[8].Text = pendingjobs.ToString("D");
+        //    GridView1.FooterRow.Cells[9].Text = returnedjobs.ToString("D");
+        //    GridView1.FooterRow.Cells[10].Text = rejectedjobs.ToString("D");
+        //    GridView1.FooterRow.Cells[11].Text = approvedjobs.ToString("D");
+        //    GridView1.FooterRow.Cells[12].Text = manpowerjobs.ToString("D");
+        //    GridView1.FooterRow.Cells[13].Text = lineitemjobs.ToString("D");
+        //    GridView1.FooterRow.Cells[14].Text = unassignedjobs.ToString("D");
+        //    GridView1.FooterRow.Cells[15].Text = nonbillingjobs.ToString("D");
+        //    //GridView1.FooterRow.Cells[16].Text = pendingmeno.ToString("D");
+        //    //GridView1.FooterRow.Cells[17].Text = memocreated.ToString("D");
+
+        //    dbcl.Conn.Close();
+        //}
+
         private void BindGridView1(string query)
         {
-            dbcl.Sqlconnection();
-            dbcl.ConnectDb();
-            SqlCommand cmd = new SqlCommand(query, dbcl.Conn);
-            SqlDataAdapter ad = new SqlDataAdapter(cmd);
-            cmd.CommandTimeout = 0;
-            DataTable dt = new DataTable();
-            ad.Fill(dt);
+            try
+            {
+                dbcl.Sqlconnection();
+                using (SqlConnection conn = dbcl.Conn)
+                {
+                    conn.Open();
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.CommandTimeout = 100;
+
+                        using (SqlDataAdapter ad = new SqlDataAdapter(cmd))
+                        {
+                            DataTable dt = new DataTable();
+                            ad.Fill(dt);
+
+                            if (dt.Rows.Count > 0)
+                            {
+                                BindGridViewData(dt);
+                            }
+                            else
+                            {
+                                // No data to display
+                                GridView1.DataSource = null;
+                                GridView1.DataBind();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle and log the exception
+                // You can replace Console.WriteLine with an appropriate logging mechanism
+                //Console.WriteLine($"An error occurred: {ex.Message}");
+            }
+        }
+
+        private void BindGridViewData(DataTable dt)
+        {
             GridView1.DataSource = dt;
             GridView1.DataBind();
 
-            Int32 total_org = 0;
-            Int32 ttlmnpr_org = 0;
-            decimal ttlot_org = 0.0m;
-            Int32 idlejobs_org = 0;
-            Int32 openjobs_org = 0;
-            Int32 closedjobs_org = 0;
-            Int32 pendingjobs_org = 0;
-            Int32 returnedjobs_org = 0;
-            Int32 rejectedjobs_org = 0;
-            Int32 approvedjobs_org = 0;
-            Int32 manpowerjobs_org = 0;
-            Int32 lineitemjobs_org = 0;
-            Int32 unassignedjobs_org = 0;
-            Int32 nonbillingjobs_org = 0;
+            SetFooterValues(dt);
+        }
 
-            Int32 total = dt.AsEnumerable().Sum(row => row.Field<Int32>("total_count"));
-            Int32 ttlmnpr = dt.AsEnumerable().Sum(row => row.Field<Int32>("total_manpower"));
-            decimal ttlot = dt.AsEnumerable().Sum(row => row.Field<decimal>("total_overtime"));
-            Int32 idlejobs = dt.AsEnumerable().Sum(row => row.Field<Int32>("Idlejob_count"));
-            Int32 openjobs = dt.AsEnumerable().Sum(row => row.Field<Int32>("openjobs_count"));
-            Int32 closedjobs = dt.AsEnumerable().Sum(row => row.Field<Int32>("closedjobs_count"));
-            Int32 pendingjobs = dt.AsEnumerable().Sum(row => row.Field<Int32>("pending_count"));
-            Int32 returnedjobs = dt.AsEnumerable().Sum(row => row.Field<Int32>("returned_count"));
-            Int32 rejectedjobs = dt.AsEnumerable().Sum(row => row.Field<Int32>("rejected_count"));
-            Int32 approvedjobs = dt.AsEnumerable().Sum(row => row.Field<Int32>("approved_count"));
-            Int32 manpowerjobs = dt.AsEnumerable().Sum(row => row.Field<Int32>("manpowerjobs"));
-            Int32 lineitemjobs = dt.AsEnumerable().Sum(row => row.Field<Int32>("lineitemjobs"));
-            Int32 unassignedjobs = dt.AsEnumerable().Sum(row => row.Field<Int32>("notassigned"));
-            Int32 nonbillingjobs = dt.AsEnumerable().Sum(row => row.Field<Int32>("nonbillingjobs"));
-            //Int32 pendingmeno = dt.AsEnumerable().Sum(row => row.Field<Int32>("pendingmemo"));
-            //Int32 memocreated = dt.AsEnumerable().Sum(row => row.Field<Int32>("createdmemo"));
+        private void SetFooterValues(DataTable dt)
+        {
+            GridViewRow footerRow = GridView1.FooterRow;
 
-            GridView1.FooterRow.Cells[0].Text = "Total";
-            GridView1.FooterRow.Cells[1].HorizontalAlign = HorizontalAlign.Right;
-            GridView1.FooterRow.Cells[2].Text = total.ToString("D");
-            GridView1.FooterRow.Cells[3].Text = ttlmnpr.ToString("D");
-            GridView1.FooterRow.Cells[4].Text = ttlot.ToString("F");
-            GridView1.FooterRow.Cells[5].Text = idlejobs.ToString("D");
-            GridView1.FooterRow.Cells[6].Text = openjobs.ToString("D");
-            GridView1.FooterRow.Cells[7].Text = closedjobs.ToString("D");
-            GridView1.FooterRow.Cells[8].Text = pendingjobs.ToString("D");
-            GridView1.FooterRow.Cells[9].Text = returnedjobs.ToString("D");
-            GridView1.FooterRow.Cells[10].Text = rejectedjobs.ToString("D");
-            GridView1.FooterRow.Cells[11].Text = approvedjobs.ToString("D");
-            GridView1.FooterRow.Cells[12].Text = manpowerjobs.ToString("D");
-            GridView1.FooterRow.Cells[13].Text = lineitemjobs.ToString("D");
-            GridView1.FooterRow.Cells[14].Text = unassignedjobs.ToString("D");
-            GridView1.FooterRow.Cells[15].Text = nonbillingjobs.ToString("D");
-            //GridView1.FooterRow.Cells[16].Text = pendingmeno.ToString("D");
-            //GridView1.FooterRow.Cells[17].Text = memocreated.ToString("D");
+            if (footerRow != null)
+            {
+                footerRow.Cells[0].Text = "Total";
+                footerRow.Cells[1].HorizontalAlign = HorizontalAlign.Right;
 
-            dbcl.Conn.Close();
+                footerRow.Cells[2].Text = dt.AsEnumerable().Sum(row => row.Field<int>("total_count")).ToString("D");
+                footerRow.Cells[3].Text = dt.AsEnumerable().Sum(row => row.Field<int>("total_manpower")).ToString("D");
+                footerRow.Cells[4].Text = dt.AsEnumerable().Sum(row => row.Field<decimal>("total_overtime")).ToString("F");
+                footerRow.Cells[5].Text = dt.AsEnumerable().Sum(row => row.Field<int>("Idlejob_count")).ToString("D");
+                footerRow.Cells[6].Text = dt.AsEnumerable().Sum(row => row.Field<int>("openjobs_count")).ToString("D");
+                footerRow.Cells[7].Text = dt.AsEnumerable().Sum(row => row.Field<int>("closedjobs_count")).ToString("D");
+                footerRow.Cells[8].Text = dt.AsEnumerable().Sum(row => row.Field<int>("pending_count")).ToString("D");
+                footerRow.Cells[9].Text = dt.AsEnumerable().Sum(row => row.Field<int>("returned_count")).ToString("D");
+                footerRow.Cells[10].Text = dt.AsEnumerable().Sum(row => row.Field<int>("rejected_count")).ToString("D");
+                footerRow.Cells[11].Text = dt.AsEnumerable().Sum(row => row.Field<int>("approved_count")).ToString("D");
+                footerRow.Cells[12].Text = dt.AsEnumerable().Sum(row => row.Field<int>("manpowerjobs")).ToString("D");
+                footerRow.Cells[13].Text = dt.AsEnumerable().Sum(row => row.Field<int>("lineitemjobs")).ToString("D");
+                footerRow.Cells[14].Text = dt.AsEnumerable().Sum(row => row.Field<int>("notassigned")).ToString("D");
+                footerRow.Cells[15].Text = dt.AsEnumerable().Sum(row => row.Field<int>("nonbillingjobs")).ToString("D");
+                //footerRow.Cells[16].Text = dt.AsEnumerable().Sum(row => row.Field<int>("pendingmemo")).ToString("D");
+                //footerRow.Cells[17].Text = dt.AsEnumerable().Sum(row => row.Field<int>("createdmemo")).ToString("D");
+            }
         }
 
         protected void GridView1_RowCommand(object sender, GridViewCommandEventArgs e)

@@ -204,7 +204,7 @@
                         </a>
                          <a class="btn btn-app" href="vw_manpowerusage.aspx">
                             <asp:Label ID="Label20" runat="server" Text="0" Visible="false"></asp:Label>
-                            <i class="fa fa-users"></i>Manpower<br /> Usage
+                            <i class="fa fa-users"></i>Manpower Usage
 
                         </a>
                     </div>
