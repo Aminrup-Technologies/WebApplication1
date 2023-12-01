@@ -202,6 +202,11 @@
                             <i class="fa fa-users"></i>Workregion
 
                         </a>
+                         <a class="btn btn-app" href="vw_manpowerusage.aspx">
+                            <asp:Label ID="Label20" runat="server" Text="0" Visible="false"></asp:Label>
+                            <i class="fa fa-users"></i>Manpower<br /> Usage
+
+                        </a>
                     </div>
                 </div>
             </div>

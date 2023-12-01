@@ -33,31 +33,20 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-                    // Retrieving from session only if it has a value
                     if (Session["Changer"] != null)
                     {
-                        LoginUserData retrievedContext = (LoginUserData)Session["Changer"];
-
-                        // Continue processing with retrievedContext
-                        region = retrievedContext.Value;
-                        comp = retrievedContext.CompValue;
-                        state = retrievedContext.State;
-                        datalock = retrievedContext.Datalock;
+                        string[] retrievedArray = (string[])Session["Changer"];
+                        region = retrievedArray[1].ToString();
+                        comp = retrievedArray[2].ToString();
+                        state = retrievedArray[0].ToString();
+                        datalock = retrievedArray[3].ToString();
                     }
                     else
                     {
-                        // Set data manually if session value is not available or not of type LoginUserData
                         region = Session["REGION"].ToString();
                         comp = Session["COMPANY_CODE"].ToString();
                         state = Session["STATE"].ToString();
                         datalock = "0";
-
-                        LoginUserData userContext = new LoginUserData();
-                        userContext.State = state;
-                        userContext.Value = region;
-                        userContext.CompValue = comp;
-                        userContext.Datalock = "1";
-                        Session["Changer"] = userContext;
                     }
 
                     BindGrid(state, region, comp);
