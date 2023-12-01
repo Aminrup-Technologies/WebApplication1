@@ -544,6 +544,15 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Label Label7;
         
         /// <summary>
+        /// div10 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl div10;
+        
+        /// <summary>
         /// Label8 control.
         /// </summary>
         /// <remarks>
@@ -562,6 +571,15 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl control_panel;
         
         /// <summary>
+        /// div11 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl div11;
+        
+        /// <summary>
         /// Label18 control.
         /// </summary>
         /// <remarks>
@@ -569,6 +587,15 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label18;
+        
+        /// <summary>
+        /// div12 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl div12;
         
         /// <summary>
         /// Label19 control.

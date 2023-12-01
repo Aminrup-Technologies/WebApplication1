@@ -144,7 +144,7 @@
 										</tr>
 									</table>
 								</ItemTemplate>
-                                <HeaderStyle CssClass="GridHeaderText-Center" />
+								<HeaderStyle CssClass="GridHeaderText-Center" />
 								<ItemStyle CssClass="text text-center" />
 							</asp:TemplateField>
 
@@ -163,7 +163,7 @@
 									[<asp:Label ID="lbl_SkillCategory" runat="server" Text='<%# Eval("SkillCategory") %>' Font-Bold="true" ForeColor="Brown" />]
 									[<asp:Label ID="lbl_SkillDesignation" runat="server" Text='<%# Eval("SkillDesignation") %>' Font-Bold="true" ForeColor="DarkBlue" />]<br />
 									DOJ:[<asp:Label ID="lbl_DOJ" runat="server" Text='<%# Eval("DOJ", "{0:dd-MM-yyyy}") %>' Font-Bold="true" ForeColor="DarkGreen" />]<br />
-                                    Safety No : <asp:Label ID="lbl_SafetyPassNo" runat="server" Text='<%# Eval("SafetyPassNo") %>' Font-Bold="true" ForeColor="DarkGreen" />
+									Safety No : <asp:Label ID="lbl_SafetyPassNo" runat="server" Text='<%# Eval("SafetyPassNo") %>' Font-Bold="true" ForeColor="DarkGreen" />
 								</ItemTemplate>
 								<HeaderStyle CssClass="GridHeaderText-Center" />
 								<ItemStyle CssClass="grid" />
@@ -172,7 +172,7 @@
 							<asp:TemplateField HeaderText="F16" HeaderStyle-Width="7%">
 								<ItemTemplate>
 									F16:<asp:Label ID="lbl_F16_YesNo" runat="server" Text='<%# Eval("F16_YesNo") %>' /><br />
-                                    F17:<asp:Label ID="lbl_F17_YesNo" runat="server" Text='<%# Eval("F17_YesNo") %>' />
+									F17:<asp:Label ID="lbl_F17_YesNo" runat="server" Text='<%# Eval("F17_YesNo") %>' />
 								</ItemTemplate>
 								<EditItemTemplate>
 									F16:<asp:DropDownList ID="DDL_F16_YesNo" CssClass="form-control form-control-sm rounded" Width="100%" runat="server" SelectedValue='<%# Bind("F16_YesNo") %>'>
@@ -181,8 +181,8 @@
 										<asp:ListItem>Yes</asp:ListItem>
 										<asp:ListItem>No</asp:ListItem>
 									</asp:DropDownList>
-                                    <br />
-                                    F17<asp:DropDownList ID="DDL_F17_YesNo" CssClass="form-control form-control-sm rounded" Width="100%" runat="server" SelectedValue='<%# Bind("F17_YesNo") %>'>
+									<br />
+									F17<asp:DropDownList ID="DDL_F17_YesNo" CssClass="form-control form-control-sm rounded" Width="100%" runat="server" SelectedValue='<%# Bind("F17_YesNo") %>'>
 										<asp:ListItem Selected="True">Please Select Option</asp:ListItem>
 										<asp:ListItem>All</asp:ListItem>
 										<asp:ListItem>Yes</asp:ListItem>
@@ -198,7 +198,7 @@
 							<asp:TemplateField HeaderText="Fixed Y/N" HeaderStyle-Width="6%" Visible="true">
 								<ItemTemplate>
 									Fixed Y/N:<asp:Label ID="lbl_FixedSalary_YesNo" runat="server" Text='<%# Bind("FixedSalary_YesNo") %>'></asp:Label><br />
-                                    Amnt:<asp:Label ID="lbl_FixedAmount" runat="server" Text='<%# Bind("FixedAmount") %>'></asp:Label>
+									Amnt:<asp:Label ID="lbl_FixedAmount" runat="server" Text='<%# Bind("FixedAmount") %>'></asp:Label>
 								</ItemTemplate>
 								<EditItemTemplate>
 									Fixed Y/N:<asp:DropDownList ID="DDL_FixedSalary_YesNo" CssClass="form-control form-control-sm rounded" runat="server" SelectedValue='<%# Bind("FixedSalary_YesNo") %>'>
@@ -207,7 +207,7 @@
 										<asp:ListItem>Yes</asp:ListItem>
 										<asp:ListItem>No</asp:ListItem>
 									</asp:DropDownList><br />
-                                    Amnt:<asp:TextBox ID="txt_FixedAmount" runat="server" Text='<%# Bind("FixedAmount") %>' TextMode="MultiLine" Rows="1" Columns="8" CssClass="form-control form-control-sm rounded" Width="100%" MaxLength="5"></asp:TextBox>
+									Amnt:<asp:TextBox ID="txt_FixedAmount" runat="server" Text='<%# Bind("FixedAmount") %>' TextMode="MultiLine" Rows="1" Columns="8" CssClass="form-control form-control-sm rounded" Width="100%" MaxLength="5"></asp:TextBox>
 									<asp:RangeValidator ID="RangeValidator1" runat="server" ControlToValidate="txt_FixedAmount"
 										Type="Integer" MinimumValue="0" MaximumValue="99999" ErrorMessage="Value must be between 1 and 99,999." ValidationGroup="Update" ForeColor="Red" SetFocusOnError="true" Display="Dynamic" />
 								</EditItemTemplate>
@@ -218,7 +218,7 @@
 							<asp:TemplateField HeaderText="WH" HeaderStyle-Width="6%" Visible="true">
 								<ItemTemplate>
 									Hours:<asp:Label ID="lbl_WorkHours" runat="server" Text='<%# Bind("WorkHours") %>'></asp:Label><br />
-                                    OT_Div:<asp:Label ID="lbl_OT_Divisibility" runat="server" Text='<%# Bind("OT_Divisibility") %>'></asp:Label>
+									OT_Div:<asp:Label ID="lbl_OT_Divisibility" runat="server" Text='<%# Bind("OT_Divisibility") %>'></asp:Label>
 								</ItemTemplate>
 								<EditItemTemplate>
 									Hours:<asp:DropDownList ID="DDL_WorkHours" runat="server" CssClass="form-control form-control-sm rounded" SelectedValue='<%# Bind("WorkHours") %>'>
@@ -228,7 +228,7 @@
 										<asp:ListItem Value="8">Eight Hours</asp:ListItem>
 										<asp:ListItem Value="12">Twelve Hours</asp:ListItem>
 									</asp:DropDownList><br />
-                                    OT_Div:<asp:DropDownList ID="DDL_OT_Divisibility" runat="server" CssClass="form-control form-control-sm rounded" SelectedValue='<%# Bind("OT_Divisibility") %>'>
+									OT_Div:<asp:DropDownList ID="DDL_OT_Divisibility" runat="server" CssClass="form-control form-control-sm rounded" SelectedValue='<%# Bind("OT_Divisibility") %>'>
 										<asp:ListItem Selected="True">Please Select Option</asp:ListItem>
 										<asp:ListItem></asp:ListItem>
 										<asp:ListItem Value="">All</asp:ListItem>
@@ -244,7 +244,7 @@
 							<asp:TemplateField HeaderText="OT F" HeaderStyle-Width="6%" Visible="true">
 								<ItemTemplate>
 									OT_Factor:<asp:Label ID="lbl_OTFactor" runat="server" Text='<%# Bind("OTFactor") %>'></asp:Label><br />
-                                    OT_Mult:<asp:Label ID="lbl_OTMultiplier" runat="server" Text='<%# Bind("OTMultiplier") %>'></asp:Label>
+									OT_Mult:<asp:Label ID="lbl_OTMultiplier" runat="server" Text='<%# Bind("OTMultiplier") %>'></asp:Label>
 								</ItemTemplate>
 								<EditItemTemplate>
 									OT_Factor:<asp:DropDownList ID="DDL_OTFactor" runat="server" CssClass="form-control form-control-sm rounded" SelectedValue='<%# Bind("OTFactor") %>'>
@@ -255,7 +255,7 @@
 										<asp:ListItem Value="2">Double</asp:ListItem>
 										<asp:ListItem Value="0">Zero</asp:ListItem>
 									</asp:DropDownList><br />
-                                    OT_Mult:<asp:DropDownList ID="DDL_OTMultiplier" runat="server" CssClass="form-control form-control-sm rounded" SelectedValue='<%# Bind("OTMultiplier") %>'>
+									OT_Mult:<asp:DropDownList ID="DDL_OTMultiplier" runat="server" CssClass="form-control form-control-sm rounded" SelectedValue='<%# Bind("OTMultiplier") %>'>
 										<asp:ListItem Selected="True">Please Select Option</asp:ListItem>
 										<asp:ListItem></asp:ListItem>
 										<asp:ListItem>All</asp:ListItem>
@@ -270,11 +270,11 @@
 							<asp:TemplateField HeaderText="DA / VDA" HeaderStyle-Width="2%" Visible="true">
 								<ItemTemplate>
 									DA/VDA:<asp:Label ID="lbl_DA_VDA" runat="server" Text='<%# Bind("DA_VDA") %>'></asp:Label><br />
-                                    Wash_Allow:<asp:Label ID="lbl_Washing_Allowance" runat="server" Text='<%# Bind("Washing_Allowance") %>'></asp:Label>
+									Wash_Allow:<asp:Label ID="lbl_Washing_Allowance" runat="server" Text='<%# Bind("Washing_Allowance") %>'></asp:Label>
 								</ItemTemplate>
 								<EditItemTemplate>
 									DA/VDA:<asp:TextBox ID="txt_DA_VDA" runat="server" Text='<%# Bind("DA_VDA") %>' CssClass="form-control form-control-sm rounded" Width="100%"></asp:TextBox><br />
-                                    Wash_Allow:<asp:TextBox ID="txt_Washing_Allowance" runat="server" Text='<%# Bind("Washing_Allowance") %>' CssClass="form-control form-control-sm rounded" Width="100%"></asp:TextBox>
+									Wash_Allow:<asp:TextBox ID="txt_Washing_Allowance" runat="server" Text='<%# Bind("Washing_Allowance") %>' CssClass="form-control form-control-sm rounded" Width="100%"></asp:TextBox>
 								</EditItemTemplate>
 								<HeaderStyle CssClass="grid" />
 								<ItemStyle CssClass="grid" />
@@ -283,11 +283,11 @@
 							<asp:TemplateField HeaderText="HRA & Conv." HeaderStyle-Width="6%" Visible="true">
 								<ItemTemplate>
 									HRA:<asp:Label ID="lbl_HRA" runat="server" Text='<%# Bind("HRA") %>'></asp:Label><br />
-                                    Conv.<asp:Label ID="lbl_Conv_Allowance" runat="server" Text='<%# Bind("Conv_Allowance") %>'></asp:Label>
+									Conv.<asp:Label ID="lbl_Conv_Allowance" runat="server" Text='<%# Bind("Conv_Allowance") %>'></asp:Label>
 								</ItemTemplate>
 								<EditItemTemplate>
 									HRA:<asp:TextBox ID="txt_HRA" runat="server" Text='<%# Bind("HRA") %>' CssClass="form-control form-control-sm rounded" Width="100%"></asp:TextBox><br />
-                                    Conv.<asp:TextBox ID="txt_Conv_Allowance" runat="server" Text='<%# Bind("Conv_Allowance") %>' CssClass="form-control form-control-sm rounded" Width="100%"></asp:TextBox>
+									Conv.<asp:TextBox ID="txt_Conv_Allowance" runat="server" Text='<%# Bind("Conv_Allowance") %>' CssClass="form-control form-control-sm rounded" Width="100%"></asp:TextBox>
 								</EditItemTemplate>
 								<HeaderStyle CssClass="grid" />
 								<ItemStyle CssClass="grid" />
@@ -296,11 +296,11 @@
 							<asp:TemplateField HeaderText="Med & Att" HeaderStyle-Width="6%" Visible="true">
 								<ItemTemplate>
 									Med_Allow:<asp:Label ID="lbl_Medical_Allowance" runat="server" Text='<%# Bind("Medical_Allowance") %>'></asp:Label><br />
-                                    Att_Allow:<asp:Label ID="lbl_ATT_Allowance" runat="server" Text='<%# Bind("ATT_Allowance") %>'></asp:Label>
+									Att_Allow:<asp:Label ID="lbl_ATT_Allowance" runat="server" Text='<%# Bind("ATT_Allowance") %>'></asp:Label>
 								</ItemTemplate>
 								<EditItemTemplate>
 									Med_Allow:<asp:TextBox ID="txt_Medical_Allowance" runat="server" Text='<%# Bind("Medical_Allowance") %>' CssClass="form-control form-control-sm rounded" Width="100%"></asp:TextBox><br />
-                                    Att_Allow:<asp:TextBox ID="txt_ATT_Allowance" runat="server" Text='<%# Bind("ATT_Allowance") %>' CssClass="form-control form-control-sm rounded" Width="100%"></asp:TextBox>
+									Att_Allow:<asp:TextBox ID="txt_ATT_Allowance" runat="server" Text='<%# Bind("ATT_Allowance") %>' CssClass="form-control form-control-sm rounded" Width="100%"></asp:TextBox>
 								</EditItemTemplate>
 								<HeaderStyle CssClass="grid" />
 								<ItemStyle CssClass="grid" />
@@ -309,11 +309,11 @@
 							<asp:TemplateField HeaderText="SPCL" HeaderStyle-Width="4%" Visible="true">
 								<ItemTemplate>
 									SPCL_All:<asp:Label ID="lbl_SPCL_Allowance" runat="server" Text='<%# Bind("SPCL_Allowance") %>'></asp:Label><br />
-                                    Misc_All:<asp:Label ID="lbl_Misc_Earnings" runat="server" Text='<%# Bind("Misc_Earnings") %>'></asp:Label>
+									Misc_All:<asp:Label ID="lbl_Misc_Earnings" runat="server" Text='<%# Bind("Misc_Earnings") %>'></asp:Label>
 								</ItemTemplate>
 								<EditItemTemplate>
 									SPCL_All:<asp:TextBox ID="txt_SPCL_Allowance" runat="server" Text='<%# Bind("SPCL_Allowance") %>' CssClass="form-control form-control-sm rounded" Width="100%"></asp:TextBox><br />
-                                    Misc_All:<asp:TextBox ID="txt_Misc_Earnings" runat="server" Text='<%# Bind("Misc_Earnings") %>' CssClass="form-control form-control-sm rounded" Width="100%"></asp:TextBox>
+									Misc_All:<asp:TextBox ID="txt_Misc_Earnings" runat="server" Text='<%# Bind("Misc_Earnings") %>' CssClass="form-control form-control-sm rounded" Width="100%"></asp:TextBox>
 								</EditItemTemplate>
 								<HeaderStyle CssClass="grid" />
 								<ItemStyle CssClass="grid" />

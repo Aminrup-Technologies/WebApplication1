@@ -67,6 +67,15 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.GridView GridView1;
         
         /// <summary>
+        /// SecondGrid control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl SecondGrid;
+        
+        /// <summary>
         /// GridView2 control.
         /// </summary>
         /// <remarks>

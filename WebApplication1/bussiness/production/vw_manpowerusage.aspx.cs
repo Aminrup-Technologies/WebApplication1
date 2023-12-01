@@ -95,6 +95,8 @@ namespace WebApplication1.bussiness.production
             GridView1.DataSource = dt;
             GridView1.DataBind();
 
+            SecondGrid.Visible = false;
+
         }
 
         protected void YourFunctionToBindGridView(string employeeWrk)
@@ -159,6 +161,7 @@ namespace WebApplication1.bussiness.production
             if (e.CommandName == "View_Details")
             {
                 YourFunctionToBindGridView(empwrk);
+                SecondGrid.Visible = true;
             }
         }
     }

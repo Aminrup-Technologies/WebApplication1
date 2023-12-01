@@ -317,8 +317,10 @@
                             <i class="fa fa-users"></i>ESIC
                         </a>
                         <a class="btn btn-app" href="#">
-                            <asp:Label ID="Label8" runat="server" Text="0" Visible="false"></asp:Label>
-                            <i class="fa fa-users"></i>TAX
+                            <div id="div10" class="badge bg-red" runat="server">
+                                <asp:Label ID="Label8" runat="server" Text="WIP" Visible="true"></asp:Label>
+                            </div>
+                            <i class="fa fa-users"></i>Final F17
                         </a>
                     </div>
                 </div>
@@ -336,12 +338,16 @@
                     </div>
                     <div class="x_content">
                         <a class="btn btn-app" href="#">
-                            <asp:Label ID="Label18" runat="server" Text="0" Visible="true"></asp:Label>
-                            <i class="fa fa-edit"></i>Rollback
+                            <div id="div11" class="badge bg-red" runat="server">
+                                <asp:Label ID="Label18" runat="server" Text="WIP" Visible="true"></asp:Label>
+                            </div>
+                            <i class="fa fa-users"></i>Payroll Status
                         </a>
                         <a class="btn btn-app" href="#">
-                            <asp:Label ID="Label19" runat="server" Text="0" Visible="true"></asp:Label>
-                            <i class="fa fa-users"></i>Paroll Visibility
+                            <div id="div12" class="badge bg-red" runat="server">
+                                <asp:Label ID="Label19" runat="server" Text="WIP" Visible="true"></asp:Label>
+                            </div>
+                            <i class="fa fa-users"></i>Controller
                         </a>
                     </div>
                 </div>
