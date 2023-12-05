@@ -899,6 +899,39 @@ namespace WebApplication1.bussiness.production
             cmbD1.Text = (now.ToString("dd"));
 
         }
+
+        public void BindMonthAndYearDropdowns(DropDownList cmbM, DropDownList cmbY)
+        {
+            // Clear existing items
+            cmbM.Items.Clear();
+            cmbY.Items.Clear();
+
+            cmbM.Items.Add(new ListItem("Please select option", "0"));
+
+            // Bind Month dropdown
+            for (int month = 1; month <= 12; month++)
+            {
+                string monthText = new DateTime(2023, month, 1).ToString("MMMM");
+                string monthValue = month.ToString("D2");
+                cmbM.Items.Add(new ListItem(monthText, monthValue));
+            }
+
+            // Bind Year dropdown with the last 5 years
+            int currentYear = DateTime.Now.Year;
+            for (int i = 0; i < 5; i++)
+            {
+                cmbY.Items.Add((currentYear - i).ToString());
+            }
+
+            // Set default values to the current month and year
+            //cmbM.SelectedValue = DateTime.Now.ToString("MM");
+            cmbY.SelectedValue = DateTime.Now.Year.ToString();
+
+            
+            //cmbY.Items.Add(new ListItem("Please select option", "0"));
+        }
+
+
         public void CalDateCombo8(DropDownList cmbM1, DropDownList cmbY1)
         {
             int yyend;
@@ -961,8 +994,11 @@ namespace WebApplication1.bussiness.production
 
         public void CalDateCombo90(DropDownList cmbM1, DropDownList cmbY1)
         {
+            
             int yyend;
+            //Populate the month dropdown list (cmbM1) with the names of the twelve months.
             cmbM1.Items.Clear();
+            //Populate the year dropdown list (cmbY1) with 11 items, including the current year and the five years before and after it.
             cmbY1.Items.Clear();
 
             yyend = (DateTime.Now.Year);

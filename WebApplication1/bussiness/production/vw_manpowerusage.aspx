@@ -51,8 +51,8 @@
 										<asp:Label ID="lbl_msg" runat="server" Text="Click SUBMIT to Save Data!!"></asp:Label>
 									</div>
 									<div class="col-md-6 col-sm-12">
-										<button type="button" class="btn btn-danger btn-sm collapse-link">Cancel</button>
-										<button type="reset" class="btn btn-warning btn-sm">Reset</button>
+										<asp:Button ID="btn_cancel" runat="server" Text="Back" CssClass="btn btn-danger btn-sm" OnClick="btn_cancel_Click" />
+										<asp:Button ID="btn_reset" runat="server" Text="Reset" CssClass="btn btn-warning btn-sm" OnClick="btn_reset_Click" />
 										<asp:Button ID="btn_submit" runat="server" Text="Submit" ValidationGroup="GetResult" CssClass="btn btn-success btn-sm" OnClick="btn_submit_Click" />
 									</div>
 								</div>

@@ -16,14 +16,14 @@
             </div>
         </div>--%>
 
-       <%-- <div class="clearfix"></div>--%>
+        <%-- <div class="clearfix"></div>--%>
 
         <div class="row">
             <div class="col-md-12" id="Supvkpirow" runat="server" visible="true">
                 <div class="x_panel">
                     <div class="x_title">
                         <h2>Employee Payroll Management : </h2>
-                        <ul class="nav navbar-right panel_toolbox"></ul>
+                        <%--<ul class="nav navbar-right panel_toolbox"></ul>--%>
                         <div id="StateSelector" runat="server" class="col-md-2 col-sm-6 form-group" visible="false">
                             <asp:DropDownList ID="DDL_WorkStates" runat="server" CssClass="form-control form-control-sm rounded" OnSelectedIndexChanged="DDL_WorkStates_SelectedIndexChanged" AutoPostBack="true"></asp:DropDownList>
                         </div>
@@ -40,6 +40,9 @@
                     </div>
                 </div>
             </div>
+            </div>
+
+            <div class="row">
 
             <div class="col-md-6" id="Div1" runat="server" visible="true">
                 <div class="x_panel">
@@ -202,7 +205,7 @@
                             <i class="fa fa-users"></i>Workregion
 
                         </a>
-                         <a class="btn btn-app" href="vw_manpowerusage.aspx">
+                        <a class="btn btn-app" href="vw_manpowerusage.aspx">
                             <asp:Label ID="Label20" runat="server" Text="0" Visible="false"></asp:Label>
                             <i class="fa fa-users"></i>Manpower Usage
 
@@ -292,6 +295,13 @@
                                 <asp:Label ID="Label5" runat="server" Text="Ok" Visible="true"></asp:Label>
                             </div>
                             <i class="fa fa-users"></i>Bank Sheets
+                        </a>
+
+                        <a class="btn btn-app" href="#">
+                            <div id="div13" class="badge bg-green" runat="server">
+                                <asp:Label ID="Label21" runat="server" Text="Ok" Visible="true"></asp:Label>
+                            </div>
+                            <i class="fa fa-users"></i>Pay Slip
                         </a>
                     </div>
                 </div>

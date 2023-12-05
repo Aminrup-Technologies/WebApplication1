@@ -197,8 +197,8 @@
 
 							<asp:TemplateField HeaderText="Fixed Y/N" HeaderStyle-Width="6%" Visible="true">
 								<ItemTemplate>
-									Fixed Y/N:<asp:Label ID="lbl_FixedSalary_YesNo" runat="server" Text='<%# Bind("FixedSalary_YesNo") %>'></asp:Label><br />
-									Amnt:<asp:Label ID="lbl_FixedAmount" runat="server" Text='<%# Bind("FixedAmount") %>'></asp:Label>
+									<asp:Label ID="lbl_fxd" runat="server" Text="Fixed Y/N:"></asp:Label><asp:Label ID="lbl_FixedSalary_YesNo" runat="server" Text='<%# Bind("FixedSalary_YesNo") %>' Font-Bold="true" ForeColor="Black" ></asp:Label><br />
+									<asp:Label ID="lbl_fxdamnt" runat="server" Text="Amnt:"></asp:Label><asp:Label ID="lbl_FixedAmount" runat="server" Text='<%# Bind("FixedAmount") %>' Font-Bold="true" ForeColor="Black"></asp:Label>
 								</ItemTemplate>
 								<EditItemTemplate>
 									Fixed Y/N:<asp:DropDownList ID="DDL_FixedSalary_YesNo" CssClass="form-control form-control-sm rounded" runat="server" SelectedValue='<%# Bind("FixedSalary_YesNo") %>'>
@@ -211,14 +211,14 @@
 									<asp:RangeValidator ID="RangeValidator1" runat="server" ControlToValidate="txt_FixedAmount"
 										Type="Integer" MinimumValue="0" MaximumValue="99999" ErrorMessage="Value must be between 1 and 99,999." ValidationGroup="Update" ForeColor="Red" SetFocusOnError="true" Display="Dynamic" />
 								</EditItemTemplate>
-								<HeaderStyle CssClass="grid" />
-								<ItemStyle CssClass="grid" />
+								<HeaderStyle CssClass="text-center bg-red"/>
+								<ItemStyle CssClass="text-center bg-orange" />
 							</asp:TemplateField>
 
 							<asp:TemplateField HeaderText="WH" HeaderStyle-Width="6%" Visible="true">
 								<ItemTemplate>
-									Hours:<asp:Label ID="lbl_WorkHours" runat="server" Text='<%# Bind("WorkHours") %>'></asp:Label><br />
-									OT_Div:<asp:Label ID="lbl_OT_Divisibility" runat="server" Text='<%# Bind("OT_Divisibility") %>'></asp:Label>
+									Hours:<asp:Label ID="lbl_WorkHours" runat="server" Text='<%# Bind("WorkHours") %>' Font-Bold="true" ForeColor="White"></asp:Label><br />
+									OT_Div:<asp:Label ID="lbl_OT_Divisibility" runat="server" Text='<%# Bind("OT_Divisibility") %>' Font-Bold="true" ForeColor="White"></asp:Label>
 								</ItemTemplate>
 								<EditItemTemplate>
 									Hours:<asp:DropDownList ID="DDL_WorkHours" runat="server" CssClass="form-control form-control-sm rounded" SelectedValue='<%# Bind("WorkHours") %>'>
@@ -237,8 +237,8 @@
 										<asp:ListItem Value="24">24 Hours</asp:ListItem>
 									</asp:DropDownList>
 								</EditItemTemplate>
-								<HeaderStyle CssClass="grid" />
-								<ItemStyle CssClass="grid" />
+								<HeaderStyle CssClass="text-center bg-primary"/>
+								<ItemStyle CssClass="text-center bg-info" />
 							</asp:TemplateField>
 
 							<asp:TemplateField HeaderText="OT F" HeaderStyle-Width="6%" Visible="true">
@@ -353,20 +353,4 @@
 			$("#myModal").modal("show");
 		}
 	</script>
-
-	<script>
-		window.onscroll = function () { fixHeader() };
-
-		var header = document.getElementById("GridView1").getElementsByTagName("thead")[0];
-		var sticky = header.offsetTop;
-
-		function fixHeader() {
-			if (window.pageYOffset > sticky) {
-				header.classList.add("fixed-header");
-			} else {
-				header.classList.remove("fixed-header");
-			}
-		}
-	</script>
-
 </asp:Content>

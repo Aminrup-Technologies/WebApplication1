@@ -49,23 +49,6 @@ namespace WebApplication1.bussiness.production
                 {
 
                     CurrentDataBinder();
-
-                    //DateTime now = DateTime.Now;
-
-                    //lbl_year.Text = DateTime.Now.Year.ToString();
-                    //lbl_monthcode.Text = DateTime.Now.ToString("MM");
-                    //lbl_month.Text = now.ToString("MMMM");
-
-                    ////The below function is used to bind the attedance details for the current month say, P, OT, Approved, Pending etc
-                    //AttendanceDataBinder(lbl_year.Text, lbl_monthcode.Text, lbl_month.Text);
-
-
-                    ////The below function is used to bind current month attendance, say in out timings, ot, approval status
-                    //string query = "select * from tbl_attendance where YEAR(CreatedDate)='" + DateTime.Now.Year.ToString() + "' and MONTH(CreatedDate)='" + DateTime.Now.Month.ToString() + "' and EmployeeWrk = '" + Session["WORKMAN"].ToString() + "' order by CreatedDate";
-                    //BindGrid(query);
-
-                    ////The below function is used to bind payment data against the month where form17 has been finalized
-                    //PaymentDadaBinder(lbl_year.Text, lbl_month.Text);
                 }
             }
         }
@@ -126,22 +109,9 @@ namespace WebApplication1.bussiness.production
             string Month = DateTime.Now.ToString("MM");
             string MonthName = DateTime.Now.ToString("MMMM");
 
-            //string Year = "2022";
-            //string Month = "07";
-            //string MonthName = "July";
-
             finalized.Visible = false;
             realtime.Visible = true;
             GridBinderReal(Year, Month);
-
-            if (Session["REGION"].ToString() == "KPO")
-            {
-                //Dynamic_AttendanceDataBinder(Year, Month, MonthName);
-            }
-            else if (Session["REGION"].ToString() == "AGL")
-            {
-                //AttendanceDataBinder(Year, Month, MonthName);
-            }
         }
 
         protected void btn_nextmonth_Click(object sender, EventArgs e)
@@ -182,7 +152,7 @@ namespace WebApplication1.bussiness.production
             lbl_year.Text = Year;
             lbl_monthcode.Text = Month;
 
-            string query = "select * from tbl_attendance where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and EmployeeWrk = '" + Session["WORKMAN"].ToString() + "' order by CreatedDate";
+            string query = "select * from tbl_attendance where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and EmployeeWrk = '" + Session["WORKMAN"].ToString() + "' and SubmitterStatus='Exit' and SiteIncharge_Approval='Approved' and AttendanceStatus='Present' order by CreatedDate";
             BindGrid(query);
 
             RegularAttendanceDataBinder(Year, Month, Monthname);
@@ -196,7 +166,7 @@ namespace WebApplication1.bussiness.production
             lbl_year.Text = Year;
             lbl_monthcode.Text = Month;
 
-            string query = "select * from tbl_attendance where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and EmployeeWrk = '" + Session["WORKMAN"].ToString() + "' order by CreatedDate";
+            string query = "select * from tbl_attendance where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and EmployeeWrk = '" + Session["WORKMAN"].ToString() + "' and SubmitterStatus='Exit' and SiteIncharge_Approval='Approved' and AttendanceStatus='Present' order by CreatedDate";
             BindGrid(query);
 
             RegularAttendanceDataBinder(Year, Month, Monthname);

@@ -176,7 +176,7 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_cancel_Click(object sender, EventArgs e)
         {
-            Response.Redirect("homepage.aspx");
+            Response.Redirect("pyrl_managedashbrd.aspx");
         }
 
 

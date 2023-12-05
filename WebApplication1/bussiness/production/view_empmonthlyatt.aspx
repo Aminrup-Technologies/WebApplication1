@@ -7,7 +7,7 @@
 		<div class="">
 			<div class="page-title">
 				<div class="title_left">
-					<h4>Employee Monthly Attendance View Page</h4>
+					<h4>Employee Attendance & Payslip View </h4>
 				</div>
 			</div>
 			<div class="clearfix"></div>

@@ -21,6 +21,11 @@ namespace WebApplication1.bussiness.production
         string str = string.Empty;
         string exptstr = string.Empty;
 
+        public static string state = string.Empty;
+        public static string region = string.Empty;
+        public static string comp = string.Empty;
+        public static string datalock = string.Empty;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -31,16 +36,37 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-                    string CmdString1 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = 'IN' and State_Code ='"+ Session["STATE"].ToString() + "' order by Id ";
-                    BindRegions(CmdString1);
-
-                    dbcl.CalDateCombo1(DDL_Day, DDL_Month, DDL_Year);
-                    dbcl.CalDateCombo1(DDL_D2, DDL_M2, DDL_Y2);
-
-                    if (Session["REGION"].ToString() != "GBL")
+                    if (Session["Changer"] != null)
                     {
-                        CheckforUser();
+                        string[] retrievedArray = (string[])Session["Changer"];
+                        region = retrievedArray[1].ToString();
+                        comp = retrievedArray[2].ToString();
+                        state = retrievedArray[0].ToString();
+                        datalock = retrievedArray[3].ToString();
+                        Session["Changer"] = null;
+                        Session["Changer"] = retrievedArray;
                     }
+                    else
+                    {
+                        region = Session["REGION"].ToString();
+                        comp = Session["COMPANY_CODE"].ToString();
+                        state = Session["STATE"].ToString();
+                        datalock = "0";
+                        string[] Bindervalue = { state, region, comp, "1" };
+                        Session["Changer"] = null;
+                        Session["Changer"] = Bindervalue;
+                    }
+
+                    //string CmdString1 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = 'IN' and State_Code ='"+ state + "' order by Id ";
+                    //BindRegions(CmdString1);
+
+                    string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = 'IN' and State_Code ='"+ state + "' and Work_Region_Code = '" + region + "' order by Id ";
+                    BindCompany(CmdString3);
+
+                    dbcl.BindMonthAndYearDropdowns(DDL_Month, DDL_Year);
+
+                    btnExport.Enabled = false;
+                    //dbcl.BindMonthAndYearDropdowns(DDL_M2, DDL_Y2);
                 }
             }
         }
@@ -90,33 +116,26 @@ namespace WebApplication1.bussiness.production
 
             return dt;
         }
-        private void CheckforUser()
-        {
-            DDL_Region.SelectedValue = Session["REGION"].ToString();
-            DDL_Region.Enabled = false;
-            string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = 'IN' and State_Code ='"+ Session["STATE"].ToString() + "' and Work_Region_Code = '" + Session["REGION"].ToString() + "' order by Id ";
-            BindCompany(CmdString3);
-        }
 
-        private void BindRegions(string CmdString)
-        {
-            dbcl.Sqlconnection();
-            dbcl.ConnectDb();
-            SqlCommand Cmd = new SqlCommand(CmdString, dbcl.Conn);
-            Cmd.CommandType = CommandType.Text;
-            DDL_Region.DataSource = Cmd.ExecuteReader();
-            DDL_Region.DataTextField = "Work_Region_Name";
-            DDL_Region.DataValueField = "Work_Region_Code";
-            DDL_Region.DataBind();
-            DDL_Region.Items.Insert(0, "Please Select Option");
-            dbcl.DisconnectDb();
-        }
+        //private void BindRegions(string CmdString)
+        //{
+        //    dbcl.Sqlconnection();
+        //    dbcl.ConnectDb();
+        //    SqlCommand Cmd = new SqlCommand(CmdString, dbcl.Conn);
+        //    Cmd.CommandType = CommandType.Text;
+        //    DDL_Region.DataSource = Cmd.ExecuteReader();
+        //    DDL_Region.DataTextField = "Work_Region_Name";
+        //    DDL_Region.DataValueField = "Work_Region_Code";
+        //    DDL_Region.DataBind();
+        //    DDL_Region.Items.Insert(0, "Please Select Option");
+        //    dbcl.DisconnectDb();
+        //}
 
-        protected void DDL_Region_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = 'IN' and State_Code ='"+ Session["STATE"].ToString() + "' and Work_Region_Code = '" + DDL_Region.SelectedValue.ToString() + "' order by Id ";
-            BindCompany(CmdString3);
-        }
+        //protected void DDL_Region_SelectedIndexChanged(object sender, EventArgs e)
+        //{
+        //    string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = 'IN' and State_Code ='"+ Session["STATE"].ToString() + "' and Work_Region_Code = '" + DDL_Region.SelectedValue.ToString() + "' order by Id ";
+        //    BindCompany(CmdString3);
+        //}
 
         private void BindCompany(string CmdString)
         {
@@ -134,34 +153,33 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_submit_Click(object sender, EventArgs e)
         {
-            //string strtday = "01";
-            string strtday = DDL_Day.SelectedItem.Text.ToString();
-            Int32 minday = Convert.ToInt32(strtday);
-
-            //string endday = "30";
-            string endday = DDL_D2.SelectedItem.Text.ToString();
-            Int32 maxday = Convert.ToInt32(endday);
-
             string current_year = DDL_Year.SelectedItem.Text.ToString();
             string current_month1 = DDL_Month.SelectedItem.Text.ToString();
-            string region = DDL_Region.SelectedValue.ToString();
-            //Session["WRKRGN"] = region;
+            string current_month2 = DDL_Month.SelectedValue.ToString();
+
+            int month = int.Parse(current_month2);
+            int year = int.Parse(current_year);
+            int daysInMonth = DateTime.DaysInMonth(year, month);
+
+            string strtday = "01";
+            string endday = daysInMonth.ToString("D2");
+            Int32 minday = Convert.ToInt32(strtday);
+            Int32 maxday = Convert.ToInt32(endday);
 
             if (DDL_ReportType.SelectedIndex == 1)
             {
-                BindDefaultHeader(strtday, endday, current_year, current_month1, region);
+                BindDefaultHeader(current_year, current_month2, region);
             }
             else if (DDL_ReportType.SelectedIndex == 2)
             {
-                BindDefaultHeader2(strtday, endday, current_year, current_month1, region);
+                BindDefaultHeader2(current_year, current_month2, region);
                 //-------------------
             }
-            Button1.Enabled = true;
             btnExport.Enabled = true;
         }
 
 
-        private void BindDefaultHeader(string Date1, string Date2, string Year, string Month, string Region)
+        private void BindDefaultHeader(string Year, string Month, string Region)
         {
             str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>SL NO</td>";
             str = str + "<td width='1%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>WL SO</td>";
@@ -172,12 +190,12 @@ namespace WebApplication1.bussiness.production
             str = str + "<td width='5%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>IFSC CODE</td>";
             str = str + "<td width='5%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>BRANCH NAME</td>";
             str = str + "<td width='1%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>AMOUNT</td>";
-            BindRBIData(Year, Month, Region, Date1, Date2);
+            BindRBIData(Year, Month, Region);
             str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='100%' style='font:normal 16px/16px Century Gothic; padding:5px 20px 5px 20px;' align='cen ter'></td></tr></table>";
             lblTotalData.Text = str;
         }
 
-        private void BindDefaultHeader2(string Date1, string Date2, string Year, string Month, string Region)
+        private void BindDefaultHeader2(string Year, string Month, string Region)
         {
             str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>SL NO</td>";
             str = str + "<td width='1%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>WL SO</td>";
@@ -188,12 +206,12 @@ namespace WebApplication1.bussiness.production
             str = str + "<td width='5%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>IFSC CODE</td>";
             str = str + "<td width='5%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>BRANCH NAME</td>";
             str = str + "<td width='1%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>AMOUNT</td></tr>";
-            BindRBIData2(Year, Month, Region, Date1, Date2);
+            BindRBIData2(Year, Month, Region);
             str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='100%' style='font:normal 16px/16px Century Gothic; padding:5px 20px 5px 20px;' align='cen ter'></td></tr></table>";
             lblTotalData.Text = str;
         }
 
-        private void BindRBIData(string Year, string Month, string Region, string Date1, string Date2)
+        private void BindRBIData(string Year, string Month, string Region)
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
@@ -211,7 +229,7 @@ namespace WebApplication1.bussiness.production
                     str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["FullName"].ToString() + "</td>";
                     str = str + "<td width='8%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>`" + re["Payment_Account"].ToString() + "</td>";
                     str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Payment_Bank"].ToString() + "</td>";
-                    str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>`" + re["Payment_IFSC"].ToString() + "</td>";
+                    str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>'" + re["Payment_IFSC"].ToString() + "</td>";
                     str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["BankBranch"].ToString() + "</td>";
                     str = str + "<td width='4%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["NetPayFinal"].ToString() + "</td></tr>";
                 }
@@ -219,7 +237,7 @@ namespace WebApplication1.bussiness.production
         }
 
 
-        private void BindRBIData2(string Year, string Month, string Region, string Date1, string Date2)
+        private void BindRBIData2(string Year, string Month, string Region)
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
@@ -248,17 +266,30 @@ namespace WebApplication1.bussiness.production
         protected void btn_excelexport_Click(object sender, EventArgs e)
         {
             string strt = "BankSheet";
-            string regn = DDL_Region.SelectedItem.Text.ToString();
+            //string regn = DDL_Region.SelectedItem.Text.ToString();
             string month = DDL_Month.SelectedItem.Text.ToString();
             string year = DDL_Year.SelectedItem.Text.ToString();
             Response.Clear();
             Response.Buffer = true;
-            Response.AddHeader("content-disposition", "attachment;filename=" + strt + "_" + regn + "_" + month + "_" + year + ".xls");
+            Response.AddHeader("content-disposition", "attachment;filename=" + strt + "_" + region + "_" + month + "_" + year + ".xls");
             Response.Charset = "";
             Response.ContentType = "application/vnd.ms-excel";
             Response.Output.Write(Request.Form[hfGridHtml.UniqueID]);
             Response.Flush();
             Response.End();
         }
+
+
+        protected void btn_reset_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("generate_banksheets.aspx");
+        }
+
+        protected void btn_cancel_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("pyrl_managedashbrd.aspx");
+        }
+
+
     }
 }

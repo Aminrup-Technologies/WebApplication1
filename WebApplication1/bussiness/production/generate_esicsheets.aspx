@@ -1,5 +1,34 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="generate_esicsheets.aspx.cs" Inherits="WebApplication1.bussiness.production.generate_esicsheets" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+    <style type="text/css">
+        .page-title {
+            width: 100%;
+            height: auto;
+            padding: 10px 0;
+        }
+
+        .title_left {
+            width: 50%;
+            float: left;
+            display: block;
+            text-align: left; /* Center the content on small screens */
+        }
+
+            .title_left h5 {
+                margin: 9px 0;
+            }
+
+        .title_right {
+            width: 50%;
+            float: right;
+            display: block;
+            text-align: right; /* Center the content on small screens */
+        }
+
+            .title_right .pull-right {
+                margin: 10px 0;
+            }
+    </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="right_col" role="main">
@@ -10,7 +39,9 @@
                 </div>
 
                 <div class="title_right">
-                    <div class="col-md-5 col-sm-5 form-group pull-right top_search"></div>
+                    <div class="pull-right">
+                        <asp:Button ID="btnExport" runat="server" Enabled="false" Text="Export To Excel" CssClass="btn btn-success btn-sm" OnClick="btn_excelexport_Click" />
+                    </div>
                 </div>
             </div>
 
@@ -21,13 +52,6 @@
                     <div class="x_panel">
                         <div class="x_content">
                             <div class="row">
-
-                                <div class="col-md-3 col-sm-12  form-group">
-                                    <label>Work Region <span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-3 col-sm-12  form-group">
-                                    <asp:DropDownList ID="DDL_Region" runat="server" CssClass="form-control form-control-sm rounded" AutoPostBack="true" OnSelectedIndexChanged="DDL_Region_SelectedIndexChanged"></asp:DropDownList>
-                                </div>
 
                                 <div class="col-md-3 col-sm-12  form-group">
                                     <label>Select Company <span class="text text-danger">*</span></label>
@@ -51,21 +75,6 @@
                                     <asp:DropDownList ID="DDL_Month" CssClass="form-control form-control-sm rounded" runat="server"></asp:DropDownList>
                                 </div>
 
-                                <div class="col-md-3 col-sm-12  form-group">
-                                    <label>Select START Day <span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-3 col-sm-12  form-group">
-                                    <asp:DropDownList ID="DDL_Day" CssClass="form-control form-control-sm rounded" runat="server" Visible="true"></asp:DropDownList>
-                                </div>
-
-                                <div class="col-md-3 col-sm-12  form-group">
-                                    <label>Select END Day <span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-3 col-sm-12  form-group">
-                                    <asp:DropDownList ID="DDL_Y2" CssClass="form-control form-control-sm rounded" runat="server" Visible="false"></asp:DropDownList>
-                                    <asp:DropDownList ID="DDL_M2" CssClass="form-control form-control-sm rounded" runat="server" Visible="false"></asp:DropDownList>
-                                    <asp:DropDownList ID="DDL_D2" CssClass="form-control form-control-sm rounded" runat="server" Visible="true"></asp:DropDownList>
-                                </div>
                             </div>
 
                             <%--button   start--%>
@@ -76,8 +85,8 @@
                                         <asp:Label ID="lbl_msg" runat="server" Text="Click SUBMIT to Save Data!!"></asp:Label>
                                     </div>
                                     <div class="col-md-6 col-sm-12">
-                                        <button type="button" class="btn btn-danger btn-sm collapse-link">Cancel</button>
-                                        <button type="reset" class="btn btn-warning btn-sm">Reset</button>
+                                        <asp:Button ID="btn_cancel" runat="server" Text="Back" CssClass="btn btn-danger btn-sm" OnClick="btn_cancel_Click" />
+										<asp:Button ID="btn_reset" runat="server" Text="Reset" CssClass="btn btn-warning btn-sm" OnClick="btn_reset_Click" />
                                         <asp:Button ID="btn_submit" runat="server" Text="Submit" CssClass="btn btn-success btn-sm" OnClientClick="return ValidateFormField()" OnClick="btn_submit_Click"/>
                                     </div>
                                 </div>
@@ -117,7 +126,7 @@
                     </div>
                     <hr />
                     <asp:HiddenField ID="hfGridHtml" runat="server" />
-                    <asp:Button ID="btnExport" runat="server" Enabled="false" Text="Export To Excel" CssClass="btn btn-success btn-sm" OnClick="btn_excelexport_Click" />
+                    
                     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
                     <script type="text/javascript">
                         $(function () {
@@ -143,21 +152,15 @@
         }
 
         function ValidateFormField() {
-            if (document.getElementById('<%=DDL_Region.ClientID%>').selectedIndex == 0) {
-                document.getElementById('<%=DDL_Region.ClientID%>').focus();
-                ShowPopup("Error :", "Work Region selection required...!");
-                return false;
-            }
-
             if (document.getElementById('<%=DDL_Company.ClientID%>').selectedIndex == 0) {
                 document.getElementById('<%=DDL_Company.ClientID%>').focus();
                 ShowPopup("Error :", "Work Company selection required...!");
                 return false;
             }
 
-            if (document.getElementById('<%=DDL_Year.ClientID%>').selectedIndex == 0) {
-                document.getElementById('<%=DDL_Year.ClientID%>').focus();
-                ShowPopup("Error :", "Calender Year selection required...!");
+            if (document.getElementById('<%=DDL_Month.ClientID%>').selectedIndex == 0) {
+                document.getElementById('<%=DDL_Month.ClientID%>').focus();
+                ShowPopup("Error :", "Calender Month selection required...!");
                 return false;
             }
         }

@@ -67,11 +67,11 @@ namespace WebApplication1.bussiness.production
                     try
                     {
                         connection.Open();
-
                         using (SqlDataAdapter adapter = new SqlDataAdapter(command))
                         {
                             adapter.Fill(dt);
                         }
+
                     }
                     catch (Exception ex)
                     {
@@ -105,7 +105,7 @@ namespace WebApplication1.bussiness.production
             // Replace 'YourDataFetchingMethod' with your actual data retrieval logic.
 
             string txtinput = txt_date.Text.ToString();
-            DataTable data = YourDataFetchingMethod(txtinput, region,employeeWrk);
+            DataTable data = YourDataFetchingMethod(txtinput, region, employeeWrk);
 
             // Bind the data to the second GridView
             GridView2.DataSource = data;
@@ -113,7 +113,7 @@ namespace WebApplication1.bussiness.production
         }
 
         // Your method to fetch data based on EmployeeWrk
-        private DataTable YourDataFetchingMethod(string targetDate, string region,string employeeWrk)
+        private DataTable YourDataFetchingMethod(string targetDate, string region, string employeeWrk)
         {
             DataTable dt = new DataTable();
 
@@ -164,5 +164,17 @@ namespace WebApplication1.bussiness.production
                 SecondGrid.Visible = true;
             }
         }
+
+
+        protected void btn_reset_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("generate_banksheets.aspx");
+        }
+
+        protected void btn_cancel_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("pyrl_managedashbrd.aspx");
+        }
+
     }
 }

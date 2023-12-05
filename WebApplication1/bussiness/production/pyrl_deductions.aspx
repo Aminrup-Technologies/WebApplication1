@@ -76,7 +76,7 @@
 										<asp:Label ID="lbl_msg" runat="server" Text="Click SUBMIT to ADD Data!!"></asp:Label>
 									</div>
 									<div class="col-md-6 col-sm-12">
-										<asp:Button ID="btn_cancel" runat="server" Text="Cancel" CssClass="btn btn-danger btn-sm" OnClick="btn_cancel_Click" />
+										<asp:Button ID="btn_cancel" runat="server" Text="Back" CssClass="btn btn-danger btn-sm" OnClick="btn_cancel_Click" />
 										<asp:Button ID="btn_reset" runat="server" Text="Reset" CssClass="btn btn-warning btn-sm" OnClick="btn_reset_Click" />
 										<asp:Button ID="btn_search" runat="server" Text="SEARCH" CssClass="btn btn-success btn-sm" OnClick="btn_search_Click" />
 									</div>

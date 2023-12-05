@@ -14,6 +14,12 @@ namespace WebApplication1.bussiness.production
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
 
         string str = string.Empty;
+        public static string state = string.Empty;
+        public static string region = string.Empty;
+        public static string comp = string.Empty;
+        public static string datalock = string.Empty;
+
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -24,46 +30,34 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-                    string CmdString1 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = 'IN' and State_Code ='"+ Session["STATE"].ToString() + "' order by Id ";
-                    BindRegions(CmdString1);
-
-                    dbcl.CalDateCombo1(DDL_Day, DDL_Month, DDL_Year);
-                    dbcl.CalDateCombo1(DDL_D2, DDL_M2, DDL_Y2);
-
-                    if (Session["REGION"].ToString() != "GBL")
+                    if (Session["Changer"] != null)
                     {
-                        CheckforUser();
+                        string[] retrievedArray = (string[])Session["Changer"];
+                        region = retrievedArray[1].ToString();
+                        comp = retrievedArray[2].ToString();
+                        state = retrievedArray[0].ToString();
+                        datalock = retrievedArray[3].ToString();
+                        Session["Changer"] = null;
+                        Session["Changer"] = retrievedArray;
                     }
+                    else
+                    {
+                        region = Session["REGION"].ToString();
+                        comp = Session["COMPANY_CODE"].ToString();
+                        state = Session["STATE"].ToString();
+                        datalock = "0";
+                        string[] Bindervalue = { state, region, comp, "1" };
+                        Session["Changer"] = null;
+                        Session["Changer"] = Bindervalue;
+                    }
+
+                    string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = 'IN' and State_Code ='" + state + "' and Work_Region_Code = '" + region + "' order by Id ";
+                    BindCompany(CmdString3);
+
+                    dbcl.BindMonthAndYearDropdowns(DDL_Month, DDL_Year);
+                    btnExport.Enabled = false;
                 }
             }
-        }
-
-        private void CheckforUser()
-        {
-            DDL_Region.SelectedValue = Session["REGION"].ToString();
-            DDL_Region.Enabled = false;
-            string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = 'IN' and State_Code ='OD' and Work_Region_Code = '" + Session["REGION"].ToString() + "' order by Id ";
-            BindCompany(CmdString3);
-        }
-
-        private void BindRegions(string CmdString)
-        {
-            dbcl.Sqlconnection();
-            dbcl.ConnectDb();
-            SqlCommand Cmd = new SqlCommand(CmdString, dbcl.Conn);
-            Cmd.CommandType = CommandType.Text;
-            DDL_Region.DataSource = Cmd.ExecuteReader();
-            DDL_Region.DataTextField = "Work_Region_Name";
-            DDL_Region.DataValueField = "Work_Region_Code";
-            DDL_Region.DataBind();
-            DDL_Region.Items.Insert(0, "Please Select Option");
-            dbcl.DisconnectDb();
-        }
-
-        protected void DDL_Region_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = 'IN' and State_Code ='OD' and Work_Region_Code = '" + DDL_Region.SelectedValue.ToString() + "' order by Id ";
-            BindCompany(CmdString3);
         }
 
         private void BindCompany(string CmdString)
@@ -82,18 +76,20 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_submit_Click(object sender, EventArgs e)
         {
-            //string strtday = "01";
-            string strtday = DDL_Day.SelectedItem.Text.ToString();
-            Int32 minday = Convert.ToInt32(strtday);
-
-            //string endday = "30";
-            string endday = DDL_D2.SelectedItem.Text.ToString();
-            Int32 maxday = Convert.ToInt32(endday);
-
             string current_year = DDL_Year.SelectedItem.Text.ToString();
             string current_month1 = DDL_Month.SelectedItem.Text.ToString();
-            string region = DDL_Region.SelectedValue.ToString();
-            BindDefaultHeader(strtday, endday, current_year, current_month1, region);
+            string current_month2 = DDL_Month.SelectedValue.ToString();
+
+            int month = int.Parse(current_month2);
+            int year = int.Parse(current_year);
+            int daysInMonth = DateTime.DaysInMonth(year, month);
+
+            string strtday = "01";
+            string endday = daysInMonth.ToString("D2");
+            Int32 minday = Convert.ToInt32(strtday);
+            Int32 maxday = Convert.ToInt32(endday);
+
+            BindDefaultHeader(strtday, endday, current_year, current_month2, region);
 
             btnExport.Enabled = true;
         }
@@ -140,7 +136,7 @@ namespace WebApplication1.bussiness.production
         protected void btn_excelexport_Click(object sender, EventArgs e)
         {
             string strt = "PFSheet";
-            string regn = DDL_Region.SelectedItem.Text.ToString();
+            string regn = region;
             string month = DDL_Month.SelectedItem.Text.ToString();
             string year = DDL_Year.SelectedItem.Text.ToString();
             Response.Clear();
@@ -152,5 +148,16 @@ namespace WebApplication1.bussiness.production
             Response.Flush();
             Response.End();
         }
+
+        protected void btn_reset_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("generate_banksheets.aspx");
+        }
+
+        protected void btn_cancel_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("pyrl_managedashbrd.aspx");
+        }
+
     }
 }
