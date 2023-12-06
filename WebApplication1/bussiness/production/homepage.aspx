@@ -143,8 +143,8 @@
                         </div>
 
                     </div>
-                    <div class=" profile-bottom text-center">
-                        <div class=" col-sm-6 emphasis">
+                    <div class="profile-bottom text-center">
+                        <div class="col-sm-6 emphasis text-danger">
                             **Only Approved Count
                         </div>
                         <div class=" col-sm-6 emphasis">

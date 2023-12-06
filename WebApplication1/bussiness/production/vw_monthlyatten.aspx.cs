@@ -166,7 +166,7 @@ namespace WebApplication1.bussiness.production
             lbl_year.Text = Year;
             lbl_monthcode.Text = Month;
 
-            string query = "select * from tbl_attendance where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and EmployeeWrk = '" + Session["WORKMAN"].ToString() + "' and SubmitterStatus='Exit' and SiteIncharge_Approval='Approved' and AttendanceStatus='Present' order by CreatedDate";
+            string query = "select * from tbl_attendance where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and EmployeeWrk = '" + Session["WORKMAN"].ToString() + "' and SubmitterStatus='Exit' order by CreatedDate";
             BindGrid(query);
 
             RegularAttendanceDataBinder(Year, Month, Monthname);

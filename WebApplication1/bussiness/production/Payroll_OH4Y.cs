@@ -146,6 +146,21 @@ namespace WebApplication1.bussiness.production
             DbCL.Conn.Close();
         }
 
+        public void HP_FindEmployeeTotalDaysByMonth(string month, string year, string empwrk, ref Int32 totalpresents)
+        {
+            string cmdString = "SELECT COUNT(DISTINCT CreatedDate) as totalpresent FROM tbl_attendance where EmployeeWrk='" + empwrk + "' and MONTH(CreatedDate)='" + month + "' and YEAR(CreatedDate) = '" + year + "' and  (AttendanceCode='P' or AttendanceCode='NH' or AttendanceCode='FL' or AttendanceCode='OD') and SubmitterStatus='Exit'";
+            DbCL.Sqlconnection();
+            DbCL.ConnectDb();
+            SqlCommand cmd = new SqlCommand(cmdString, DbCL.Conn);
+            SqlDataReader Rdr;
+            Rdr = cmd.ExecuteReader();
+            if (Rdr.Read())
+            {
+                totalpresents = Convert.ToInt32(Rdr["totalpresent"].ToString());
+            }
+            DbCL.Conn.Close();
+        }
+
         public void FindEmployeeTotalPresentByMonth(string month, string year, string empwrk, ref Int32 totalpresents)
         {
             string cmdString = "SELECT COUNT(DISTINCT CreatedDate) as totalpresent FROM tbl_attendance where EmployeeWrk='" + empwrk + "' and MONTH(CreatedDate)='" + month + "' and YEAR(CreatedDate) = '" + year + "' and  AttendanceCode='P' and SiteIncharge_Approval='Approved' and AttendanceStatus='Present'";

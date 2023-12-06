@@ -153,7 +153,7 @@
 
             <div class="row">
                 <div class="card-box col-md-12 col-sm-12 small" style="width: 100%; height: 100%; overflow: scroll;">
-                    <asp:GridView ID="GridView1" runat="server" Width="100%" CssClass="table table-striped table-hover table-bordered table-sm dt-responsive" AutoGenerateColumns="false" ShowHeaderWhenEmpty="true" EmptyDataText="No Data Found">
+                    <asp:GridView ID="GridView1" runat="server" Width="100%" CssClass="table table-striped table-hover table-bordered table-sm" AutoGenerateColumns="false" ShowHeaderWhenEmpty="true" EmptyDataText="No Data Found">
                         <Columns>
                             <asp:TemplateField HeaderText="Sl" Visible="True" HeaderStyle-Width="1%">
                                 <ItemTemplate>
@@ -171,42 +171,24 @@
 
                             <asp:TemplateField HeaderText="Date" Visible="true" HeaderStyle-Width="8%">
                                 <ItemTemplate>
-                                    <asp:Label ID="lbl_CreatedDate" runat="server" Text='<%# Bind("CreatedDate","{0:dd-MM-yyyy}") %>'></asp:Label>
+                                    <asp:Label ID="lbl_CreatedDate" runat="server" Text='<%# Bind("CreatedDate","{0:dd-MM-yyyy}") %>' ForeColor="Black" Font-Bold="true"></asp:Label><br />
+                                    <asp:Label ID="lbl_JOBID" runat="server" Text='<%# Bind("JOBID") %>' Visible="true" ForeColor="Blue" Font-Bold="true" />
                                 </ItemTemplate>
                                 <ItemStyle CssClass="text text-center" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="JOBID" Visible="true" HeaderStyle-Width="5%">
+                            <asp:TemplateField HeaderText="Supervisor Name" HeaderStyle-Width="12%" Visible="true">
                                 <ItemTemplate>
-                                    <asp:Label ID="lbl_JOBID" runat="server" Text='<%# Bind("JOBID") %>' Visible="true" />
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
-                            </asp:TemplateField>
-
-                            <asp:TemplateField HeaderText="Supervisor Name" HeaderStyle-Width="12%" Visible="false">
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_Creator_Name" runat="server" Text='<%# Bind("Creator_Name") %>'></asp:Label>
+                                    <asp:Label ID="supvlbl" runat="server" Text="Supv.:" ForeColor="Green" Font-Bold="true"></asp:Label><asp:Label ID="lbl_Creator_Name" runat="server" Text='<%# Bind("Creator_Name") %>'></asp:Label><br />
+                                    <asp:Label ID="inchargelbl" runat="server" Text="In-Charge:" ForeColor="Green" Font-Bold="true"></asp:Label><asp:Label ID="lbl_JOB_InchargeName" runat="server" Text='<%# Bind("JOB_InchargeName") %>'></asp:Label>
                                 </ItemTemplate>
                                 <ItemStyle CssClass="text text-left" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Approver" HeaderStyle-Width="12%" Visible="false">
+                            <asp:TemplateField HeaderText="Punch Time" HeaderStyle-Width="15%">
                                 <ItemTemplate>
-                                    <asp:Label ID="lbl_JOB_InchargeName" runat="server" Text='<%# Bind("JOB_InchargeName") %>'></asp:Label>
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
-                            </asp:TemplateField>
-
-                            <asp:TemplateField HeaderText="IN-Punch Time" HeaderStyle-Width="15%">
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_Inpunch_Time" runat="server" Text='<%# Bind("Inpunch_Time","{0:dd-MM-yyyy hh:mm:ss tt}") %>'></asp:Label>
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
-                            </asp:TemplateField>
-
-                            <asp:TemplateField HeaderText="OUT-Punch Time" HeaderStyle-Width="15%">
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_Outpunch_Time" runat="server" Text='<%# Bind("Outpunch_Time","{0:dd-MM-yyyy hh:mm:ss tt}") %>'></asp:Label>
+                                    <asp:Label ID="inpunchlbl" runat="server" Text="IN:" ForeColor="Green" Font-Bold="true"></asp:Label><asp:Label ID="lbl_Inpunch_Time" runat="server" Text='<%# Bind("Inpunch_Time","{0:dd-MM-yyyy hh:mm:ss tt}") %>'></asp:Label><br />
+                                    <asp:Label ID="outpunchlbl" runat="server" Text="OUT:" ForeColor="DarkRed" Font-Bold="true"></asp:Label><asp:Label ID="lbl_Outpunch_Time" runat="server" Text='<%# Bind("Outpunch_Time","{0:dd-MM-yyyy hh:mm:ss tt}") %>'></asp:Label>
                                 </ItemTemplate>
                                 <ItemStyle CssClass="text text-center" />
                             </asp:TemplateField>
@@ -218,16 +200,10 @@
                                 <ItemStyle CssClass="text text-center" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="W" HeaderStyle-Width="1%">
+                            <asp:TemplateField HeaderText="W" HeaderStyle-Width="10%">
                                 <ItemTemplate>
-                                    <asp:Label ID="lbl_WorkedHours" runat="server" Text='<%# Bind("WorkedHours") %>'></asp:Label>
-                                </ItemTemplate>
-                                <ItemStyle CssClass="text text-center" />
-                            </asp:TemplateField>
-
-                            <asp:TemplateField HeaderText="Lunch (Y/N)" HeaderStyle-Width="5%">
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_LunchFactor" runat="server" Text='<%# Bind("LunchFactor") %>'></asp:Label>
+                                    <asp:Label ID="hourslbl" runat="server" Text="Work-Hours:" ForeColor="Green" Font-Bold="true"></asp:Label><asp:Label ID="lbl_WorkedHours" runat="server" Text='<%# Bind("WorkedHours") %>'></asp:Label><br />
+                                    <asp:Label ID="lunchlbl" runat="server" Text="Lunch:" ForeColor="Brown" Font-Bold="true"></asp:Label><asp:Label ID="lbl_LunchFactor" runat="server" Text='<%# Bind("LunchFactor") %>'></asp:Label>
                                 </ItemTemplate>
                                 <ItemStyle CssClass="text text-center" />
                             </asp:TemplateField>

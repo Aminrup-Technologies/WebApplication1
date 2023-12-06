@@ -339,8 +339,10 @@ namespace WebApplication1.bussiness.production
             lbl_caldays.Text = caldays.ToString();
 
             Int32 ttldays = 0;
-            PayRoll.FindEmployeeTotalDaysByMonth(month.ToString(), year.ToString(), empwrk, ref ttldays);
-            lbl_totalpresent.Text = ttldays.ToString();
+            Int32 ttldayapproved = 0;
+            PayRoll.HP_FindEmployeeTotalDaysByMonth(month.ToString(), year.ToString(), empwrk, ref ttldays);
+            PayRoll.FindEmployeeTotalDaysByMonth(month.ToString(), year.ToString(), empwrk, ref ttldayapproved);
+            lbl_totalpresent.Text = ttldayapproved.ToString();
             lbl_dayswrkd.Text = ttldays.ToString();
 
             Int32 ttlp = 0;
