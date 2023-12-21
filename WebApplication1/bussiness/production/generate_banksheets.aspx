@@ -43,7 +43,7 @@
 
             <div class="title_right">
                 <div class="pull-right">
-                    <asp:Button ID="btnExport" runat="server" Enabled="false" Text="Export To Excel" CssClass="btn btn-success btn-sm" OnClick="btn_excelexport_Click" ToolTip="Generate the report...!!" />
+                    <asp:Button ID="Button1" runat="server" Text="Export" Enabled="false" CssClass="btn btn-primary btn-sm" OnClick="ExportExcel"/>
                 </div>
             </div>
 
