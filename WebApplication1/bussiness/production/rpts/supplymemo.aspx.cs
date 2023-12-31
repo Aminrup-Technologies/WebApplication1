@@ -21,6 +21,7 @@ namespace WebApplication1.bussiness.production.rpts
             Bind_SMJIDDetails(JOBID);
             Bind_Manpower(JOBID);
             Bind_ShiftData(JOBID);
+            Bind_LineItemData(JOBID);
         }
 
 
@@ -183,5 +184,51 @@ namespace WebApplication1.bussiness.production.rpts
             dbcl.Conn.Close();
         }
 
+
+        private void Bind_LineItemData(string jobid)
+        {
+            string ddljobid = lbl_jobid.Text.ToString();
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
+            string CmdString = "select ServiceNumber, Service_Description, Order_Quantity, PerUnit_Value, Shift_Skill FROM tbl_SupMem_LineItems_Data where JOBID ='" + jobid + "' order by Id";
+            SqlCommand cmd = new SqlCommand(CmdString, dbcl.Conn);
+            SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.HasRows)
+            {
+                LineItems_Grid.DataSource = dr;
+                LineItems_Grid.DataBind();
+            }
+            else
+            {
+                DataTable dt5 = new DataTable();
+                LineItems_Grid.DataSource = dt5;
+                LineItems_Grid.DataBind();
+            }
+            dbcl.Conn.Close();
+        }
+
+        protected void LineItems_Grid_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.DataRow)
+            {
+                // Check if the row count is exactly 1
+                if (LineItems_Grid.Rows.Count == 1)
+                {
+                    // Assuming 'Shift_Skill' is in the 5th column (index 4)
+                    int shiftSkillColumnIndex = 4;
+
+                    // Check if 'Shift_Skill' is 'UNIFIED'
+                    if (e.Row.Cells[shiftSkillColumnIndex].Text == "UNIFIED")
+                    {
+                        // Hide the column
+                        e.Row.Cells[shiftSkillColumnIndex].Visible = false;
+                    }
+                }
+                else
+                {
+
+                }
+            }
+        }
     }
 }

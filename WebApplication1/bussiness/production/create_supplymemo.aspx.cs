@@ -29,6 +29,7 @@ namespace WebApplication1.bussiness.production
         DataTable dt_lineitems = new DataTable();
         DataTable dt_selectedrows = new DataTable();
 
+        public static string wo_number = string.Empty;
         public static string viewid = string.Empty;
         public static string yr = string.Empty;
         public static string mnt = string.Empty;
@@ -137,7 +138,7 @@ namespace WebApplication1.bussiness.production
 
                         txt_jobsupv.Text = dt.Rows[0]["Creator_Name"].ToString();
                         lbl_creatorwrk.Text = dt.Rows[0]["Creator_Workman"].ToString();
-                        string wo_number = dt.Rows[0]["WorkOrderNo"].ToString();
+                        wo_number = dt.Rows[0]["WorkOrderNo"].ToString();
                         txt_workorderno.Text = wo_number;
                         txt_jobid.Text = dt.Rows[0]["JOBID"].ToString();
                         string jobidstatus = dt.Rows[0]["JOBID_Status"].ToString();
@@ -286,12 +287,29 @@ namespace WebApplication1.bussiness.production
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
+            //SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
+            //SqlDataAdapter ad = new SqlDataAdapter(cmd);
+            //dt_lineitems.Rows.Clear();
+            //ad.Fill(dt_lineitems);
+            //GridView3.DataSource = dt_lineitems;
+            //GridView3.DataBind();
+            //dbcl.Conn.Close();
+
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
-            SqlDataAdapter ad = new SqlDataAdapter(cmd);
-            dt_lineitems.Rows.Clear();
-            ad.Fill(dt_lineitems);
-            GridView3.DataSource = dt_lineitems;
-            GridView3.DataBind();
+            SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.HasRows)
+            {
+                GridView3.DataSource = dr;
+                GridView3.DataBind();
+            }
+            else
+            {
+                string body = "No Line Items data found for PO : "+ wo_number + "";
+                dbcl.SendEmailCC("anupam.sharma@atswork.in", "office@atswork.in", "PO Details", body);
+                DataTable dt6 = new DataTable();
+                GridView3.DataSource = dt6;
+                GridView3.DataBind();
+            }
             dbcl.Conn.Close();
         }
 
@@ -1347,6 +1365,7 @@ namespace WebApplication1.bussiness.production
                 int ExeValue = 0;
                 string ExeMsg = "Pending"; //This is to save the return type from the execution query of the first Insert Task
                 string StatusChanged = "No";
+                string LineItemsInserted = "No";
                 if (dbcl.Conn.State == ConnectionState.Closed)
                 { dbcl.ConnectDb(); }
 
@@ -1373,13 +1392,16 @@ namespace WebApplication1.bussiness.production
                         ExeMsg = InsertIntoDB2(ref sqlTrans, SuppluMemoIDNo, RefDBID, RefJOBID, RefJOBdate, EmpWrk, EmpName, PO_SC_name, PO_DG_name, shiftcalc);
                     }
 
-                    //-----------------------------------------3
-                    string CmdString = "UPDATE tbl_jobs set Level1_BillingCode=@Level1_BillingCode, JOB_Status=@JOB_Status where JOBID=@JOBID";
-                    StatusChanged = UpdateJOBTableStatus(ref sqlTrans, SuppluMemoIDNo, txt_jobid.Text.ToString(), CmdString);
+                    //-----------------------------------------3                   
+                    LineItemsInserted = InsertDataWithTransaction(ref sqlTrans, txt_jobid.Text.ToString(), SuppluMemoIDNo);
 
-                    if (ExeMsg.Equals("Done") && ExeValue == -1 && StatusChanged == "Yes")
+                    if (ExeMsg.Equals("Done") && ExeValue == -1 && LineItemsInserted == "Done")
                     {
+                        string CmdString = "UPDATE tbl_jobs set Level1_BillingCode=@Level1_BillingCode, JOB_Status=@JOB_Status where JOBID=@JOBID";
+                        StatusChanged = UpdateJOBTableStatus(ref sqlTrans, SuppluMemoIDNo, txt_jobid.Text.ToString(), CmdString);
+
                         sqlTrans.Commit();
+
                         string title = "Success :";
                         string body = "Success 1286 : Data saved & Memo Created";
                         lbl_msg.Text = body;
@@ -1575,9 +1597,111 @@ namespace WebApplication1.bussiness.production
             btn_reset.Enabled = true; ;
         }
 
+        private DataTable GetDataFromGridView()
+        {
+            DataTable dt = new DataTable();
+            //dt.Columns.Add("Id");
+            dt.Columns.Add("WODB_Code");
+            dt.Columns.Add("WOI_DBCode");
+            dt.Columns.Add("ItemNO");
+            dt.Columns.Add("LineNumber");
+            dt.Columns.Add("ServiceNumber");
+            dt.Columns.Add("Service_Description");
+            dt.Columns.Add("Order_Quantity");
+            dt.Columns.Add("Rate");
+            dt.Columns.Add("PerUnit_Value");
+            dt.Columns.Add("ShiftSkill");
+
+            foreach (GridViewRow row in GridView4.Rows)
+            {
+                DataRow dr = dt.NewRow();
+                //dr["Id"] = (row.FindControl("lbl_Id") as Label).Text;
+                dr["WODB_Code"] = (row.FindControl("lbl_WODB_Code") as Label).Text;
+                dr["WOI_DBCode"] = (row.FindControl("lbl_WOI_DBCode") as Label).Text;
+                dr["ItemNO"] = (row.FindControl("lbl_ItemNO") as Label).Text;
+                dr["LineNumber"] = (row.FindControl("lbl_LineNumber") as Label).Text;
+                dr["ServiceNumber"] = (row.FindControl("lbl_ServiceNumber") as Label).Text;
+                dr["Service_Description"] = (row.FindControl("lbl_Service_Description") as Label).Text;
+                dr["Order_Quantity"] = (row.FindControl("lbl_Order_Quantity") as Label).Text;
+                dr["Rate"] = (row.FindControl("lbl_Rate") as Label).Text;
+                dr["PerUnit_Value"] = (row.FindControl("lbl_PerUnit_Value") as Label).Text;
+
+                DropDownList ddlShiftSkill = row.FindControl("DDL_EmpCategory") as DropDownList;
+                dr["ShiftSkill"] = ddlShiftSkill.SelectedValue;
+
+                dt.Rows.Add(dr);
+            }
+
+            return dt;
+        }
+
+
+
         protected void btn_proceednxt_Click(object sender, EventArgs e)
         {
+            LineItems_SelectorPanel.Visible = false;
+            LineItems_SelectorButtonDIV.Visible = false;
 
+            foreach (GridViewRow row in GridView4.Rows)
+            {
+                // Assuming the DropDownList is in the last column (index 11)
+                DropDownList ddlEmpCategory = (DropDownList)row.Cells[11].FindControl("DDL_EmpCategory");
+
+                if (ddlEmpCategory != null)
+                {
+                    ddlEmpCategory.Enabled = false;
+                }
+            }
+        }
+
+        // Replace the connection string with your own
+        private const string ConnectionString = "your_connection_string_here";
+        private static readonly object LockObject = new object();
+
+        private string InsertDataWithTransaction(ref SqlTransaction sqlTran, string jobID, string smjID)
+        {
+            string msg = string.Empty;
+
+            try
+            {
+                foreach (GridViewRow row in GridView4.Rows)
+                {
+
+                    using (SqlCommand command = new SqlCommand("InsertSupMemLineItem", dbcl.Conn, sqlTran))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+
+                        // Add parameters
+                        command.Parameters.AddWithValue("@JOBID", jobID);
+                        command.Parameters.AddWithValue("@SMJID", smjID);
+                        command.Parameters.AddWithValue("@ItemNO", (row.FindControl("lbl_ItemNO") as Label).Text.ToString());
+                        command.Parameters.AddWithValue("@LineNumber", (row.FindControl("lbl_LineNumber") as Label).Text.ToString());
+                        command.Parameters.AddWithValue("@ServiceNumber", (row.FindControl("lbl_ServiceNumber") as Label).Text.ToString());
+                        command.Parameters.AddWithValue("@Service_Description", (row.FindControl("lbl_Service_Description") as Label).Text.ToString());
+                        command.Parameters.AddWithValue("@Order_Quantity", (row.FindControl("lbl_Order_Quantity") as Label).Text.ToString());
+                        command.Parameters.AddWithValue("@Rate", (row.FindControl("lbl_Rate") as Label).Text.ToString());
+                        command.Parameters.AddWithValue("@PerUnit_Value", (row.FindControl("lbl_PerUnit_Value") as Label).Text.ToString());
+                        DropDownList ddlShiftSkill = row.FindControl("DDL_EmpCategory") as DropDownList;
+                        command.Parameters.AddWithValue("@Shift_Skill", ddlShiftSkill.SelectedItem.Text.ToString());
+
+                        // Execute the stored procedure
+                        command.ExecuteNonQuery();
+                        msg = "Done";
+                    }
+                }
+                // Commit the transaction if everything is successful
+                //sqlTran.Commit();
+            }
+            catch (Exception ex)
+            {
+                // Rollback the transaction in case of an exception
+                //sqlTran.Rollback();
+
+                string title = "Catch Box :";
+                string body = "Error 1681 : " + ex.Message;
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+            }
+            return msg;
         }
 
         protected void btn_reset_Click(object sender, EventArgs e)

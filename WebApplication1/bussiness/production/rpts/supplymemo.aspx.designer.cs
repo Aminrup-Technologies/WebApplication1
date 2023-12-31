@@ -7,13 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WebApplication1.bussiness.production.rpts
-{
-
-
-    public partial class supplymemo
-    {
-
+namespace WebApplication1.bussiness.production.rpts {
+    
+    
+    public partial class supplymemo {
+        
         /// <summary>
         /// form1 control.
         /// </summary>
@@ -22,7 +20,7 @@ namespace WebApplication1.bussiness.production.rpts
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
-
+        
         /// <summary>
         /// lbl_smjid1 control.
         /// </summary>
@@ -31,7 +29,7 @@ namespace WebApplication1.bussiness.production.rpts
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_smjid1;
-
+        
         /// <summary>
         /// lbl_smjid2 control.
         /// </summary>
@@ -40,7 +38,7 @@ namespace WebApplication1.bussiness.production.rpts
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_smjid2;
-
+        
         /// <summary>
         /// lbl_jobid control.
         /// </summary>
@@ -49,7 +47,7 @@ namespace WebApplication1.bussiness.production.rpts
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_jobid;
-
+        
         /// <summary>
         /// lbl_smjdate control.
         /// </summary>
@@ -58,7 +56,7 @@ namespace WebApplication1.bussiness.production.rpts
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_smjdate;
-
+        
         /// <summary>
         /// lbl_jobdatedetails control.
         /// </summary>
@@ -67,7 +65,7 @@ namespace WebApplication1.bussiness.production.rpts
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_jobdatedetails;
-
+        
         /// <summary>
         /// lbl_smjcreatorname control.
         /// </summary>
@@ -76,7 +74,7 @@ namespace WebApplication1.bussiness.production.rpts
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_smjcreatorname;
-
+        
         /// <summary>
         /// lbl_smjcreatorwrk control.
         /// </summary>
@@ -85,7 +83,7 @@ namespace WebApplication1.bussiness.production.rpts
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_smjcreatorwrk;
-
+        
         /// <summary>
         /// lbl_pono control.
         /// </summary>
@@ -94,7 +92,7 @@ namespace WebApplication1.bussiness.production.rpts
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_pono;
-
+        
         /// <summary>
         /// lbl_permitno control.
         /// </summary>
@@ -103,7 +101,7 @@ namespace WebApplication1.bussiness.production.rpts
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_permitno;
-
+        
         /// <summary>
         /// lbl_jobtitle control.
         /// </summary>
@@ -112,7 +110,7 @@ namespace WebApplication1.bussiness.production.rpts
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_jobtitle;
-
+        
         /// <summary>
         /// lbl_jobdept control.
         /// </summary>
@@ -121,7 +119,7 @@ namespace WebApplication1.bussiness.production.rpts
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_jobdept;
-
+        
         /// <summary>
         /// lbl_jobrgn control.
         /// </summary>
@@ -130,7 +128,7 @@ namespace WebApplication1.bussiness.production.rpts
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_jobrgn;
-
+        
         /// <summary>
         /// lbl_jobloc control.
         /// </summary>
@@ -139,7 +137,7 @@ namespace WebApplication1.bussiness.production.rpts
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_jobloc;
-
+        
         /// <summary>
         /// lbl_jobsupvname control.
         /// </summary>
@@ -148,7 +146,7 @@ namespace WebApplication1.bussiness.production.rpts
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_jobsupvname;
-
+        
         /// <summary>
         /// lbl_jobsupvwrk control.
         /// </summary>
@@ -157,7 +155,7 @@ namespace WebApplication1.bussiness.production.rpts
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_jobsupvwrk;
-
+        
         /// <summary>
         /// lbl_siteincharge control.
         /// </summary>
@@ -166,7 +164,7 @@ namespace WebApplication1.bussiness.production.rpts
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_siteincharge;
-
+        
         /// <summary>
         /// lbl_inchargewrk control.
         /// </summary>
@@ -175,7 +173,7 @@ namespace WebApplication1.bussiness.production.rpts
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_inchargewrk;
-
+        
         /// <summary>
         /// ManpowerGrid control.
         /// </summary>
@@ -184,7 +182,16 @@ namespace WebApplication1.bussiness.production.rpts
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView ManpowerGrid;
-
+        
+        /// <summary>
+        /// LineItems_Grid control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView LineItems_Grid;
+        
         /// <summary>
         /// ShiftGrid control.
         /// </summary>

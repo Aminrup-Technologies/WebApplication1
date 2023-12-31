@@ -495,7 +495,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-12 col-sm-12">
+                <div class="col-md-12 col-sm-12" id="LineItems_SelectorPanel" runat="server" visible="true">
                     <div class="x_panel">
                         <div class="x_title">
                             <h2>Workorder Line Items for Selection</h2>
@@ -515,7 +515,7 @@
                                             </ItemTemplate>
                                             <ItemStyle CssClass="text text-center" />
                                         </asp:TemplateField>
-                                        <asp:TemplateField HeaderText="SRL ID" HeaderStyle-Width="3%" Visible="true">
+                                        <asp:TemplateField HeaderText="SRL ID" HeaderStyle-Width="3%" Visible="false">
                                             <ItemTemplate>
                                                 <asp:Label ID="lbl_Id" runat="server" Text='<%# Bind("Id") %>'></asp:Label>
                                             </ItemTemplate>
@@ -605,7 +605,7 @@
                 <div class="col-md-12 col-sm-12">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Selected Line Items</h2>
+                            <h2>View Selected Line Items</h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                             </ul>
@@ -622,7 +622,7 @@
                                             </ItemTemplate>
                                             <ItemStyle CssClass="text text-center" />
                                         </asp:TemplateField>
-                                        <asp:TemplateField HeaderText="SRL ID" HeaderStyle-Width="3%" Visible="true">
+                                        <asp:TemplateField HeaderText="SRL ID" HeaderStyle-Width="3%" Visible="false">
                                             <ItemTemplate>
                                                 <asp:Label ID="lbl_Id" runat="server" Text='<%# Bind("Id") %>'></asp:Label>
                                             </ItemTemplate>
@@ -685,12 +685,14 @@
                                         <asp:TemplateField HeaderText="Shift Skill" HeaderStyle-Width="10%" Visible="true">
                                             <ItemTemplate>
                                                 <asp:DropDownList ID="DDL_EmpCategory" class="form-control form-control-sm rounded no-padding" runat="server">
-                                                    <asp:ListItem Text="--SELECT--" Value="--SELECT--"></asp:ListItem>
-                                                    <asp:ListItem Text="HIGHLY-SKILLED" Value="HIGHLY-SKILLED"></asp:ListItem>
-                                                    <asp:ListItem Text="SKILLED" Value="SKILLED"></asp:ListItem>
-                                                    <asp:ListItem Text="SEMI-SKILLED" Value="SEMI-SKILLED"></asp:ListItem>
-                                                    <asp:ListItem Text="UN-SKILLED" Value="UN-SKILLED"></asp:ListItem>
+                                                    <asp:ListItem Text="--SELECT--" Value="0"></asp:ListItem>
+                                                    <asp:ListItem Text="UNIFIED" Value="5"></asp:ListItem>
+                                                    <asp:ListItem Text="HIGHLY-SKILLED" Value="1"></asp:ListItem>
+                                                    <asp:ListItem Text="SKILLED" Value="2"></asp:ListItem>
+                                                    <asp:ListItem Text="SEMI-SKILLED" Value="3"></asp:ListItem>
+                                                    <asp:ListItem Text="UN-SKILLED" Value="4"></asp:ListItem>
                                                 </asp:DropDownList>
+                                                <asp:RequiredFieldValidator ID="RFV1" runat="server" ErrorMessage="Selection Required" Display="Dynamic" SetFocusOnError="true" ControlToValidate="DDL_EmpCategory" InitialValue="0" ValidationGroup="LI_Selector" ForeColor="DarkRed"></asp:RequiredFieldValidator>
                                             </ItemTemplate>
                                             <ItemStyle CssClass="text text-center" />
                                         </asp:TemplateField>
@@ -699,14 +701,14 @@
                                 </asp:GridView>
                             </div>
                             <%--form buttons div ---- start--%>
-                            <div class="col-md-6 center-margin" runat="server" id="Div1" visible="true">
+                            <div class="col-md-6 center-margin" runat="server" id="LineItems_SelectorButtonDIV" visible="true">
                                 <div class="ln_solid"></div>
                                 <div class="item form-group row">
                                     <div class="col-md-6 col-sm-12">
-                                        <asp:Label ID="Label3" runat="server" Text="">Click to Add Selected Line Items</asp:Label>
+                                        <asp:Label ID="Label3" runat="server" Text="">Click to Add Finalize Selection</asp:Label>
                                     </div>
                                     <div class="col-md-3 col-sm-6">
-                                        <asp:Button ID="btn_proceednxt" runat="server" Text="Proceed Next" CssClass="btn btn-success btn-sm" Enabled="true" OnClick="btn_proceednxt_Click" />
+                                        <asp:Button ID="btn_proceednxt" runat="server" Text="Proceed Next" CausesValidation="true" ValidationGroup="LI_Selector" CssClass="btn btn-success btn-sm" Enabled="true" OnClick="btn_proceednxt_Click" />
                                     </div>
                                     <div class="col-md-3 col-sm-6">
                                         <asp:Button ID="btn_reset" runat="server" Text="Clear Selection" CssClass="btn btn-warning btn-sm" Enabled="true" OnClick="btn_reset_Click" />
@@ -728,7 +730,7 @@
                             </ul>
                             <div class="clearfix"></div>
                         </div>
-                        <div>
+                        <div class="x_content">
                             <div class="row">
                                 <div class="animated flipInY col-lg-3 col-md-3 col-sm-6  ">
                                     <div class="tile-stats">
@@ -777,24 +779,23 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                    <%--form buttons div ---- start--%>
+                    <div class="col-md-6 center-margin" runat="server" visible="true">
+                        <div class="ln_solid"></div>
+                        <div class="row center col-md-12">
+                            <div class="col-7">
+                                <asp:Button ID="btn_home" runat="server" Text="Home" CssClass="btn btn-danger btn-sm" Enabled="true" Visible="true" OnClick="btn_home_Click" />
+                                <asp:Button ID="btn_backpage" runat="server" Text="Go Back" ToolTip="Click to jump tp previous page" CssClass="btn btn-warning btn-sm" Enabled="true" Visible="true" OnClick="btn_backpage_Click" />
+                                <asp:Button ID="btn_crtspm" runat="server" Text="Save" ToolTip="Click to Create Supply Memo" CssClass="btn btn-primary btn-sm" Enabled="true" OnClick="btn_crtspm_Click" />
+                            </div>
 
-                <%--form buttons div ---- start--%>
-                <div class="col-md-6 center-margin" runat="server" visible="true">
-                    <div class="ln_solid"></div>
-                    <div class="row center col-md-12">
-                        <div class="col-7">
-                            <asp:Button ID="btn_home" runat="server" Text="Home" CssClass="btn btn-danger btn-sm" Enabled="true" Visible="true" OnClick="btn_home_Click" />
-                            <asp:Button ID="btn_backpage" runat="server" Text="Go Back" ToolTip="Click to jump tp previous page" CssClass="btn btn-warning btn-sm" Enabled="true" Visible="true" OnClick="btn_backpage_Click" />
-                            <asp:Button ID="btn_crtspm" runat="server" Text="Save" ToolTip="Click to Create Supply Memo" CssClass="btn btn-primary btn-sm" Enabled="true" OnClick="btn_crtspm_Click" />
-                        </div>
-
-                        <div class="col-5">
-                            <asp:Label ID="lbl_msg" runat="server" Text="Save for Supply Memo" Font-Bold="true" ForeColor="DarkBlue"></asp:Label>
+                            <div class="col-5">
+                                <asp:Label ID="lbl_msg" runat="server" Text="Save for Supply Memo" Font-Bold="true" ForeColor="DarkBlue"></asp:Label>
+                            </div>
                         </div>
                     </div>
+                    <%--form buttons div ---- end--%>
                 </div>
-                <%--form buttons div ---- end--%>
             </div>
         </div>
     </div>

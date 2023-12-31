@@ -440,6 +440,55 @@
                                     <tr>
                                         <td colspan="4" class="LineBreak"><span>&nbsp;</span></td>
                                     </tr>
+
+                                    <tr>
+                                        <td colspan="4">
+                                            <asp:GridView ID="LineItems_Grid" runat="server" BorderWidth="0" AutoGenerateColumns="False" CellPadding="3" ForeColor="#333333" ShowHeaderWhenEmpty="True" EmptyDataText="No Entries Found...!!" Width="100%" HorizontalAlign="Center" BorderStyle="Solid" BorderColor="Black" OnRowDataBound="LineItems_Grid_RowDataBound">
+                                                <Columns>
+                                                    <asp:TemplateField HeaderText="Service Number" HeaderStyle-Width="20%">
+                                                        <ItemTemplate>
+                                                            <asp:Label ID="lbl_ServiceNumber" runat="server" Text='<%# Bind("ServiceNumber") %>'></asp:Label>
+                                                        </ItemTemplate>
+                                                        <HeaderStyle CssClass="headergrid" />
+                                                        <ItemStyle CssClass="ManpowerGridCenter" />
+                                                    </asp:TemplateField>
+
+                                                    <asp:TemplateField HeaderText="Service Description" HeaderStyle-Width="40%">
+                                                        <ItemTemplate>
+                                                            <asp:Label ID="lbl_Service_Description" runat="server" Text='<%# Bind("Service_Description") %>'></asp:Label>
+                                                        </ItemTemplate>
+                                                        <HeaderStyle CssClass="headergrid" />
+                                                        <ItemStyle CssClass="ManpowerGridLeft" />
+                                                    </asp:TemplateField>
+
+                                                    <asp:TemplateField HeaderText="Order Quantity" HeaderStyle-Width="20%">
+                                                        <ItemTemplate>
+                                                            <asp:Label ID="lbl_Order_Quantity" runat="server" Text='<%# Bind("Order_Quantity") %>'></asp:Label>
+                                                        </ItemTemplate>
+                                                        <HeaderStyle CssClass="headergrid" />
+                                                        <ItemStyle CssClass="ManpowerGridCenter" />
+                                                    </asp:TemplateField>
+
+                                                    <asp:TemplateField HeaderText="Shift" HeaderStyle-Width="20%">
+                                                        <ItemTemplate>
+                                                            <asp:Label ID="lbl_Shift_Skill" runat="server" Text='<%# Bind("Shift_Skill") %>'></asp:Label>
+                                                        </ItemTemplate>
+                                                        <HeaderStyle CssClass="headergrid" />
+                                                        <ItemStyle CssClass="ManpowerGridCenter" />
+                                                    </asp:TemplateField>
+                                                </Columns>
+                                                <EmptyDataRowStyle Font-Names="Monaco,monospace;" Font-Size="Small" Height="15px" HorizontalAlign="Center" VerticalAlign="Middle" />
+                                                <HeaderStyle BackColor="Brown" Font-Bold="True" Font-Size="12pt" ForeColor="White" Height="18px" BorderColor="Black" BorderStyle="Solid" BorderWidth="1px" />
+                                                <AlternatingRowStyle BackColor="#DFDFDF" />
+                                                <RowStyle Font-Names="Monaco,monospace;" Font-Size="12pt" Font-Bold="true" ForeColor="Black" />
+                                            </asp:GridView>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td colspan="4" class="LineBreak"><span>&nbsp;</span></td>
+                                    </tr>
+
                                     <tr>
                                         <td colspan="4">
                                             <asp:GridView ID="ShiftGrid" runat="server" BorderWidth="0" AutoGenerateColumns="False" CellPadding="3" ForeColor="#333333" ShowHeaderWhenEmpty="True" EmptyDataText="No Entries Found...!!" Width="100%" HorizontalAlign="Center" BorderStyle="Solid" BorderColor="Black">
