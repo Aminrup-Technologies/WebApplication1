@@ -576,6 +576,13 @@
                                             <ItemStyle CssClass="text text-center" />
                                         </asp:TemplateField>
 
+                                        <asp:TemplateField HeaderText="Shift Skill" HeaderStyle-Width="10%" Visible="false">
+                                            <ItemTemplate>
+                                                <asp:Label ID="lbl_Shift_Skill" runat="server" Text='<%# Bind("Shift_Skill") %>'></asp:Label>
+                                            </ItemTemplate>
+                                            <ItemStyle CssClass="text text-center" />
+                                        </asp:TemplateField>
+
                                         <asp:TemplateField HeaderText="Select" HeaderStyle-Width="5%" Visible="true">
                                             <ItemTemplate>
                                                 <asp:CheckBox ID="CheckRow" runat="server" />
@@ -602,7 +609,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-12 col-sm-12">
+                <div class="col-md-12 col-sm-12" id="LineItems_SelectedPanel" runat="server" visible="true">
                     <div class="x_panel">
                         <div class="x_title">
                             <h2>View Selected Line Items</h2>
@@ -682,6 +689,14 @@
                                             </ItemTemplate>
                                             <ItemStyle CssClass="text text-center" />
                                         </asp:TemplateField>
+
+                                        <asp:TemplateField HeaderText="Shift Skill" HeaderStyle-Width="10%" Visible="false">
+                                            <ItemTemplate>
+                                                <asp:Label ID="lbl_Shift_Skill" runat="server" Text='<%# Bind("Shift_Skill") %>'></asp:Label>
+                                            </ItemTemplate>
+                                            <ItemStyle CssClass="text text-center" />
+                                        </asp:TemplateField>
+
                                         <asp:TemplateField HeaderText="Shift Skill" HeaderStyle-Width="10%" Visible="true">
                                             <ItemTemplate>
                                                 <asp:DropDownList ID="DDL_EmpCategory" class="form-control form-control-sm rounded no-padding" runat="server">

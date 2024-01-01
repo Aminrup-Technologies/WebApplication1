@@ -41,7 +41,7 @@ namespace WebApplication1.bussiness.production.rpts
                 if (dt.Rows.Count > 0)
                 {
                     string smjid = dt.Rows[0]["Level1_BillingCode"].ToString();
-                    lbl_smjid1.Text = lbl_smjid2.Text= smjid;
+                    lbl_smjid1.Text = lbl_smjid2.Text = smjid;
 
                     string jobdate = dt.Rows[0]["CreatedDate"].ToString();
                     DateTime dt1 = DateTime.Parse(jobdate);
@@ -195,8 +195,68 @@ namespace WebApplication1.bussiness.production.rpts
             SqlDataReader dr = cmd.ExecuteReader();
             if (dr.HasRows)
             {
-                LineItems_Grid.DataSource = dr;
-                LineItems_Grid.DataBind();
+                DataTable dt = new DataTable();
+                dt.Load(dr);
+
+                string highSkillValue = string.Empty;
+                string SkillValue = string.Empty;
+                string semiSkillValue = string.Empty;
+                string unSkillValue = string.Empty;
+
+                // Check if there is exactly one row and the value in the 3rd index is "UNIFIED"
+                if (dt.Rows.Count == 1 && dt.Rows[0][4].ToString() == "UNIFIED")
+                {
+                    Unified_LIGrid.Visible = true;
+                    LineItems_Grid.DataSource = dt;
+                    LineItems_Grid.DataBind();
+                    LineItems_Grid.Columns[3].Visible = false;
+                }
+                else if (dt.Rows.Count > 1)
+                {
+                    Unified_LIGrid.Visible = false;
+                    ShiftGrid.FooterRow.Visible = true;
+                    Label lblFooterTotalHSShiftCount = (Label)ShiftGrid.FooterRow.FindControl("lbl_Footer_Total_HSShiftCount");
+                    Label lblFooterTotalSShiftCount = (Label)ShiftGrid.FooterRow.FindControl("lbl_Footer_Total_SShiftCount");
+                    Label lblFooterTotalSSShiftCount = (Label)ShiftGrid.FooterRow.FindControl("lbl_Footer_Total_SSShiftCount");
+                    Label lblFooterTotalUSShiftCount = (Label)ShiftGrid.FooterRow.FindControl("lbl_Footer_Total_USShiftCount");
+
+
+                    foreach (DataRow row in dt.Rows)
+                    {
+                        string value = row.Field<string>(4);
+                        // Check values in the 4th index for different conditions
+                        if (value == "HIGHLY-SKILLED")
+                        {
+                            lblFooterTotalHSShiftCount.Text = row.Field<string>(0);
+                        }
+                        else if (value == "SKILLED")
+                        {
+                            lblFooterTotalSShiftCount.Text = row.Field<string>(0);
+                        }
+                        else if (value == "SEMI-SKILLED")
+                        {
+                            lblFooterTotalSSShiftCount.Text = row.Field<string>(0);
+                        }
+                        else if (value == "UN-SKILLED")
+                        {
+                            lblFooterTotalUSShiftCount.Text = row.Field<string>(0);
+                        }
+                        // Add more conditions as needed
+                        else
+                        {
+                            // Default actions if none of the specified conditions are met
+                            // ...
+                        }
+                    }
+
+                    LineItems_Grid.DataSource = dt;
+                    LineItems_Grid.DataBind();
+                }
+                else
+                {
+                    LineItems_Grid.DataSource = dt;
+                    LineItems_Grid.DataBind();
+                }
             }
             else
             {
@@ -212,16 +272,19 @@ namespace WebApplication1.bussiness.production.rpts
             if (e.Row.RowType == DataControlRowType.DataRow)
             {
                 // Check if the row count is exactly 1
-                if (LineItems_Grid.Rows.Count == 1)
+                if (LineItems_Grid.Rows.Count > 0)
                 {
-                    // Assuming 'Shift_Skill' is in the 5th column (index 4)
-                    int shiftSkillColumnIndex = 4;
-
-                    // Check if 'Shift_Skill' is 'UNIFIED'
-                    if (e.Row.Cells[shiftSkillColumnIndex].Text == "UNIFIED")
+                    if (LineItems_Grid.Rows.Count == 1)
                     {
-                        // Hide the column
-                        e.Row.Cells[shiftSkillColumnIndex].Visible = false;
+                        string shiftSkillValue = (e.Row.FindControl("lbl_Shift_Skill") as Label)?.Text;
+                        if (shiftSkillValue == "UNIFIED")
+                        {
+
+                        }
+                    }
+                    else if (LineItems_Grid.Rows.Count > 1)
+                    {
+
                     }
                 }
                 else

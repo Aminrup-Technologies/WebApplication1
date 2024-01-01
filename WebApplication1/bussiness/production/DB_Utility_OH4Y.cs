@@ -259,6 +259,19 @@ namespace WebApplication1.bussiness.production
             return dt;
         }
 
+        public DataTable GetDataTableJOBID(String cmdString, string jobid)
+        {
+            Sqlconnection();
+            SqlCommand cmd = new SqlCommand(cmdString, Conn);
+            cmd.Parameters.AddWithValue("@JOBID", jobid);
+            cmd.CommandType = CommandType.Text;
+            DataTable dt = new DataTable();
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            da.Fill(dt);
+            Conn.Close();
+            return dt;
+        }
+
         public void BindCombo(DropDownList cmbName, string CmdString)
         {
             cmbName.Items.Clear();

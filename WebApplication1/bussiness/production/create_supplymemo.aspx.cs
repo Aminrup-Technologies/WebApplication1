@@ -17,8 +17,19 @@ namespace WebApplication1.bussiness.production
 {
     public partial class create_supplymemo : System.Web.UI.Page
     {
-        //SqlConnection sqlConn = new SqlConnection(ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString);
+        public static string jobid = string.Empty;
+        public static string wo_number = string.Empty;
+        public static string viewid = string.Empty;
+        public static string yr = string.Empty;
+        public static string mnt = string.Empty;
+
         public static string SQLQRY_MAX_SPID_NO = "SELECT TOP 1 TRM_REQUEST_NO FROM T_REQUEST_MASTER ORDER BY TRM_ID DESC";
+        public static string qry_jobdetails = "select * from tbl_jobs where JOBID=@JOBID";
+        public static string qry_permitdetails = "select * from tbl_jobspermit where JOBID=@JOBID order by Id desc";
+        public static string qry_polineitems = "select Id, WODB_Code, WOI_DBCode, ItemNO, LineNumber, ServiceNumber, Service_Description, Order_Quantity, Rate, PerUnit_Value, '' as Shift_Skill  from tlb_WO_LineItems_Data where WO_Number=@WO_Number order by Id";
+        public static string qry_polineitems2= "select Id, JOBID as WODB_Code, SMJID as WOI_DBCode, ItemNO, LineNumber, ServiceNumber, Service_Description, Order_Quantity, Rate, PerUnit_Value,Shift_Skill from tbl_SupMem_LineItems_Data where JOBID=@JOBID order by Id";
+        public static string qry_jobmanpower = "select a.Id, a.JOBID, a.CreatedDate, a.JOB_Region, a.JOB_Company, a.EmployeeWrk, a.EmployeeName, a.EmpCategory,a.PO_SkillCategory, a.EmpDesignation, a.Employee_Worksite, a.Employee_WorksiteCode, a.Inpunch_Time, a.Outpunch_Time, a.WorkedHours, a.WourkHours, a.LunchFactor, a.ProvidedOT, a.AttendanceStatus, a.AttendanceCode, a.GatePassNo,a.SafetyPassNo, Round(IIF(a.LunchFactor ='Yes',(WorkedHours-1)/8,WorkedHours/8),2) as ShiftCalc from tbl_attendance a, tbl_Employee_Mustertable b  where a.JOBID=@JOBID and a.EmployeeWrk=b.WorkmanSL order by a.Id desc";
+
 
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
         CountChecker CC = new CountChecker();
@@ -29,16 +40,8 @@ namespace WebApplication1.bussiness.production
         DataTable dt_lineitems = new DataTable();
         DataTable dt_selectedrows = new DataTable();
 
-        public static string wo_number = string.Empty;
-        public static string viewid = string.Empty;
-        public static string yr = string.Empty;
-        public static string mnt = string.Empty;
-
         // Default folder
-
-
         static readonly string rootFolder = @"C:\atswork.in\wwwroot\erp_images\Permits";
-
         //static readonly string rootFolder = @"D:\OH4Y Works\OH4Y_2021\Demo\WebApplication1\WebApplication1\erp_images\Permits";
 
         protected void Page_Load(object sender, EventArgs e)
@@ -52,14 +55,12 @@ namespace WebApplication1.bussiness.production
                 else
                 {
                     //ViewState["RefUrl"] = Request.UrlReferrer.ToString();
-                    string jobid = Request.QueryString["JOBID"];
+                    jobid = Request.QueryString["JOBID"];
                     viewid = Request.QueryString["viewid"];
 
                     yr = Request.QueryString["y"];
                     mnt = Request.QueryString["m"];
                     Bind_JOBIDDetails(jobid);
-
-                    //Checker();
                 }
             }
             else
@@ -114,12 +115,11 @@ namespace WebApplication1.bussiness.production
         private void Bind_JOBIDDetails(string jobid)
         {
             try
-            {
-                string query = "select * from tbl_jobs where JOBID=@JOBID";
+            {      
                 SqlParameter[] pram = {
                                           new SqlParameter("@JOBID",jobid),
                                       };
-                dt = dbcl.SPreturn_dt(query, pram);
+                dt = dbcl.SPreturn_dt(qry_jobdetails, pram);
                 if (dt.Rows.Count > 0)
                 {
                     if (dt.Rows[0]["BillingCode"].ToString() == "MS")
@@ -215,13 +215,22 @@ namespace WebApplication1.bussiness.production
 
                         if (jobidstatus == "Blocked" && uploadstatus == "Yes" && approvalstatus == "Approved" && entryexitstatus == "Exit" && JOB_Status == "Level1MemoCreated")
                         {
+                            LineItemSelector_Grid(qry_polineitems2, jobid, "2");
+                            LineItems_SelectorPanel.Visible = false;
+                            LineItems_SelectedPanel.Visible = true;
+                            this.GridView4.Columns[11].Visible = true;
+                            this.GridView4.Columns[12].Visible = false;
+
                             this.GridView2.Columns[20].Visible = false;
                             btn_crtspm.Text = "Print Memo";
                             btn_crtspm.CssClass = "btn btn-success btn-sm";
                             btn_crtspm.ToolTip = "Click to print Supply Memo";
+
+
                         }
                         else if (jobidstatus == "Blocked" && uploadstatus == "Yes" && approvalstatus == "Approved" && entryexitstatus == "Exit" && JOB_Status != "Level1MemoCreated")
                         {
+                            LineItemSelector_Grid(qry_polineitems, wo_number, "1");
                             btn_crtspm.Text = "Save";
                             btn_crtspm.CssClass = "btn btn-primary btn-sm";
                             btn_crtspm.ToolTip = "Click to CREATE Supply Memo";
@@ -237,18 +246,12 @@ namespace WebApplication1.bussiness.production
                         //txt_approverrmrks.Text = dt.Rows[0]["JOB_Title"].ToString();
                         txt_approverrmrks.Text = "N/A";
 
-                        string CmdString2 = "select * from tbl_jobspermit where JOBID='" + jobid + "' order by Id desc";
-                        BindGrid(CmdString2);
 
-                        string CmdString3 = "select Id, WODB_Code, WOI_DBCode, ItemNO, LineNumber, ServiceNumber, Service_Description, Order_Quantity, Rate, PerUnit_Value from tlb_WO_LineItems_Data where WO_Number='" + wo_number + "' order by Id";
-                        BindGrid3(CmdString3);
+                        PermitData_Grid(qry_permitdetails);   
+                        ManpowerAtten_Grid(qry_jobmanpower);
+                        //LineItemSelector_Grid(qry_polineitems, wo_number,"1");
 
                         btn_proceednxt.Enabled = false;
-
-                        //string CmdString3 = "select * from tbl_attendance where JOBID='" + jobid + "' order by Id desc";
-                        //BindGrid2(CmdString3);
-                        //string memogridbinder = "SELECT Id, CreatedDate, JOBID, JOB_Region, JOB_Company, JOB_SiteName, JOB_SiteCode, EmployeeName, EmployeeWrk, EmpCategory, EmpDesignation, Employee_Worksite, Employee_WorksiteCode, WourkHours, Inpunch_Time, Outpunch_Time, WorkedTime, WorkedHours, LunchFactor, Calc_OT, ProvidedOT, AttendanceStatus, AttendanceCode, GatePassNo FROM tbl_attendance where JOBID='" + jobid + "' order by Id desc";
-                        BindGrid2();
                     }
                     else
                     {
@@ -262,7 +265,7 @@ namespace WebApplication1.bussiness.production
             {
                 ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup();", true);
                 lbl_msg.ForeColor = System.Drawing.Color.Red;
-                lbl_msg.Text = "Error 263 : " + ex.Message.ToString();
+                lbl_msg.Text = "Error 264 : " + ex.Message.ToString();
 
                 string title = "Notifications 265 :";
                 string body = ex.Message;
@@ -270,11 +273,12 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-        private void BindGrid(string cmdString)
+        private void PermitData_Grid(string cmdString)
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
+            cmd.Parameters.AddWithValue("@JOBID", jobid);
             SqlDataAdapter ad = new SqlDataAdapter(cmd);
             DataSet ds = new DataSet();
             ad.Fill(ds);
@@ -283,49 +287,67 @@ namespace WebApplication1.bussiness.production
             dbcl.Conn.Close();
         }
 
-        private void BindGrid3(string cmdString)
+        private void LineItemSelector_Grid(string cmdString, string number, string selector)
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
-            //SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
-            //SqlDataAdapter ad = new SqlDataAdapter(cmd);
-            //dt_lineitems.Rows.Clear();
-            //ad.Fill(dt_lineitems);
-            //GridView3.DataSource = dt_lineitems;
-            //GridView3.DataBind();
-            //dbcl.Conn.Close();
-
-            SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
-            SqlDataReader dr = cmd.ExecuteReader();
-            if (dr.HasRows)
+            
+            if (selector == "1")
             {
-                GridView3.DataSource = dr;
-                GridView3.DataBind();
+                SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
+                cmd.Parameters.AddWithValue("@WO_Number", number);
+                SqlDataReader dr = cmd.ExecuteReader();
+                if (dr.HasRows)
+                {
+                    GridView3.DataSource = dr;
+                    GridView3.DataBind();
+                }
+                else
+                {
+                    string body = "No Line Items data found for PO : " + wo_number + "";
+                    dbcl.SendEmailCC("anupam.sharma@atswork.in", "office@atswork.in", "PO Details", body);
+                    DataTable dt6 = new DataTable();
+                    GridView3.DataSource = dt6;
+                    GridView3.DataBind();
+                }
             }
-            else
+            else if ((selector == "2"))
             {
-                string body = "No Line Items data found for PO : "+ wo_number + "";
-                dbcl.SendEmailCC("anupam.sharma@atswork.in", "office@atswork.in", "PO Details", body);
-                DataTable dt6 = new DataTable();
-                GridView3.DataSource = dt6;
-                GridView3.DataBind();
+                
+                SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
+                cmd.Parameters.AddWithValue("@JOBID", number);
+                SqlDataReader dr = cmd.ExecuteReader();
+                if (dr.HasRows)
+                {
+                    GridView4.DataSource = dr;
+                    GridView4.DataBind();
+                }
+                else
+                {
+                    //string body = "No Line Items data found for PO : " + wo_number + "";
+                    //dbcl.SendEmailCC("anupam.sharma@atswork.in", "office@atswork.in", "PO Details", body);
+                    DataTable dt7 = new DataTable();
+                    GridView4.DataSource = dt7;
+                    GridView4.DataBind();
+                }
             }
+            
+            
             dbcl.Conn.Close();
         }
 
-        private void BindGrid2()
+        private void ManpowerAtten_Grid(string sqlqry)
         {
-            string cmdString = "select a.Id, a.JOBID, a.CreatedDate, a.JOB_Region, a.JOB_Company, a.EmployeeWrk, a.EmployeeName, a.EmpCategory,a.PO_SkillCategory, a.EmpDesignation, a.Employee_Worksite, a.Employee_WorksiteCode, a.Inpunch_Time, a.Outpunch_Time, a.WorkedHours, a.WourkHours, a.LunchFactor, a.ProvidedOT, a.AttendanceStatus, a.AttendanceCode, a.GatePassNo,a.SafetyPassNo, Round(IIF(a.LunchFactor ='Yes',(WorkedHours-1)/8,WorkedHours/8),2) as ShiftCalc from tbl_attendance a, tbl_Employee_Mustertable b  where a.JOBID='" + txt_jobid.Text.ToString() + "' and a.EmployeeWrk=b.WorkmanSL order by a.Id desc";
-
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
-            SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
+            SqlCommand cmd = new SqlCommand(sqlqry, dbcl.Conn);
+            cmd.Parameters.AddWithValue("@JOBID", jobid);
             cmd.CommandType = CommandType.Text;
             SqlDataReader dr = cmd.ExecuteReader();
             FirstDatatable = null;
             if (dr.Read())
             {
-                FirstDatatable = dbcl.GetDataTable(cmdString);
+                FirstDatatable = dbcl.GetDataTableJOBID(sqlqry, jobid);
                 NewGridrmemo();
             }
             dbcl.Conn.Close();
@@ -438,7 +460,7 @@ namespace WebApplication1.bussiness.production
                             // Check the number of rows affected to determine if the update was successful
                             if (rowsAffected > 0)
                             {
-                                BindGrid2();
+                                ManpowerAtten_Grid(qry_jobmanpower);
                                 //Console.WriteLine("Update successful. Rows affected: " + rowsAffected);
                             }
                             else
@@ -1568,7 +1590,7 @@ namespace WebApplication1.bussiness.production
         protected void btn_addlineitems_Click(object sender, EventArgs e)
         {
             dt_selectedrows.Clear();
-            dt_selectedrows.Columns.AddRange(new DataColumn[10] { new DataColumn("Id"), new DataColumn("WODB_Code"), new DataColumn("WOI_DBCode"), new DataColumn("ItemNO"), new DataColumn("LineNumber"), new DataColumn("ServiceNumber"), new DataColumn("Service_Description"), new DataColumn("Order_Quantity"), new DataColumn("Rate"), new DataColumn("PerUnit_Value") });
+            dt_selectedrows.Columns.AddRange(new DataColumn[11] { new DataColumn("Id"), new DataColumn("WODB_Code"), new DataColumn("WOI_DBCode"), new DataColumn("ItemNO"), new DataColumn("LineNumber"), new DataColumn("ServiceNumber"), new DataColumn("Service_Description"), new DataColumn("Order_Quantity"), new DataColumn("Rate"), new DataColumn("PerUnit_Value"), new DataColumn("Shift_Skill") });
             foreach (GridViewRow row in GridView3.Rows)
             {
                 if (row.RowType == DataControlRowType.DataRow)
@@ -1586,6 +1608,7 @@ namespace WebApplication1.bussiness.production
                         string Order_Quantity = (row.Cells[8].FindControl("lbl_Order_Quantity") as Label).Text;
                         string Rate = (row.Cells[9].FindControl("lbl_Rate") as Label).Text;
                         string PerUnit_Value = (row.Cells[10].FindControl("lbl_PerUnit_Value") as Label).Text;
+                        string Shift_Skill = (row.Cells[11].FindControl("lbl_Shift_Skill") as Label).Text;
                         dt_selectedrows.Rows.Add(Id, WODB_Code, WOI_DBCode, ItemNO, LineNumber, ServiceNumber, Service_Description, Order_Quantity, Rate, PerUnit_Value);
                     }
                 }
@@ -1710,8 +1733,8 @@ namespace WebApplication1.bussiness.production
             GridView4.DataSource = dt_selectedrows;
             GridView4.DataBind();
 
-            string CmdString3 = "select Id, WODB_Code, WOI_DBCode, ItemNO, LineNumber, ServiceNumber, Service_Description, Order_Quantity, Rate, PerUnit_Value from tlb_WO_LineItems_Data where WO_Number='" + txt_workorderno.Text.ToString() + "' order by Id";
-            BindGrid3(CmdString3);
+            string CmdString3 = "select Id, WODB_Code, WOI_DBCode, ItemNO, LineNumber, ServiceNumber, Service_Description, Order_Quantity, Rate, PerUnit_Value from tlb_WO_LineItems_Data where WO_Number=@WO_Number order by Id";
+            LineItemSelector_Grid(CmdString3, wo_number,"1");
 
             btn_proceednxt.Enabled = false;
         }

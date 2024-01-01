@@ -184,6 +184,15 @@ namespace WebApplication1.bussiness.production.rpts {
         protected global::System.Web.UI.WebControls.GridView ManpowerGrid;
         
         /// <summary>
+        /// Unified_LIGrid control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow Unified_LIGrid;
+        
+        /// <summary>
         /// LineItems_Grid control.
         /// </summary>
         /// <remarks>

@@ -159,7 +159,7 @@
         .SubHeading1 {
             text-align: center;
             color: white;
-            border:1px solid #595959;
+            border: 1px solid #595959;
             border-top: none;
             font-weight: bold;
             background-color: brown;
@@ -169,7 +169,7 @@
         .SubHeading2 {
             text-align: center;
             color: white;
-            border:1px solid #595959;
+            border: 1px solid #595959;
             border-top: none;
             font-weight: bold;
             background-color: brown;
@@ -183,13 +183,14 @@
         .ManpowerGridLeft {
             text-align: left;
         }
+
         .TBTSigCol1 {
             width: 50%;
             border: 1px solid black;
             border-top: none;
             text-align: center;
             padding-left: 2px;
-            border-right:none;
+            border-right: none;
         }
 
         .TBTSigCol2 {
@@ -281,7 +282,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="DocIDDataHdrCol1"><span>Creation Date</span></td>
+                                        <td class="DocIDDataHdrCol2"><span>Creation Date</span></td>
                                         <td class="DocIDDataHdrCol2">
                                             <asp:Label ID="lbl_smjdate" runat="server" ForeColor="Blue" Font-Bold="true" Text="Creation Date"></asp:Label>
                                         </td>
@@ -441,9 +442,9 @@
                                         <td colspan="4" class="LineBreak"><span>&nbsp;</span></td>
                                     </tr>
 
-                                    <tr>
+                                    <tr id="Unified_LIGrid" runat="server" visible="false">
                                         <td colspan="4">
-                                            <asp:GridView ID="LineItems_Grid" runat="server" BorderWidth="0" AutoGenerateColumns="False" CellPadding="3" ForeColor="#333333" ShowHeaderWhenEmpty="True" EmptyDataText="No Entries Found...!!" Width="100%" HorizontalAlign="Center" BorderStyle="Solid" BorderColor="Black" OnRowDataBound="LineItems_Grid_RowDataBound">
+                                            <asp:GridView ID="LineItems_Grid" runat="server" BorderWidth="0" AutoGenerateColumns="False" CellPadding="3" ForeColor="#333333" ShowHeaderWhenEmpty="True" EmptyDataText="No Entries Found...!!" Width="100%" HorizontalAlign="Center" BorderStyle="Solid" BorderColor="Black">
                                                 <Columns>
                                                     <asp:TemplateField HeaderText="Service Number" HeaderStyle-Width="20%">
                                                         <ItemTemplate>
@@ -497,40 +498,60 @@
                                                         <ItemTemplate>
                                                             <asp:Label ID="lbl_Total_HSShiftCount" runat="server" Text='<%# Bind("Total_HSShiftCount") %>'></asp:Label>
                                                         </ItemTemplate>
+                                                        <FooterTemplate>
+                                                            <asp:Label ID="lbl_Footer_Total_HSShiftCount" runat="server"></asp:Label>
+                                                        </FooterTemplate>
                                                         <HeaderStyle CssClass="headergrid" />
                                                         <ItemStyle CssClass="ManpowerGridCenter" />
+                                                        <FooterStyle CssClass="ManpowerGridCenter" />
                                                     </asp:TemplateField>
 
                                                     <asp:TemplateField HeaderText="Skilled" HeaderStyle-Width="20%">
                                                         <ItemTemplate>
                                                             <asp:Label ID="lbl_Total_SShiftCount" runat="server" Text='<%# Bind("Total_SShiftCount") %>'></asp:Label>
                                                         </ItemTemplate>
+                                                        <FooterTemplate>
+                                                            <asp:Label ID="lbl_Footer_Total_SShiftCount" runat="server"></asp:Label>
+                                                        </FooterTemplate>
                                                         <HeaderStyle CssClass="headergrid" />
                                                         <ItemStyle CssClass="ManpowerGridCenter" />
+                                                        <FooterStyle CssClass="ManpowerGridCenter" />
                                                     </asp:TemplateField>
 
                                                     <asp:TemplateField HeaderText="Semi-Skilled" HeaderStyle-Width="20%">
                                                         <ItemTemplate>
                                                             <asp:Label ID="lbl_Total_SSShiftCount" runat="server" Text='<%# Bind("Total_SSShiftCount") %>'></asp:Label>
                                                         </ItemTemplate>
+                                                        <FooterTemplate>
+                                                            <asp:Label ID="lbl_Footer_Total_SSShiftCount" runat="server"></asp:Label>
+                                                        </FooterTemplate>
                                                         <HeaderStyle CssClass="headergrid" />
                                                         <ItemStyle CssClass="ManpowerGridCenter" />
+                                                        <FooterStyle CssClass="ManpowerGridCenter" />
                                                     </asp:TemplateField>
 
                                                     <asp:TemplateField HeaderText="Un-Skilled" HeaderStyle-Width="20%">
                                                         <ItemTemplate>
                                                             <asp:Label ID="lbl_Total_USShiftCount" runat="server" Text='<%# Bind("Total_USShiftCount") %>'></asp:Label>
                                                         </ItemTemplate>
+                                                        <FooterTemplate>
+                                                            <asp:Label ID="lbl_Footer_Total_USShiftCount" runat="server"></asp:Label>
+                                                        </FooterTemplate>
                                                         <HeaderStyle CssClass="headergrid" />
                                                         <ItemStyle CssClass="ManpowerGridCenter" />
+                                                        <FooterStyle CssClass="ManpowerGridCenter" />
                                                     </asp:TemplateField>
 
                                                     <asp:TemplateField HeaderText="TOTAL" HeaderStyle-Width="20%">
                                                         <ItemTemplate>
                                                             <asp:Label ID="lbl_Total_ShiftCount" runat="server" Text='<%# Bind("Total_ShiftCount") %>' Font-Bold="true"></asp:Label>
                                                         </ItemTemplate>
+                                                        <FooterTemplate>
+                                                            <asp:Label ID="lbl_Footer_Total_ShiftCount" runat="server" Text=""></asp:Label>
+                                                        </FooterTemplate>
                                                         <HeaderStyle CssClass="headergrid" />
                                                         <ItemStyle CssClass="ManpowerGridCenter" />
+                                                        <FooterStyle CssClass="ManpowerGridCenter" />
                                                     </asp:TemplateField>
                                                 </Columns>
                                                 <EmptyDataRowStyle Font-Names="Monaco,monospace;" Font-Size="Small" Height="15px" HorizontalAlign="Center" VerticalAlign="Middle" />

@@ -128,7 +128,7 @@ namespace WebApplication1.bussiness.production
             lbl_year.Text = Year;
             lbl_monthcode.Text = Month;
 
-            string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOBID_Status='Blocked' and EntryExit='Exit' and FinalUpldStatus='Yes' and Incharge_Approval='Approved' and BillingCode='MS' order by CreatedDate desc";
+            string CmdString2 = "select Id,CreatedDate,Creator_Workman,WorkOrderNo,JOBID,IIF(JOB_Status !='Level1MemoCreated',JOBID_Status,Level1_BillingCode) as JOBID_Status,JOBID_Status,JOB_Site,JOB_InchargeName,JOB_Shift,JOB_Title,JOB_PermitNo,JOB_Status,FinalUpldStatus,Incharge_Approval from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + Year + "' and JOBID_Status='Blocked' and MONTH(CreatedDate)='" + Month + "' and JOBID_Status='Blocked' and EntryExit='Exit' and FinalUpldStatus='Yes' and Incharge_Approval='Approved' and BillingCode='MS' order by CreatedDate desc";
             BindGrid(CmdString2);
         }
 

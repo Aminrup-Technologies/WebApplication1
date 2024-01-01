@@ -180,6 +180,7 @@ namespace WebApplication1.bussiness.production
             str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='5%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>S. NO</td>";
             str = str + "<td width='5%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>WORK SL</td>";
             str = str + "<td width='18%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>EMPLOYEE NAME</td>";
+            str = str + "<td width='18%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>EMPLOYEE DESG</td>";
             for (int i = minday; i <= maxday; i++)
             {
                 str = str + "<td width='2%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + i + "</td>";
@@ -193,11 +194,11 @@ namespace WebApplication1.bussiness.production
             string findempquery = "";
             if (DDL_EmpWorkStatus.SelectedIndex == 1)
             {
-                findempquery = "select WorkmanSL, FullName from tbl_Employee_Mustertable where WorkRegion='" + region + "' and F16_YesNo='Yes' order by Id";
+                findempquery = "select WorkmanSL, FullName, SkillDesignation from tbl_Employee_Mustertable where WorkRegion='" + region + "' and F16_YesNo='Yes' order by Id";
             }
             else
             {
-                findempquery = "select WorkmanSL, FullName from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and F16_YesNo='Yes' order by Id";
+                findempquery = "select WorkmanSL, FullName, SkillDesignation from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and F16_YesNo='Yes' order by Id";
             }
 
             //string findempquery = "select WorkmanSL, FullName from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='"+DDL_EmpWorkStatus.SelectedItem.Text.ToString()+"' order by Id";
@@ -212,6 +213,7 @@ namespace WebApplication1.bussiness.production
                     Int32 ttlot = 0;
                     string wrkman = re["WorkmanSL"].ToString();
                     string emp_name = re["FullName"].ToString();
+                    string emp_desg = re["SkillDesignation"].ToString();
                     str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='5%' style='background-color:white; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + Sl + "</td>";
                     str = str + "<td width='5%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + wrkman + "</td>";
                     str = str + "<td width='18%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + emp_name + "</td>";
@@ -387,7 +389,8 @@ namespace WebApplication1.bussiness.production
         {
             str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='5%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>S. NO</td>";
             str = str + "<td width='5%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>WORK SL</td>";
-            str = str + "<td width='18%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>EMPLOYEE NAME</td>";
+            str = str + "<td width='9%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>EMPLOYEE NAME</td>";
+            str = str + "<td width='9%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>EMPLOYEE DESG</td>";
             for (int i = minday; i <= maxday; i++)
             {
                 str = str + "<td width='2%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + i + "</td>";
@@ -401,11 +404,11 @@ namespace WebApplication1.bussiness.production
             string findempquery = "";
             if (DDL_EmpWorkStatus.SelectedIndex == 1)
             {
-                findempquery = "select WorkmanSL, FullName from tbl_Employee_Mustertable where WorkRegion='" + region + "' and F16_YesNo='Yes' order by Id";
+                findempquery = "select WorkmanSL, FullName,SkillDesignation  from tbl_Employee_Mustertable where WorkRegion='" + region + "' and F16_YesNo='Yes' order by Id";
             }
             else
             {
-                findempquery = "select WorkmanSL, FullName from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and F16_YesNo='Yes' order by Id";
+                findempquery = "select WorkmanSL, FullName,SkillDesignation  from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and F16_YesNo='Yes' order by Id";
             }
 
             //findempquery = "select top(20) WorkmanSL, FullName from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='Active' order by Id";
@@ -418,12 +421,15 @@ namespace WebApplication1.bussiness.production
             {
                 string EmpWrk = string.Empty;
                 string EmpName = string.Empty;
+                string EmpDesg = string.Empty;
                 Int32 TotaPresentCount = 0;
 
                 for (int i = 0; i < dt_emps.Rows.Count; i++)
                 {
                     EmpWrk = dt_emps.Rows[i][0].ToString();
                     EmpName = dt_emps.Rows[i][1].ToString();
+                    EmpDesg = dt_emps.Rows[i][2].ToString();
+
 
                     dbcl.Sqlconnection();
                     dbcl.ConnectDb();
@@ -441,7 +447,8 @@ namespace WebApplication1.bussiness.production
                     Int32 halfdaycount = 0;
                     str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='5%' style='background-color:white; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + Sl + "</td>";
                     str = str + "<td width='5%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + EmpWrk + "</td>";
-                    str = str + "<td width='18%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + EmpName + "</td>";
+                    str = str + "<td width='9%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + EmpName + "</td>";
+                    str = str + "<td width='9%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + EmpDesg + "</td>";
                     Int32 day = minday;
                     for (int j = minday; j <= maxday; j++)
                     {
@@ -659,7 +666,8 @@ namespace WebApplication1.bussiness.production
         {
             str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='5%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>S. NO</td>";
             str = str + "<td width='5%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>WORK SL</td>";
-            str = str + "<td width='18%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>EMPLOYEE NAME</td>";
+            str = str + "<td width='9%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>EMPLOYEE NAME</td>";
+            str = str + "<td width='9%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>EMPLOYEE DESG</td>";
             for (int i = minday; i <= maxday; i++)
             {
                 str = str + "<td width='2%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + i + "</td>";
@@ -673,11 +681,11 @@ namespace WebApplication1.bussiness.production
             string findempquery = "";
             if (DDL_EmpWorkStatus.SelectedIndex == 1)
             {
-                findempquery = "select WorkmanSL, FullName from tbl_Employee_Mustertable where WorkRegion='" + region + "' and F16_YesNo='Yes' order by Id";
+                findempquery = "select WorkmanSL, FullName, SkillDesignation from tbl_Employee_Mustertable where WorkRegion='" + region + "' and F16_YesNo='Yes' order by Id";
             }
             else
             {
-                findempquery = "select WorkmanSL, FullName from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus = '" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and F16_YesNo='Yes' order by Id";
+                findempquery = "select WorkmanSL, FullName, SkillDesignation from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus = '" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and F16_YesNo='Yes' order by Id";
             }
             //findempquery = "select top(20) WorkmanSL, FullName from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' order by Id";
 
@@ -691,11 +699,13 @@ namespace WebApplication1.bussiness.production
             {
                 string EmpWrk = string.Empty;
                 string EmpName = string.Empty;
+                string EmpDesg = string.Empty;
 
                 for (int i = 0; i < dt_emps.Rows.Count; i++)
                 {
                     EmpWrk = dt_emps.Rows[i][0].ToString();
                     EmpName = dt_emps.Rows[i][1].ToString();
+                    EmpDesg = dt_emps.Rows[i][2].ToString();
 
                     dbcl.Sqlconnection();
                     dbcl.ConnectDb();
@@ -711,7 +721,8 @@ namespace WebApplication1.bussiness.production
                     decimal ttlot = .0m;
                     str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='5%' style='background-color:white; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + Sl + "</td>";
                     str = str + "<td width='5%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + EmpWrk + "</td>";
-                    str = str + "<td width='18%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + EmpName + "</td>";
+                    str = str + "<td width='9%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + EmpName + "</td>";
+                    str = str + "<td width='9%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + EmpDesg + "</td>";
                     Int32 day = minday;
                     for (int j = minday; j <= maxday; j++)
                     {
@@ -902,7 +913,8 @@ namespace WebApplication1.bussiness.production
         {
             str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='5%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>S. NO</td>";
             str = str + "<td width='5%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>WORK SL</td>";
-            str = str + "<td width='18%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>EMPLOYEE NAME</td>";
+            str = str + "<td width='9%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>EMPLOYEE NAME</td>";
+            str = str + "<td width='9%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>EMPLOYEE DESG</td>";
             for (int i = minday; i <= maxday; i++)
             {
                 str = str + "<td width='2%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + i + "</td>";
@@ -917,11 +929,11 @@ namespace WebApplication1.bussiness.production
             string findempquery = "";
             if (DDL_EmpWorkStatus.SelectedIndex == 1)
             {
-                findempquery = "select WorkmanSL, FullName from tbl_Employee_Mustertable where WorkRegion='" + region + "' and F16_YesNo='Yes' order by Id";
+                findempquery = "select WorkmanSL, FullName,SkillDesignation from tbl_Employee_Mustertable where WorkRegion='" + region + "' and F16_YesNo='Yes' order by Id";
             }
             else
             {
-                findempquery = "select WorkmanSL, FullName from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and F16_YesNo='Yes' order by Id";
+                findempquery = "select WorkmanSL, FullName,SkillDesignation from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and F16_YesNo='Yes' order by Id";
             }
 
             //findempquery = "select top(10) WorkmanSL, FullName from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' order by Id";
@@ -935,12 +947,14 @@ namespace WebApplication1.bussiness.production
             {
                 string EmpWrk = string.Empty;
                 string EmpName = string.Empty;
+                string EmpDesg = string.Empty;
                 Int32 TotaPresentCount = 0;
 
                 for (int i = 0; i < dt_emps.Rows.Count; i++)
                 {
                     EmpWrk = dt_emps.Rows[i][0].ToString();
                     EmpName = dt_emps.Rows[i][1].ToString();
+                    EmpDesg = dt_emps.Rows[i][2].ToString();
 
                     dbcl.Sqlconnection();
                     dbcl.ConnectDb();
@@ -956,7 +970,8 @@ namespace WebApplication1.bussiness.production
                     Int32 halfdaycount = 0;
                     str = str + "<table width='100%' rowspan=2 style='border-collapse:collapse;'><tr><td width='5%' style='background-color:white; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + Sl + "</td>";
                     str = str + "<td width='5%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + EmpWrk + "</td>";
-                    str = str + "<td width='18%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + EmpName + "</td>";
+                    str = str + "<td width='9%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + EmpName + "</td>";
+                    str = str + "<td width='9%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + EmpDesg + "</td>";
                     Int32 day = minday;
                     for (int j = minday; j <= maxday; j++)
                     {
@@ -973,7 +988,7 @@ namespace WebApplication1.bussiness.production
                     str = str + "<td width='10%' style='background-color:white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + TotaPresentCount + "</td></tr></table>";
                     //here goes the function call for OT Row
 
-                    BindHeadingOTRow4(minday, maxday, month_no, year, region, EmpWrk, EmpName);
+                    BindHeadingOTRow4(minday, maxday, month_no, year, region, EmpWrk, EmpName, EmpDesg);
 
 
                     Sl = Sl + 1;
@@ -1231,7 +1246,7 @@ namespace WebApplication1.bussiness.production
         }
 
         //Function for Binding OT Row
-        private void BindHeadingOTRow4(Int32 minday, Int32 maxday, string month_no, string year, string region, string wrkman, string emp_name)
+        private void BindHeadingOTRow4(Int32 minday, Int32 maxday, string month_no, string year, string region, string wrkman, string emp_name, string emp_desg)
         {
 
             dbcl.Sqlconnection();
@@ -1251,7 +1266,8 @@ namespace WebApplication1.bussiness.production
             decimal ttlot = .0m;
             str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='5%' style='background-color:white; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'></td>";
             str = str + "<td width='5%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + wrkman + "</td>";
-            str = str + "<td width='18%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + emp_name + "</td>";
+            str = str + "<td width='9%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + emp_name + "</td>";
+            str = str + "<td width='9%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + emp_desg + "</td>";
             Int32 day = minday;
             for (int j = minday; j <= maxday; j++)
             {
