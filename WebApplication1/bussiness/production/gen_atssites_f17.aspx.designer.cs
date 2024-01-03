@@ -10,7 +10,7 @@
 namespace WebApplication1.bussiness.production {
     
     
-    public partial class gen_ats_f17 {
+    public partial class gen_atssites_f17 {
         
         /// <summary>
         /// DDL_Region control.
@@ -29,6 +29,15 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList DDL_Company;
+        
+        /// <summary>
+        /// DDL_Worksites control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList DDL_Worksites;
         
         /// <summary>
         /// DDL_Year control.
@@ -119,32 +128,5 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnExport;
-        
-        /// <summary>
-        /// btnInsertDB control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnInsertDB;
-        
-        /// <summary>
-        /// btn_f17print control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btn_f17print;
-        
-        /// <summary>
-        /// btn_f29print control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btn_f29print;
     }
 }

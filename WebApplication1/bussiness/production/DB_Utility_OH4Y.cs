@@ -1005,6 +1005,27 @@ namespace WebApplication1.bussiness.production
             cmbY1.Text = (now.ToString("yyyy"));
         }
 
+        public Int32 SundayCount (Int32 month, Int32 year)
+        {
+            //int month = 12;
+            //int year = 2023;
+
+            int daysInMonth = DateTime.DaysInMonth(year, month);
+
+            int sundayCount = 0;
+
+            for (int day = 1; day <= daysInMonth; day++)
+            {
+                DateTime currentDate = new DateTime(year, month, day);
+
+                if (currentDate.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    sundayCount++;
+                }
+            }
+            return sundayCount;
+        }
+
         public void CalDateCombo90(DropDownList cmbM1, DropDownList cmbY1)
         {
             

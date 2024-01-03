@@ -234,6 +234,7 @@
     <Content Include="bussiness\production\emp_payroll_wages.aspx" />
     <Content Include="bussiness\production\emp_profilepic.aspx" />
     <Content Include="bussiness\production\gen_agl_F17.aspx" />
+    <Content Include="bussiness\production\gen_atssites_f17.aspx" />
     <Content Include="bussiness\production\gen_ats_f17.aspx" />
     <Content Include="bussiness\production\gen_jsr_F17.aspx" />
     <Content Include="bussiness\production\gen_kpo_F17.aspx" />
@@ -659,6 +660,13 @@
     </Compile>
     <Compile Include="bussiness\production\gen_agl_F17.aspx.designer.cs">
       <DependentUpon>gen_agl_F17.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\gen_atssites_f17.aspx.cs">
+      <DependentUpon>gen_atssites_f17.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\gen_atssites_f17.aspx.designer.cs">
+      <DependentUpon>gen_atssites_f17.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\gen_ats_f17.aspx.cs">
       <DependentUpon>gen_ats_f17.aspx</DependentUpon>

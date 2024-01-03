@@ -1,13 +1,13 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="gen_ats_f17.aspx.cs" Inherits="WebApplication1.bussiness.production.gen_ats_f17" %>
-
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="gen_atssites_f17.aspx.cs" Inherits="WebApplication1.bussiness.production.gen_atssites_f17" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="right_col" role="main">
         <div class="">
             <div class="page-title">
                 <div class="title_left">
-                    <h5>Generate Form 17 (Trail / NO Deductions) </h5>
+                    <h5>Generate Worksites F17 </h5>
                 </div>
 
                 <div class="title_right">
@@ -41,7 +41,14 @@
                                     <label>Select Company <span class="text text-danger">*</span></label>
                                 </div>
                                 <div class="col-md-3 col-sm-6 col-xs-6 col-lg-2 form-group">
-                                    <asp:DropDownList ID="DDL_Company" runat="server" CssClass="form-control form-control-sm rounded"></asp:DropDownList>
+                                    <asp:DropDownList ID="DDL_Company" runat="server" CssClass="form-control form-control-sm rounded" AutoPostBack="true" OnSelectedIndexChanged="DDL_Company_SelectedIndexChanged"></asp:DropDownList>
+                                </div>
+
+                                <div class="col-md-3 col-sm-6 col-xs-6 col-lg-2 form-group">
+                                    <label>Work Sites <span class="text text-danger">*</span></label>
+                                </div>
+                                <div class="col-md-3 col-sm-6 col-xs-6 col-lg-2 form-group">
+                                    <asp:DropDownList ID="DDL_Worksites" runat="server" CssClass="form-control form-control-sm rounded" AutoPostBack="true"></asp:DropDownList>
                                 </div>
 
                                 <div class="col-md-3 col-sm-6 col-xs-6 col-lg-2 form-group">
@@ -508,19 +515,8 @@
                     <div class="col-md-3 col-sm-3" style="text-align: center;">
                         <asp:Button ID="btnExport" runat="server" Enabled="false" Text="Export To Excel" ToolTip="Click to Download Data in Excel Format" CssClass="btn btn-success btn-sm" OnClick="btn_excelexport_Click" />
                     </div>
-                    <div class="col-md-3 col-sm-3" style="text-align: center;">
-                        <asp:Button ID="btnInsertDB" runat="server" Enabled="false" Text="Export To Server" ToolTip="Click to SAVE Data in SERVER" CssClass="btn btn-warning btn-sm" OnClick="btnInsertDB_Click" />
-                    </div>
                 </div>
 
-                <div class="col-md-6 col-sm-6" style="text-align: center;">
-                    <div class="col-md-3 col-sm-3" style="text-align: center;">
-                        <asp:Button ID="btn_f17print" runat="server" Enabled="false" Visible="true" Text="Print Form 17" ToolTip="Click to Print F17" CssClass="btn btn-primary btn-sm" OnClick="btn_f17print_Click" />
-                    </div>
-                    <div class="col-md-3 col-sm-3" style="text-align: center;">
-                        <asp:Button ID="btn_f29print" runat="server" Enabled="false" Visible="true" Text="Print Form 29" ToolTip="Click to Print F29" CssClass="btn btn-primary btn-sm" OnClick="btn_f29print_Click" />
-                    </div>
-                </div>
             </div>
 
             <div class="col-md-12 col-sm-12  ">
