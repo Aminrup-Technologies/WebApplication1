@@ -245,8 +245,11 @@
                             <i class="fa fa-edit"></i>NINL F17
                         </a>
 
+                        <a class="btn btn-app" href="gen_atssites_f17.aspx" id="ATS_F17Sites" runat="server">
+                            <span class="badge bg-green">New</span><i class="fa fa-edit"></i>Worksites F17</a>
+
                         <a class="btn btn-app" href="gen_ats_f17.aspx" id="ATS_F17" runat="server">
-                            <span class="badge bg-green">New</span><i class="fa fa-edit"></i>ATS Global F17</a>
+                            <span class="badge bg-green">New</span><i class="fa fa-edit"></i>Region F17</a>
 
                         <a class="btn btn-app" href="pyrl_approvedeductions.aspx">
                             <div id="div5" class="badge bg-red" runat="server">

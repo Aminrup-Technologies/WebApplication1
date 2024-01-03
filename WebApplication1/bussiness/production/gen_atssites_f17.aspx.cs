@@ -4,10 +4,11 @@ using System.Web.UI.WebControls;
 using System.Data.SqlClient;
 using System.Data;
 using System.IO;
+using System.Globalization;
 
 namespace WebApplication1.bussiness.production
 {
-    public partial class gen_ats_f17 : System.Web.UI.Page
+    public partial class gen_atssites_f17 : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
         Payroll_OH4Y PayRoll = new Payroll_OH4Y();
@@ -29,7 +30,6 @@ namespace WebApplication1.bussiness.production
         public static decimal GorssBreaker = 20500;
 
         public static Int32 WashBreak = 1000; //Added for Calculating Washing Allowances
-
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
@@ -43,8 +43,6 @@ namespace WebApplication1.bussiness.production
 
                 dbcl.BindMonthAndYearDropdowns(DDL_Month, DDL_Year);
 
-                //dbcl.CalDateCombo1(DDL_Day, DDL_Month, DDL_Year);
-                //dbcl.CalDateCombo1(DDL_D2, DDL_M2, DDL_Y2);
             }
         }
 
@@ -59,6 +57,20 @@ namespace WebApplication1.bussiness.production
             DDL_Company.DataValueField = "Company_Code";
             DDL_Company.DataBind();
             DDL_Company.Items.Insert(0, "Please Select Option");
+            dbcl.DisconnectDb();
+        }
+
+        private void BindWorksite(string CmdString)
+        {
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
+            SqlCommand Cmd = new SqlCommand(CmdString, dbcl.Conn);
+            Cmd.CommandType = CommandType.Text;
+            DDL_Worksites.DataSource = Cmd.ExecuteReader();
+            DDL_Worksites.DataTextField = "Worksite_Name";
+            DDL_Worksites.DataValueField = "DB_Code";
+            DDL_Worksites.DataBind();
+            DDL_Worksites.Items.Insert(0, "Please Select Option");
             dbcl.DisconnectDb();
         }
 
@@ -84,9 +96,15 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_submit_Click(object sender, EventArgs e)
         {
+            DateTime currentDate = DateTime.Now;
+
             string current_year = DDL_Year.SelectedItem.Text.ToString();
             string current_month1 = DDL_Month.SelectedItem.Text.ToString();
             string current_month2 = DDL_Month.SelectedValue.ToString();
+
+            // Get the current year and month
+            int currentYear = DateTime.Now.Year;
+            int currentMonth = DateTime.Now.Month;
 
             int month = int.Parse(current_month2);
             int year = int.Parse(current_year);
@@ -104,88 +122,34 @@ namespace WebApplication1.bussiness.production
             region = DDL_Region.SelectedValue.ToString();
             company = DDL_Company.SelectedValue.ToString();
 
-            date1 = year + "-" + month + "-0" + minday;
-            date2 = year + "-" + month + "-" + maxday;
+            // Create start and end date strings
+            date1 = $"{year}-{month:D2}-{minday:D2}";
+            date2 = $"{year}-{month:D2}-{maxday:D2}";
+
+            //date1 = year + "-" + month + "-0" + minday;
+            //date2 = year + "-" + month + "-" + maxday;
 
             CalWorkingDays = daysInMonth - sundaycount;
-            //CalWorkingDays = Convert.ToInt32(DDL_Days.SelectedItem.Text.ToString());
 
 
-            if (DDL_Days.SelectedItem.Text.ToString() == CalWorkingDays.ToString())
+            // Convert date1 to DateTime for comparison
+            DateTime startDate = DateTime.ParseExact(date1, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+            // Check if date1 is greater than or equal to today's date
+            if (startDate <= currentDate)
             {
-                if (DataRowChecker() != true) //If row does not exists then create row
-                {
-                    try
-                    {
-                        dbcl.Sqlconnection();
-                        dbcl.ConnectDb();
-                        string InsertQuery = "INSERT into tbl_MonthlyPayrollStatus(PayrollYear,PayrollMonth,PayrollRegion,PayrollCompany,PayrollStartDay,PayrollEndDay,PayrrollMonthDays,PayrollWorkDays,F17_TrialStatus,F17_TrialTimeStamp,F17_Trial_LoggerName,F17_Trial_LoggerWrk,F17_Trial_LoggerRegion) VALUES(@PayrollYear,@PayrollMonth,@PayrollRegion,@PayrollCompany,@PayrollStartDay,@PayrollEndDay,@PayrrollMonthDays,@PayrollWorkDays,@F17_TrialStatus,@F17_TrialTimeStamp,@F17_Trial_LoggerName,@F17_Trial_LoggerWrk,@F17_Trial_LoggerRegion)";
-                        SqlCommand cmd = new SqlCommand(InsertQuery, dbcl.Conn);
-                        cmd.CommandType = CommandType.Text;
-                        cmd.Parameters.AddWithValue("@PayrollYear", year);
-                        cmd.Parameters.AddWithValue("@PayrollMonth", month);
-                        cmd.Parameters.AddWithValue("@PayrollRegion", region);
-                        cmd.Parameters.AddWithValue("@PayrollCompany", company);
-                        cmd.Parameters.AddWithValue("@PayrollStartDay", startday.ToString());
-                        cmd.Parameters.AddWithValue("@PayrollEndDay", endday.ToString());
-                        cmd.Parameters.AddWithValue("@PayrrollMonthDays", endday.ToString());
-                        cmd.Parameters.AddWithValue("@PayrollWorkDays", CalWorkingDays);
-                        cmd.Parameters.AddWithValue("@F17_TrialStatus", "No");
-                        cmd.Parameters.AddWithValue("@F17_TrialTimeStamp", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt"));
-                        cmd.Parameters.AddWithValue("@F17_Trial_LoggerName", Session["USERNAME"].ToString());
-                        cmd.Parameters.AddWithValue("@F17_Trial_LoggerWrk", Session["WORKMAN"].ToString());
-                        cmd.Parameters.AddWithValue("@F17_Trial_LoggerRegion", Session["REGION"].ToString());
-                        cmd.ExecuteNonQuery();
-                        dbcl.DisconnectDb();
-                        dbcl.Conn.Close();
-                    }
-                    catch (Exception ex)
-                    {
-                        lbl_msg.Text = "Error : " + ex.Message;
+                string query = "select WorkmanSL, WorkRegion, FullName, SkillCategory, SkillDesignation,FixedSalary_YesNo, FixedAmount, WorkHours, OTFactor, OTMultiplier, DA_VDA, HRA,Conv_Allowance, Medical_Allowance, Washing_Allowance, ATT_Allowance, SPCL_Allowance, Misc_Earnings, OT_Divisibility, Cur_Advance, Cur_Fines, Cur_Others from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and Worksite_Code='" + DDL_Worksites.SelectedValue.ToString() + "' and F17_YesNo='Yes' order by Id";
 
-                        string title = "Notifications :";
-                        string body = ex.Message;
-                        ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
-                        //throw;
-                    }
-                }
-                else
-                {
-                    if (StatusChecker() == true)
-                    {
-                        // if row exists and Status = "Yes" then display already finalized
-
-                        btnInsertDB.Enabled = false;
-                        btn_f17print.Enabled = true;
-                        btn_f29print.Enabled = true;
-
-                        string title = "Notifications :";
-                        string body = "Trial Form 17 Already Finalized";
-                        ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
-                    }
-                    else
-                    {
-                        btnInsertDB.Enabled = true;
-                        btn_f17print.Enabled = false;
-                        btn_f29print.Enabled = false;
-                    }
-                }
+                BindGridByQuery(query);
             }
             else
             {
                 string title = "Notifications :";
-                string body = "Calender Working Wrong Selection....! re-try";
+                string body = "Wrong Selection........!";
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
 
-
-            //string query = "select WorkmanSL, WorkRegion, FullName, SkillCategory, SkillDesignation,FixedSalary_YesNo, FixedAmount, WorkHours, OTFactor, OTMultiplier, DA_VDA, HRA,Conv_Allowance, Medical_Allowance, Washing_Allowance, ATT_Allowance, SPCL_Allowance, Misc_Earnings from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' order by Id";
-
-            string query = "select WorkmanSL, WorkRegion, FullName, SkillCategory, SkillDesignation,FixedSalary_YesNo, FixedAmount, WorkHours, OTFactor, OTMultiplier, DA_VDA, HRA,Conv_Allowance, Medical_Allowance, Washing_Allowance, ATT_Allowance, SPCL_Allowance, Misc_Earnings, OT_Divisibility, Cur_Advance, Cur_Fines, Cur_Others from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and F17_YesNo='Yes' order by Id";
-
-            //string query = "select WorkmanSL, WorkRegion, FullName, SkillCategory, SkillDesignation,FixedSalary_YesNo, FixedAmount, WorkHours, OTFactor, OTMultiplier, DA_VDA, HRA,Conv_Allowance, Medical_Allowance, Washing_Allowance, ATT_Allowance, SPCL_Allowance, Misc_Earnings, OT_Divisibility, Cur_Advance, Cur_Fines, Cur_Others from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and F17_YesNo='Yes' and WorkmanSL='A410' order by Id";
-
-            BindGridByQuery(query);
+            
         }
 
 
@@ -247,11 +211,11 @@ namespace WebApplication1.bussiness.production
             try
             {
                 dbcl.Sqlconnection();
-                using (SqlConnection conn = dbcl.Conn)
+                using (SqlConnection connection = dbcl.Conn)
                 {
-                    conn.Open();
+                    connection.Open();
 
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    using (SqlCommand cmd = new SqlCommand(query, connection))
                     {
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                         {
@@ -270,9 +234,9 @@ namespace WebApplication1.bussiness.production
                 string body = ex.Message;
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
-
-            
         }
+
+
         protected void GridView_DataBound(object sender, EventArgs e)
         {
             for (int i = 0; i <= GridView.Rows.Count - 1; i++)
@@ -959,7 +923,7 @@ namespace WebApplication1.bussiness.production
                     k = cmd.ExecuteNonQuery();
                     dbcl.DisconnectDb();
 
-                    StatusUpdater();
+                    //StatusUpdater();
                 }
                 catch (Exception ex)
                 {
@@ -976,9 +940,9 @@ namespace WebApplication1.bussiness.production
                 //lbl_insertsuccess.ForeColor = System.Drawing.Color.DarkGreen;
                 //UpdateForm17Status(Year, Month);
 
-                btnInsertDB.Enabled = false;
-                btnInsertDB.Text = "Finalized";
-                btnInsertDB.CssClass = "btn btn-success btn-sm";
+                //btnInsertDB.Enabled = false;
+                //btnInsertDB.Text = "Finalized";
+                //btnInsertDB.CssClass = "btn btn-success btn-sm";
             }
             else
             {
@@ -1287,7 +1251,7 @@ namespace WebApplication1.bussiness.production
                 cmd.ExecuteNonQuery();
                 cmd.Dispose();
 
-                btn_f17print.Enabled = true;
+                //btn_f17print.Enabled = true;
                 string title = "Notifications :";
                 string body = "Data saved Successfully";
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
@@ -1295,13 +1259,19 @@ namespace WebApplication1.bussiness.production
             catch (Exception ex)
             {
                 string title = "Notifications :";
-                string body = "Error : " + ex.Message;
+                string body = "Error 1234 : " + ex.Message;
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
         protected void btn_f29print_Click(object sender, EventArgs e)
         {
             Response.Write("<script>window.open ('/bussiness/production/rpts/f29.aspx?Year=" + year + "&Month=" + month + "&Region=" + region + "','_blank');</script>");
+        }
+
+        protected void DDL_Company_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string CmdString3 = "select Worksite_Name,DB_Code from tlb_atsworksites where Country_Code = 'IN' and WorkRegion_Code = '" + DDL_Region.SelectedValue.ToString() + "' and Company_Code='"+ DDL_Company.SelectedValue.ToString() + "' order by Id ";
+            BindWorksite(CmdString3);
         }
     }
 }
