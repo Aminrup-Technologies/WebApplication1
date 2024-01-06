@@ -267,7 +267,7 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_uploadbtn_Click(object sender, EventArgs e)
         {
-            if (btn_uploadbtn.Text =="ADD MORE")
+            if (btn_uploadbtn.Text == "ADD MORE")
             {
                 DDL_UploadType.SelectedIndex = 2;
                 pdfuploadbuttonrow1.Visible = true;
@@ -340,47 +340,133 @@ namespace WebApplication1.bussiness.production
 
                     else if (DDL_UploadType.SelectedIndex == 2)
                     {
-                        switch (ext) // this switch code validate the files which allow to upload only PDF file
+                        //switch (ext) // this switch code validate the files which allow to upload only PDF file
+                        //{
+                        //    case ".jpg":
+                        //        FileType = "image/jpg";
+                        //        break;
+
+                        //    case ".jpeg":
+                        //        FileType = "image/jpeg";
+                        //        break;
+                        //    case ".png":
+                        //        FileType = "image/png";
+                        //        break;
+                        //}
+
+                        switch (ext)
                         {
                             case ".jpg":
-                                FileType = "image/jpg";
-                                break;
-
                             case ".jpeg":
-                                FileType = "image/jpeg";
-                                break;
                             case ".png":
-                                FileType = "image/png";
+                                FileType = "image/jpeg"; // Change this to the appropriate content type for the resized image
+
+                                // Resize and compress the image before saving
+                                using (System.Drawing.Image originalImage = System.Drawing.Image.FromStream(FileUpload1.PostedFile.InputStream))
+                                {
+                                    int maxWidth = 800; // Adjust this value based on your requirements
+                                    int maxHeight = 600; // Adjust this value based on your requirements
+
+                                    // Calculate new dimensions while maintaining aspect ratio
+                                    int newWidth, newHeight;
+                                    if (originalImage.Width > originalImage.Height)
+                                    {
+                                        newWidth = maxWidth;
+                                        newHeight = (int)((double)originalImage.Height / originalImage.Width * maxWidth);
+                                    }
+                                    else
+                                    {
+                                        newWidth = (int)((double)originalImage.Width / originalImage.Height * maxHeight);
+                                        newHeight = maxHeight;
+                                    }
+
+                                    using (System.Drawing.Image resizedImage = new Bitmap(originalImage, newWidth, newHeight))
+                                    {
+                                        // Save the resized and compressed image
+                                        Server_FilePath = Server.MapPath(@"\erp_images\Permits\") + lbl_jobid.Text.ToString() + "-" + Path.GetFileNameWithoutExtension(FileUpload1.PostedFile.FileName) + ext;
+                                        resizedImage.Save(Server_FilePath, System.Drawing.Imaging.ImageFormat.Jpeg); // Change the format if needed
+                                    }
+                                }
+
                                 break;
                         }
                     }
 
+                    //if (FileType != String.Empty)
+                    //{
+                    //    Server_FilePath = Server.MapPath(@"\erp_images\Permits\") + lbl_jobid.Text.ToString() + "-" + Path.GetFileName(FileUpload1.PostedFile.FileName);
+                    //    FileUpload1.SaveAs(Server_FilePath);
+
+                    //    Stream fs = FileUpload1.PostedFile.InputStream;
+                    //    BinaryReader br = new BinaryReader(fs); //reads the binary files
+                    //    bytes = br.ReadBytes((Int32)fs.Length); //counting the file length into bytes
+
+                    //    //ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup1();", true);
+
+                    //    string title = "Notifications :";
+                    //    string body = "File Uploaded, Proceed...!!";
+                    //    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+
+                    //    lblMessage.ForeColor = System.Drawing.Color.Green;
+                    //    lblMessage.Text = "File Uploaded Successfully";
+
+                    //    FileFlag = true;
+                    //    lbl_fileyesno.Text = "Yes";
+
+                    //    InsertIntoDB(Server_FileName, FileType, ext, bytes);
+
+                    //    string ddljobid = DDL_JOBID.SelectedItem.Text.ToString();
+                    //    Bind_JOBIDDetails(ddljobid);
+                    //    VisibilityOffAfterLoading();
+                    //}
+                    //else
+                    //{
+                    //    ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup1();", true);
+                    //    lblMessage.ForeColor = System.Drawing.Color.Red;
+                    //    lblMessage.Text = "Select Only PDF File having extension (.pdf) ";
+
+                    //    FileFlag = false;
+                    //    lbl_fileyesno.Text = "No";
+                    //}
+
                     if (FileType != String.Empty)
                     {
-                        Server_FilePath = Server.MapPath(@"\erp_images\Permits\") + lbl_jobid.Text.ToString() + "-" + Path.GetFileName(FileUpload1.PostedFile.FileName);
-                        FileUpload1.SaveAs(Server_FilePath);
+                        try
+                        {
+                            //Server_FilePath = Server.MapPath(@"\erp_images\Permits\") + lbl_jobid.Text.ToString() + "-" + Path.GetFileName(FileUpload1.PostedFile.FileName);
+                            //FileUpload1.SaveAs(Server_FilePath);
 
-                        Stream fs = FileUpload1.PostedFile.InputStream;
-                        BinaryReader br = new BinaryReader(fs); //reads the binary files
-                        bytes = br.ReadBytes((Int32)fs.Length); //counting the file length into bytes
+                            using (Stream fs = FileUpload1.PostedFile.InputStream)
+                            using (BinaryReader br = new BinaryReader(fs)) // reads the binary files
+                            {
+                                bytes = br.ReadBytes((Int32)fs.Length); // counting the file length into bytes
+                            }
 
-                        //ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup1();", true);
+                            string title = "Notifications :";
+                            string body = "File Uploaded, Proceed...!!";
+                            ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
 
-                        string title = "Notifications :";
-                        string body = "File Uploaded, Proceed...!!";
-                        ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                            lblMessage.ForeColor = System.Drawing.Color.Green;
+                            lblMessage.Text = "File Uploaded Successfully";
 
-                        lblMessage.ForeColor = System.Drawing.Color.Green;
-                        lblMessage.Text = "File Uploaded Successfully";
+                            FileFlag = true;
+                            lbl_fileyesno.Text = "Yes";
 
-                        FileFlag = true;
-                        lbl_fileyesno.Text = "Yes";
+                            InsertIntoDB(Server_FileName, FileType, ext, bytes);
 
-                        InsertIntoDB(Server_FileName, FileType, ext, bytes);
+                            string ddljobid = DDL_JOBID.SelectedItem.Text.ToString();
+                            Bind_JOBIDDetails(ddljobid);
+                            VisibilityOffAfterLoading();
+                        }
+                        catch (Exception ex)
+                        {
+                            ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup();", true);
+                            lblMessage.ForeColor = System.Drawing.Color.Red;
+                            lblMessage.Text = "Error: " + ex.Message.ToString();
 
-                        string ddljobid = DDL_JOBID.SelectedItem.Text.ToString();
-                        Bind_JOBIDDetails(ddljobid);
-                        VisibilityOffAfterLoading();
+                            FileFlag = false;
+                            lbl_fileyesno.Text = "No";
+                        }
                     }
                     else
                     {
@@ -487,7 +573,7 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-                    newcount =  count + 1;
+                    newcount = count + 1;
                     UploadStatus = "Yes";
                     Masterstatus = "Yes";
                     MasterCode = "2";
