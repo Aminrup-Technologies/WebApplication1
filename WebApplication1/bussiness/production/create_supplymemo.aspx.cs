@@ -61,6 +61,8 @@ namespace WebApplication1.bussiness.production
                     yr = Request.QueryString["y"];
                     mnt = Request.QueryString["m"];
                     Bind_JOBIDDetails(jobid);
+
+                    
                 }
             }
             else
@@ -216,13 +218,19 @@ namespace WebApplication1.bussiness.production
                         if (jobidstatus == "Blocked" && uploadstatus == "Yes" && approvalstatus == "Approved" && entryexitstatus == "Exit" && JOB_Status == "Level1MemoCreated")
                         {
                             LineItemSelector_Grid(qry_polineitems2, jobid, "2");
+
+                            LineItems_SelectorButtonDIV.Visible = false;
+
+                            Div_MemoTypeSelector.Visible = false;
                             LineItems_SelectorPanel.Visible = false;
                             LineItems_SelectedPanel.Visible = true;
                             this.GridView4.Columns[11].Visible = true;
                             this.GridView4.Columns[12].Visible = false;
 
                             this.GridView2.Columns[20].Visible = false;
+
                             btn_crtspm.Text = "Print Memo";
+                            btn_crtspm.Enabled = true;
                             btn_crtspm.CssClass = "btn btn-success btn-sm";
                             btn_crtspm.ToolTip = "Click to print Supply Memo";
 
@@ -230,10 +238,16 @@ namespace WebApplication1.bussiness.production
                         }
                         else if (jobidstatus == "Blocked" && uploadstatus == "Yes" && approvalstatus == "Approved" && entryexitstatus == "Exit" && JOB_Status != "Level1MemoCreated")
                         {
+                            Div_MemoTypeSelector.Visible = true;
+                            DDL_MemoType.Focus();
+                            LineItems_SelectorPanel.Visible = false;
+                            
+
                             LineItemSelector_Grid(qry_polineitems, wo_number, "1");
+                            btn_crtspm.Enabled = false;
                             btn_crtspm.Text = "Save";
                             btn_crtspm.CssClass = "btn btn-primary btn-sm";
-                            btn_crtspm.ToolTip = "Click to CREATE Supply Memo";
+                            btn_crtspm.ToolTip = "Select MEMO type to proceed";
                         }
                         else
                         {
@@ -1361,10 +1375,16 @@ namespace WebApplication1.bussiness.production
                 //Function 1 --------- SAVE the MEMO Details into the DB
                 CollectDetailFromDT();
                 //Response.Redirect("create_supplymemo.aspx?JOBID=" + txt_jobid.Text.ToString() + "");
+                
+
+                LineItems_SelectorPanel.Visible = false;
+
                 string title = "Success :";
                 string body = "Memo already Created";
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+
                 btn_crtspm.Text = "Print Memo";
+                //Response.Redirect("rpts/supplymemo.aspx?JOBID=" + txt_jobid.Text.ToString() + "");
             }
             else
             {
@@ -1414,8 +1434,17 @@ namespace WebApplication1.bussiness.production
                         ExeMsg = InsertIntoDB2(ref sqlTrans, SuppluMemoIDNo, RefDBID, RefJOBID, RefJOBdate, EmpWrk, EmpName, PO_SC_name, PO_DG_name, shiftcalc);
                     }
 
-                    //-----------------------------------------3                   
-                    LineItemsInserted = InsertDataWithTransaction(ref sqlTrans, txt_jobid.Text.ToString(), SuppluMemoIDNo);
+                    if (DDL_MemoType.SelectedItem.Value.ToString() == "1")
+                    {
+                        //-----------------------------------------3                   
+                        LineItemsInserted = InsertDataWithTransaction(ref sqlTrans, txt_jobid.Text.ToString(), SuppluMemoIDNo);
+                    }
+                    else
+                    {
+                        //This is to skip line items add feature, memo will be without Line Items
+                        LineItemsInserted = "Done";
+                    }
+                    
 
                     if (ExeMsg.Equals("Done") && ExeValue == -1 && LineItemsInserted == "Done")
                     {
@@ -1549,6 +1578,7 @@ namespace WebApplication1.bussiness.production
                 cmdSPDetails.Parameters.AddWithValue("@Total_USShiftCount", count4);
                 cmdSPDetails.Parameters.AddWithValue("@Total_ShiftCount", totalshift);
                 cmdSPDetails.Parameters.AddWithValue("@DepartmentOfficer", String.Empty);
+                cmdSPDetails.Parameters.AddWithValue("@MemoType", DDL_MemoType.SelectedItem.Value);
                 //msg = "Done";
                 Count = cmdSPDetails.ExecuteNonQuery();
 
@@ -1589,35 +1619,44 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_addlineitems_Click(object sender, EventArgs e)
         {
-            dt_selectedrows.Clear();
-            dt_selectedrows.Columns.AddRange(new DataColumn[11] { new DataColumn("Id"), new DataColumn("WODB_Code"), new DataColumn("WOI_DBCode"), new DataColumn("ItemNO"), new DataColumn("LineNumber"), new DataColumn("ServiceNumber"), new DataColumn("Service_Description"), new DataColumn("Order_Quantity"), new DataColumn("Rate"), new DataColumn("PerUnit_Value"), new DataColumn("Shift_Skill") });
-            foreach (GridViewRow row in GridView3.Rows)
+            if (DDL_MemoType.SelectedItem.Value.ToString() == "1")
             {
-                if (row.RowType == DataControlRowType.DataRow)
+                dt_selectedrows.Clear();
+                dt_selectedrows.Columns.AddRange(new DataColumn[11] { new DataColumn("Id"), new DataColumn("WODB_Code"), new DataColumn("WOI_DBCode"), new DataColumn("ItemNO"), new DataColumn("LineNumber"), new DataColumn("ServiceNumber"), new DataColumn("Service_Description"), new DataColumn("Order_Quantity"), new DataColumn("Rate"), new DataColumn("PerUnit_Value"), new DataColumn("Shift_Skill") });
+                foreach (GridViewRow row in GridView3.Rows)
                 {
-                    System.Web.UI.WebControls.CheckBox chkRow = (row.Cells[10].FindControl("CheckRow") as System.Web.UI.WebControls.CheckBox);
-                    if (chkRow.Checked)
+                    if (row.RowType == DataControlRowType.DataRow)
                     {
-                        string Id = (row.Cells[1].FindControl("lbl_Id") as Label).Text;
-                        string WODB_Code = (row.Cells[2].FindControl("lbl_WODB_Code") as Label).Text;
-                        string WOI_DBCode = (row.Cells[3].FindControl("lbl_WOI_DBCode") as Label).Text;
-                        string ItemNO = (row.Cells[4].FindControl("lbl_ItemNO") as Label).Text;
-                        string LineNumber = (row.Cells[5].FindControl("lbl_LineNumber") as Label).Text;
-                        string ServiceNumber = (row.Cells[6].FindControl("lbl_ServiceNumber") as Label).Text;
-                        string Service_Description = (row.Cells[7].FindControl("lbl_Service_Description") as Label).Text;
-                        string Order_Quantity = (row.Cells[8].FindControl("lbl_Order_Quantity") as Label).Text;
-                        string Rate = (row.Cells[9].FindControl("lbl_Rate") as Label).Text;
-                        string PerUnit_Value = (row.Cells[10].FindControl("lbl_PerUnit_Value") as Label).Text;
-                        string Shift_Skill = (row.Cells[11].FindControl("lbl_Shift_Skill") as Label).Text;
-                        dt_selectedrows.Rows.Add(Id, WODB_Code, WOI_DBCode, ItemNO, LineNumber, ServiceNumber, Service_Description, Order_Quantity, Rate, PerUnit_Value);
+                        System.Web.UI.WebControls.CheckBox chkRow = (row.Cells[10].FindControl("CheckRow") as System.Web.UI.WebControls.CheckBox);
+                        if (chkRow.Checked)
+                        {
+                            string Id = (row.Cells[1].FindControl("lbl_Id") as Label).Text;
+                            string WODB_Code = (row.Cells[2].FindControl("lbl_WODB_Code") as Label).Text;
+                            string WOI_DBCode = (row.Cells[3].FindControl("lbl_WOI_DBCode") as Label).Text;
+                            string ItemNO = (row.Cells[4].FindControl("lbl_ItemNO") as Label).Text;
+                            string LineNumber = (row.Cells[5].FindControl("lbl_LineNumber") as Label).Text;
+                            string ServiceNumber = (row.Cells[6].FindControl("lbl_ServiceNumber") as Label).Text;
+                            string Service_Description = (row.Cells[7].FindControl("lbl_Service_Description") as Label).Text;
+                            string Order_Quantity = (row.Cells[8].FindControl("lbl_Order_Quantity") as Label).Text;
+                            string Rate = (row.Cells[9].FindControl("lbl_Rate") as Label).Text;
+                            string PerUnit_Value = (row.Cells[10].FindControl("lbl_PerUnit_Value") as Label).Text;
+                            string Shift_Skill = (row.Cells[11].FindControl("lbl_Shift_Skill") as Label).Text;
+                            dt_selectedrows.Rows.Add(Id, WODB_Code, WOI_DBCode, ItemNO, LineNumber, ServiceNumber, Service_Description, Order_Quantity, Rate, PerUnit_Value);
+                        }
                     }
                 }
-            }
-            GridView4.DataSource = dt_selectedrows;
-            GridView4.DataBind();
 
-            btn_proceednxt.Enabled = true;
-            btn_reset.Enabled = true; ;
+                LineItems_SelectedPanel.Visible = true;
+                GridView4.DataSource = dt_selectedrows;
+                GridView4.DataBind();
+
+                btn_proceednxt.Enabled = true;
+                btn_reset.Enabled = true;
+            }
+            else
+            {
+
+            }
         }
 
         private DataTable GetDataFromGridView()
@@ -1662,18 +1701,25 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_proceednxt_Click(object sender, EventArgs e)
         {
-            LineItems_SelectorPanel.Visible = false;
-            LineItems_SelectorButtonDIV.Visible = false;
-
-            foreach (GridViewRow row in GridView4.Rows)
+            if (DDL_MemoType.SelectedItem.Value.ToString() == "1")
             {
-                // Assuming the DropDownList is in the last column (index 11)
-                DropDownList ddlEmpCategory = (DropDownList)row.Cells[11].FindControl("DDL_EmpCategory");
+                LineItems_SelectorPanel.Visible = false;
+                LineItems_SelectorButtonDIV.Visible = false;
 
-                if (ddlEmpCategory != null)
+                foreach (GridViewRow row in GridView4.Rows)
                 {
-                    ddlEmpCategory.Enabled = false;
+                    // Assuming the DropDownList is in the last column (index 11)
+                    DropDownList ddlEmpCategory = (DropDownList)row.Cells[11].FindControl("DDL_EmpCategory");
+
+                    if (ddlEmpCategory != null)
+                    {
+                        ddlEmpCategory.Enabled = false;
+                    }
                 }
+
+                btn_crtspm.Visible = true;
+                btn_crtspm.Enabled = true;
+                LineItems_SelectorPanel.Visible = false;
             }
         }
 
@@ -1737,6 +1783,38 @@ namespace WebApplication1.bussiness.production
             LineItemSelector_Grid(CmdString3, wo_number,"1");
 
             btn_proceednxt.Enabled = false;
+        }
+
+        protected void DDL_MemoType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string ddlvalue = DDL_MemoType.SelectedItem.Value.ToString();
+            if (DDL_MemoType.SelectedItem.Value.ToString() != "-1")
+            {
+                if (ddlvalue == "1")
+                {
+                    //When memo to be created with Line items
+                    LineItems_SelectorPanel.Visible = true;
+                    LineItems_SelectedPanel.Visible = false;
+
+                    btn_crtspm.Enabled = false;
+                }
+                else
+                {
+                    // Value = 0; Means wihtout line items
+                    LineItems_SelectorPanel.Visible = false;
+                    LineItems_SelectedPanel.Visible = false;
+
+                    btn_crtspm.Enabled = true;
+                    btn_crtspm.Visible = true;
+                }
+            }
+            else
+            {
+                string title = "Error:";
+                string body = "Error 1770 : Not a valid selection...!";
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                //When initial or pre-defined value is selected
+            }
         }
     }
 }

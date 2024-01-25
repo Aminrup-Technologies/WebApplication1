@@ -495,7 +495,36 @@
                     </div>
                 </div>
 
-                <div class="col-md-12 col-sm-12" id="LineItems_SelectorPanel" runat="server" visible="true">
+                <div class="col-md-12 col-sm-12" id="Div_MemoTypeSelector" runat="server" visible="true">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Select Memo Creation Type</h2>
+                            <ul class="nav navbar-right panel_toolbox">
+                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                            </ul>
+                            <div class="clearfix"></div>
+                        </div>
+
+                        <div class="x_content">
+                            <div class="card-box col-md-12 col-sm-12">
+                                <div class="col-md-6 col-sm-6">
+                                    <span>Select MEMO Creation Type :</span>
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <asp:DropDownList ID="DDL_MemoType" runat="server" class="form-control form-control-sm rounded no-padding" OnSelectedIndexChanged="DDL_MemoType_SelectedIndexChanged" AutoPostBack="true">
+                                        <asp:ListItem Text="--- SELECT MEMO TYPE ---" Value="-1" Selected="True">--- SELECT MEMO TYPE ---</asp:ListItem>
+                                        <asp:ListItem Text="Without Line Items" Value="0">Without Line Items</asp:ListItem>
+                                        <asp:ListItem Text="With Line Items" Value="1">With Line Items</asp:ListItem>
+                                    </asp:DropDownList>
+                                    <asp:RequiredFieldValidator ID="RFV1" runat="server" ErrorMessage="**" Display="Dynamic" SetFocusOnError="true" InitialValue="-1" ControlToValidate="DDL_MemoType" ValidationGroup="CreateMemo"></asp:RequiredFieldValidator>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-12 col-sm-12" id="LineItems_SelectorPanel" runat="server" visible="false">
                     <div class="x_panel">
                         <div class="x_title">
                             <h2>Workorder Line Items for Selection</h2>
@@ -593,14 +622,14 @@
                                 </asp:GridView>
                             </div>
                             <%--form buttons div ---- start--%>
-                            <div class="col-md-6 center-margin" runat="server" id="Div_AddLineItems" visible="true">
+                            <div class="col-md-12" runat="server" id="Div_AddLineItems" visible="true">
                                 <div class="ln_solid"></div>
                                 <div class="item form-group row">
                                     <div class="col-md-6 col-sm-12">
                                         <asp:Label ID="Label2" runat="server" Text="">Click to Add Selected Line Items</asp:Label>
                                     </div>
                                     <div class="col-md-6 col-sm-12">
-                                        <asp:Button ID="btn_addlineitems" runat="server" Text="Add Line Items" CssClass="btn btn-success btn-sm" Enabled="true" OnClick="btn_addlineitems_Click" />
+                                        <asp:Button ID="btn_addlineitems" runat="server" Text="Add Line Items" CssClass="btn btn-success btn-sm" Enabled="true" OnClientClick="return validateCheckBoxes();" OnClick="btn_addlineitems_Click" />
                                     </div>
                                 </div>
                             </div>
@@ -609,7 +638,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-12 col-sm-12" id="LineItems_SelectedPanel" runat="server" visible="true">
+                <div class="col-md-12 col-sm-12" id="LineItems_SelectedPanel" runat="server" visible="false">
                     <div class="x_panel">
                         <div class="x_title">
                             <h2>View Selected Line Items</h2>
@@ -801,7 +830,7 @@
                             <div class="col-7">
                                 <asp:Button ID="btn_home" runat="server" Text="Home" CssClass="btn btn-danger btn-sm" Enabled="true" Visible="true" OnClick="btn_home_Click" />
                                 <asp:Button ID="btn_backpage" runat="server" Text="Go Back" ToolTip="Click to jump tp previous page" CssClass="btn btn-warning btn-sm" Enabled="true" Visible="true" OnClick="btn_backpage_Click" />
-                                <asp:Button ID="btn_crtspm" runat="server" Text="Save" ToolTip="Click to Create Supply Memo" CssClass="btn btn-primary btn-sm" Enabled="true" OnClick="btn_crtspm_Click" />
+                                <asp:Button ID="btn_crtspm" runat="server" Text="Create Memo" ToolTip="Click to Create Supply Memo" CausesValidation="true" ValidationGroup="CreateMemo" CssClass="btn btn-primary btn-sm" Enabled="true" OnClick="btn_crtspm_Click" />
                             </div>
 
                             <div class="col-5">
@@ -820,6 +849,20 @@
             $("#MyPopup .modal-title").html(title);
             $("#MyPopup .modal-body").html(body);
             $("#MyPopup").modal("show");
+        }
+
+        function validateCheckBoxes() {
+            var checkboxes = document.querySelectorAll('[id*=CheckRow]');
+            var checked = Array.prototype.slice.call(checkboxes).some(function (checkbox) {
+                return checkbox.checked;
+            });
+
+            if (!checked) {
+                alert("Please select at least one line item.");
+                return false;
+            }
+
+            return true;
         }
     </script>
 </asp:Content>

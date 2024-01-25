@@ -374,7 +374,7 @@
                                                         <ItemStyle CssClass="ManpowerGridLeft" />
                                                     </asp:TemplateField>
 
-                                                    <asp:TemplateField HeaderText="Grade" HeaderStyle-Width="20%">
+                                                    <asp:TemplateField HeaderText="Grade" HeaderStyle-Width="15%">
                                                         <ItemTemplate>
                                                             <asp:Label ID="lbl_PO_SkillCategory" runat="server" Text='<%# Bind("PO_SkillCategory") %>'></asp:Label>
                                                         </ItemTemplate>
@@ -382,7 +382,7 @@
                                                         <ItemStyle CssClass="ManpowerGridCenter" />
                                                     </asp:TemplateField>
 
-                                                    <asp:TemplateField HeaderText="Designation" HeaderStyle-Width="18%">
+                                                    <asp:TemplateField HeaderText="Designation" HeaderStyle-Width="16%">
                                                         <ItemTemplate>
                                                             <asp:Label ID="lbl_PO_EmpDesignation" runat="server" Text='<%# Bind("PO_EmpDesignation") %>'></asp:Label>
                                                         </ItemTemplate>
@@ -390,7 +390,7 @@
                                                         <ItemStyle CssClass="ManpowerGridCenter" />
                                                     </asp:TemplateField>
 
-                                                    <asp:TemplateField HeaderText="In-Time" HeaderStyle-Width="15%">
+                                                    <asp:TemplateField HeaderText="In-Time" HeaderStyle-Width="18%">
                                                         <ItemTemplate>
                                                             <asp:Label ID="lbl_Inpunch_Time" runat="server" Text='<%# Bind("Inpunch_Time","{0:dd-MM-yyyy hh:mm tt}") %>'></asp:Label>
                                                         </ItemTemplate>
@@ -398,7 +398,7 @@
                                                         <ItemStyle CssClass="ManpowerGridCenter" />
                                                     </asp:TemplateField>
 
-                                                    <asp:TemplateField HeaderText="Out-Time" HeaderStyle-Width="15%">
+                                                    <asp:TemplateField HeaderText="Out-Time" HeaderStyle-Width="18%">
                                                         <ItemTemplate>
                                                             <asp:Label ID="lbl_Outpunch_Time" runat="server" Text='<%# Bind("Outpunch_Time","{0:dd-MM-yyyy hh:mm tt}") %>'></asp:Label>
                                                         </ItemTemplate>
@@ -406,7 +406,7 @@
                                                         <ItemStyle CssClass="ManpowerGridCenter" />
                                                     </asp:TemplateField>
 
-                                                    <asp:TemplateField HeaderText="Safetypass" HeaderStyle-Width="20%">
+                                                    <asp:TemplateField HeaderText="Safetypass" HeaderStyle-Width="16%">
                                                         <ItemTemplate>
                                                             <asp:Label ID="lbl_safetypassno" runat="server" Text='<%# Bind("safetypassno") %>'></asp:Label>
                                                         </ItemTemplate>
@@ -435,10 +435,10 @@
                                         <td colspan="4" class="LineBreak"><span>&nbsp;</span></td>
                                     </tr>
 
-                                    <tr>
+                                    <tr id="Unified_LIGrid_0" runat="server" visible="true">
                                         <td class="PageHeading" colspan="4"><span>Supply of Service No.</span></td>
                                     </tr>
-                                    <tr>
+                                    <tr id="Unified_LIGrid_2" runat="server" visible="true">
                                         <td colspan="4" class="LineBreak"><span>&nbsp;</span></td>
                                     </tr>
 
@@ -565,8 +565,7 @@
                                     <tr>
                                         <td colspan="4" class="LineBreak"><span>&nbsp;</span></td>
                                     </tr>
-                                </tbody>
-                                <tfoot>
+
                                     <tr>
                                         <td class="SubHeading1" colspan="2"><span>For ATS Signature</span></td>
                                         <td class="SubHeading2" colspan="2"><span>Signature of Department</span></td>
@@ -578,6 +577,11 @@
                                     <tr>
                                         <td class="TBTSigCol1" colspan="2"><span>Date : ___/____/_______</span></td>
                                         <td class="TBTSigCol2" colspan="2"><span>Date : ___/____/_______</span></td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="4">&nbsp;</td>
                                     </tr>
                                 </tfoot>
                             </table>

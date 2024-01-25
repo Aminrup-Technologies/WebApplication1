@@ -12,7 +12,7 @@ namespace WebApplication1.bussiness.production.rpts
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
         DataTable dt = new DataTable();
-
+        private static int MemoType = 0;
         protected void Page_Load(object sender, EventArgs e)
         {
             string JOBID = Request.QueryString["JOBID"];
@@ -102,6 +102,14 @@ namespace WebApplication1.bussiness.production.rpts
 
                     lbl_smjcreatorname.Text = dt.Rows[0]["CreatorName"].ToString();
                     lbl_smjcreatorwrk.Text = dt.Rows[0]["CreatorWorkmen"].ToString();
+
+                    MemoType = Convert.ToInt32(dt.Rows[0]["MemoType"].ToString());
+
+                    if (MemoType == 0)
+                    {
+                        Unified_LIGrid_0.Visible = false;
+                        Unified_LIGrid_2.Visible = false;
+                    }
                 }
             }
             catch (Exception ex)
