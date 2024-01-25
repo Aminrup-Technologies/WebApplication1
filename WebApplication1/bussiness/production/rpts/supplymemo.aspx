@@ -565,8 +565,7 @@
                                     <tr>
                                         <td colspan="4" class="LineBreak"><span>&nbsp;</span></td>
                                     </tr>
-                                </tbody>
-                                <tfoot>
+
                                     <tr>
                                         <td class="SubHeading1" colspan="2"><span>For ATS Signature</span></td>
                                         <td class="SubHeading2" colspan="2"><span>Signature of Department</span></td>
@@ -578,6 +577,11 @@
                                     <tr>
                                         <td class="TBTSigCol1" colspan="2"><span>Date : ___/____/_______</span></td>
                                         <td class="TBTSigCol2" colspan="2"><span>Date : ___/____/_______</span></td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="4">&nbsp;</td>
                                     </tr>
                                 </tfoot>
                             </table>

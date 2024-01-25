@@ -4,7 +4,7 @@
 }
 
 @page {
-    size: A4;
+    size: auto;
     margin: 0;
 }
 
@@ -15,7 +15,7 @@
 body {
     margin: 0 auto;
     padding: 0;
-    background: rgb(204, 204, 204);
+    background: white;
     display: flex;
     flex-direction: column;
 }
@@ -23,7 +23,6 @@ body {
 .page {
     display: inline-block;
     position: relative;
-    height: 297mm;
     width: 210mm;
     font-size: 12pt;
     margin: 2em auto;
