@@ -116,13 +116,11 @@ namespace WebApplication1.bussiness.production
         protected void btn_reset_Click(object sender, EventArgs e)
         {
             Response.Redirect("searchemployee.aspx");
-
         }
 
         protected void btn_cancel_Click(object sender, EventArgs e)
         {
             Response.Redirect("homepage.aspx");
-
         }
 
 

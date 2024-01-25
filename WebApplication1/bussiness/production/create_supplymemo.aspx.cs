@@ -1570,8 +1570,8 @@ namespace WebApplication1.bussiness.production
                 cmdSPDetails.Parameters.AddWithValue("@Ref_JOBCompany", lbl_jobcompay.Text.ToString());
                 cmdSPDetails.Parameters.AddWithValue("@Ref_JOBWorksite", txt_worksitename.Text.ToString());
                 cmdSPDetails.Parameters.AddWithValue("@Ref_JOBSiteCode", lbl_worksitedbcode.Text.ToString());
-                cmdSPDetails.Parameters.AddWithValue("@Ref_JOBSiteIncharge", txt_inchargename.Text.ToString());
-                cmdSPDetails.Parameters.AddWithValue("@Ref_JOBInchargeName", lbl_inchargewrk.Text.ToString());
+                cmdSPDetails.Parameters.AddWithValue("@Ref_JOBSiteIncharge", lbl_inchargewrk.Text.ToString());
+                cmdSPDetails.Parameters.AddWithValue("@Ref_JOBInchargeName", txt_inchargename.Text.ToString());
                 cmdSPDetails.Parameters.AddWithValue("@Total_HSShiftCount", count1);
                 cmdSPDetails.Parameters.AddWithValue("@Total_SShiftCount", count2);
                 cmdSPDetails.Parameters.AddWithValue("@Total_SSShiftCount", count3);
