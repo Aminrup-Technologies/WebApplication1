@@ -7,13 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WebApplication1.bussiness.production
-{
-
-
-    public partial class jobstatus_flow
-    {
-
+namespace WebApplication1.bussiness.production {
+    
+    
+    public partial class jobstatus_flow {
+        
         /// <summary>
         /// step1 control.
         /// </summary>
@@ -22,7 +20,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl step1;
-
+        
         /// <summary>
         /// step2 control.
         /// </summary>
@@ -31,7 +29,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl step2;
-
+        
         /// <summary>
         /// step3 control.
         /// </summary>
@@ -40,7 +38,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl step3;
-
+        
         /// <summary>
         /// step4 control.
         /// </summary>
@@ -49,7 +47,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl step4;
-
+        
         /// <summary>
         /// step5 control.
         /// </summary>

@@ -1714,10 +1714,10 @@ namespace WebApplication1.bussiness.production
 
         public Int32 Find_CreatedJOBID(string workman)
         {
-            string cmdString = "";
             Sqlconnection();
             ConnectDb();
-            cmdString = "select COUNT(JOBID) from tbl_jobs where Creator_Workman=@Creator_Workman and JOBID_Status='Active' and YEAR(CreatedDate)='" + DateTime.Now.Year + "' and MONTH(CreatedDate)='" + DateTime.Now.Month + "'";
+            string cmdString = @"SELECT COUNT(*) FROM [ats_erp].[dbo].[tbl_jobs] WHERE Creator_Workman = @Creator_Workman AND JOBID_Status = 'Active' AND MONTH(CreatedDate) = MONTH(GETDATE()) AND YEAR(CreatedDate) = YEAR(GETDATE())";
+
             SqlCommand cmd = new SqlCommand(cmdString, Conn);
             cmd.CommandType = CommandType.Text;
             cmd.Parameters.AddWithValue("@Creator_Workman", workman);

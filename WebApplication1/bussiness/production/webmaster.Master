@@ -31,6 +31,11 @@
     <link href="../vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
     <link href="../vendors/DataTables/datatables.min.css" rel="stylesheet" />
 
+    <!-- PNotify -->
+    <link href="../vendors/pnotify/dist/pnotify.css" rel="stylesheet">
+    <link href="../vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
+    <link href="../vendors/pnotify/dist/pnotify.nonblock.css" rel="stylesheet">
+
     <link href="css/loader.css" rel="stylesheet" />
     <!-- Custom Theme Style -->
     <link href="../build/css/custom.css" rel="stylesheet" />
@@ -423,6 +428,10 @@
         <!-- Custom Theme Scripts -->
         <script src="../build/js/custom.js"></script>
 
+        <!-- PNotify -->
+        <script src="../vendors/pnotify/dist/pnotify.js"></script>
+        <script src="../vendors/pnotify/dist/pnotify.buttons.js"></script>
+        <script src="../vendors/pnotify/dist/pnotify.nonblock.js"></script>
     </form>
 </body>
 </html>

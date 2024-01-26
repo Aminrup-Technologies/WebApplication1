@@ -7,13 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WebApplication1.bussiness.production
-{
-
-
-    public partial class jobs_and_manpower
-    {
-
+namespace WebApplication1.bussiness.production {
+    
+    
+    public partial class jobs_and_manpower {
+        
         /// <summary>
         /// lbl_activejobid control.
         /// </summary>
@@ -22,7 +20,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_activejobid;
-
+        
         /// <summary>
         /// jobstatusflow control.
         /// </summary>
@@ -31,7 +29,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::WebApplication1.bussiness.production.jobstatus_flow jobstatusflow;
-
+        
         /// <summary>
         /// lbl_activejobcount control.
         /// </summary>
@@ -40,16 +38,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_activejobcount;
-
-        /// <summary>
-        /// lbl_inpunchcount control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbl_inpunchcount;
-
+        
         /// <summary>
         /// lbl_prmtupldcount control.
         /// </summary>
@@ -58,7 +47,16 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_prmtupldcount;
-
+        
+        /// <summary>
+        /// lbl_inpunchcount control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_inpunchcount;
+        
         /// <summary>
         /// lbl_outpndgcount control.
         /// </summary>
@@ -67,7 +65,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_outpndgcount;
-
+        
         /// <summary>
         /// lbl_splyjobscount control.
         /// </summary>
@@ -76,7 +74,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_splyjobscount;
-
+        
         /// <summary>
         /// lbl_lijobscount control.
         /// </summary>

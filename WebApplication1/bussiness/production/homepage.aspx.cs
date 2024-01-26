@@ -46,6 +46,20 @@ namespace WebApplication1.bussiness.production
                     // Perform the login action here, such as prompting the user for credentials and validating them
                     lbl_username.Text = Session["USERNAME"].ToString();
                     PageDataLoader();
+
+
+                    // RegisterStartupScript is used to inject JavaScript code into the page
+                    string PN_WelcomeBack_script = @"<script type='text/javascript'>
+                            new PNotify({
+                                title: 'Regular Success',
+                                text: 'Welcome back to ATS Web Portal',
+                                type: 'success',
+                                styling: 'bootstrap3'
+                            });
+                        </script>";
+
+                    // RegisterStartupScript adds the JavaScript code to the page
+                    ClientScript.RegisterStartupScript(this.GetType(), "ShowWelcomeNotification", PN_WelcomeBack_script, false);
                 }
             }
         }
@@ -176,9 +190,24 @@ namespace WebApplication1.bussiness.production
                     string PasswordExpiry = dt.Rows[0]["PasswordExpiry"].ToString();
                     Int32 psexpdays = 0;
                     FindDaysLeft(PasswordExpiry, ref psexpdays);
+
+                    // RegisterStartupScript is used to inject JavaScript code into the page
+                    string PN_PasswordExpiry_script = $@"<script type='text/javascript'>
+                            new PNotify({{
+                                title: 'Regular Notice',
+                                text: 'Your login password will expire in {psexpdays} days.',
+                                type: 'info',
+                                styling: 'bootstrap3'
+                            }});
+                        </script>";
+
+                    // RegisterStartupScript adds the JavaScript code to the page
+                    ClientScript.RegisterStartupScript(this.GetType(), "ShowExpiryNotification", PN_PasswordExpiry_script, false);
+
+
                     if (psexpdays <= 0)
                     {
-                        ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPasswordModal();", true);
+                        ClientScript.RegisterStartupScript(this.GetType(), "alert8", "ShowPasswordModal();", true);
                         txt_oldpass.Text = "";
                         txt_oldpass.Focus();
                         txt_oldpass.BorderColor = Color.Red;
@@ -233,7 +262,7 @@ namespace WebApplication1.bussiness.production
                     {
                         btn_cancel_contactdata.Enabled = false;
                         btn_sv_contactdata.Enabled = true;
-                        ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowContactModal();", true);
+                        //ClientScript.RegisterStartupScript(this.GetType(), "alert9", "ShowContactModal();", true);
                     }
                 }
                 else
@@ -385,7 +414,7 @@ namespace WebApplication1.bussiness.production
 
                 btn_bankedit.Text = "Save Changes";
 
-                ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup1();", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "alert10", "ShowPopup1();", true);
             }
             else if (btn_bankedit.Text.ToString() == "Save Changes")
             {
@@ -399,7 +428,7 @@ namespace WebApplication1.bussiness.production
                     txt_branchname.ReadOnly = false;
                     btn_bankedit.Text = "Make Changes";
                     Refresh();
-                    ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup1();", true);
+                    ClientScript.RegisterStartupScript(this.GetType(), "alert11", "ShowPopup1();", true);
                 }
                 else
                 {
@@ -409,7 +438,7 @@ namespace WebApplication1.bussiness.production
                     txt_ifsc.ReadOnly = true;
                     txt_branchname.ReadOnly = true;
                     btn_bankedit.Text = "Make Changes";
-                    ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup1();", true);
+                    ClientScript.RegisterStartupScript(this.GetType(), "alert12", "ShowPopup1();", true);
                 }
             }
         }
@@ -475,7 +504,7 @@ namespace WebApplication1.bussiness.production
 
                 btn_gtpsedit.Text = "Save Changes";
 
-                ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup2();", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "alert13", "ShowPopup2();", true);
             }
             else if (btn_gtpsedit.Text.ToString() == "Save Changes")
             {
@@ -641,8 +670,9 @@ namespace WebApplication1.bussiness.production
                 newpwd_row11.Visible = true; newpwd_row12.Visible = true;
 
                 btn_validateoldpassword.Enabled = false;
+                btn_discardsvpass.Enabled = false;
 
-                ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPasswordModal();", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "alert1", "ShowPasswordModal();", true);
             }
             else
             {
@@ -669,7 +699,7 @@ namespace WebApplication1.bussiness.production
 
                 btn_svpass.Enabled = false;
 
-                ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPasswordModal();", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "alert2", "ShowPasswordModal();", true);
             }
         }
 
@@ -725,7 +755,7 @@ namespace WebApplication1.bussiness.production
                 //If updating the login credentials failed
             }
 
-            ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPasswordModal();", true);
+            ClientScript.RegisterStartupScript(this.GetType(), "alert3", "ShowPasswordModal();", true);
         }
         private Boolean UpdateLoginCredentials()
         {
@@ -756,6 +786,9 @@ namespace WebApplication1.bussiness.production
 
                 lbl_msgpass.ForeColor = System.Drawing.Color.Green;
                 lbl_msgpass.Text = "Login Credentials Updated Successfully....!!";
+
+                btn_relogin.Visible = true;
+                btn_relogin.Enabled = true;
             }
             catch (Exception ex)
             {
@@ -768,24 +801,27 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_discardsvpass_Click(object sender, EventArgs e)
         {
-            txt_oldpass.Text = "";
-            txt_oldpass.ReadOnly = false;
+            //txt_oldpass.Text = "";
+            //txt_oldpass.ReadOnly = false;
 
-            txt_newpass1.Text = "";
-            txt_newpass1.ReadOnly = true;
+            //txt_newpass1.Text = "";
+            //txt_newpass1.ReadOnly = true;
 
-            txt_newpass2.Text = "";
-            txt_newpass2.ReadOnly = true;
+            //txt_newpass2.Text = "";
+            //txt_newpass2.ReadOnly = true;
 
-            DDL_SQ1.SelectedIndex = 0;
-            txt_SQAns1.Text = "";
-            txt_SQAns1.ReadOnly = true;
+            //DDL_SQ1.SelectedIndex = 0;
+            //txt_SQAns1.Text = "";
+            //txt_SQAns1.ReadOnly = true;
 
-            DDL_SQ2.SelectedIndex = 0;
-            txt_SQAns2.Text = "";
-            txt_SQAns2.ReadOnly = true;
+            //DDL_SQ2.SelectedIndex = 0;
+            //txt_SQAns2.Text = "";
+            //txt_SQAns2.ReadOnly = true;
 
-            ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPasswordModal();", true);
+            //ClientScript.RegisterStartupScript(this.GetType(), "alert4", "ShowPasswordModal();", true);
+
+            Session.Abandon();
+            Response.Redirect("login.aspx");
         }
         protected void btn_relogin_Click(object sender, EventArgs e)
         {
@@ -861,7 +897,7 @@ namespace WebApplication1.bussiness.production
                 btn_cancel_contactdata.Enabled = false;
                 btn_sv_contactdata.Enabled = false;
 
-                ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowContactModal();", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "alert5", "ShowContactModal();", true);
             }
             else if (btn_sv_contactdata.Text == "Save Changes")
             {
@@ -992,7 +1028,7 @@ namespace WebApplication1.bussiness.production
                     btn_sv_contactdata.Enabled = true;
                     btn_SendOTP.Enabled = false;
                     TextBoxEnteredOTP.ReadOnly = true;
-                    ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowContactModal();", true);
+                    ClientScript.RegisterStartupScript(this.GetType(), "alert6", "ShowContactModal();", true);
 
                 }
                 else
@@ -1002,7 +1038,7 @@ namespace WebApplication1.bussiness.production
                     string body = "Invalid OTP or Email Address....! Re-try....!";
                     ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
 
-                    ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowContactModal();", true);
+                    ClientScript.RegisterStartupScript(this.GetType(), "alert7", "ShowContactModal();", true);
                 }
             }
         }

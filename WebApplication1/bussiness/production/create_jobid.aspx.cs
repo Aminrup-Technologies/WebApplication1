@@ -67,7 +67,6 @@ namespace WebApplication1.bussiness.production
 
                 string CmdString5 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where JOBID_Menu='Yes' order by Id";
                 Bind_WorkRegion(CmdString5);
-
                 DDL_Region.SelectedValue = Session["REGION"].ToString();
 
                 Workorder_Binder();
@@ -169,7 +168,7 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_reset_Click(object sender, EventArgs e)
         {
-            Response.Redirect("searchemployee.aspx");
+            Response.Redirect("create_jobid.aspx");
         }
 
         protected void btn_cancel_Click(object sender, EventArgs e)
@@ -530,7 +529,7 @@ namespace WebApplication1.bussiness.production
 
                 if (DB_WOType == "ARC")
                 {
-                    if (DDL_Region.SelectedValue.ToString() == "AGL" || DDL_Region.SelectedValue.ToString() == "KPO")
+                    if (DDL_Region.SelectedValue.ToString() == "AGL" || DDL_Region.SelectedValue.ToString() == "KPO" || DDL_Region.SelectedValue.ToString() == "NINL" || DDL_Region.SelectedValue.ToString() == "JSR")
                     {
                         cmd.Parameters.AddWithValue("@JOB_Status", "Created");
                         cmd.Parameters.AddWithValue("@FinalUpldStatus", "No");

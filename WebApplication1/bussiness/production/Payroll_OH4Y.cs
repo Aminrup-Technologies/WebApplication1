@@ -148,17 +148,28 @@ namespace WebApplication1.bussiness.production
 
         public void HP_FindEmployeeTotalDaysByMonth(string month, string year, string empwrk, ref Int32 totalpresents)
         {
-            string cmdString = "SELECT COUNT(DISTINCT CreatedDate) as totalpresent FROM tbl_attendance where EmployeeWrk='" + empwrk + "' and MONTH(CreatedDate)='" + month + "' and YEAR(CreatedDate) = '" + year + "' and  (AttendanceCode='P' or AttendanceCode='NH' or AttendanceCode='FL' or AttendanceCode='OD') and SubmitterStatus='Exit'";
+            //string cmdString = "SELECT COUNT(DISTINCT CreatedDate) as totalpresent FROM tbl_attendance where EmployeeWrk='" + empwrk + "' and MONTH(CreatedDate)='" + month + "' and YEAR(CreatedDate) = '" + year + "' and  (AttendanceCode='P' or AttendanceCode='NH' or AttendanceCode='FL' or AttendanceCode='OD') and SubmitterStatus='Exit'";
+
             DbCL.Sqlconnection();
             DbCL.ConnectDb();
-            SqlCommand cmd = new SqlCommand(cmdString, DbCL.Conn);
-            SqlDataReader Rdr;
-            Rdr = cmd.ExecuteReader();
-            if (Rdr.Read())
+            string cmdString = "SELECT COUNT(DISTINCT CreatedDate) as totalpresent FROM tbl_attendance " +
+                       "WHERE EmployeeWrk=@EmployeeWrk " +
+                       "AND MONTH(CreatedDate)=@Month " +
+                       "AND YEAR(CreatedDate)=@Year " +
+                       "AND AttendanceCode IN ('P', 'NH', 'FL', 'OD') " +
+                       "AND SubmitterStatus='Exit'";
+
+            using (SqlCommand command = new SqlCommand(cmdString, DbCL.Conn))
             {
-                totalpresents = Convert.ToInt32(Rdr["totalpresent"].ToString());
+                // Assuming empwrk, month, and year are variables containing your values
+                command.Parameters.AddWithValue("@EmployeeWrk", empwrk);
+                command.Parameters.AddWithValue("@Month", month);
+                command.Parameters.AddWithValue("@Year", year);
+
+                // Execute the query and retrieve the result
+                int totalPresent = (int)command.ExecuteScalar();
+                DbCL.Conn.Close();
             }
-            DbCL.Conn.Close();
         }
 
         public void FindEmployeeTotalPresentByMonth(string month, string year, string empwrk, ref Int32 totalpresents)

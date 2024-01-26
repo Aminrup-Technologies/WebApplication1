@@ -9,11 +9,12 @@
                 </span>
             </a>
         </li>
+        
         <li>
             <a href="#step-2">
                 <div id="step2" runat="server" class="step_no">2</div>
                 <span class="step_descr">Step 2<br />
-                    <small>Permit Uploaded</small>
+                    <small>In-Punch Done</small>
                 </span>
             </a>
         </li>
@@ -21,7 +22,7 @@
             <a href="#step-3">
                 <div id="step3" runat="server" class="step_no">3</div>
                 <span class="step_descr">Step 3<br />
-                    <small>In-Punch Done</small>
+                    <small>Permit Uploaded</small>
                 </span>
             </a>
         </li>

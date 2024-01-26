@@ -22,7 +22,7 @@
                 <div class="col-md-12">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>JOBID : <asp:Label ID="lbl_activejobid" runat="server" Text="Label" ForeColor="Blue" Font-Bold="true"></asp:Label>&nbsp; Real-Time Flow</h2>
+                            <h2>JOBID : <asp:Label ID="lbl_activejobid" runat="server" Text="N/A" ForeColor="Blue" Font-Bold="true"></asp:Label>&nbsp; Real-Time Flow</h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                                 </li>
@@ -52,16 +52,16 @@
                                     <asp:Label ID="lbl_activejobcount" runat="server" Text="Label"></asp:Label></span>
                                 <i class="fa fa-edit"></i>Create ID
 
+                            </a> 
+                            <a class="btn btn-app" href="job_permitupload.aspx">
+                                <span class="badge bg-orange">
+                                    <asp:Label ID="lbl_prmtupldcount" runat="server" Text="Label"></asp:Label></span>
+                                <i class="fa fa-edit"></i>Permit Upload
                             </a>
                             <a class="btn btn-app" href="job_inpunch.aspx">
                                 <span class="badge bg-orange">
                                     <asp:Label ID="lbl_inpunchcount" runat="server" Text="Label"></asp:Label></span>
                                 <i class="fa fa-edit"></i>IN Punch
-                            </a>
-                            <a class="btn btn-app" href="job_permitupload.aspx">
-                                <span class="badge bg-orange">
-                                    <asp:Label ID="lbl_prmtupldcount" runat="server" Text="Label"></asp:Label></span>
-                                <i class="fa fa-edit"></i>Permit Upload
                             </a>
                             <a class="btn btn-app" href="job_outpunch.aspx">
                                 <span class="badge bg-orange">
