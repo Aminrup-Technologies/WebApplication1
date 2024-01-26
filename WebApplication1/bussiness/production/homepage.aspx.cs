@@ -181,6 +181,8 @@ namespace WebApplication1.bussiness.production
                         ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPasswordModal();", true);
                         txt_oldpass.Text = "";
                         txt_oldpass.Focus();
+                        txt_oldpass.BorderColor = Color.Red;
+                        btn_relogin.Visible = false;
                     }
 
                     string bankname = dt.Rows[0]["Payment_Bank"].ToString();
