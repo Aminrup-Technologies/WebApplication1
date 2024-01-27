@@ -143,7 +143,7 @@ namespace WebApplication1.bussiness.production
 
                         string title = "Notifications :";
                         string body = "Kindly update your Gatepass Data, Your Gatepass has expired...!!!";
-                        ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                        ClientScript.RegisterStartupScript(this.GetType(), "Popup1", "ShowPopup('" + title + "', '" + body + "');", true);
                     }
                     lbl_gpexpdays.Text = gpdays.ToString();
                     string gpvaldt = DateBinder(gpval);
@@ -267,7 +267,7 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-                    ClientScript.RegisterStartupScript(typeof(Page), "AlertMessage", "<script>alert('User ID is InActive');</script>");
+                    ClientScript.RegisterStartupScript(typeof(Page), "AlertMessage1", "<script>alert('User ID is InActive');</script>");
                 }
             }
         }
@@ -593,7 +593,7 @@ namespace WebApplication1.bussiness.production
 
                 string title = "Notifications :";
                 string body = "Data saved Successfully";
-                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup2", "ShowPopup('" + title + "', '" + body + "');", true);
             }
             catch (Exception ex)
             {
@@ -602,7 +602,7 @@ namespace WebApplication1.bussiness.production
 
                 string title = "Notifications :";
                 string body = ex.Message.ToString();
-                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup3", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
 
@@ -632,7 +632,7 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-                    ClientScript.RegisterStartupScript(typeof(Page), "AlertMessage", "<script>alert('User ID is InActive');</script>");
+                    ClientScript.RegisterStartupScript(typeof(Page), "AlertMessage2", "<script>alert('User ID is InActive');</script>");
                 }
             }
         }
@@ -642,6 +642,8 @@ namespace WebApplication1.bussiness.production
             string inputoldpass = txt_oldpass.Text.TrimEnd().ToString();
             if (UserPass == inputoldpass)
             {
+                ClientScript.RegisterStartupScript(this.GetType(), "alert8", "ShowPasswordModal();", true);
+
                 txt_newpass1.ReadOnly = false;
                 txt_newpass2.ReadOnly = false;
 
@@ -672,7 +674,7 @@ namespace WebApplication1.bussiness.production
                 btn_validateoldpassword.Enabled = false;
                 btn_discardsvpass.Enabled = false;
 
-                ClientScript.RegisterStartupScript(this.GetType(), "alert1", "ShowPasswordModal();", true);
+                btn_validateoldpassword.Text = "Verified";
             }
             else
             {
@@ -699,7 +701,7 @@ namespace WebApplication1.bussiness.production
 
                 btn_svpass.Enabled = false;
 
-                ClientScript.RegisterStartupScript(this.GetType(), "alert2", "ShowPasswordModal();", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "alert8", "ShowPasswordModal();", true);
             }
         }
 
@@ -755,7 +757,7 @@ namespace WebApplication1.bussiness.production
                 //If updating the login credentials failed
             }
 
-            ClientScript.RegisterStartupScript(this.GetType(), "alert3", "ShowPasswordModal();", true);
+            ClientScript.RegisterStartupScript(this.GetType(), "alert8", "ShowPasswordModal();", true);
         }
         private Boolean UpdateLoginCredentials()
         {
@@ -818,7 +820,7 @@ namespace WebApplication1.bussiness.production
             //txt_SQAns2.Text = "";
             //txt_SQAns2.ReadOnly = true;
 
-            //ClientScript.RegisterStartupScript(this.GetType(), "alert4", "ShowPasswordModal();", true);
+            //ClientScript.RegisterStartupScript(this.GetType(), "alert8", "ShowPasswordModal();", true);
 
             Session.Abandon();
             Response.Redirect("login.aspx");
@@ -877,7 +879,7 @@ namespace WebApplication1.bussiness.production
                 {
                     string title = "Notifications :";
                     string body = ex.Message.ToString();
-                    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                    ClientScript.RegisterStartupScript(this.GetType(), "Popup4", "ShowPopup('" + title + "', '" + body + "');", true);
                 }
             }
 
@@ -909,7 +911,7 @@ namespace WebApplication1.bussiness.production
 
                 string title = "Notifications :";
                 string body = "Contact details SAVED successfully...!";
-                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup5", "ShowPopup('" + title + "', '" + body + "');", true);
 
                 InputMob1.Visible = false; InputMob2.Visible = false;
                 InputEmail1.Visible = false; InputEmail2.Visible = false;
@@ -941,7 +943,7 @@ namespace WebApplication1.bussiness.production
             {
                 string title = "Notifications :";
                 string body = ex.Message.ToString();
-                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup6", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
 
@@ -974,7 +976,7 @@ namespace WebApplication1.bussiness.production
             {
                 string title = "Notifications :";
                 string body = ex.Message.ToString();
-                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup7", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
 
@@ -1036,7 +1038,7 @@ namespace WebApplication1.bussiness.production
                     // Invalid OTP or email
                     string title = "Notifications :";
                     string body = "Invalid OTP or Email Address....! Re-try....!";
-                    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                    ClientScript.RegisterStartupScript(this.GetType(), "Popup8", "ShowPopup('" + title + "', '" + body + "');", true);
 
                     ClientScript.RegisterStartupScript(this.GetType(), "alert7", "ShowContactModal();", true);
                 }
@@ -1122,7 +1124,7 @@ namespace WebApplication1.bussiness.production
 
             btn_cancel_contactdata.Enabled = false;
 
-            ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowContactModal();", true);
+            ClientScript.RegisterStartupScript(this.GetType(), "alert17", "ShowContactModal();", true);
             OTP_1.Visible = true;
             OTP_2.Visible = true;
             btn_sv_contactdata.Enabled = false;

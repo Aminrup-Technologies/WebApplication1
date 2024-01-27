@@ -500,7 +500,7 @@
 									</div>
 
 									<div class="col-md-4 form-group">
-										<label><span class="text text-danger">*</span>Click to verify</label>
+										<label><span class="text text-danger">*</span>Verify OLD Password</label>
 									</div>
 									<div class="col-md-8 form-group">
 										<asp:Button ID="btn_validateoldpassword" runat="server" Text="Verify & Proceed" ValidationGroup="OLDPASS" CausesValidation="true" CssClass="btn btn-sm btn-success" OnClick="btn_validateoldpassword_Click"/>
