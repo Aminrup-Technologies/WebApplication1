@@ -19,9 +19,6 @@ namespace WebApplication1.bussiness.production
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
         Payroll_OH4Y PayRoll = new Payroll_OH4Y();
-
-
-
         public static string UserPass = "";
         DataTable dt = new DataTable();
 
@@ -205,13 +202,17 @@ namespace WebApplication1.bussiness.production
                     ClientScript.RegisterStartupScript(this.GetType(), "ShowExpiryNotification", PN_PasswordExpiry_script, false);
 
 
-                    if (psexpdays <= 0)
+                    if (psexpdays <= 15)
                     {
-                        ClientScript.RegisterStartupScript(this.GetType(), "alert8", "ShowPasswordModal();", true);
-                        txt_oldpass.Text = "";
-                        txt_oldpass.Focus();
-                        txt_oldpass.BorderColor = Color.Red;
-                        btn_relogin.Visible = false;
+                        //ClientScript.RegisterStartupScript(this.GetType(), "alert8", "ShowPasswordModal();", true);
+                        //txt_oldpass.Text = "";
+                        //txt_oldpass.Focus();
+                        //txt_oldpass.BorderColor = Color.Red;
+                        //btn_relogin.Visible = false;
+
+                        //Instead of displaying a popup to change the login credentails, redirect the user to a separate page to change the password
+
+                        Response.Redirect("emp_pwdchange.aspx");
                     }
 
                     string bankname = dt.Rows[0]["Payment_Bank"].ToString();
@@ -608,7 +609,7 @@ namespace WebApplication1.bussiness.production
 
 
         //------------ Added on 05-07-2022----------------//
-        private void LoadLoginDetails()
+        public void LoadLoginDetails()
         {
             string query = "select * from tbl_Employee_Mustertable where WorkmanSL=@WorkmanSL and LoginID=@LoginID";
             SqlParameter[] pram = {

@@ -233,6 +233,7 @@
     <Content Include="bussiness\production\css\Site.css" />
     <Content Include="bussiness\production\emp_payroll_wages.aspx" />
     <Content Include="bussiness\production\emp_profilepic.aspx" />
+    <Content Include="bussiness\production\emp_pwdchange.aspx" />
     <Content Include="bussiness\production\gen_agl_F17.aspx" />
     <Content Include="bussiness\production\gen_atssites_f17.aspx" />
     <Content Include="bussiness\production\gen_ats_f17.aspx" />
@@ -547,6 +548,13 @@
     </Compile>
     <Compile Include="bussiness\production\emp_profilepic.aspx.designer.cs">
       <DependentUpon>emp_profilepic.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\emp_pwdchange.aspx.cs">
+      <DependentUpon>emp_pwdchange.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\emp_pwdchange.aspx.designer.cs">
+      <DependentUpon>emp_pwdchange.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\gen_agl_F17.aspx.cs">
       <DependentUpon>gen_agl_F17.aspx</DependentUpon>
