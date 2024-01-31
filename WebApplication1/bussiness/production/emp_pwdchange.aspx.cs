@@ -34,6 +34,8 @@ namespace WebApplication1.bussiness.production
                     BindSecurityQ2(CmdString2);
 
                     LoadLoginDetails();
+
+                    txt_oldpass.Focus();
                 }
             }
         }
@@ -214,7 +216,18 @@ namespace WebApplication1.bussiness.production
                 btn_relogin.Enabled = true;
                 //Session.Abandon();
                 //Response.Redirect("login.aspx");
-                btn_closecvpass.Enabled = false;
+                btn_cancel.Enabled = false;
+
+                txt_newpass1.ReadOnly = true;
+                txt_newpass2.ReadOnly = true;
+
+                DDL_SQ1.Enabled = false;
+                txt_SQAns1.ReadOnly = true;
+
+                DDL_SQ2.Enabled = false;
+                txt_SQAns2.ReadOnly = true;
+
+                btnrow.Visible = false;
 
             }
             else
@@ -267,6 +280,12 @@ namespace WebApplication1.bussiness.production
                 lbl_msgpass.Text = "Error: " + ex.Message.ToString();
             }
             return flag;
+        }
+
+
+        protected void btn_cancel_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("homepage.aspx");
         }
 
     }

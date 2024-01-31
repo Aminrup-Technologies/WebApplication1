@@ -310,6 +310,15 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Button btn_relogin;
         
         /// <summary>
+        /// btnrow control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl btnrow;
+        
+        /// <summary>
         /// lbl_msg control.
         /// </summary>
         /// <remarks>
@@ -319,13 +328,13 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Label lbl_msg;
         
         /// <summary>
-        /// btn_closecvpass control.
+        /// btn_cancel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btn_closecvpass;
+        protected global::System.Web.UI.WebControls.Button btn_cancel;
         
         /// <summary>
         /// btn_discardsvpass control.
@@ -353,5 +362,14 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button ShowPopup;
+        
+        /// <summary>
+        /// view_panel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl view_panel;
     }
 }
