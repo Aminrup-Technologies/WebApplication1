@@ -97,7 +97,7 @@
                                 </div>
 
                                 <div class="form-group row">
-                                    <asp:Label ID="lbl_msgpass" CssClass="control-label col-lg-6 col-sm-12" runat="server" Text="Your login credentails has expired, Please change to continue visitng" Font-Bold="true" ForeColor="Red"></asp:Label>
+                                    <asp:Label ID="lbl_msgpass" CssClass="control-label col-lg-6 col-sm-12" runat="server" Text="Your login credentails has expired, Please change to continue visitng." Font-Bold="true" ForeColor="Red"></asp:Label>
                                     <div class="col-lg-6 col-sm-12">
                                         <asp:Button ID="btn_relogin" CausesValidation="false" runat="server" Text="Re-Login" Enabled="false" CssClass="btn btn-primary btn-sm" OnClick="btn_relogin_Click" />
                                     </div>
@@ -113,11 +113,12 @@
                                         <asp:Label ID="lbl_msg" runat="server" Text="Click SUBMIT to Save Data!!"></asp:Label>
                                     </div>
                                     <div class="col-md-6 col-sm-12">
-                                        <asp:Button ID="btn_cancel" runat="server" Text="HOME" CssClass="btn btn-danger btn-sm" OnClick="btn_cancel_Click" />
+                                        <asp:Button ID="btn_cancel" runat="server" Text="SKIP NOW" CssClass="btn btn-danger btn-sm" OnClick="btn_cancel_Click" />
                                         <asp:Button ID="btn_discardsvpass" runat="server" Text="Logout" CausesValidation="false" CssClass="btn btn-warning btn-sm" OnClick="btn_discardsvpass_Click" />
                                         <asp:Button ID="btn_svpass" runat="server" CssClass="btn btn-success btn-sm" Text="Save Changes" Enabled="false" OnClick="btn_svpass_Click" CausesValidation="true" ValidationGroup="ChnagePassword" />
                                     </div>
                                 </div>
+                                <p>You can skip now, by clicking on the [SKIP NOW]</p>
                             </div>
 
 

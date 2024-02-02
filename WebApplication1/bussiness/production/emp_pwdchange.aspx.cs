@@ -50,7 +50,7 @@ namespace WebApplication1.bussiness.production
             string inputoldpass = txt_oldpass.Text.TrimEnd().ToString();
             if (UserPass == inputoldpass)
             {
-                ClientScript.RegisterStartupScript(this.GetType(), "alert8", "ShowPasswordModal();", true);
+                //ClientScript.RegisterStartupScript(this.GetType(), "alert8", "ShowPasswordModal();", true);
 
                 txt_newpass1.ReadOnly = false;
                 txt_newpass2.ReadOnly = false;
@@ -237,7 +237,7 @@ namespace WebApplication1.bussiness.production
                 //If updating the login credentials failed
             }
 
-            ClientScript.RegisterStartupScript(this.GetType(), "alert8", "ShowPasswordModal();", true);
+            //ClientScript.RegisterStartupScript(this.GetType(), "alert8", "ShowPasswordModal();", true);
         }
 
         private Boolean UpdateLoginCredentials()
@@ -285,7 +285,52 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_cancel_Click(object sender, EventArgs e)
         {
-            Response.Redirect("homepage.aspx");
+            if (UpdateSkipLoginCredentials() == true)
+            {        
+                Response.Redirect("homepage.aspx");
+            }
+            else
+            {
+
+            }
+                
+        }
+
+        private Boolean UpdateSkipLoginCredentials()
+        {
+            Boolean flag = false;
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = dbcl.Conn;
+                string CmdString = "UPDATE tbl_Employee_Mustertable set Pass_UpdateDate=@Pass_UpdateDate , PassUpdatedByName=@PassUpdatedByName, PassUpdatedByWrk=@PassUpdatedByWrk, PasswordExpiry=@PasswordExpiry where WorkmanSL=@WorkmanSL and LoginID=@LoginID";
+                cmd.CommandText = CmdString;
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@WorkmanSL", txt_atsworkmenno.Text.ToString());
+                cmd.Parameters.AddWithValue("@LoginID", txt_atsloginid.Text.ToString());
+                cmd.Parameters.AddWithValue("@Pass_UpdateDate", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt"));
+                cmd.Parameters.AddWithValue("@PassUpdatedByName", Session["USERNAME"].ToString());
+                cmd.Parameters.AddWithValue("@PassUpdatedByWrk", Session["WORKMAN"].ToString());
+                cmd.Parameters.AddWithValue("@PasswordExpiry", DateTime.Today.AddDays(30));
+                cmd.ExecuteNonQuery();
+                cmd.Dispose();
+                flag = true;
+
+                lbl_msgpass.ForeColor = System.Drawing.Color.Green;
+                lbl_msgpass.Text = "Login Credentials Updated Successfully....!!";
+
+                btn_relogin.Visible = true;
+                btn_relogin.Enabled = true;
+            }
+            catch (Exception ex)
+            {
+                flag = false;
+                lbl_msgpass.ForeColor = System.Drawing.Color.Red;
+                lbl_msgpass.Text = "Error: " + ex.Message.ToString();
+            }
+            return flag;
         }
 
     }
