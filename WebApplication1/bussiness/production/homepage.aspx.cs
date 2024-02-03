@@ -12,6 +12,7 @@ using System.IO;
 using System.Configuration;
 using System.Net.Mail;
 using System.Net;
+using Microsoft.AspNet.SignalR;
 
 namespace WebApplication1.bussiness.production
 {
@@ -57,6 +58,9 @@ namespace WebApplication1.bussiness.production
 
                     // RegisterStartupScript adds the JavaScript code to the page
                     ClientScript.RegisterStartupScript(this.GetType(), "ShowWelcomeNotification", PN_WelcomeBack_script, false);
+
+                    IHubContext hubContext = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+                    hubContext.Clients.All.newNotification("Hello from the server!");
                 }
             }
         }
