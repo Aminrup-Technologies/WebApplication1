@@ -9,6 +9,78 @@
             $("#MyPopup .modal-body").html(body);
             $("#MyPopup").modal("show");
         }
+
+        function ShowCheckboxDiv(IdBaseName, NumberOfBoxes) {
+            for (let x = 1; x <= NumberOfBoxes; x++) {
+                const CheckThisBox = IdBaseName + x;
+                const BoxDiv = IdBaseName + x + 'Div';
+
+                const checkbox = document.getElementById(CheckThisBox);
+
+                // Check if the checkbox element is found
+                if (checkbox !== null && checkbox !== undefined) {
+                    if (checkbox.checked) {
+                        document.getElementById(BoxDiv).style.display = "block";
+                    } else {
+                        document.getElementById(BoxDiv).style.display = "none";
+                    }
+                } else {
+                    console.error(`Checkbox element with ID ${CheckThisBox} not found.`);
+                }
+            }
+            return false;
+        }
+
+
+        <%--function ValidateModuleList(source, args) {
+            var chkListModules = document.getElementById('<%= chkbxrspons.ClientID %>');
+            var chkListinputs = chkListModules.getElementsByTagName("input");
+            for (var i = 0; i < chkListinputs.length; i++) {
+                if (chkListinputs[i].checked) {
+                    args.IsValid = true;
+                    return;
+                }
+            }
+            args.IsValid = false;
+        }
+
+        function ToggleValidatorSOP(chkSOP) {
+            var valName = document.getElementById("<%=valSOP.ClientID%>");
+            ValidatorEnable(valName, chkSOP.checked);
+        }
+        function ToggleValidatorPRSNL(chkPRSNL) {
+            var valName5 = document.getElementById("<%=cvmodulelist.ClientID%>");
+            ValidatorEnable(valName5, chkPRSNL.checked);
+        }
+        function ToggleValidatorSI(chkSI) {
+            var valName1 = document.getElementById("<%=valSI.ClientID%>");
+            ValidatorEnable(valName1, chkSI.checked);
+        }
+
+        function ToggleValidatorHazard(chkHZD) {
+            var valName2 = document.getElementById("<%=valHazard.ClientID%>");
+            ValidatorEnable(valName2, chkHZD.checked);
+        }
+
+        function ToggleValidatorSftMsg(chkSftyMsg) {
+            var valName3 = document.getElementById("<%=valSftMsg.ClientID%>");
+		    ValidatorEnable(valName3, chkSftyMsg.checked);
+		}--%>
+
+		<%--function ToggleValidatorSftAlert(chkSftyAlert) {
+		    var valName4 = document.getElementById("<%=valSftAlert.ClientID%>");
+		    ValidatorEnable(valName4, chkSftyAlert.checked);
+		}--%>
+
+        function showhide() {
+            var div = document.getElementById("newpost");
+            if (div.style.display !== "none") {
+                div.style.display = "none";
+            }
+            else {
+                div.style.display = "block";
+            }
+        }
     </script>
     <div class="right_col" role="main">
         <div class="">
@@ -69,8 +141,6 @@
                             <div class="clearfix">&nbsp;</div>
                             <div class="tab-content" id="myTabContent">
                                 <div class="tab-pane fade show active" id="jobid" role="tabpanel" aria-labelledby="jobid-tab">
-
-
 
                                     <div class="form-group row">
                                         <label class="col-form-label col-md-3 col-sm-3 label-align" for="first-name">Select JOBID <span class="required">*</span></label>
@@ -260,9 +330,56 @@
                                 <div class="tab-pane fade" id="tbt" role="tabpanel" aria-labelledby="tbt-tab">
                                     tbt details
                                 </div>
+
                                 <div class="tab-pane fade" id="annexure" role="tabpanel" aria-labelledby="annexure-tab">
-                                    tbt details
+
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-md-12 col-sm-12 label-align" for="BoxName1">ITEMS DISCUSSED : <small>(Indicate if not discussed)</small><span class="required">*</span></label>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="BoxName1">1. Safety contact and review of action items from last meeting :</label>
+                                        <div class="col-md-6 col-sm-6 ">
+                                            <div class="col-md-3 col-sm-3">
+                                                <input type="checkbox" id="BoxName1" name="BoxName1" onclick="ShowCheckboxDiv('BoxName', 9)" />
+                                                Yes
+                                            </div>
+                                        </div>
+                                        <div class="clearfix"></div>
+                                        <div class="col-md-12 col-sm-12  form-group" id="BoxName1Div" style="display: none;">
+                                            N/A
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="BoxName2">2. Items of General Safety Importance to the Total Work Site : (Ask employees to mention any incident / Near Miss during the past day which may have or have resuted into damage to property or injury to Company or Contractor Personnel)</label>
+                                        <div class="col-md-6 col-sm-6 ">
+                                            <div class="col-md-3 col-sm-3">
+                                                <input type="checkbox" id="BoxName2" name="BoxName2" onclick="ShowCheckboxDiv('BoxName', 9)" />Yes
+                                            </div>
+                                        </div>
+                                        <div class="clearfix"></div>
+                                        <div class="col-md-12 col-sm-12  form-group" id="BoxName2Div" style="display: none;">
+                                            <asp:Button ID="btn_newincidententry" runat="server" Text="New Incident" Enabled="false" CssClass="btn btn-primary btn-sm" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="BoxName3">3. Items of safety interest to this Group:(Eg. Red Stripes, Orange Stripes, Green Stripe, Safety alert tips for safety communication, hazards or safety conditions applicable to this group’s work area)</label>
+                                        <div class="col-md-6 col-sm-6 ">
+                                            <div class="col-md-3 col-sm-3">
+                                                <input type="checkbox" id="BoxName3" name="BoxName3" onclick="ShowCheckboxDiv('BoxName', 9); ToggleValidatorSI(this);" checked="checked" />Yes
+                                            </div>
+                                        </div>
+                                        <div class="clearfix"></div>
+                                        <div class="col-md-12 col-sm-12  form-group" id="BoxName3Div" style="display: block;">
+                                            <asp:TextBox ID="txt_sftyintrst" runat="server" class="form-control form-control-sm rounded" ReadOnly="false" TextMode="MultiLine" Rows="3"></asp:TextBox><br />
+                                            <asp:RequiredFieldValidator ID="valSI" ControlToValidate="txt_sftyintrst" runat="server" ErrorMessage="*Required" ForeColor="Red" ValidationGroup="Group1" />
+                                        </div>
+                                    </div>
+
                                 </div>
+
                                 <div class="tab-pane fade" id="photo" role="tabpanel" aria-labelledby="photo-tab">
                                     Photograph
                                 </div>
