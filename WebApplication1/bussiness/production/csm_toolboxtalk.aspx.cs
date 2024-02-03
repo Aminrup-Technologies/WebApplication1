@@ -38,31 +38,83 @@ namespace WebApplication1.bussiness.production
                 else
                 {
 
-                    ActiveJOB_Checker();
-
-                    BindTBTCheckLists();
-
-                    JOBIDDetails_Row.Visible = false;
-                    AttachedAttendanceRow.Visible = false;
+                    if (ActiveJobChecker())
+                    {
+                        BindTBTCheckLists();
+                        JOBIDDetails_Row.Visible = false;
+                        AttachedAttendanceRow.Visible = false;
+                        Default_Buttons.Visible = false;
+                    }
+                    else
+                    {
+                        Default_Buttons.Visible = true;
+                    }
 
                 }
             }
         }
 
-        private void ActiveJOB_Checker()
+        private void ActiveJOB_Checker1()
         {
             Int32 Activejobcount = CC.Find_ActiveJOBCountforINPunch(Session["WORKMAN"].ToString(), Session["REGION"].ToString());
             if (Activejobcount > 0)
             {
-                dbcl.FillCombo(DDL_JOBID, "select JOBID from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and JOBID_Status='Active' order by CreatedDate desc ");
+                dbcl.FillCombo(DDL_JOBID, "SELECT JOBID FROM tbl_jobs WHERE Creator_Workman = '" + Session["WORKMAN"].ToString() + "' AND JOBID_Status = 'Active' ORDER BY CreatedDate DESC");
             }
             else
             {
-                string title = "Notifications :";
-                string body = "NO Active JOB ID Found...! Kindly create a JOB ID and proceed.";
-                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                string NoActiveJOBID_Notification_script = @"<script type='text/javascript'>
+                            new PNotify({
+                                title: 'Oh No !!!',
+                                text: 'You Don\'t have an ACTIVE JOB',
+                                type: 'error',
+                                styling: 'bootstrap3'
+                            });
+                        </script>";
+
+                ClientScript.RegisterStartupScript(this.GetType(), "NoActiveJOBID_Notification", NoActiveJOBID_Notification_script, false);
             }
         }
+
+        private bool ActiveJobChecker()
+        {
+            if (Session["WORKMAN"] != null && Session["REGION"] != null)
+            {
+                Int32 activeJobCount = CC.Find_ActiveJOBCountforINPunch(Session["WORKMAN"].ToString(), Session["REGION"].ToString());
+
+                if (activeJobCount > 0)
+                {
+                    dbcl.FillCombo(DDL_JOBID, "SELECT CONCAT(JOBID, ' : ', CONVERT(VARCHAR, CreatedDate, 105)) AS JOBID FROM tbl_jobs WHERE Creator_Workman = '" + Session["WORKMAN"].ToString() + "' AND JOBID_Status = 'Active' AND [CreatedDate] >= DATEADD(DAY, -7, GETDATE()) ORDER BY CreatedDate DESC");
+
+                    // Return true if there are active jobs
+                    return true;
+                }
+                else
+                {
+                    DDL_SftyOfcr.Items.Insert(0, "Please Select Option");
+
+                    string noActiveJobIdNotificationScript = @"<script type='text/javascript'>
+                            new PNotify({
+                                title: 'Oh No !!!',
+                                text: 'You Don\'t have an ACTIVE JOB',
+                                type: 'error',
+                                styling: 'bootstrap3'
+                            });
+                        </script>";
+
+                    ClientScript.RegisterStartupScript(this.GetType(), "NoActiveJOBID_Notification", noActiveJobIdNotificationScript, false);
+
+                    // Return false if there are no active jobs
+                    return false;
+                }
+            }
+            else
+            {
+                // Handle session variables being null
+                return false;
+            }
+        }
+
 
         private void Bind_SafetySupervisors(string CmdString)
         {
@@ -97,9 +149,19 @@ namespace WebApplication1.bussiness.production
         {
             if (DDL_JOBID.SelectedIndex == 0)
             {
-                string title = "Notifications :";
-                string body = "Select Valid JOBID";
-                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                string JOBID_Selector_script = @"<script type='text/javascript'>
+                            new PNotify({
+                                title: 'Guide',
+                                text: 'Please select a valid & active JOBID',
+                                type: 'info',
+                                styling: 'bootstrap3'
+                            });
+                        </script>";
+                ClientScript.RegisterStartupScript(this.GetType(), "JOBID_Selector_Notification", JOBID_Selector_script, false);
+
+                //string title = "Notifications :";
+                //string body = "Select Valid JOBID";
+                //ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
 
                 JOBIDDetails_Row.Visible = false;
                 AttachedAttendanceRow.Visible = false;
@@ -107,20 +169,34 @@ namespace WebApplication1.bussiness.production
                 deptrow.Visible = false;
                 LineManagerRow.Visible = false;
                 sftysupvrow.Visible = false;
-                sftyofcrrow.Visible = true;
                 supvrow.Visible = false;
                 ContractEmployeesrow.Visible = false;
                 CreateTBTIDRow.Visible = false;
                 jobsupv.Visible = false;
+                sftyofcrrow.Visible = false;
             }
             else
             {
-                string ddljobid = DDL_JOBID.SelectedItem.Text.ToString();
+                string jobID  = DDL_JOBID.SelectedItem.Text.ToString();
+                string ddljobid = "";
+                string jobdate = "";
+                string[] parts = jobID.Split(new string[] { " : " }, StringSplitOptions.None);
 
+                if (parts.Length == 2)
+                {
+                    ddljobid = parts[0]; // This will contain "JOB0095467"
+                    jobdate = parts[1]; // This will contain "2024-02-02"
+
+                    // Now you can use jobID and dateStr as needed.
+                }
+                else
+                {
+                    // Handle the case where the string format is unexpected.
+                }
 
                 sftysupvrow.Visible = true;
-
                 sftyofcrrow.Visible = true;
+
                 string CmdString = "select FullName, WorkmanSL from tbl_Employee_Mustertable where SkillDesignation = 'SAFETY SUPERVISOR' and WorkStatus = 'Active' and WorkRegion = '" + Session["REGION"].ToString() + "' order by Id";
                 Bind_SafetySupervisors(CmdString);
 
@@ -129,15 +205,14 @@ namespace WebApplication1.bussiness.production
 
 
                 //Check if TBT is already added aganist this JOBID
-                Int32 TBTCount = CC.GetTBTCount(ddljobid);
-                if (TBTCount == 0)
+                //Int32 TBTCount = CC.GetTBTCount(ddljobid);
+                if (!CC.TBTRecordExist(ddljobid, jobdate))
                 {
                     Bind_JOBIDDetails(ddljobid);
                     JOBIDDetails_Row.Visible = true;
 
                     LineManagerRow.Visible = true;
                     ContractEmployeesrow.Visible = true;
-
 
                 }
                 else
@@ -157,9 +232,19 @@ namespace WebApplication1.bussiness.production
                     }
                     else if (Panel1_flag == true && Panel2_flag != true && Panel3_flag != true)
                     {
-                        string title = "Notifications :";
-                        string body = "TBT ID Created, Incomplete submission....!!";
-                        ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                        string Panel1_Completed_script = @"<script type='text/javascript'>
+                            new PNotify({
+                                title: 'Guide',
+                                text: 'ID Created TBT Incomplete....!!',
+                                type: 'success',
+                                styling: 'bootstrap3'
+                            });
+                        </script>";
+                        ClientScript.RegisterStartupScript(this.GetType(), "Panel1_Completed_Notification", Panel1_Completed_script, false);
+
+                        //string title = "Notifications :";
+                        //string body = "TBT ID Created, Incomplete submission....!!";
+                        //ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
                     }
                     else if (Panel1_flag == true && Panel2_flag == true && Panel3_flag != true)
                     {
@@ -293,12 +378,12 @@ namespace WebApplication1.bussiness.production
                         supvrow.Visible = true;
                         string sftysupv = dt.Rows[0]["SafetySupvWrk"].ToString();
                         DDL_SftySupv.SelectedValue = sftysupv;
-                        DDL_SftySupv.Enabled = true;
+                        DDL_SftySupv.Enabled = false;
 
                         sftyofcrrow.Visible = true;
                         string sftyofcsupv = dt.Rows[0]["SafetyOfficerWrk"].ToString();
                         DDL_SftyOfcr.SelectedValue = sftyofcsupv;
-                        DDL_SftyOfcr.Enabled = true;
+                        DDL_SftyOfcr.Enabled = false;
 
                         txt_incharge.Text = dt.Rows[0]["AreaInchargeName"].ToString();
 
@@ -345,8 +430,8 @@ namespace WebApplication1.bussiness.production
                         txt_sftmsg.ReadOnly = true;
                         txt_sftmsg.Text = dt.Rows[0]["SafetyMessageItems"].ToString();
 
-                        txt_sftalert.ReadOnly = true;
-                        txt_sftalert.Text = dt.Rows[0]["SafetyAlertItems"].ToString();
+                        //txt_sftalert.ReadOnly = true;
+                        //txt_sftalert.Text = dt.Rows[0]["SafetyAlertItems"].ToString();
                     }
                     else
                     {
@@ -368,8 +453,8 @@ namespace WebApplication1.bussiness.production
                         txt_sftmsg.ReadOnly = false;
                         txt_sftmsg.Text = "";
 
-                        txt_sftalert.ReadOnly = false;
-                        txt_sftalert.Text = "";
+                        //txt_sftalert.ReadOnly = false;
+                        //txt_sftalert.Text = "";
 
                         TBT_ItemsSavedMsgHR.Visible = true;
                     }
@@ -779,17 +864,20 @@ namespace WebApplication1.bussiness.production
                 }
 
 
-                bool Point8 = (Page.Request.Form["BoxName8"] == "on") ? true : false;
-                if (Point8 == true)
-                {
-                    cmd.Parameters.AddWithValue("@SafetyAlert", "Yes");
-                    cmd.Parameters.AddWithValue("@SafetyAlertItems", txt_sftalert.Text.ToString());
-                }
-                else
-                {
-                    cmd.Parameters.AddWithValue("@SafetyAlert", "No");
-                    cmd.Parameters.AddWithValue("@SafetyAlertItems", DBNull.Value);
-                }
+                //bool Point8 = (Page.Request.Form["BoxName8"] == "on") ? true : false;
+                //if (Point8 == true)
+                //{
+                //    cmd.Parameters.AddWithValue("@SafetyAlert", "Yes");
+                //    cmd.Parameters.AddWithValue("@SafetyAlertItems", txt_sftalert.Text.ToString());
+                //}
+                //else
+                //{
+                //    cmd.Parameters.AddWithValue("@SafetyAlert", "No");
+                //    cmd.Parameters.AddWithValue("@SafetyAlertItems", DBNull.Value);
+                //}
+
+                cmd.Parameters.AddWithValue("@SafetyAlert", "No");
+                cmd.Parameters.AddWithValue("@SafetyAlertItems", DBNull.Value);
 
 
                 bool Point9 = (Page.Request.Form["BoxName9"] == "on") ? true : false;

@@ -1553,13 +1553,13 @@ body {
 }
 
 .title_left {
-    width: 60%;
+    width: 90%;
     float: none;
     display: block;
     text-align: left; /* Center the content on small screens */
 }
 
-    .title_left h5 {
+    .title_left h4 {
         margin: 9px 0;
     }
 
@@ -2151,7 +2151,7 @@ h2 {
     position: relative;
     width: 100%;
     margin-bottom: 10px;
-    padding: 10px 17px;
+    padding: 5px 8px;
     display: inline-block;
     background: #fff;
     border: 1px solid #E6E9ED;

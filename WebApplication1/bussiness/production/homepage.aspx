@@ -32,7 +32,7 @@
 						</h4>
 
 						<div class="right col-md-4 col-sm-4 text-center">
-							<img id="ProfilePic_3" runat="server" src="...." width="220" height="240" alt="ProfilePhoto" class="img-circle img-fluid">
+							<img id="ProfilePic_3" runat="server" src="...." width="200" height="240" alt="ProfilePhoto" class="img-circle img-fluid small">
 						</div>
 
 						<div class="left col-md-8 col-sm-8 text-left">

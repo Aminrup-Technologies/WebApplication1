@@ -78,7 +78,7 @@
                             <div class="separator">
                                 <br />
                                 <div>
-                                    <p>© 2021-22 All Rights Reserved. Powered by <a href="#" target="_blank">OH4Y</a></p>
+                                    <p>© 2021-2024 All Rights Reserved. <span style="font-weight: bold; color: darkred;">ATS,JSR</span> Powered by <a href="#" target="_blank">Aminrup Technologies</a></p>
                                 </div>
                             </div>
                         </div>

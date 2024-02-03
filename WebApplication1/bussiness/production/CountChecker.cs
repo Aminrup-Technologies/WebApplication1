@@ -15,17 +15,38 @@ namespace WebApplication1.bussiness.production
 
         public Int32 Find_ActiveJOBCountforINPunch(string workman, string region)
         {
-            string cmdString = "";
-            dbcl.Sqlconnection();
-            dbcl.ConnectDb();
-            cmdString = "select COUNT(JOBID) from tbl_jobs where Creator_Workman=@Creator_Workman and JOBID_Status='Active'";
-            SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
-            cmd.CommandType = CommandType.Text;
-            cmd.Parameters.AddWithValue("@Creator_Workman", workman);
-            Int32 count = Convert.ToInt32(cmd.ExecuteScalar());
-            dbcl.Conn.Close();
+            Int32 count = 0;
+            try
+            {
+                string cmdString = "";
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+                cmdString = "SELECT COUNT([JOBID]) FROM [tbl_jobs] WHERE [Creator_Workman] = @Creator_Workman AND [JOBID_Status] = 'Active' AND [CreatedDate] >= DATEADD(DAY, -7, GETDATE())";
+                SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@Creator_Workman", workman);
+                count = Convert.ToInt32(cmd.ExecuteScalar());
+                dbcl.Conn.Close();
+                return count;
+            }
+            catch (SqlException ex)
+            {
+                count = 0;
+                // Handle the exception, log it, or throw a custom exception.
+                // For example, you can log the exception details to the console or a log file.
+                Console.WriteLine("SQL Exception: " + ex.Message);
+                //throw; // rethrow the exception if needed
+            }
+            catch (Exception ex)
+            {
+                count = 0;
+                // Handle other types of exceptions if necessary
+                Console.WriteLine("Exception: " + ex.Message);
+                //throw; // rethrow the exception if needed
+            }
             return count;
         }
+
 
         public Int32 Find_ActiveJOBCountforOUTPunch(string workman, string region)
         {
@@ -249,6 +270,28 @@ namespace WebApplication1.bussiness.production
             Int32 count = Convert.ToInt32(cmd.ExecuteScalar());
             dbcl.DisconnectDb();
             return count;
+        }
+
+        public bool TBTRecordExist(string JOBID, string jobDate)
+        {
+            dbcl.Sqlconnection();  // Assuming dbcl is an instance of a class that manages database connections
+
+            string cmdstring = "IF EXISTS (SELECT 1 FROM tbl_toolboxtalkdata WHERE Ref_JOBID = @JOBID AND Ref_JOBDate = @JobDate) SELECT 1 ELSE SELECT 0";
+            dbcl.ConnectDb();
+
+            using (SqlCommand cmd = new SqlCommand(cmdstring, dbcl.Conn))
+            {
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@JOBID", JOBID);
+                cmd.Parameters.AddWithValue("@JobDate", jobDate);
+
+                // ExecuteScalar will return 1 if a record exists, 0 otherwise
+                int result = Convert.ToInt32(cmd.ExecuteScalar());
+
+                dbcl.DisconnectDb();
+
+                return result == 1;  // Return true if a record exists, false otherwise
+            }
         }
 
         public Int32 GetSOPCount(string JOBID)

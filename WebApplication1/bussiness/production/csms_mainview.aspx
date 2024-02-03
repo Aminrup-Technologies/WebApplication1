@@ -7,7 +7,7 @@
         <div class="">
             <div class="page-title">
                 <div class="title_left">
-                    <h2>Contractor Safety Management (CSM)</h2>
+                    <h2>CSM Dashboard</h2>
                 </div>
             </div>
 
