@@ -19,7 +19,7 @@
             <div class="clearfix"></div>
 
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-12" id="async" runat="server" visible="false">
                     <div class="x_panel">
                         <div class="x_title">
                             <h2>JOBID : <asp:Label ID="lbl_activejobid" runat="server" Text="N/A" ForeColor="Blue" Font-Bold="true"></asp:Label>&nbsp; Real-Time Flow</h2>

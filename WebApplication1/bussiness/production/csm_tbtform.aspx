@@ -32,7 +32,7 @@
         }
 
 
-        <%--function ValidateModuleList(source, args) {
+        function ValidateModuleList(source, args) {
             var chkListModules = document.getElementById('<%= chkbxrspons.ClientID %>');
             var chkListinputs = chkListModules.getElementsByTagName("input");
             for (var i = 0; i < chkListinputs.length; i++) {
@@ -64,8 +64,8 @@
 
         function ToggleValidatorSftMsg(chkSftyMsg) {
             var valName3 = document.getElementById("<%=valSftMsg.ClientID%>");
-		    ValidatorEnable(valName3, chkSftyMsg.checked);
-		}--%>
+            ValidatorEnable(valName3, chkSftyMsg.checked);
+        }
 
 		<%--function ToggleValidatorSftAlert(chkSftyAlert) {
 		    var valName4 = document.getElementById("<%=valSftAlert.ClientID%>");
@@ -143,15 +143,15 @@
                                 <div class="tab-pane fade show active" id="jobid" role="tabpanel" aria-labelledby="jobid-tab">
 
                                     <div class="form-group row">
-                                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="first-name">Select JOBID <span class="required">*</span></label>
-                                        <div class="col-md-6 col-sm-6 ">
+                                        <label class="col-form-label col-md-3 col-sm-3 label-align">Select JOBID <span class="required">*</span></label>
+                                        <div class="col-md-6 col-sm-6">
                                             <asp:DropDownList ID="DDL_JOBID" runat="server" class="form-control form-control-sm rounded" AutoPostBack="true" OnSelectedIndexChanged="DDL_JOBID_SelectedIndexChanged"></asp:DropDownList>
                                             <asp:RequiredFieldValidator ID="RequiredFieldValidator1" ValidationGroup="CreateTBTID" ControlToValidate="DDL_JOBID" runat="server" ErrorMessage="Required" ForeColor="Red" Display="Dynamic" SetFocusOnError="true" InitialValue="--Select--"></asp:RequiredFieldValidator>
                                         </div>
                                     </div>
 
                                     <div class="form-group row" id="JOBIDDetails_Row" runat="server" visible="false">
-                                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="last-name">
+                                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="lbl_jobid">
                                             JOBID Details <span class="required">*</span>
                                         </label>
                                         <div class="col-md-6 col-sm-6 ">
@@ -334,54 +334,264 @@
                                 <div class="tab-pane fade" id="annexure" role="tabpanel" aria-labelledby="annexure-tab">
 
                                     <div class="form-group row">
-                                        <label class="col-form-label col-md-12 col-sm-12 label-align" for="BoxName1">ITEMS DISCUSSED : <small>(Indicate if not discussed)</small><span class="required">*</span></label>
+                                        <label class="col-form-label col-md-12 col-sm-12" for="BoxName1">ITEMS DISCUSSED : <small>(Indicate if not discussed)</small><span class="required">*</span></label>
                                     </div>
 
                                     <div class="form-group row">
-                                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="BoxName1">1. Safety contact and review of action items from last meeting :</label>
-                                        <div class="col-md-6 col-sm-6 ">
-                                            <div class="col-md-3 col-sm-3">
-                                                <input type="checkbox" id="BoxName1" name="BoxName1" onclick="ShowCheckboxDiv('BoxName', 9)" />
-                                                Yes
+                                        <label class="col-form-label col-md-10 col-sm-12" for="BoxName1">1. Safety contact and review of action items from last meeting :</label>
+                                        <div class="col-md-2 col-sm-12">
+                                            <div class="col-md-2 col-sm-12">
+                                                <input type="checkbox" id="BoxName1" name="BoxName1" onclick="ShowCheckboxDiv('BoxName', 8)" />Yes
                                             </div>
                                         </div>
-                                        <div class="clearfix"></div>
-                                        <div class="col-md-12 col-sm-12  form-group" id="BoxName1Div" style="display: none;">
+                                        <div class="clearfix">&nbsp;</div>
+                                        <div class="col-md-12 col-sm-12 form-group" id="BoxName1Div" style="display: none;">
                                             N/A
                                         </div>
                                     </div>
 
                                     <div class="form-group row">
-                                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="BoxName2">2. Items of General Safety Importance to the Total Work Site : (Ask employees to mention any incident / Near Miss during the past day which may have or have resuted into damage to property or injury to Company or Contractor Personnel)</label>
-                                        <div class="col-md-6 col-sm-6 ">
-                                            <div class="col-md-3 col-sm-3">
-                                                <input type="checkbox" id="BoxName2" name="BoxName2" onclick="ShowCheckboxDiv('BoxName', 9)" />Yes
+                                        <label class="col-form-label col-md-10 col-sm-12" for="BoxName2">2. Items of General Safety Importance to the Total Work Site : (Ask employees to mention any incident / Near Miss during the past day which may have or have resuted into damage to property or injury to Company or Contractor Personnel)</label>
+                                        <div class="col-md-2 col-sm-12">
+                                            <div class="col-md-2 col-sm-12">
+                                                <input type="checkbox" id="BoxName2" name="BoxName2" onclick="ShowCheckboxDiv('BoxName', 8)" />
+                                                Yes
                                             </div>
                                         </div>
-                                        <div class="clearfix"></div>
-                                        <div class="col-md-12 col-sm-12  form-group" id="BoxName2Div" style="display: none;">
-                                            <asp:Button ID="btn_newincidententry" runat="server" Text="New Incident" Enabled="false" CssClass="btn btn-primary btn-sm" />
+                                        <div class="clearfix">&nbsp;</div>
+                                        <div class="col-md-12 col-sm-12 form-group" id="BoxName2Div" style="display: none;">
+                                            <div>
+                                                <asp:Button ID="btn_newincidententry" runat="server" Text="New Incident" Enabled="false" CssClass="btn btn-primary btn-sm" />
+                                            </div>
                                         </div>
                                     </div>
 
                                     <div class="form-group row">
-                                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="BoxName3">3. Items of safety interest to this Group:(Eg. Red Stripes, Orange Stripes, Green Stripe, Safety alert tips for safety communication, hazards or safety conditions applicable to this group’s work area)</label>
-                                        <div class="col-md-6 col-sm-6 ">
+                                        <label class="col-form-label col-md-10 col-sm-12" for="BoxName3">3. Items of safety interest to this Group:(Eg. Red Stripes, Orange Stripes, Green Stripe, Safety alert tips for safety communication, hazards or safety conditions applicable to this group’s work area)</label>
+                                        <div class="col-md-2 col-sm-12">
                                             <div class="col-md-3 col-sm-3">
-                                                <input type="checkbox" id="BoxName3" name="BoxName3" onclick="ShowCheckboxDiv('BoxName', 9); ToggleValidatorSI(this);" checked="checked" />Yes
+                                                <input type="checkbox" id="BoxName3" name="BoxName3" onclick="ShowCheckboxDiv('BoxName', 8); ToggleValidatorSI(this);" checked="checked" />Yes
                                             </div>
                                         </div>
-                                        <div class="clearfix"></div>
-                                        <div class="col-md-12 col-sm-12  form-group" id="BoxName3Div" style="display: block;">
+                                        <div class="clearfix">&nbsp;</div>
+                                        <div class="col-md-10 col-sm-12  form-group" id="BoxName3Div" style="display: block;">
                                             <asp:TextBox ID="txt_sftyintrst" runat="server" class="form-control form-control-sm rounded" ReadOnly="false" TextMode="MultiLine" Rows="3"></asp:TextBox><br />
                                             <asp:RequiredFieldValidator ID="valSI" ControlToValidate="txt_sftyintrst" runat="server" ErrorMessage="*Required" ForeColor="Red" ValidationGroup="Group1" />
                                         </div>
                                     </div>
 
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-md-10 col-sm-12" for="BoxName4">
+                                            4. Standard Operation Procedures (SOP) relevant to this Group :
+                                        </label>
+                                        <div class="col-md-2 col-sm-12">
+                                            <div class="col-md-3 col-sm-3">
+                                            <input type="checkbox" id="BoxName4" name="BoxName4" onclick="ShowCheckboxDiv('BoxName', 8); ToggleValidatorSOP(this);" checked="checked" />
+                                            Yes</div>
+                                        </div>
+
+                                        <div class="clearfix">&nbsp;</div>
+
+                                        <div class="col-md-10 col-sm-12" id="BoxName4Div" style="display: block;">
+                                            <asp:TextBox ID="txt_sopno" runat="server" class="form-control form-control-sm rounded" ReadOnly="false"></asp:TextBox><br />
+                                            <asp:RequiredFieldValidator ID="valSOP" ControlToValidate="txt_sopno" runat="server" ErrorMessage="*Required" ForeColor="Red" ValidationGroup="Group1" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-md-10 col-sm-12" for="BoxName5">
+                                            5. Reminders to Employees of their Personal Responsibilities to ensure and Maintain :
+                                        </label>
+                                        <div class="col-md-2 col-sm-12">
+                                            <div class="col-md-3 col-sm-3">
+                                            <input type="checkbox" id="BoxName5" name="BoxName5" onclick="ShowCheckboxDiv('BoxName', 8); ToggleValidatorPRSNL(this);" checked="checked" />
+                                            Yes</div>
+                                        </div>
+
+                                        <div class="clearfix">&nbsp;</div>
+
+                                        <div class="col-md-12 col-sm-12" id="BoxName5Div" style="display: block;">
+                                                <asp:CheckBoxList ID="chkbxrspons" runat="server" Font-Size="Small" CssClass="checkbox rounded" RepeatColumns="2" Width="100%"></asp:CheckBoxList><br />
+                                                <asp:CustomValidator runat="server" ID="cvmodulelist" ClientValidationFunction="ValidateModuleList" Display="Dynamic" ErrorMessage="Please select state"></asp:CustomValidator>
+                                            <br />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-md-10 col-sm-12" for="BoxName6">
+                                            6. Hazardous materials relevant to this Group Work's Area :
+                                        </label>
+                                        <div class="col-md-2 col-sm-12">
+                                            <div class="col-md-3 col-sm-3">
+                                            <input type="checkbox" id="BoxName6" name="BoxName6" onclick="ShowCheckboxDiv('BoxName', 8); ToggleValidatorHazard(this);" checked="checked" />
+                                            Yes</div>
+                                        </div>
+
+                                        <div class="clearfix">&nbsp;</div>
+
+                                        <div class="col-md-10 col-sm-12" id="BoxName6Div" style="display: block;">
+                                                <asp:TextBox ID="txt_hazards" runat="server" class="form-control form-control-sm rounded" ReadOnly="false" TextMode="MultiLine" Rows="3"></asp:TextBox><br />
+                                                <asp:RequiredFieldValidator ID="valHazard" ControlToValidate="txt_hazards" runat="server" ErrorMessage="*Required" ForeColor="Red" ValidationGroup="Group1" />
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-md-10 col-sm-12" for="BoxName7">
+                                            7. Safety Message Handouts / Circulars to be shared with Contract Employees :
+                                        </label>
+                                        <div class="col-md-2 col-sm-12">
+                                            <div class="col-md-3 col-sm-3">
+                                            <input type="checkbox" id="BoxName7" name="BoxName7" onclick="ShowCheckboxDiv('BoxName', 8); ToggleValidatorSftMsg(this);" checked="checked" />
+                                            Yes</div>
+                                        </div>
+                                        <div class="clearfix">&nbsp;</div>
+                                        <div class="col-md-10 col-sm-12" id="BoxName7Div" style="display: block;">
+                                                <asp:TextBox ID="txt_sftmsg" runat="server" class="form-control form-control-sm rounded" ReadOnly="false" TextMode="MultiLine" Rows="3"></asp:TextBox><br />
+                                                <asp:RequiredFieldValidator ID="valSftMsg" ControlToValidate="txt_sftmsg" runat="server" ErrorMessage="*Required" ForeColor="Red" ValidationGroup="Group1" />
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-md-10 col-sm-12" for="BoxName8">
+                                            8. Actions resulting from this meeting and points raised by Contract Employees and Supervisor :
+                                        </label>
+                                        <div class="col-md-2 col-sm-12">
+                                            <div class="col-md-3 col-sm-3">
+                                            <input type="checkbox" id="BoxName8" name="BoxName8" onclick="ShowCheckboxDiv('BoxName', 8)" />
+                                            Yes</div>
+                                        </div>
+                                        <div class="clearfix">&nbsp;</div>
+                                        <div class="col-md-10 col-sm-12" id="BoxName8Div" style="display: none;">
+                                                <asp:Button ID="btn_addfeedback" runat="server" Text="Add Actionable" Enabled="false" CssClass="btn btn-primary btn-sm" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 center-margin" id="SavePanel2Data" runat="server" visible="false">
+                                        <div class="ln_solid"></div>
+                                        <div class="item form-group row">
+                                            <div class="col-md-6 col-sm-12">
+                                                <asp:Label ID="Label10" runat="server" Text="Click PROCEED to ADD Data!!"></asp:Label>
+                                            </div>
+                                            <div class="col-md-6 col-sm-12">
+                                                <button type="button" class="btn btn-danger btn-sm collapse-link">Cancel</button>
+                                                <button type="reset" class="btn btn-warning btn-sm">Reset</button>
+                                                <asp:Button ID="btn_savetbtdata" runat="server" Text="PROCEED" Enabled="true" CausesValidation="true" CssClass="btn btn-success btn-sm" ValidationGroup="Group1" OnClick="btn_savetbtdata_Click" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" id="TBT_ItemsSavedMsg" runat="server" visible="false">
+                                        <div class="col-md-12 col-sm-12" style="vertical-align: middle; text-align: center;">
+                                            <asp:Image ID="Img_Success2" runat="server" ImageUrl="~/erp_images/success_gif.gif" Width="100px" Height="100px" />
+                                            <asp:Label ID="lbl_tbtitemssavedmsg" runat="server" Text="TBT Items Data Saved..!" Font-Bold="true" Font-Size="Large"></asp:Label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 center-margin" id="TBT_ItemsSavedMsgHR" runat="server" visible="false">
+                                        <div class="ln_solid"></div>
+                                    </div>
+
+                                    <div class="col-md-12 center-margin" id="Div2" runat="server" visible="false">
+                                        <div class="ln_solid"></div>
+                                    </div>
+
                                 </div>
 
                                 <div class="tab-pane fade" id="photo" role="tabpanel" aria-labelledby="photo-tab">
-                                    Photograph
+                                    <div class="row" id="TBTPhotographRow" runat="server" visible="false">
+                                        <div class="col-md-6 col-sm-6 form-group" id="uploadbuttonrow1" runat="server" visible="true">
+                                            <label>Upload Photograph (.jpeg / .jpg) <span class="text text-danger">*</span></label>
+                                        </div>
+                                        <div class="col-md-6 col-sm-6 form-group" id="uploadbuttonrow2" runat="server" visible="true">
+                                            <button type="button" class="btn btn-primary btn-sm" id="btnShowPopup" data-toggle="modal" data-target="#myModal">
+                                                <i class="fa fa-plus-circle"></i>&nbsp;Meeting Photograph
+                                            </button>
+                                        </div>
+
+                                        <div class="col-md-6 col-sm-12 form-group" id="UploadedPhotoRow1" runat="server" visible="false">
+                                            <label>Uploaded Photograph<span class="text text-danger">*</span></label>
+                                        </div>
+                                        <div class="col-md-6 col-sm-12 form-group" id="UploadedPhotoRow2" runat="server" visible="false">
+                                            <asp:Image ID="ImgDisplay" runat="server" Height="200px" Width="320px" class="img-thumbnail" />
+                                        </div>
+                                    </div>
+
+                                    <%--- Up-loader Modal --%>
+                                    <div class="modal fade" id="myModal">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h4 class="modal-title">Upload TBT Meeting Photograph</h4>
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <div class="form-group">
+                                                                <label>Capture / Choose TBT Meeting Photograph</label>
+                                                                <div class="input-group">
+                                                                    <div class="custom-file col-md-8">
+                                                                        <asp:FileUpload ID="TBM_FileUploader" CssClass="custom-file-input" runat="server" AllowMultiple="false" />
+                                                                        <label class="custom-file-label"></label>
+                                                                    </div>
+                                                                    <asp:Label ID="lbl_fileyesno" runat="server" Text="Label" Visible="false"></asp:Label>
+                                                                    <div class="input-group-append col-md-4">
+                                                                        <asp:Button ID="btnUpload" runat="server" CssClass="btn btn-primary btn-sm" CausesValidation="false" Text="Upload" OnClick="btnUpload_Click" />
+                                                                    </div>
+                                                                </div>
+                                                                <asp:Label ID="lblMessage" runat="server"></asp:Label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <%--- Up-loader Modal -------- END --%>
+
+
+                                    <%--ADD button-3 start--%>
+                                    <div class="col-md-6 center-margin" id="SavePanel3Data" runat="server" visible="false">
+                                        <div class="ln_solid"></div>
+                                        <div class="item form-group row">
+                                            <div class="col-md-6 col-sm-12">
+                                                <asp:Label ID="Label12" runat="server" Text="Click PROCEED to SAVE Data!!"></asp:Label>
+                                            </div>
+                                            <div class="col-md-6 col-sm-12">
+                                                <button type="button" class="btn btn-danger btn-sm collapse-link">Cancel</button>
+                                                <button type="reset" class="btn btn-warning btn-sm">Reset</button>
+                                                <asp:Button ID="btn_saveTBTPhoto" runat="server" Text="PROCEED" Enabled="true" CssClass="btn btn-success btn-sm" OnClick="btn_saveTBTPhoto_Click" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <%--ADD button-3 end--%>
+
+
+                                    <div class="row" id="TBTPhotoUploaded" runat="server" visible="false">
+                                        <div class="col-md-12 col-sm-12" style="vertical-align: middle; text-align: center;">
+                                            <asp:Image ID="Img_Success" runat="server" ImageUrl="~/erp_images/success_gif.gif" Width="100px" Height="100px" />
+                                            <asp:Label ID="Label11" runat="server" Text="Photograph Uploaded Successfully...!" Font-Bold="true" Font-Size="Large"></asp:Label>
+                                            <asp:Label ID="lbl_tbtphotoid" runat="server" Text=""></asp:Label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 center-margin" id="TBTFinalStep" runat="server" visible="false">
+                                        <div class="ln_solid"></div>
+                                        <div class="item form-group row">
+                                            <div class="col-md-6 col-sm-12">
+                                                <asp:Label ID="Label13" runat="server" Text="Click FINISH to Close!!"></asp:Label>
+                                            </div>
+                                            <div class="col-md-6 col-sm-12">
+                                                <asp:Button ID="Button1" runat="server" class="btn btn-danger btn-sm" CausesValidation="false" Text="Home" PostBackUrl="~/bussiness/production/homepage.aspx" />
+                                                <button type="reset" class="btn btn-warning btn-sm">Reset</button>
+                                                <asp:Button ID="btn_finalstep" runat="server" Text="FINISH" Enabled="true" CssClass="btn btn-success btn-sm" OnClick="btn_finalstep_Click" />
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="tab-pane fade" id="action" role="tabpanel" aria-labelledby="action-tab">

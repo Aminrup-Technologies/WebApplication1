@@ -327,7 +327,7 @@
                                 </div>
 
 
-                                <div class="col-md-12 col-sm-12  form-group">
+                                <div class="col-md-12 col-sm-12 form-group">
                                     <asp:Label ID="Label2" class="col-form-label col-md-9 col-sm-9" runat="server" Font-Bold="true">2. Items of General Safety Importance to the Total Work Site : (Ask employees to mention any incident / Near Miss during the past day which may have or have resuted into damage to property or injury to Company or Contractor Personnel)</asp:Label>
                                     <div class="col-md-3 col-sm-3">
                                         <input type="checkbox" id="BoxName2" name="BoxName2" onclick="ShowCheckboxDiv('BoxName', 9)" />

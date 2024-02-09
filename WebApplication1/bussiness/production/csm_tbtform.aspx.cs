@@ -56,18 +56,18 @@ namespace WebApplication1.bussiness.production
 
         protected void BindTBTCheckLists()
         {
-            //string cmdString = "select * from tlb_personalresponsibilities order by Id";
-            //dbcl.Sqlconnection();
-            //dbcl.ConnectDb();
-            //SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
-            //SqlDataAdapter da = new SqlDataAdapter(cmd);
-            //DataTable dt = new DataTable();
-            //da.Fill(dt);
-            //chkbxrspons.DataTextField = "PS_ItemText";
-            //chkbxrspons.DataValueField = "PS_ItemID";
-            //chkbxrspons.DataSource = dt;
-            //chkbxrspons.DataBind();
-            //dbcl.DisconnectDb();
+            string cmdString = "select * from tlb_personalresponsibilities order by Id";
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
+            SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            chkbxrspons.DataTextField = "PS_ItemText";
+            chkbxrspons.DataValueField = "PS_ItemID";
+            chkbxrspons.DataSource = dt;
+            chkbxrspons.DataBind();
+            dbcl.DisconnectDb();
         }
 
         private bool ActiveJobChecker()
@@ -562,6 +562,419 @@ namespace WebApplication1.bussiness.production
                 e.Row.Cells.RemoveAt(2);
                 e.Row.Cells.RemoveAt(1);
             }
+        }
+
+        protected void btn_savetbtdata_Click(object sender, EventArgs e)
+        {
+            if (TBT_Panel2Data() == true)
+            {
+                JOB_TableUpdate();
+                //panel2heading.Visible = false;
+                //TBTPanel2.Visible = false;
+                SavePanel2Data.Visible = false;
+
+                TBT_ItemsSavedMsg.Visible = true;
+                TBT_ItemsSavedMsgHR.Visible = true;
+
+
+                TBTPhotographRow.Visible = true;
+            }
+            else
+            {
+                //panel2heading.Visible = true;
+                //TBTPanel2.Visible = true;
+                SavePanel2Data.Visible = true;
+
+                TBT_ItemsSavedMsg.Visible = false;
+                TBT_ItemsSavedMsgHR.Visible = false;
+
+
+                TBTPhotographRow.Visible = false;
+
+                string title = "Notifications :";
+                string body = "Panel 2 Data NOT Saved or TBTID NOT attched";
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+            }
+        }
+
+
+        private Boolean TBT_Panel2Data()
+        {
+            Boolean datasaved = false;
+
+            try
+            {
+                string prsnl_resp = FindChkdItems();
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = dbcl.Conn;
+                string CmdString = "UPDATE tbl_toolboxtalkdata set PrevActionItem=@PrevActionItem,NewIncidentItem=@NewIncidentItem, Ref_IncidentID=@Ref_IncidentID,SafetyInterest=@SafetyInterest, SafetyInterestItems=@SafetyInterestItems, SOPYesNo=@SOPYesNo, SOPNumber=@SOPNumber,EmpPrsnlResponsibilty=@EmpPrsnlResponsibilty, EmpPersnlItems=@EmpPersnlItems, HazardMaterial=@HazardMaterial, HazardMaterialItems=@HazardMaterialItems, SafetyMessage=@SafetyMessage, SafetyMessageItems=@SafetyMessageItems, SafetyAlert=@SafetyAlert, SafetyAlertItems=@SafetyAlertItems, Ref_ActionItem=@Ref_ActionItem, Ref_ActionID=@Ref_ActionID, Panel2_Status=@Panel2_Status, Panel2_TimeStamp=@Panel2_TimeStamp  where TBT_ID=@TBT_ID";
+                cmd.CommandText = CmdString;
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@TBT_ID", lbl_TBTID.Text.ToString());
+
+
+                bool Point1 = (Page.Request.Form["BoxName1"] == "on") ? true : false;
+                if (Point1 == true)
+                {
+                    cmd.Parameters.AddWithValue("@PrevActionItem", "Yes");
+                }
+                else
+                {
+                    cmd.Parameters.AddWithValue("@PrevActionItem", "No");
+                }
+
+                bool Point2 = (Page.Request.Form["BoxName2"] == "on") ? true : false;
+                if (Point2 == true)
+                {
+                    cmd.Parameters.AddWithValue("@NewIncidentItem", "Yes");
+                    cmd.Parameters.AddWithValue("@Ref_IncidentID", DBNull.Value);
+                }
+                else
+                {
+                    cmd.Parameters.AddWithValue("@NewIncidentItem", "No");
+                    cmd.Parameters.AddWithValue("@Ref_IncidentID", DBNull.Value);
+                }
+
+                bool Point3 = (Page.Request.Form["BoxName3"] == "on") ? true : false;
+                if (Point3 == true)
+                {
+                    cmd.Parameters.AddWithValue("@SafetyInterest", "Yes");
+                    cmd.Parameters.AddWithValue("@SafetyInterestItems", txt_sftyintrst.Text.ToString());
+                }
+                else
+                {
+                    cmd.Parameters.AddWithValue("@SafetyInterest", "No");
+                    cmd.Parameters.AddWithValue("@SafetyInterestItems", DBNull.Value);
+                }
+
+                bool Point4 = (Page.Request.Form["BoxName4"] == "on") ? true : false;
+                if (Point4 == true)
+                {
+                    cmd.Parameters.AddWithValue("@SOPYesNo", "Yes");
+                    cmd.Parameters.AddWithValue("@SOPNumber", txt_sopno.Text.ToString());
+                }
+                else
+                {
+                    cmd.Parameters.AddWithValue("@SOPYesNo", "No");
+                    cmd.Parameters.AddWithValue("@SOPNumber", DBNull.Value);
+                }
+
+                bool Point5 = (Page.Request.Form["BoxName5"] == "on") ? true : false;
+                if (Point5 == true)
+                {
+                    cmd.Parameters.AddWithValue("@EmpPrsnlResponsibilty", "Yes");
+                    cmd.Parameters.AddWithValue("@EmpPersnlItems", prsnl_resp);
+                }
+                else
+                {
+                    cmd.Parameters.AddWithValue("@EmpPrsnlResponsibilty", "No");
+                    cmd.Parameters.AddWithValue("@EmpPersnlItems", prsnl_resp);
+                }
+
+
+                bool Point6 = (Page.Request.Form["BoxName6"] == "on") ? true : false;
+                if (Point6 == true)
+                {
+                    cmd.Parameters.AddWithValue("@HazardMaterial", "Yes");
+                    cmd.Parameters.AddWithValue("@HazardMaterialItems", txt_hazards.Text.ToString());
+                }
+                else
+                {
+                    cmd.Parameters.AddWithValue("@HazardMaterial", "No");
+                    cmd.Parameters.AddWithValue("@HazardMaterialItems", DBNull.Value);
+                }
+
+                bool Point7 = (Page.Request.Form["BoxName7"] == "on") ? true : false;
+                if (Point7 == true)
+                {
+                    cmd.Parameters.AddWithValue("@SafetyMessage", "Yes");
+                    cmd.Parameters.AddWithValue("@SafetyMessageItems", txt_sftmsg.Text.ToString());
+                }
+                else
+                {
+                    cmd.Parameters.AddWithValue("@SafetyMessage", "No");
+                    cmd.Parameters.AddWithValue("@SafetyMessageItems", DBNull.Value);
+                }
+
+
+                //bool Point8 = (Page.Request.Form["BoxName8"] == "on") ? true : false;
+                //if (Point8 == true)
+                //{
+                //    cmd.Parameters.AddWithValue("@SafetyAlert", "Yes");
+                //    cmd.Parameters.AddWithValue("@SafetyAlertItems", txt_sftalert.Text.ToString());
+                //}
+                //else
+                //{
+                //    cmd.Parameters.AddWithValue("@SafetyAlert", "No");
+                //    cmd.Parameters.AddWithValue("@SafetyAlertItems", DBNull.Value);
+                //}
+
+                cmd.Parameters.AddWithValue("@SafetyAlert", "No");
+                cmd.Parameters.AddWithValue("@SafetyAlertItems", DBNull.Value);
+
+
+                bool Point9 = (Page.Request.Form["BoxName9"] == "on") ? true : false;
+                if (Point9 == true)
+                {
+                    cmd.Parameters.AddWithValue("@Ref_ActionItem", "Yes");
+                    cmd.Parameters.AddWithValue("@Ref_ActionID", DBNull.Value);
+                }
+                else
+                {
+                    cmd.Parameters.AddWithValue("@Ref_ActionItem", "No");
+                    cmd.Parameters.AddWithValue("@Ref_ActionID", DBNull.Value);
+                }
+
+                cmd.Parameters.AddWithValue("@Panel2_Status", "Complete");
+                cmd.Parameters.AddWithValue("@Panel2_TimeStamp", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt"));
+                cmd.ExecuteNonQuery();
+                cmd.Dispose();
+
+
+                datasaved = true;
+                string title = "Notifications :";
+                string body = "Panel 2 Data Saved";
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+            }
+            catch (Exception ex)
+            {
+                string title = "Notifications :";
+                string body = ex.Message;
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                datasaved = false;
+            }
+
+            return datasaved;
+        }
+
+        private string FindTBMPhotoId()
+        {
+            string aa = null;
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
+            string kk = null;
+            string cmdString1 = "select Id,TBT_PhotoID from tbl_toolboxtalkdata where Id=(select max(Id)from tbl_toolboxtalkdata)";
+            SqlCommand com1 = new SqlCommand(cmdString1, dbcl.Conn);
+            SqlDataReader DR1 = com1.ExecuteReader();
+            if (DR1.Read())
+            {
+                aa = DR1.GetValue(1).ToString();
+                if (aa == null || aa == "")
+                {
+                    kk = "TBTP01";
+                }
+                else
+                {
+                    string bb = aa.Substring(5);
+                    int k = Convert.ToInt32(bb);
+                    k = k + 1;
+                    string q = Convert.ToString(k);
+                    kk = "TBTP0" + q;
+                }
+            }
+            else
+            {
+                kk = "TBTP01";
+            }
+            dbcl.Conn.Close();
+            return kk;
+        }
+
+        private string FindChkdItems()
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < chkbxrspons.Items.Count; i++)
+            {
+                if (chkbxrspons.Items[i].Selected == true)
+                {
+                    sb.Append(chkbxrspons.Items[i].Text + ",");
+                }
+            }
+            string chkditms = sb.ToString().TrimEnd(',');
+            return chkditms;
+        }
+
+        protected void btnUpload_Click(object sender, EventArgs e)
+        {
+            if (UploadTBMImage() == true && TBT_Panel3Data() == true)
+            {
+                JOB_TableUpdate();
+                uploadbuttonrow1.Visible = false;
+                uploadbuttonrow2.Visible = false;
+                UploadedPhotoRow1.Visible = true;
+                UploadedPhotoRow2.Visible = true;
+
+                SavePanel3Data.Visible = true;
+            }
+            else
+            {
+                TBM_FileUploader.Focus();
+                TBM_FileUploader.BorderColor = Color.Red;
+
+                UploadedPhotoRow1.Visible = false;
+                UploadedPhotoRow2.Visible = false;
+
+
+                SavePanel3Data.Visible = false;
+            }
+        }
+
+        private Boolean TBT_Panel3Data()
+        {
+            Boolean datasaved = false;
+
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = dbcl.Conn;
+                string CmdString = "UPDATE tbl_toolboxtalkdata set TBTPhoto=@TBTPhoto,TBT_PhotoID=@TBT_PhotoID, TBT_PhotoFile=@TBT_PhotoFile,TBT_PhotoPath=@TBT_PhotoPath, TBT_PhotoTimeStamp=@TBT_PhotoTimeStamp where TBT_ID=@TBT_ID";
+                cmd.CommandText = CmdString;
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@TBT_ID", lbl_TBTID.Text.ToString());
+                cmd.Parameters.AddWithValue("@TBTPhoto", "Uploaded");
+                cmd.Parameters.AddWithValue("@TBT_PhotoID", lbl_tbtphotoid.Text.ToString());
+                cmd.Parameters.AddWithValue("@TBT_PhotoFile", imgfilename);
+                cmd.Parameters.AddWithValue("@TBT_PhotoPath", imglink);
+                cmd.Parameters.AddWithValue("@TBT_PhotoTimeStamp", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt"));
+                cmd.ExecuteNonQuery();
+                cmd.Dispose();
+
+
+                datasaved = true;
+                string title = "Notifications :";
+                string body = "Panel 3 Data Saved";
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+            }
+            catch (Exception ex)
+            {
+                string title = "Notifications :";
+                string body = ex.Message;
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                datasaved = false;
+            }
+
+            return datasaved;
+        }
+
+        private Boolean UploadTBMImage()
+        {
+            Boolean imgsaved = false;
+
+            DateTime d = DateTime.Now;
+            string month = d.Month.ToString();
+            string year = d.Year.ToString();
+            string day = d.Day.ToString();
+            string imgdate = day + month + year;
+
+            // Check file exist or not
+            if (TBM_FileUploader.PostedFile != null)
+            {
+                // Check the extension of image
+                string extension = Path.GetExtension(TBM_FileUploader.FileName);
+                if (extension.ToLower() == ".png" || extension.ToLower() == ".jpg" || extension.ToLower() == ".jpeg")
+                {
+                    Stream strm = TBM_FileUploader.PostedFile.InputStream;
+                    using (var image = System.Drawing.Image.FromStream(strm))
+                    {
+                        string TBPhotoId = lbl_TBTID.Text.ToString();
+                        lbl_tbtphotoid.Text = TBPhotoId;
+
+
+                        // Print Original Size of file (Height or Width)
+                        //lblprev.Text = image.Size.ToString();
+
+                        int newWidth = 440; // New Width of Image in Pixel
+                        int newHeight = 540; // New Height of Image in Pixel
+                        var thumbImg = new Bitmap(newWidth, newHeight);
+                        var thumbGraph = Graphics.FromImage(thumbImg);
+
+                        thumbGraph.CompositingQuality = CompositingQuality.HighQuality;
+                        thumbGraph.SmoothingMode = SmoothingMode.HighQuality;
+                        thumbGraph.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                        var imgRectangle = new Rectangle(0, 0, newWidth, newHeight);
+                        thumbGraph.DrawImage(image, imgRectangle);
+
+                        // Save the file
+                        string targetPath = Server.MapPath(@"\erp_images\TBTPhoto\") + TBPhotoId + "_" + imgdate + ".jpg";
+                        TBM_FileUploader.SaveAs(Server.MapPath(@"\erp_images\TBTPhoto\") + TBPhotoId + "_" + imgdate + ".jpg");
+
+                        //the below will be saved as database value
+                        imglink = "\\erp_images\\TBTPhoto\\" + TBPhotoId + "_" + imgdate + ".jpg";
+                        thumbImg.Save(targetPath, image.RawFormat);
+                        imgfilename = TBPhotoId + "_" + imgdate + ".jpg";
+
+                        // Print new Size of file (height or Width)
+                        //lblaftr.Text = thumbImg.Size.ToString();
+
+                        //Show Image instantly
+
+                        ImgDisplay.ImageUrl = @"\erp_images\TBTPhoto\" + TBPhotoId + "_" + imgdate + ".jpg";
+
+                        //on successfully image is saved
+                        imgsaved = true;
+
+                        string title = "Notifications :";
+                        string body = "TBT Photograph Uploaded Successfully";
+                        ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                    }
+                }
+                else
+                {
+                    string title = "Notifications :";
+                    string body = "Kindly Select Appropriate File Type";
+                    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                }
+            }
+            return imgsaved;
+        }
+
+        private void JOB_TableUpdate()
+        {
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = dbcl.Conn;
+                string CmdString = "UPDATE tbl_jobs set TBTID=@TBTID,TBT_Count=@TBT_Count where JOBID=@JOBID";
+                cmd.CommandText = CmdString;
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@TBTID", lbl_TBTID.Text.ToString());
+                cmd.Parameters.AddWithValue("@TBT_Count", "1");
+                cmd.Parameters.AddWithValue("@JOBID", lbl_jobid.Text.ToString());
+                cmd.ExecuteNonQuery();
+                cmd.Dispose();
+
+
+                //string title = "Notifications :";
+                //string body = "Panel 3 Data Saved";
+                //ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+            }
+            catch (Exception ex)
+            {
+                string title = "Notifications :";
+                string body = "TBT ID cannot be attched to JOBID";
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+            }
+        }
+
+        protected void btn_saveTBTPhoto_Click(object sender, EventArgs e)
+        {
+            TBTPhotoUploaded.Visible = true;
+
+            SavePanel3Data.Visible = false;
+            TBTPhotographRow.Visible = false;
+
+            TBTFinalStep.Visible = true;
+        }
+
+        protected void btn_finalstep_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("csms_mainview.aspx");
         }
 
     }
