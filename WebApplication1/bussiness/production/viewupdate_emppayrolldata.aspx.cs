@@ -32,30 +32,39 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-                    if (Session["Changer"] != null)
+                    if (Session["WORKMAN"].ToString() == "J8")
                     {
-                        string[] retrievedArray = (string[])Session["Changer"];
-                        region = retrievedArray[1].ToString();
-                        comp = retrievedArray[2].ToString();
-                        state = retrievedArray[0].ToString();
-                        datalock = retrievedArray[3].ToString();
-                        //Session["Changer"]= null;
+                        if (Session["Changer"] != null)
+                        {
+                            string[] retrievedArray = (string[])Session["Changer"];
+                            region = retrievedArray[1].ToString();
+                            comp = retrievedArray[2].ToString();
+                            state = retrievedArray[0].ToString();
+                            datalock = retrievedArray[3].ToString();
+                            //Session["Changer"]= null;
+                        }
+                        else
+                        {
+                            region = Session["REGION"].ToString();
+                            comp = Session["COMPANY_CODE"].ToString();
+                            state = Session["STATE"].ToString();
+                            datalock = "0";
+                        }
+
+                        string CmdString2 = "select Category_Type, Category_DB from tlb_payroll_category where Country_Code = 'IN' and State_Code='" + state + "' and WorkRegion_Code='" + region + "' and Company_Code='" + comp + "' order by Id desc";
+                        BindSkillCategory(CmdString2);
+
+                        string CmdString3 = "select Id, WorkmanSL, FullName, SkillCategory,SkillDesignation,DOJ,SafetyPassNo, F16_YesNo,F17_YesNo, FixedSalary_YesNo, FixedAmount,WorkHours, OTFactor, OTMultiplier, OT_Divisibility, DA_VDA, HRA, Conv_Allowance, Medical_Allowance, ATT_Allowance, SPCL_Allowance,Misc_Earnings,Washing_Allowance from tbl_Employee_Mustertable where WorkRegion = '" + region + "' and WorkCompany='" + comp + "' and WorkStatus='Active' and F16_YesNo='Yes' and F17_YesNo='Yes' order by Id desc";
+                        BindGrid(CmdString3);
+
+                        DDL_EmpWorkStatus.SelectedIndex = 2;
                     }
                     else
                     {
-                        region = Session["REGION"].ToString();
-                        comp = Session["COMPANY_CODE"].ToString();
-                        state = Session["STATE"].ToString();
-                        datalock = "0";
+                        DataTable dt = new DataTable();
+                        GridView1.DataSource = dt;
+                        GridView1.DataBind();
                     }
-
-                    string CmdString2 = "select Category_Type, Category_DB from tlb_payroll_category where Country_Code = 'IN' and State_Code='"+ state + "' and WorkRegion_Code='" + region + "' and Company_Code='" + comp + "' order by Id desc";
-                    BindSkillCategory(CmdString2);
-
-                    string CmdString3 = "select Id, WorkmanSL, FullName, SkillCategory,SkillDesignation,DOJ,SafetyPassNo, F16_YesNo,F17_YesNo, FixedSalary_YesNo, FixedAmount,WorkHours, OTFactor, OTMultiplier, OT_Divisibility, DA_VDA, HRA, Conv_Allowance, Medical_Allowance, ATT_Allowance, SPCL_Allowance,Misc_Earnings,Washing_Allowance from tbl_Employee_Mustertable where WorkRegion = '" + region + "' and WorkCompany='" + comp + "' and WorkStatus='Active' and F16_YesNo='Yes' and F17_YesNo='Yes' order by Id desc";
-                    BindGrid(CmdString3);
-
-                    DDL_EmpWorkStatus.SelectedIndex = 2;
                 }
             }
         }
