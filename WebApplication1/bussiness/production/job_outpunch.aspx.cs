@@ -55,20 +55,14 @@ namespace WebApplication1.bussiness.production
             Int32 Activejobcount = CC.Find_ActiveJOBCountforOUTPunch(Session["WORKMAN"].ToString(), Session["REGION"].ToString());
             if (Activejobcount > 0)
             {
-                if (Session["REGION"].ToString() == "AGL")
-                {
-                    dbcl.FillCombo(DDL_JOBID, "select JOBID from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and JOBID_Status='Active' and EntryExit='Entry' order by CreatedDate desc ");
-                }
-                else
-                {
-                    dbcl.FillCombo(DDL_JOBID, "select JOBID from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and JOBID_Status='Active' and EntryExit='Entry' order by CreatedDate desc ");
-                }
+
+               dbcl.FillCombo(DDL_JOBID, "select CONCAT(JOBID, ' : ', CONVERT(VARCHAR, CreatedDate, 105)) AS JOBID from tbl_jobs where [CreatedDate] >= DATEADD(DAY, -3, GETDATE()) and Creator_Workman='" + Session["WORKMAN"].ToString() + "' and JOBID_Status='Active' and EntryExit='Entry' and FinalUpldStatus='Yes' order by CreatedDate desc ");
 
                 //AddDefaultFirstRecord();
             }
             else
             {
-                string title = "Notifications :";
+                string title = "65 : Notifications :";
                 string body = "NO Active JOB ID Found...! Kindly create a JOB ID and proceed.";
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
@@ -76,28 +70,45 @@ namespace WebApplication1.bussiness.production
 
         protected void DDL_JOBID_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string ddljobid = DDL_JOBID.SelectedItem.Text.ToString();
-            if (Pull_PermitStatus(ddljobid) == true)
+            string jobID = DDL_JOBID.SelectedItem.Text.ToString();
+            string ddljobid = "";
+            string jobdate = "";
+            string[] parts = jobID.Split(new string[] { " : " }, StringSplitOptions.None);
+
+            if (parts.Length == 2)
             {
-                Bind_JOBIDDetails(ddljobid);
+                ddljobid = parts[0]; // This will contain "JOB0095467"
+                                     //jobdate = parts[1]; // This will contain "2024-02-02"
+
+                string[] dateParts = parts[1].Split('-');
+                if (dateParts.Length == 3)
+                {
+                    // Convert date to "YYYY-MM-DD" format
+                    jobdate = $"{dateParts[2]}-{dateParts[1]}-{dateParts[0]}";
+                }
+            }
+            if (Pull_PermitStatus(ddljobid,jobdate) == true)
+            {
+                Bind_JOBIDDetails(ddljobid, jobdate);
                 JOBIDDetails_Row.Visible = true;
             }
             else
             {
-                string title = "Notifications :";
+                string title = "81 : Notifications :";
                 string body = "Permit NOT Upload...Aganist the selected JOBID!!";
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
 
-        private Boolean Pull_PermitStatus(string jobid)
+        private Boolean Pull_PermitStatus(string jobid, string jobdate)
         {
             Boolean flag = false;
             try
             {
-                string query = "select * from tbl_jobs where JOBID=@JOBID and JOBID_Status='Active' and EntryExit='Entry'";
+                string query = "select FinalUpldStatus from tbl_jobs where JOBID=@JOBID and CreatedDate=@CreatedDate and JOBID_Status='Active' and EntryExit='Entry'";
                 SqlParameter[] pram = {
                                           new SqlParameter("@JOBID",jobid),
+                                          new SqlParameter("@CreatedDate",jobdate),
                                       };
                 dt = dbcl.SPreturn_dt(query, pram);
                 if (dt.Rows.Count > 0)
@@ -115,7 +126,7 @@ namespace WebApplication1.bussiness.production
             }
             catch (Exception ex)
             {
-                string title = "Notifications :";
+                string title = "112 : Notifications :";
                 string body = ex.Message;
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
@@ -124,7 +135,24 @@ namespace WebApplication1.bussiness.production
 
         private void CheckPendingOUT()
         {
-            string ddljobid = DDL_JOBID.SelectedItem.Text.ToString();
+            string jobID = DDL_JOBID.SelectedItem.Text.ToString();
+            string ddljobid = "";
+            string jobdate = "";
+            string[] parts = jobID.Split(new string[] { " : " }, StringSplitOptions.None);
+
+            if (parts.Length == 2)
+            {
+                ddljobid = parts[0]; // This will contain "JOB0095467"
+                                     //jobdate = parts[1]; // This will contain "2024-02-02"
+
+                string[] dateParts = parts[1].Split('-');
+                if (dateParts.Length == 3)
+                {
+                    // Convert date to "YYYY-MM-DD" format
+                    jobdate = $"{dateParts[2]}-{dateParts[1]}-{dateParts[0]}";
+                }
+            }
+
             string supv = Session["WORKMAN"].ToString();
             if (CC.CheckforPendingOUT(ddljobid, supv) == 0)
             {
@@ -151,7 +179,24 @@ namespace WebApplication1.bussiness.production
 
         private void UpdateJOBTable1(string jobidstatus, string jobstatus, string mastercode, string entryexitstatus)
         {
-            string ddljobid = DDL_JOBID.SelectedItem.Text.ToString();
+            string jobID = DDL_JOBID.SelectedItem.Text.ToString();
+            string ddljobid = "";
+            string jobdate = "";
+            string[] parts = jobID.Split(new string[] { " : " }, StringSplitOptions.None);
+
+            if (parts.Length == 2)
+            {
+                ddljobid = parts[0]; // This will contain "JOB0095467"
+                                     //jobdate = parts[1]; // This will contain "2024-02-02"
+
+                string[] dateParts = parts[1].Split('-');
+                if (dateParts.Length == 3)
+                {
+                    // Convert date to "YYYY-MM-DD" format
+                    jobdate = $"{dateParts[2]}-{dateParts[1]}-{dateParts[0]}";
+                }
+            }
+
             try
             {
                 dbcl.Sqlconnection();
@@ -171,20 +216,21 @@ namespace WebApplication1.bussiness.production
             }
             catch (Exception ex)
             {
-                string title = "Notifications :";
+                string title = "168 : Notifications :";
                 string body = "Error : " + ex.Message;
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
 
 
-        private void Bind_JOBIDDetails(string jobid)
+        private void Bind_JOBIDDetails(string jobid, string jobdate)
         {
             try
             {
-                string query = "select CreatedDate,Creator_Name,Creator_Workman,Creator_Region,Creator_Company,Creator_Site,Creator_SiteCode,WorkOrderNo,JOBID,JOB_Region,JOB_Company,JOB_Site,JOB_SiteCode,JOB_InchargeWrk,JOB_InchargeName,JOB_Dept,JOB_Location,JOB_Shift,JOB_PermitNo,CSM_Documents from tbl_jobs where JOBID=@JOBID";
+                string query = "select CreatedDate, Creator_Name, Creator_Workman, Creator_Region, Creator_Company, Creator_Site, Creator_SiteCode, WorkOrderNo, JOBID, JOB_Region, JOB_Company, JOB_Site, JOB_SiteCode, JOB_InchargeWrk, JOB_InchargeName, JOB_Dept, JOB_Location, JOB_Shift, JOB_PermitNo, CSM_Documents from tbl_jobs where JOBID=@JOBID and CreatedDate=@CreatedDate";
                 SqlParameter[] pram = {
                                           new SqlParameter("@JOBID",jobid),
+                                          new SqlParameter("@CreatedDate",jobdate),
                                       };
                 dt = dbcl.SPreturn_dt(query, pram);
                 if (dt.Rows.Count > 0)
@@ -214,7 +260,7 @@ namespace WebApplication1.bussiness.production
                     {
                         CSMRow.Visible = true;
                         //First check for CSM Docs Counts then go for Punch OUT Display
-                        CSM_Documents_CountbyJOBID(jobid);
+                        CSM_Documents_CountbyJOBID(jobid, lbl_jobiddate.Text, lbl_creatorwrk.Text, lbl_creatorregion.Text, lbl_creatorcompany.Text);
                     }
                     else
                     {
@@ -224,19 +270,23 @@ namespace WebApplication1.bussiness.production
             }
             catch (Exception ex)
             {
-                string title = "Notifications :";
+                string title = "271 : Notifications :";
                 string body = "Error : " + ex.Message;
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
 
-        private void CSM_Documents_CountbyJOBID(string jobid)
+        private void CSM_Documents_CountbyJOBID(string jobid, string jobdate, string crtrwrk, string crtrrgn, string crtrcomp)
         {
             try
             {
-                string query = "select TBT_Count, SOP_Count from tbl_jobs where JOBID=@JOBID";
+                string query = "select TBT_Count, SOP_Count from tbl_jobs where CreatedDate=@CreatedDate and Creator_Workman=@Creator_Workman and Creator_Region=@Creator_Region and Creator_Company=@Creator_Company and JOBID=@JOBID ";
                 SqlParameter[] pram = {
                                           new SqlParameter("@JOBID",jobid),
+                                          new SqlParameter("@CreatedDate",jobdate),
+                                          new SqlParameter("@Creator_Workman",crtrwrk),
+                                          new SqlParameter("@Creator_Region",crtrrgn),
+                                          new SqlParameter("@Creator_Company",crtrcomp),
                                       };
                 dt = dbcl.SPreturn_dt(query, pram);
                 if (dt.Rows.Count > 0)
@@ -260,7 +310,7 @@ namespace WebApplication1.bussiness.production
             }
             catch (Exception ex)
             {
-                string title = "Notifications :";
+                string title = "311 : Notifications :";
                 string body = "Error : " + ex.Message;
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
@@ -268,7 +318,24 @@ namespace WebApplication1.bussiness.production
 
         private void Bind_GridView()
         {
-            string ddljobid = DDL_JOBID.SelectedItem.Text.ToString();
+            string jobID = DDL_JOBID.SelectedItem.Text.ToString();
+            string ddljobid = "";
+            string jobdate = "";
+            string[] parts = jobID.Split(new string[] { " : " }, StringSplitOptions.None);
+
+            if (parts.Length == 2)
+            {
+                ddljobid = parts[0]; // This will contain "JOB0095467"
+                                     //jobdate = parts[1]; // This will contain "2024-02-02"
+
+                string[] dateParts = parts[1].Split('-');
+                if (dateParts.Length == 3)
+                {
+                    // Convert date to "YYYY-MM-DD" format
+                    jobdate = $"{dateParts[2]}-{dateParts[1]}-{dateParts[0]}";
+                }
+            }
+
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             string cmdString = "Select * from tbl_attendance where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and JOBID='"+ ddljobid + "' and AttendanceStatus = 'Entry' order by Id";
@@ -378,7 +445,24 @@ namespace WebApplication1.bussiness.production
 
             Boolean flag = false;
 
-            string jobid = DDL_JOBID.SelectedItem.Text.ToString();
+            string jobID = DDL_JOBID.SelectedItem.Text.ToString();
+            string ddljobid = "";
+            string jobdate = "";
+            string[] parts = jobID.Split(new string[] { " : " }, StringSplitOptions.None);
+
+            if (parts.Length == 2)
+            {
+                ddljobid = parts[0]; // This will contain "JOB0095467"
+                                     //jobdate = parts[1]; // This will contain "2024-02-02"
+
+                string[] dateParts = parts[1].Split('-');
+                if (dateParts.Length == 3)
+                {
+                    // Convert date to "YYYY-MM-DD" format
+                    jobdate = $"{dateParts[2]}-{dateParts[1]}-{dateParts[0]}";
+                }
+            }
+
             string dbid = lbl_Id.Text.ToString();
             string emp_wrkman = lbl_empworkman.Text.ToString();
 
@@ -416,7 +500,7 @@ namespace WebApplication1.bussiness.production
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.CommandTimeout = 0;
                     cmd.Parameters.AddWithValue("@Id", dbid);
-                    cmd.Parameters.AddWithValue("@JOBID", jobid);
+                    cmd.Parameters.AddWithValue("@JOBID", ddljobid);
                     cmd.Parameters.AddWithValue("@SubmitterStatus", "Exit");
                     cmd.Parameters.AddWithValue("@EmployeeWrk", emp_wrkman);
                     cmd.Parameters.AddWithValue("@Outpunch_Time", dtout);

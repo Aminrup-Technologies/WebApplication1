@@ -122,6 +122,13 @@
                             </div>
                             <i class="fa fa-users"></i>Upload Deductions
                         </a>
+
+                        <a class="btn btn-app" href="pyrl_emiselector.aspx">
+                            <div id="div14" class="badge bg-green" runat="server">
+                                <asp:Label ID="Label23" runat="server" Text="WIP" Visible="true"></asp:Label>
+                            </div>
+                            <i class="fa fa-users"></i>EMI Scheduler
+                        </a>
                     </div>
 
                     <!-- Large modal : Confirm to Clear all deductions-------START------>

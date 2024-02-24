@@ -7,13 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WebApplication1.bussiness.production
-{
-
-
-    public partial class job_inpunch
-    {
-
+namespace WebApplication1.bussiness.production {
+    
+    
+    public partial class job_inpunch {
+        
         /// <summary>
         /// InpunchPanel_Row control.
         /// </summary>
@@ -22,7 +20,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl InpunchPanel_Row;
-
+        
         /// <summary>
         /// DDL_JOBID control.
         /// </summary>
@@ -31,7 +29,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList DDL_JOBID;
-
+        
         /// <summary>
         /// RequiredFieldValidator1 control.
         /// </summary>
@@ -40,7 +38,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator1;
-
+        
         /// <summary>
         /// JOBIDDetails_Row control.
         /// </summary>
@@ -49,7 +47,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl JOBIDDetails_Row;
-
+        
         /// <summary>
         /// lbl_jobid control.
         /// </summary>
@@ -58,7 +56,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_jobid;
-
+        
         /// <summary>
         /// lbl_jobiddate control.
         /// </summary>
@@ -67,7 +65,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_jobiddate;
-
+        
         /// <summary>
         /// lbl_jobcreatorname control.
         /// </summary>
@@ -76,7 +74,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_jobcreatorname;
-
+        
         /// <summary>
         /// lbl_creatorwrk control.
         /// </summary>
@@ -85,7 +83,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_creatorwrk;
-
+        
         /// <summary>
         /// lbl_jobsite control.
         /// </summary>
@@ -94,7 +92,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_jobsite;
-
+        
         /// <summary>
         /// lbl_jobsitecode control.
         /// </summary>
@@ -103,7 +101,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_jobsitecode;
-
+        
         /// <summary>
         /// lbl_creatorregion control.
         /// </summary>
@@ -112,7 +110,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_creatorregion;
-
+        
         /// <summary>
         /// lbl_creatorcompany control.
         /// </summary>
@@ -121,7 +119,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_creatorcompany;
-
+        
         /// <summary>
         /// lbl_crtrsitename control.
         /// </summary>
@@ -130,7 +128,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_crtrsitename;
-
+        
         /// <summary>
         /// lbl_crtrsitecode control.
         /// </summary>
@@ -139,7 +137,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_crtrsitecode;
-
+        
         /// <summary>
         /// lbl_wrkordr control.
         /// </summary>
@@ -148,7 +146,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_wrkordr;
-
+        
         /// <summary>
         /// lbl_permitno control.
         /// </summary>
@@ -157,7 +155,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_permitno;
-
+        
         /// <summary>
         /// lbl_jobrgn control.
         /// </summary>
@@ -166,7 +164,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_jobrgn;
-
+        
         /// <summary>
         /// lbl_jobcompay control.
         /// </summary>
@@ -175,7 +173,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_jobcompay;
-
+        
         /// <summary>
         /// lbl_inchargename control.
         /// </summary>
@@ -184,7 +182,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_inchargename;
-
+        
         /// <summary>
         /// lbl_inchargewrk control.
         /// </summary>
@@ -193,7 +191,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_inchargewrk;
-
+        
         /// <summary>
         /// lbl_jobloc control.
         /// </summary>
@@ -202,7 +200,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_jobloc;
-
+        
         /// <summary>
         /// lbl_jobshift control.
         /// </summary>
@@ -211,7 +209,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_jobshift;
-
+        
         /// <summary>
         /// lbl_dept control.
         /// </summary>
@@ -220,7 +218,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_dept;
-
+        
         /// <summary>
         /// AttachedAttendanceRow control.
         /// </summary>
@@ -229,7 +227,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl AttachedAttendanceRow;
-
+        
         /// <summary>
         /// GridView2 control.
         /// </summary>
@@ -238,7 +236,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView GridView2;
-
+        
         /// <summary>
         /// WorkmanInput_Row control.
         /// </summary>
@@ -247,7 +245,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl WorkmanInput_Row;
-
+        
         /// <summary>
         /// txt_empworkman control.
         /// </summary>
@@ -256,7 +254,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txt_empworkman;
-
+        
         /// <summary>
         /// RequiredFieldValidator2 control.
         /// </summary>
@@ -265,7 +263,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator2;
-
+        
         /// <summary>
         /// PendingOUTMsg control.
         /// </summary>
@@ -274,7 +272,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl PendingOUTMsg;
-
+        
         /// <summary>
         /// lbl_pendingmsg control.
         /// </summary>
@@ -283,7 +281,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_pendingmsg;
-
+        
         /// <summary>
         /// EmployeeName_Row control.
         /// </summary>
@@ -292,7 +290,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl EmployeeName_Row;
-
+        
         /// <summary>
         /// txt_empname control.
         /// </summary>
@@ -301,7 +299,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txt_empname;
-
+        
         /// <summary>
         /// lbl_workhours control.
         /// </summary>
@@ -310,7 +308,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_workhours;
-
+        
         /// <summary>
         /// lbl_designation control.
         /// </summary>
@@ -319,7 +317,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_designation;
-
+        
         /// <summary>
         /// lbl_designationcode control.
         /// </summary>
@@ -328,7 +326,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_designationcode;
-
+        
         /// <summary>
         /// lbl_category control.
         /// </summary>
@@ -337,7 +335,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_category;
-
+        
         /// <summary>
         /// lbl_categorycode control.
         /// </summary>
@@ -346,7 +344,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_categorycode;
-
+        
         /// <summary>
         /// lbl_pocategoryname control.
         /// </summary>
@@ -355,7 +353,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_pocategoryname;
-
+        
         /// <summary>
         /// lbl_pocategorycode control.
         /// </summary>
@@ -364,7 +362,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_pocategorycode;
-
+        
         /// <summary>
         /// GPValidty_row control.
         /// </summary>
@@ -373,7 +371,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl GPValidty_row;
-
+        
         /// <summary>
         /// lbl_gpno control.
         /// </summary>
@@ -382,7 +380,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_gpno;
-
+        
         /// <summary>
         /// lbl_gpvalidty control.
         /// </summary>
@@ -391,7 +389,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_gpvalidty;
-
+        
         /// <summary>
         /// lbl_gpdays control.
         /// </summary>
@@ -400,7 +398,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_gpdays;
-
+        
         /// <summary>
         /// Image1 control.
         /// </summary>
@@ -409,7 +407,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Image Image1;
-
+        
         /// <summary>
         /// lbl_sftyno control.
         /// </summary>
@@ -418,7 +416,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_sftyno;
-
+        
         /// <summary>
         /// btnShowPopup2 control.
         /// </summary>
@@ -427,7 +425,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlButton btnShowPopup2;
-
+        
         /// <summary>
         /// EmployeeWorksite_Row control.
         /// </summary>
@@ -436,7 +434,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl EmployeeWorksite_Row;
-
+        
         /// <summary>
         /// txt_worksite control.
         /// </summary>
@@ -445,7 +443,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txt_worksite;
-
+        
         /// <summary>
         /// lbl_worksitecode control.
         /// </summary>
@@ -454,7 +452,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_worksitecode;
-
+        
         /// <summary>
         /// InPunchDate_Row control.
         /// </summary>
@@ -463,7 +461,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl InPunchDate_Row;
-
+        
         /// <summary>
         /// txt_date control.
         /// </summary>
@@ -472,7 +470,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txt_date;
-
+        
         /// <summary>
         /// RequiredFieldValidator3 control.
         /// </summary>
@@ -481,7 +479,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator3;
-
+        
         /// <summary>
         /// InPunchTime_Row control.
         /// </summary>
@@ -490,7 +488,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl InPunchTime_Row;
-
+        
         /// <summary>
         /// txt_time control.
         /// </summary>
@@ -499,7 +497,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txt_time;
-
+        
         /// <summary>
         /// RequiredFieldValidator4 control.
         /// </summary>
@@ -508,7 +506,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator4;
-
+        
         /// <summary>
         /// ShowPopup control.
         /// </summary>
@@ -517,7 +515,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button ShowPopup;
-
+        
         /// <summary>
         /// Addto_buttons control.
         /// </summary>
@@ -526,7 +524,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl Addto_buttons;
-
+        
         /// <summary>
         /// lbl_msg control.
         /// </summary>
@@ -535,7 +533,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_msg;
-
+        
         /// <summary>
         /// btn_reset control.
         /// </summary>
@@ -544,7 +542,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btn_reset;
-
+        
         /// <summary>
         /// btn_submit control.
         /// </summary>
@@ -553,7 +551,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btn_submit;
-
+        
         /// <summary>
         /// ViewState_TableRow control.
         /// </summary>
@@ -562,7 +560,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl ViewState_TableRow;
-
+        
         /// <summary>
         /// GridView1 control.
         /// </summary>
@@ -571,7 +569,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView GridView1;
-
+        
         /// <summary>
         /// AttendanceSentMesg control.
         /// </summary>
@@ -580,7 +578,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl AttendanceSentMesg;
-
+        
         /// <summary>
         /// Img_Success control.
         /// </summary>
@@ -589,7 +587,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Image Img_Success;
-
+        
         /// <summary>
         /// Label1 control.
         /// </summary>
@@ -598,7 +596,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label1;
-
+        
         /// <summary>
         /// inpunched_buttons control.
         /// </summary>
@@ -607,7 +605,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl inpunched_buttons;
-
+        
         /// <summary>
         /// btn_tbtpage control.
         /// </summary>
@@ -616,7 +614,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btn_tbtpage;
-
+        
         /// <summary>
         /// btn_soppage control.
         /// </summary>
@@ -625,7 +623,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btn_soppage;
-
+        
         /// <summary>
         /// btn_hmpg control.
         /// </summary>
@@ -634,7 +632,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btn_hmpg;
-
+        
         /// <summary>
         /// SendAttendance_Buttons control.
         /// </summary>
@@ -643,7 +641,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl SendAttendance_Buttons;
-
+        
         /// <summary>
         /// lbl_finalmsg control.
         /// </summary>
@@ -652,7 +650,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_finalmsg;
-
+        
         /// <summary>
         /// btn_finalsubmit control.
         /// </summary>
@@ -661,7 +659,34 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btn_finalsubmit;
-
+        
+        /// <summary>
+        /// inpunch_done_buttons control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl inpunch_done_buttons;
+        
+        /// <summary>
+        /// btn_upload control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btn_upload;
+        
+        /// <summary>
+        /// btn_inpunch control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btn_inpunch;
+        
         /// <summary>
         /// lbl_oldgpno control.
         /// </summary>
@@ -670,7 +695,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_oldgpno;
-
+        
         /// <summary>
         /// nwgprow1 control.
         /// </summary>
@@ -679,7 +704,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl nwgprow1;
-
+        
         /// <summary>
         /// nwgprow2 control.
         /// </summary>
@@ -688,7 +713,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl nwgprow2;
-
+        
         /// <summary>
         /// txt_nwgpno control.
         /// </summary>
@@ -697,7 +722,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txt_nwgpno;
-
+        
         /// <summary>
         /// RequiredFieldValidator5 control.
         /// </summary>
@@ -706,7 +731,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator5;
-
+        
         /// <summary>
         /// lbl_oldgpvalidity control.
         /// </summary>
@@ -715,7 +740,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_oldgpvalidity;
-
+        
         /// <summary>
         /// nwgpvalrow1 control.
         /// </summary>
@@ -724,7 +749,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl nwgpvalrow1;
-
+        
         /// <summary>
         /// nwgpvalrow2 control.
         /// </summary>
@@ -733,7 +758,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl nwgpvalrow2;
-
+        
         /// <summary>
         /// txt_nwgpvalidity control.
         /// </summary>
@@ -742,7 +767,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txt_nwgpvalidity;
-
+        
         /// <summary>
         /// RequiredFieldValidator6 control.
         /// </summary>
@@ -751,7 +776,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator6;
-
+        
         /// <summary>
         /// lbl_oldsftyno control.
         /// </summary>
@@ -760,7 +785,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_oldsftyno;
-
+        
         /// <summary>
         /// nwsftyrow1 control.
         /// </summary>
@@ -769,7 +794,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl nwsftyrow1;
-
+        
         /// <summary>
         /// nwsftyrow2 control.
         /// </summary>
@@ -778,7 +803,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl nwsftyrow2;
-
+        
         /// <summary>
         /// txt_nwsftyno control.
         /// </summary>
@@ -787,7 +812,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txt_nwsftyno;
-
+        
         /// <summary>
         /// RequiredFieldValidator7 control.
         /// </summary>
@@ -796,7 +821,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator7;
-
+        
         /// <summary>
         /// lbl_oldsftyval control.
         /// </summary>
@@ -805,7 +830,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_oldsftyval;
-
+        
         /// <summary>
         /// nwrfidrow1 control.
         /// </summary>
@@ -814,7 +839,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl nwrfidrow1;
-
+        
         /// <summary>
         /// nwrfidrow2 control.
         /// </summary>
@@ -823,7 +848,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl nwrfidrow2;
-
+        
         /// <summary>
         /// txt_nwsftyvalidity control.
         /// </summary>
@@ -832,7 +857,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txt_nwsftyvalidity;
-
+        
         /// <summary>
         /// RequiredFieldValidator8 control.
         /// </summary>
@@ -841,7 +866,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator8;
-
+        
         /// <summary>
         /// lbl_oldpvvalidity control.
         /// </summary>
@@ -850,7 +875,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_oldpvvalidity;
-
+        
         /// <summary>
         /// nwpvrow1 control.
         /// </summary>
@@ -859,7 +884,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl nwpvrow1;
-
+        
         /// <summary>
         /// nwpvrow2 control.
         /// </summary>
@@ -868,7 +893,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl nwpvrow2;
-
+        
         /// <summary>
         /// txt_nwpvvalidity control.
         /// </summary>
@@ -877,7 +902,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txt_nwpvvalidity;
-
+        
         /// <summary>
         /// RequiredFieldValidator9 control.
         /// </summary>
@@ -886,7 +911,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator9;
-
+        
         /// <summary>
         /// Label2 control.
         /// </summary>
@@ -895,7 +920,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label2;
-
+        
         /// <summary>
         /// btn_gtpsedit control.
         /// </summary>
@@ -904,7 +929,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btn_gtpsedit;
-
+        
         /// <summary>
         /// btn_cancel control.
         /// </summary>

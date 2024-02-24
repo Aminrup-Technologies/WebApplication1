@@ -363,6 +363,8 @@
 								</div>
 							</div>
 
+                            
+
 							<%--button start--%>
 							<div class="col-md-6 center-margin" id="inpunched_buttons" runat="server" visible="false">
 								<div class="ln_solid"></div>
@@ -388,6 +390,16 @@
 								</div>
 							</div>
 							<%--Final SAVE button end--%>
+
+                            <%--button start--%>
+                            <div class="col-md-6 center-margin" id="inpunch_done_buttons" runat="server" visible="false">
+                                <div class="ln_solid"></div>
+                                <div class="col-md-12 col-sm-12 center" style="text-align: center;">
+                                    <asp:Button ID="btn_upload" runat="server" Text="Permit Upload" CssClass="btn btn-primary btn-sm" Visible="true" OnClick="btn_upload_Click" />
+                                    <asp:Button ID="btn_inpunch" runat="server" Text="In-Punch Page" CssClass="btn btn-info btn-sm" Visible="false" OnClick="btn_inpunch_Click" />
+                                </div>
+                            </div>
+                            <%--button end--%>
 						</div>
 					</div>
 				</div>

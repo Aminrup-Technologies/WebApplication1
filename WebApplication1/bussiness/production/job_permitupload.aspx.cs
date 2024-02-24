@@ -59,19 +59,15 @@ namespace WebApplication1.bussiness.production
         private void ActiveJOB_Checker()
         {
             Int32 Activejobcount = CC.Find_PendingPermitUpload(Session["WORKMAN"].ToString());
-            Int32 PendingUploadjobcount = CC.Find_PendingPermitUploadStatus(Session["WORKMAN"].ToString());
+            //Int32 PendingUploadjobcount = CC.Find_PendingPermitUploadStatus(Session["WORKMAN"].ToString());
 
             if (Activejobcount > 0)
             {
-                dbcl.FillCombo(DDL_JOBID, "select JOBID from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and JOBID_Status='Active' and EntryExit='Entry' order by CreatedDate desc ");
-            }
-            else if (PendingUploadjobcount > 0)
-            {
-                dbcl.FillCombo(DDL_JOBID, "select JOBID from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and JOBID_Status='Active' and FinalUpldStatus='No' order by CreatedDate desc ");
+                dbcl.FillCombo(DDL_JOBID, "select CONCAT(JOBID, ' : ', CONVERT(VARCHAR, CreatedDate, 105)) AS JOBID from tbl_jobs where [CreatedDate] >= DATEADD(DAY, -3, GETDATE()) and Creator_Workman='" + Session["WORKMAN"].ToString() + "' and JOBID_Status='Active' and EntryExit='Entry' order by CreatedDate desc");
             }
             else
             {
-                string title = "Notifications :";
+                string title = "70 : Notifications :";
                 string body = "NO Active JOB ID Found...! Kindly create a JOB ID and proceed.";
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
@@ -95,7 +91,24 @@ namespace WebApplication1.bussiness.production
             }
             else
             {
-                string ddljobid = DDL_JOBID.SelectedItem.Text.ToString();
+                string jobID = DDL_JOBID.SelectedItem.Text.ToString();
+                string ddljobid = "";
+                string jobdate = "";
+                string[] parts = jobID.Split(new string[] { " : " }, StringSplitOptions.None);
+
+                if (parts.Length == 2)
+                {
+                    ddljobid = parts[0]; // This will contain "JOB0095467"
+                    //jobdate = parts[1]; // This will contain "2024-02-02"
+
+                    string[] dateParts = parts[1].Split('-');
+                    if (dateParts.Length == 3)
+                    {
+                        // Convert date to "YYYY-MM-DD" format
+                        jobdate = $"{dateParts[2]}-{dateParts[1]}-{dateParts[0]}";
+                    }
+                }
+
                 Bind_JOBIDDetails(ddljobid);
 
                 string CmdString2 = "select * from tbl_jobspermit where JOBID='" + ddljobid + "' order by Id desc";
@@ -227,9 +240,13 @@ namespace WebApplication1.bussiness.production
             }
             catch (Exception ex)
             {
-                ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup();", true);
-                lblMessage.ForeColor = System.Drawing.Color.Red;
-                lblMessage.Text = "Error: " + ex.Message.ToString();
+                string title = "243 : Notifications :";
+                string body = ex.Message.ToString();
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+
+                //ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup();", true);
+                //lblMessage.ForeColor = System.Drawing.Color.Red;
+                //lblMessage.Text = "245 : Error: " + ex.Message.ToString();
             }
         }
 
@@ -364,8 +381,8 @@ namespace WebApplication1.bussiness.production
                                 // Resize and compress the image before saving
                                 using (System.Drawing.Image originalImage = System.Drawing.Image.FromStream(FileUpload1.PostedFile.InputStream))
                                 {
-                                    int maxWidth = 800; // Adjust this value based on your requirements
-                                    int maxHeight = 600; // Adjust this value based on your requirements
+                                    int maxWidth = 2000; // Adjust this value based on your requirements
+                                    int maxHeight = 1200; // Adjust this value based on your requirements
 
                                     // Calculate new dimensions while maintaining aspect ratio
                                     int newWidth, newHeight;
@@ -454,7 +471,24 @@ namespace WebApplication1.bussiness.production
 
                             InsertIntoDB(Server_FileName, FileType, ext, bytes);
 
-                            string ddljobid = DDL_JOBID.SelectedItem.Text.ToString();
+                            string jobID = DDL_JOBID.SelectedItem.Text.ToString();
+                            string ddljobid = "";
+                            string jobdate = "";
+                            string[] parts = jobID.Split(new string[] { " : " }, StringSplitOptions.None);
+
+                            if (parts.Length == 2)
+                            {
+                                ddljobid = parts[0]; // This will contain "JOB0095467"
+                                                     //jobdate = parts[1]; // This will contain "2024-02-02"
+
+                                string[] dateParts = parts[1].Split('-');
+                                if (dateParts.Length == 3)
+                                {
+                                    // Convert date to "YYYY-MM-DD" format
+                                    jobdate = $"{dateParts[2]}-{dateParts[1]}-{dateParts[0]}";
+                                }
+                            }
+
                             Bind_JOBIDDetails(ddljobid);
                             VisibilityOffAfterLoading();
                         }
@@ -462,7 +496,7 @@ namespace WebApplication1.bussiness.production
                         {
                             ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup();", true);
                             lblMessage.ForeColor = System.Drawing.Color.Red;
-                            lblMessage.Text = "Error: " + ex.Message.ToString();
+                            lblMessage.Text = "495 : Error: " + ex.Message.ToString();
 
                             FileFlag = false;
                             lbl_fileyesno.Text = "No";
@@ -480,9 +514,9 @@ namespace WebApplication1.bussiness.production
                 }
                 catch (Exception ex)
                 {
-                    ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup();", true);
-                    lblMessage.ForeColor = System.Drawing.Color.Red;
-                    lblMessage.Text = "Error: " + ex.Message.ToString();
+                    string title = "517 : Notifications :";
+                    string body = ex.Message.ToString();
+                    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
 
                     FileFlag = false;
                     lbl_fileyesno.Text = "No";
@@ -529,9 +563,9 @@ namespace WebApplication1.bussiness.production
             }
             catch (Exception ex)
             {
-                ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup();", true);
-                lblMessage.ForeColor = System.Drawing.Color.Red;
-                lblMessage.Text = "Error: " + ex.Message.ToString();
+                string title = "567 : Notifications :";
+                string body = ex.Message.ToString();
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
 
@@ -548,36 +582,41 @@ namespace WebApplication1.bussiness.production
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@JOBID", lbl_jobid.Text.ToString());
                 cmd.Parameters.AddWithValue("@UploadType", DDL_UploadType.SelectedItem.Text.ToString());
-                cmd.Parameters.AddWithValue("@JOB_Status", "Permit Uploaded");
+                
                 Int32 count = CC.Find_PermitUploadCount(lbl_jobid.Text.ToString());
                 Int32 newcount = 0;
                 string UploadStatus = "";
                 string Masterstatus = "";
                 string MasterCode = "";
+                string jobstatus = "";
                 if (count == 0)
                 {
-                    if (DDL_UploadType.SelectedItem.Text.ToString() == "PDF File")
+                    if (DDL_UploadType.SelectedItem.Text.ToString() == "PDF File" || DDL_UploadType.SelectedItem.Text.ToString() == "Photograph")
                     {
                         newcount = 1;
                         UploadStatus = "Yes";
                         Masterstatus = "Yes";
-                        MasterCode = "2";
+                        MasterCode = "3";
+                        jobstatus = "Permit Uploaded";
                     }
-                    else
-                    {
-                        newcount = 1;
-                        UploadStatus = "Yes";
-                        Masterstatus = "No";
-                        MasterCode = "1";
-                    }
+                    //else
+                    //{
+                    //    newcount = 1;
+                    //    UploadStatus = "Yes";
+                    //    Masterstatus = "No";
+                    //    MasterCode = "3";
+                    //    jobstatus = "Permit Uploaded";
+                    //}
                 }
                 else
                 {
                     newcount = count + 1;
                     UploadStatus = "Yes";
                     Masterstatus = "Yes";
-                    MasterCode = "2";
+                    MasterCode = "3";
+                    jobstatus = "Permit Uploaded";
                 }
+                cmd.Parameters.AddWithValue("@JOB_Status", jobstatus);
                 cmd.Parameters.AddWithValue("@FinalUpldStatus", Masterstatus);
                 cmd.Parameters.AddWithValue("@FileCount", newcount);
                 cmd.Parameters.AddWithValue("@PermitUpload", UploadStatus);
@@ -588,10 +627,9 @@ namespace WebApplication1.bussiness.production
             }
             catch (Exception ex)
             {
-                ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup();", true);
-                lblMessage.ForeColor = System.Drawing.Color.Red;
-                lblMessage.Text = "Error: " + ex.Message.ToString();
-                //throw;
+                string title = "630 : Notifications :";
+                string body = ex.Message.ToString();
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
 
@@ -672,10 +710,9 @@ namespace WebApplication1.bussiness.production
             }
             catch (Exception ex)
             {
-                //ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup();", true);
-                //lbl_msg.ForeColor = System.Drawing.Color.Red;
-                //lbl_msg.Text = "Error: " + ex.Message.ToString();
-                throw;
+                string title = "713 : Notifications :";
+                string body = ex.Message.ToString();
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
 
@@ -758,12 +795,28 @@ namespace WebApplication1.bussiness.production
                     ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
                 }
 
-                string ddljobid = DDL_JOBID.SelectedItem.Text.ToString();
+                string jobID = DDL_JOBID.SelectedItem.Text.ToString();
+                string ddljobid = "";
+                string jobdate = "";
+                string[] parts = jobID.Split(new string[] { " : " }, StringSplitOptions.None);
+
+                if (parts.Length == 2)
+                {
+                    ddljobid = parts[0]; // This will contain "JOB0095467"
+                    //jobdate = parts[1]; // This will contain "2024-02-02"
+
+                    string[] dateParts = parts[1].Split('-');
+                    if (dateParts.Length == 3)
+                    {
+                        // Convert date to "YYYY-MM-DD" format
+                        jobdate = $"{dateParts[2]}-{dateParts[1]}-{dateParts[0]}";
+                    }
+                }
                 Bind_JOBIDDetails(ddljobid);
             }
             catch (Exception ex)
             {
-                string title = "Notifications :";
+                string title = "819 : Notifications :";
                 string body = ex.Message;
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
                 //throw;
@@ -792,7 +845,7 @@ namespace WebApplication1.bussiness.production
             }
             catch (IOException ioExp)
             {
-                string title = "Notifications :";
+                string title = "848 : Notifications :";
                 string body = ioExp.Message;
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }

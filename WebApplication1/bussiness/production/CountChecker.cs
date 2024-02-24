@@ -21,7 +21,76 @@ namespace WebApplication1.bussiness.production
                 string cmdString = "";
                 dbcl.Sqlconnection();
                 dbcl.ConnectDb();
-                cmdString = "SELECT COUNT([JOBID]) FROM [tbl_jobs] WHERE [Creator_Workman] = @Creator_Workman AND [JOBID_Status] = 'Active' AND [CreatedDate] >= DATEADD(DAY, -7, GETDATE())";
+                cmdString = "SELECT COUNT([JOBID]) FROM [tbl_jobs] WHERE [Creator_Workman] = @Creator_Workman AND [JOBID_Status] = 'Active' AND [CreatedDate] >= DATEADD(DAY, -3, GETDATE()) and CSM_Documents='Yes' and CSM_Documents='Yes' and TBT_Count='0'";
+                SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@Creator_Workman", workman);
+                count = Convert.ToInt32(cmd.ExecuteScalar());
+                dbcl.Conn.Close();
+                return count;
+            }
+            catch (SqlException ex)
+            {
+                count = 0;
+                // Handle the exception, log it, or throw a custom exception.
+                // For example, you can log the exception details to the console or a log file.
+                Console.WriteLine("SQL Exception: " + ex.Message);
+                //throw; // rethrow the exception if needed
+            }
+            catch (Exception ex)
+            {
+                count = 0;
+                // Handle other types of exceptions if necessary
+                Console.WriteLine("Exception: " + ex.Message);
+                //throw; // rethrow the exception if needed
+            }
+            return count;
+        }
+
+        public Int32 Find_ActiveJOBCountforJOBINPunch(string workman, string region)
+        {
+            Int32 count = 0;
+            try
+            {
+                string cmdString = "";
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+                cmdString = "SELECT COUNT([JOBID]) FROM [tbl_jobs] WHERE [CreatedDate] >= DATEADD(DAY, -3, GETDATE()) and [Creator_Workman] = @Creator_Workman AND [JOBID_Status] = 'Active'";
+                SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@Creator_Workman", workman);
+                count = Convert.ToInt32(cmd.ExecuteScalar());
+                dbcl.Conn.Close();
+                return count;
+            }
+            catch (SqlException ex)
+            {
+                count = 0;
+                // Handle the exception, log it, or throw a custom exception.
+                // For example, you can log the exception details to the console or a log file.
+                Console.WriteLine("SQL Exception: " + ex.Message);
+                //throw; // rethrow the exception if needed
+            }
+            catch (Exception ex)
+            {
+                count = 0;
+                // Handle other types of exceptions if necessary
+                Console.WriteLine("Exception: " + ex.Message);
+                //throw; // rethrow the exception if needed
+            }
+            return count;
+        }
+
+
+        public Int32 Find_ActiveJOBCountforSOP(string workman, string region)
+        {
+            Int32 count = 0;
+            try
+            {
+                string cmdString = "";
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+                cmdString = "SELECT COUNT([JOBID]) FROM [tbl_jobs] WHERE [CreatedDate] >= DATEADD(DAY, -3, GETDATE()) and [Creator_Workman] = @Creator_Workman AND [JOBID_Status] = 'Active' AND CSM_Documents='Yes' and SOP_Count=0 and SOPID is null";
                 SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@Creator_Workman", workman);
@@ -50,21 +119,13 @@ namespace WebApplication1.bussiness.production
 
         public Int32 Find_ActiveJOBCountforOUTPunch(string workman, string region)
         {
-            string cmdString = "";
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
-            if (region == "AGL")
-            {
-                cmdString = "select COUNT(JOBID) from tbl_jobs where Creator_Workman=@Creator_Workman and JOBID_Status='Active'";
-            }
-            else
-            {
-                cmdString = "select COUNT(JOBID) from tbl_jobs where Creator_Workman=@Creator_Workman and JOBID_Status='Active'";
-            }
-            //string cmdString = "select COUNT(JOBID) from tbl_jobs where Creator_Workman=@Creator_Workman and JOBID_Status='Active' and FinalUpldStatus='Yes'";
+            string cmdString = "select COUNT(JOBID) from tbl_jobs where [CreatedDate] >= DATEADD(DAY, -3, GETDATE()) and Creator_Region=@Creator_Region and Creator_Workman=@Creator_Workman and JOBID_Status='Active' and FinalUpldStatus='Yes'";
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
             cmd.CommandType = CommandType.Text;
             cmd.Parameters.AddWithValue("@Creator_Workman", workman);
+            cmd.Parameters.AddWithValue("@Creator_Region", region);
             Int32 tbmcount = Convert.ToInt32(cmd.ExecuteScalar());
             dbcl.Conn.Close();
             return tbmcount;
@@ -100,7 +161,7 @@ namespace WebApplication1.bussiness.production
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
-            string cmdString = "select COUNT(JOBID) from tbl_jobs where Creator_Workman=@Creator_Workman and JOBID_Status='Active' and EntryExit='Entry'";
+            string cmdString = "select COUNT(JOBID) from tbl_jobs where [CreatedDate] >= DATEADD(DAY, -3, GETDATE()) and Creator_Workman=@Creator_Workman and JOBID_Status='Active' and EntryExit='Entry'";
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
             cmd.CommandType = CommandType.Text;
             cmd.Parameters.AddWithValue("@Creator_Workman", workman);
@@ -112,7 +173,7 @@ namespace WebApplication1.bussiness.production
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
-            string cmdString = "select COUNT(JOBID) from tbl_jobs where Creator_Workman=@Creator_Workman and JOBID_Status='Active' and FinalUpldStatus='No'";
+            string cmdString = "select COUNT(JOBID) from tbl_jobs where [CreatedDate] >= DATEADD(DAY, -3, GETDATE()) and Creator_Workman=@Creator_Workman and JOB_Status='In-Punch Done' and FinalUpldStatus='No'";
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
             cmd.CommandType = CommandType.Text;
             cmd.Parameters.AddWithValue("@Creator_Workman", workman);
@@ -151,7 +212,7 @@ namespace WebApplication1.bussiness.production
         public Int32 CheckforPendingOUT(string jobid, string supvwrkman)
         {
             dbcl.Sqlconnection();
-            string cmdstring = "select count (Id) from tbl_attendance where JOBID= '" + jobid + "' and Creator_Workman='" + supvwrkman + "'  and AttendanceStatus = 'Entry'";
+            string cmdstring = "select count (JOBID) from tbl_attendance where JOBID= '" + jobid + "' and Creator_Workman='" + supvwrkman + "'  and AttendanceStatus = 'Entry'";
             dbcl.ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdstring, dbcl.Conn);
             cmd.CommandType = CommandType.Text;
@@ -163,7 +224,7 @@ namespace WebApplication1.bussiness.production
         public Int32 CheckforPendingPermit(string jobid, string supvwrkman)
         {
             dbcl.Sqlconnection();
-            string cmdstring = "select count (Id) from tbl_jobs where JOBID= '" + jobid + "' and Creator_Workman='" + supvwrkman + "'  and FinalUpldStatus = 'No'";
+            string cmdstring = "select count (JOBID) from tbl_jobs where JOBID= '" + jobid + "' and Creator_Workman='" + supvwrkman + "'  and FinalUpldStatus = 'No'";
             dbcl.ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdstring, dbcl.Conn);
             cmd.CommandType = CommandType.Text;
@@ -279,25 +340,32 @@ namespace WebApplication1.bussiness.production
             string cmdstring = "IF EXISTS (SELECT 1 FROM tbl_toolboxtalkdata WHERE Ref_JOBID = @JOBID AND Ref_JOBDate = @JobDate) SELECT 1 ELSE SELECT 0";
             dbcl.ConnectDb();
 
-            using (SqlCommand cmd = new SqlCommand(cmdstring, dbcl.Conn))
+            try
             {
-                cmd.CommandType = CommandType.Text;
-                cmd.Parameters.AddWithValue("@JOBID", JOBID);
-                cmd.Parameters.AddWithValue("@JobDate", jobDate);
+                using (SqlCommand cmd = new SqlCommand(cmdstring, dbcl.Conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+                    cmd.Parameters.AddWithValue("@JOBID", JOBID);
+                    cmd.Parameters.AddWithValue("@JobDate", jobDate);
 
-                // ExecuteScalar will return 1 if a record exists, 0 otherwise
-                int result = Convert.ToInt32(cmd.ExecuteScalar());
+                    // ExecuteScalar will return 1 if a record exists, 0 otherwise
+                    int exeresult = Convert.ToInt32(cmd.ExecuteScalar());
+                    dbcl.DisconnectDb();
 
-                dbcl.DisconnectDb();
-
-                return result == 1;  // Return true if a record exists, false otherwise
+                    return exeresult == 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                //Console.WriteLine("Error: " + ex.Message);
+                return false;
             }
         }
 
         public Int32 GetSOPCount(string JOBID)
         {
             dbcl.Sqlconnection();
-            string cmdstring = "select count (Id) from tbl_soptraining where Ref_JOBID='" + JOBID + "'";
+            string cmdstring = "select count (Ref_JOBID) from tbl_soptraining where Ref_JOBID='" + JOBID + "'";
             dbcl.ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdstring, dbcl.Conn);
             cmd.CommandType = CommandType.Text;

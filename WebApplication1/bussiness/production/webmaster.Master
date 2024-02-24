@@ -63,31 +63,54 @@
     <script src="../../Scripts/jquery-1.7.2.min.js"></script>
     <script type="text/javascript">
         var i = 0;
+        var idleTimeout;
+
+        function startIdleTimer() {
+            idleTimeout = setTimeout(function () {
+                location.href = 'http://atswork.in/';
+            }, 5 * 60 * 1000); // 5 minutes in milliseconds
+        }
+
+        function resetIdleTimer() {
+            clearTimeout(idleTimeout);
+            startIdleTimer();
+        }
+
         function ShowCurrentTime() {
             var dt = new Date();
-            document.getElementById("lblTime1").innerHTML = 8 - i + " Minutes";
+            document.getElementById("lblTime1").innerHTML = 5 - i + " Minutes"; // Adjusted to 5 minutes
             i++;
-            if (i == 8) {
-                setTimeout("location.href='http://atswork.in/'", 0);
+            if (i == 6) { // Adjusted to 6 since you want to stop at i = 5
+                location.href = 'http://atswork.in/';
+                return;
             }
-            window.setTimeout("ShowCurrentTime()", 800000); // Here 1000(milliseconds) means 1 sec
+            resetIdleTimer(); // Reset idle timer on any activity
+            window.setTimeout(ShowCurrentTime, 60 * 1000); // Adjusted to 1 minute (60 seconds)
         }
 
         $(document).ready(function () {
+            startIdleTimer(); // Start idle timer when the page loads
+            ShowCurrentTime();
             ShowTime();
         });
-
 
         function ShowTime() {
             var dt = new Date();
             document.getElementById("lblTime").innerHTML = dt.toLocaleTimeString();
-            window.setTimeout("ShowTime()", 800000); // Here 1000(milliseconds) means one 1 Sec
+            window.setTimeout(ShowTime, 60 * 1000); // Adjusted to 1 minute (60 seconds)
         }
 
         function reloadPage() {
             location.reload();
         }
+
+        // Event listeners for user activity
+        document.addEventListener("mousemove", resetIdleTimer);
+        document.addEventListener("keypress", resetIdleTimer);
     </script>
+
+
+
 </head>
 <body class="nav-md footer_fixed" onload="ShowCurrentTime()">
     <form id="form1" runat="server">
@@ -355,10 +378,12 @@
         <!-- footer content -->
         <footer>
             <div class="text-center" id="iprow" runat="server" visible="false">
-                Login from IP : <asp:Label ID="lbl_IPAddress" runat="server" Text="N/A" Visible="false"></asp:Label>
+                Login from IP :
+                <asp:Label ID="lbl_IPAddress" runat="server" Text="N/A" Visible="false"></asp:Label>
             </div>
             <div class="text-right small">
-                Autologout > <asp:Label ID="lblTime1" runat="server" Text="N/A" Font-Bold="true" ForeColor="IndianRed" Visible="true"></asp:Label>
+                Autologout >
+                <asp:Label ID="lblTime1" runat="server" Text="N/A" Font-Bold="true" ForeColor="IndianRed" Visible="true"></asp:Label>
                 || Time :
 					<asp:Label ID="lblTime" runat="server" Text="N/A" Font-Bold="true" ForeColor="Black" Visible="true"></asp:Label>
                 || © 2021-2024 <span style="font-weight: bold; color: darkred;">ATS,JSR</span>

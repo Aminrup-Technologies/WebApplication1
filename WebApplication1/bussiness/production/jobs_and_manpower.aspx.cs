@@ -112,7 +112,7 @@ namespace WebApplication1.bussiness.production
             string cmdString = "";
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
-            cmdString = "select COUNT(JOBID) from tbl_jobs where Creator_Workman=@Creator_Workman and JOBID_Status='Active' and  JOB_Status='In-Punch Done' and YEAR(CreatedDate)='" + DateTime.Now.Year + "' and MONTH(CreatedDate)='" + DateTime.Now.Month + "'";
+            cmdString = "select COUNT(JOBID) from tbl_jobs where Creator_Workman=@Creator_Workman and EntryExit='Entry' and [CreatedDate] >= DATEADD(DAY, -3, GETDATE())";
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
             cmd.CommandType = CommandType.Text;
             cmd.Parameters.AddWithValue("@Creator_Workman", workman);
@@ -126,7 +126,7 @@ namespace WebApplication1.bussiness.production
             string cmdString = "";
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
-            cmdString = "select COUNT(JOBID) from tbl_jobs where Creator_Workman=@Creator_Workman and JOBID_Status='Active' and JOB_Status='Permit Uploaded' and YEAR(CreatedDate)='" + DateTime.Now.Year + "' and MONTH(CreatedDate)='" + DateTime.Now.Month + "'";
+            cmdString = "select COUNT(JOBID) from tbl_jobs where Creator_Workman=@Creator_Workman and FinalUpldStatus='Yes' and JOB_Status='Permit Uploaded' and [CreatedDate] >= DATEADD(DAY, -3, GETDATE())";
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
             cmd.CommandType = CommandType.Text;
             cmd.Parameters.AddWithValue("@Creator_Workman", workman);
@@ -140,7 +140,7 @@ namespace WebApplication1.bussiness.production
             string cmdString = "";
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
-            cmdString = "select COUNT(JOBID) from tbl_jobs where Creator_Workman=@Creator_Workman and JOBID_Status='Active' and JOB_Status='Out-Punch Done' and YEAR(CreatedDate)='" + DateTime.Now.Year + "' and MONTH(CreatedDate)='" + DateTime.Now.Month + "'";
+            cmdString = "select COUNT(JOBID) from tbl_jobs where Creator_Workman=@Creator_Workman and EntryExit='Entry' and FinalUpldStatus='Yes' and JOB_Status='Permit Uploaded' and [CreatedDate] >= DATEADD(DAY, -3, GETDATE())";
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
             cmd.CommandType = CommandType.Text;
             cmd.Parameters.AddWithValue("@Creator_Workman", workman);
@@ -155,7 +155,7 @@ namespace WebApplication1.bussiness.production
             string cmdString = "";
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
-            cmdString = "select COUNT(JOBID) from tbl_jobs where Creator_Workman=@Creator_Workman and BillingCode='MS' and YEAR(CreatedDate)='" + DateTime.Now.Year + "' and MONTH(CreatedDate)='" + DateTime.Now.Month + "'";
+            cmdString = "select COUNT(JOBID) from tbl_jobs where Creator_Workman=@Creator_Workman and BillingCode='MS' and MONTH(CreatedDate) = MONTH(GETDATE()) AND YEAR(CreatedDate) = YEAR(GETDATE())";
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
             cmd.CommandType = CommandType.Text;
             cmd.Parameters.AddWithValue("@Creator_Workman", workman);
@@ -169,7 +169,7 @@ namespace WebApplication1.bussiness.production
             string cmdString = "";
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
-            cmdString = "select COUNT(JOBID) from tbl_jobs where Creator_Workman=@Creator_Workman and BillingCode='LI' and YEAR(CreatedDate)='" + DateTime.Now.Year + "' and MONTH(CreatedDate)='" + DateTime.Now.Month + "'";
+            cmdString = "select COUNT(JOBID) from tbl_jobs where Creator_Workman=@Creator_Workman and BillingCode='LI' and MONTH(CreatedDate) = MONTH(GETDATE()) AND YEAR(CreatedDate) = YEAR(GETDATE())";
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
             cmd.CommandType = CommandType.Text;
             cmd.Parameters.AddWithValue("@Creator_Workman", workman);

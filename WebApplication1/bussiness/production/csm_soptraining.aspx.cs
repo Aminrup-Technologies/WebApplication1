@@ -43,16 +43,16 @@ namespace WebApplication1.bussiness.production
 
         private void ActiveJOB_Checker()
         {
-            Int32 Activejobcount = CC.Find_ActiveJOBCountforINPunch(Session["WORKMAN"].ToString(), Session["REGION"].ToString());
+            Int32 Activejobcount = CC.Find_ActiveJOBCountforSOP(Session["WORKMAN"].ToString(), Session["REGION"].ToString());
             if (Activejobcount > 0)
             {
-                dbcl.FillCombo(DDL_JOBID, "select JOBID from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and JOBID_Status='Active' order by CreatedDate desc ");
+                dbcl.FillCombo(DDL_JOBID, "select CONCAT(JOBID, ' : ', CONVERT(VARCHAR, CreatedDate, 105)) AS JOBID from tbl_jobs where [CreatedDate] >= DATEADD(DAY, -3, GETDATE()) and Creator_Workman='" + Session["WORKMAN"].ToString() + "' and JOBID_Status='Active' and SOP_Count=0 and SOPID is null order by CreatedDate desc ");
             }
             else
             {
-                string title = "Notifications :";
+                string title = "53 :Notifications :";
                 string body = "NO Active JOB ID Found...! Kindly create a JOB ID and proceed.";
-                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup_53", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
 
@@ -60,18 +60,34 @@ namespace WebApplication1.bussiness.production
         {
             if (DDL_JOBID.SelectedIndex == 0)
             {
-                string title = "Notifications :";
+                string title = "63 : Notifications :";
                 string body = "Select Valid JOBID";
-                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup_63", "ShowPopup('" + title + "', '" + body + "');", true);
 
                 JOBIDDetails_Row.Visible = false;
                 AttachedAttendanceRow.Visible = false;
             }
             else
             {
-                string ddljobid = DDL_JOBID.SelectedItem.Text.ToString();
+                string jobID = DDL_JOBID.SelectedItem.Text.ToString();
+                string ddljobid = "";
+                string jobdate = "";
+                string[] parts = jobID.Split(new string[] { " : " }, StringSplitOptions.None);
 
-                Bind_JOBIDDetails(ddljobid);
+                if (parts.Length == 2)
+                {
+                    ddljobid = parts[0]; // This will contain "JOB0095467"
+                    //jobdate = parts[1]; // This will contain "2024-02-02"
+
+                    string[] dateParts = parts[1].Split('-');
+                    if (dateParts.Length == 3)
+                    {
+                        // Convert date to "YYYY-MM-DD" format
+                        jobdate = $"{dateParts[2]}-{dateParts[1]}-{dateParts[0]}";
+                    }
+                }
+
+                Bind_JOBIDDetails(ddljobid, jobdate);
                 JOBIDDetails_Row.Visible = true;
 
 
@@ -110,7 +126,7 @@ namespace WebApplication1.bussiness.production
         {
             try
             {
-                string query = "select * from tbl_soptraining where Ref_JOBID=@Ref_JOBID";
+                string query = "select SOP_ID, SOPNumber, SOPTitle, SOPTrainer, SOPDuration, SafetySupvWrk, SafetyOfficerWrk, SOPPhoto, SOP_PhotoID, SOP_PhotoFile from tbl_soptraining where Ref_JOBID=@Ref_JOBID";
                 SqlParameter[] pram = {
                                           new SqlParameter("@Ref_JOBID",jobid),
                                       };
@@ -161,9 +177,9 @@ namespace WebApplication1.bussiness.production
             }
             catch (Exception ex)
             {
-                string title = "Notifications :";
+                string title = "164 : Notifications :";
                 string body = ex.Message;
-                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup_164", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
         private void Bind_SafetySupervisors(string CmdString)
@@ -194,13 +210,14 @@ namespace WebApplication1.bussiness.production
             dbcl.DisconnectDb();
         }
 
-        private void Bind_JOBIDDetails(string jobid)
+        private void Bind_JOBIDDetails(string jobid, string jobdate)
         {
             try
             {
-                string query = "select * from tbl_jobs where JOBID=@JOBID";
+                string query = "select CreatedDate, Creator_Site, Creator_Workman, Creator_Region, Creator_Company, Creator_Name, Creator_SiteCode, WorkOrderNo, JOB_Title, JOB_Region, JOB_Company, JOB_Site, JOB_SiteCode, JOB_InchargeWrk, JOB_InchargeName, JOB_Dept, JOB_Location, JOB_Shift, JOB_PermitNo from tbl_jobs where JOBID=@JOBID and CreatedDate=@CreatedDate";
                 SqlParameter[] pram = {
                                           new SqlParameter("@JOBID",jobid),
+                                          new SqlParameter("@CreatedDate",jobdate),
                                       };
                 dt = dbcl.SPreturn_dt(query, pram);
                 if (dt.Rows.Count > 0)
@@ -247,7 +264,7 @@ namespace WebApplication1.bussiness.production
 
                     lbl_crtrsitecode.Text = dt.Rows[0]["Creator_SiteCode"].ToString();
                     lbl_wrkordr.Text = dt.Rows[0]["WorkOrderNo"].ToString();
-                    lbl_jobid.Text = dt.Rows[0]["JOBID"].ToString();
+                    lbl_jobid.Text = jobid;
                     lbl_jobtitle.Text = dt.Rows[0]["JOB_Title"].ToString();
                     lbl_jobrgn.Text = dt.Rows[0]["JOB_Region"].ToString();
                     lbl_jobcompay.Text = dt.Rows[0]["JOB_Company"].ToString();
@@ -276,17 +293,33 @@ namespace WebApplication1.bussiness.production
             }
             catch (Exception ex)
             {
-                string title = "Notifications :";
+                string title = "279 : Notifications :";
                 string body = ex.Message;
-                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup_281", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
 
-        private void CheckforAttachedAttendnace()
+        private void CheckforAttachedAttendnace0()
         {
-            string ddljobid = DDL_JOBID.SelectedItem.Text.ToString();
+            string jobID = DDL_JOBID.SelectedItem.Text.ToString();
+            string ddljobid = "";
+            string jobdate = "";
+            string[] parts = jobID.Split(new string[] { " : " }, StringSplitOptions.None);
+
+            if (parts.Length == 2)
+            {
+                ddljobid = parts[0]; // This will contain "JOB0095467"
+                                     //jobdate = parts[1]; // This will contain "2024-02-02"
+
+                string[] dateParts = parts[1].Split('-');
+                if (dateParts.Length == 3)
+                {
+                    // Convert date to "YYYY-MM-DD" format
+                    jobdate = $"{dateParts[2]}-{dateParts[1]}-{dateParts[0]}";
+                }
+            }
             dbcl.Sqlconnection();
-            string cmdstring = "select count (Id) from tbl_attendance where JOBID= '" + ddljobid.ToString() + "' and Creator_Workman='" + Session["WORKMAN"].ToString() + "'  and AttendanceStatus = 'Entry'";
+            string cmdstring = "select count (JOBID) from tbl_attendance where JOBID= '" + ddljobid.ToString() + "' and Creator_Workman='" + Session["WORKMAN"].ToString() + "'  and AttendanceStatus = 'Entry'";
             dbcl.ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdstring, dbcl.Conn);
             cmd.CommandType = CommandType.Text;
@@ -310,12 +343,83 @@ namespace WebApplication1.bussiness.production
             dbcl.DisconnectDb();
         }
 
+        private void CheckforAttachedAttendnace()
+        {
+            string jobID = DDL_JOBID.SelectedItem.Text.ToString();
+            string ddljobid = "";
+            string jobdate = "";
+            string[] parts = jobID.Split(new string[] { " : " }, StringSplitOptions.None);
+
+            if (parts.Length == 2)
+            {
+                ddljobid = parts[0]; // This will contain "JOB0095467"
+                string[] dateParts = parts[1].Split('-');
+                if (dateParts.Length == 3)
+                {
+                    // Convert date to "YYYY-MM-DD" format
+                    jobdate = $"{dateParts[2]}-{dateParts[1]}-{dateParts[0]}";
+                }
+            }
+
+            // Use parameterized query to prevent SQL injection
+            string cmdstring = "SELECT COUNT(JOBID) FROM tbl_attendance WHERE JOBID = @ddljobid AND CreatedDate=@CreatedDate and Creator_Workman = @workman AND AttendanceStatus = 'Entry'";
+            dbcl.Sqlconnection();
+            using (SqlConnection conn = dbcl.Conn)
+            {
+                using (SqlCommand cmd = new SqlCommand(cmdstring, conn))
+                {
+                    cmd.Parameters.AddWithValue("@ddljobid", ddljobid);
+                    cmd.Parameters.AddWithValue("@workman", Session["WORKMAN"].ToString());
+                    cmd.Parameters.AddWithValue("@CreatedDate", jobdate);
+                    try
+                    {
+                        conn.Open();
+                        int count = Convert.ToInt32(cmd.ExecuteScalar());
+                        AttachedAttendanceRow.Visible = count != 0;
+
+                        if (AttachedAttendanceRow.Visible)
+                        {
+                            Bind_AttendanceGridView();
+                            sopinput_1.Visible = true;
+                            sopinput_2.Visible = true;
+                            sopinput_3.Visible = true;
+                            sopinput_4.Visible = true;
+                            CreateSOPIDRow.Visible = true;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        string title = "279 : Notifications :";
+                        string body = ex.Message;
+                        ClientScript.RegisterStartupScript(this.GetType(), "Popup_281", "ShowPopup('" + title + "', '" + body + "');", true);
+                    }
+                }
+            }
+        }
+
+
         private void Bind_AttendanceGridView()
         {
-            string ddljobid = DDL_JOBID.SelectedItem.Text.ToString();
+            string jobID = DDL_JOBID.SelectedItem.Text.ToString();
+            string ddljobid = "";
+            string jobdate = "";
+            string[] parts = jobID.Split(new string[] { " : " }, StringSplitOptions.None);
+
+            if (parts.Length == 2)
+            {
+                ddljobid = parts[0]; // This will contain "JOB0095467"
+                                     //jobdate = parts[1]; // This will contain "2024-02-02"
+
+                string[] dateParts = parts[1].Split('-');
+                if (dateParts.Length == 3)
+                {
+                    // Convert date to "YYYY-MM-DD" format
+                    jobdate = $"{dateParts[2]}-{dateParts[1]}-{dateParts[0]}";
+                }
+            }
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
-            string CmdString = "Select * from tbl_attendance where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and JOBID='" + ddljobid + "' and AttendanceStatus = 'Entry' order by Id";
+            string CmdString = "Select EmployeeWrk,EmployeeName,EmpDesignation,GatePassNo from tbl_attendance where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and JOBID='" + ddljobid + "' and CreatedDate='" + jobdate + "' and AttendanceStatus = 'Entry' order by Id";
 
             //string CmdString = "Select a.EmployeeWrk, a.EmployeeName, a.EmpDesignation , b.GatePassNo from tbl_attendance a, tbl_Employee_Mustertable b where a.Creator_Workman='" + Session["WORKMAN"].ToString() + "' and a.JOBID='" + ddljobid + "' and a.AttendanceStatus = 'Entry' and a.EmployeeWrk=b.WorkmanSL order by a.Id";
             SqlCommand cmd = new SqlCommand(CmdString, dbcl.Conn);
@@ -379,16 +483,16 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-                    string title = "Notifications :";
+                    string title = "382 : Notifications :";
                     string body = "Record cannot be inserted";
-                    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                    ClientScript.RegisterStartupScript(this.GetType(), "Popup_382", "ShowPopup('" + title + "', '" + body + "');", true);
                 }
             }
             else
             {
-                string title = "Notifications :";
+                string title = "389 : Notifications :";
                 string body = "SOP Number * SOP Title Required";
-                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup_389", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
 
@@ -416,9 +520,9 @@ namespace WebApplication1.bussiness.production
             }
             catch (Exception ex)
             {
-                string title = "Notifications :";
+                string title = "419 : Notifications :";
                 string body = ex.Message;
-                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup_419", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
 
@@ -514,9 +618,9 @@ namespace WebApplication1.bussiness.production
             }
             catch (Exception ex)
             {
-                string title = "Notifications :";
+                string title = "517 : Notifications :";
                 string body = ex.Message.ToString();
-                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup_517", "ShowPopup('" + title + "', '" + body + "');", true);
                 datasaved = false;
             }
 
@@ -526,7 +630,7 @@ namespace WebApplication1.bussiness.production
 
 
         //-----Photograph------------//
-        private Boolean UploadTBMImage()
+        private Boolean UploadTBMImage1()
         {
             Boolean imgsaved = false;
 
@@ -583,16 +687,16 @@ namespace WebApplication1.bussiness.production
                         //on successfully image is saved
                         imgsaved = true;
 
-                        string title = "Notifications :";
+                        string title = "586 : Notifications :";
                         string body = "Photograph Uploaded Successfully";
-                        ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                        ClientScript.RegisterStartupScript(this.GetType(), "Popup_586", "ShowPopup('" + title + "', '" + body + "');", true);
                     }
                 }
                 else
                 {
-                    string title = "Notifications :";
+                    string title = "593 : Notifications :";
                     string body = "Kindly Select Appropriate File Type";
-                    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                    ClientScript.RegisterStartupScript(this.GetType(), "Popup_593", "ShowPopup('" + title + "', '" + body + "');", true);
                 }
             }
             return imgsaved;
@@ -647,15 +751,15 @@ namespace WebApplication1.bussiness.production
 
 
                 datasaved = true;
-                string title = "Notifications :";
+                string title = "650 : Notifications :";
                 string body = "Panel 3 Data Saved";
-                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup_650", "ShowPopup('" + title + "', '" + body + "');", true);
             }
             catch (Exception ex)
             {
-                string title = "Notifications :";
+                string title = "656 :Notifications";
                 string body = ex.Message;
-                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup_650", "ShowPopup('" + title + "', '" + body + "');", true);
                 datasaved = false;
             }
 
@@ -670,5 +774,91 @@ namespace WebApplication1.bussiness.production
 
             Response.Redirect("csms_mainview.aspx");
         }
+
+
+        private bool UploadTBMImage()
+        {
+            bool imgSaved = false;
+
+            try
+            {
+                DateTime now = DateTime.Now;
+                string month = now.Month.ToString();
+                string year = now.Year.ToString();
+                string day = now.Day.ToString();
+                string imgDate = day + month + year;
+
+                if (FileUploader.PostedFile != null)
+                {
+                    string extension = Path.GetExtension(FileUploader.FileName);
+                    string[] allowedExtensions = { ".png", ".jpg", ".jpeg" };
+
+                    if (allowedExtensions.Contains(extension.ToLower()))
+                    {
+                        using (Stream stream = FileUploader.PostedFile.InputStream)
+                        {
+                            using (var image = System.Drawing.Image.FromStream(stream))
+                            {
+                                string photoId = lbl_ID.Text.ToString();
+                                lbl_photoid.Text = photoId;
+
+                                int newWidth = 440; // New Width of Image in Pixels
+                                int newHeight = 540; // New Height of Image in Pixels
+
+                                using (var thumbImg = new Bitmap(newWidth, newHeight))
+                                {
+                                    using (var thumbGraph = Graphics.FromImage(thumbImg))
+                                    {
+                                        thumbGraph.CompositingQuality = CompositingQuality.HighQuality;
+                                        thumbGraph.SmoothingMode = SmoothingMode.HighQuality;
+                                        thumbGraph.InterpolationMode = InterpolationMode.HighQualityBicubic;
+
+                                        var imgRectangle = new Rectangle(0, 0, newWidth, newHeight);
+                                        thumbGraph.DrawImage(image, imgRectangle);
+
+                                        string directoryPath = Server.MapPath(@"\erp_images\SOPPhoto\");
+                                        if (!Directory.Exists(directoryPath))
+                                        {
+                                            Directory.CreateDirectory(directoryPath);
+                                        }
+
+                                        string targetPath = Path.Combine(directoryPath, photoId + "_" + imgDate + ".jpg");
+                                        thumbImg.Save(targetPath, image.RawFormat);
+
+                                        imglink = @"\erp_images\SOPPhoto\" + photoId + "_" + imgDate + ".jpg";
+                                        imgfilename = photoId + "_" + imgDate + ".jpg";
+
+                                        ImgDisplay.ImageUrl = @"\erp_images\SOPPhoto\" + photoId + "_" + imgDate + ".jpg";
+
+                                        imgSaved = true;
+
+                                        ShowNotification("Photograph Uploaded Successfully");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        ShowNotification("Kindly Select Appropriate File Type");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string title = "745 : Notifications :";
+                string body = ex.Message;
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup_745", "ShowPopup('" + title + "', '" + body + "');", true);
+            }
+
+            return imgSaved;
+        }
+
+        private void ShowNotification(string message)
+        {
+            string title = "755 : Notifications";
+            ClientScript.RegisterStartupScript(this.GetType(), "Popup_755", "ShowPopup('" + title + "', '" + message + "');", true);
+        }
+
     }
 }

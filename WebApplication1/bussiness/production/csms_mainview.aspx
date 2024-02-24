@@ -25,7 +25,7 @@
                             <div class="clearfix"></div>
                         </div>
                         <div class="x_content">
-                            <a class="btn btn-app" href="csm_toolboxtalk.aspx">
+                            <a class="btn btn-app" href="csm_tbtform.aspx">
                                 <span class="badge bg-red">Daily : 1
                                     <asp:Label ID="lbl_tbttodaycount" runat="server" Text="0" Visible="false"></asp:Label></span>
                                 <i class="fa fa-edit"></i>TBT Talk
@@ -38,7 +38,7 @@
 
                             </a>
                             <a class="btn btn-app" href="ppe_request.aspx">
-                                <span class="badge bg-orange">Weekly : 1
+                                <span class="badge bg-red">Weekly : 1
                                     <asp:Label ID="Label2" runat="server" Text="0" Visible="false"></asp:Label></span>
                                 <i class="fa fa-male"></i>PPE Audit
 

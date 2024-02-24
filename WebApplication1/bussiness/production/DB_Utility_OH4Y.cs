@@ -1716,7 +1716,7 @@ namespace WebApplication1.bussiness.production
         {
             Sqlconnection();
             ConnectDb();
-            string cmdString = @"SELECT COUNT(*) FROM [ats_erp].[dbo].[tbl_jobs] WHERE Creator_Workman = @Creator_Workman AND JOBID_Status = 'Active' AND MONTH(CreatedDate) = MONTH(GETDATE()) AND YEAR(CreatedDate) = YEAR(GETDATE())";
+            string cmdString = @"SELECT COUNT(*) FROM [ats_erp].[dbo].[tbl_jobs] WHERE Creator_Workman = @Creator_Workman AND [CreatedDate] >= DATEADD(DAY, -3, GETDATE()) AND JOBID_Status='Active' and EntryExit='Entry'";
 
             SqlCommand cmd = new SqlCommand(cmdString, Conn);
             cmd.CommandType = CommandType.Text;
@@ -1730,7 +1730,7 @@ namespace WebApplication1.bussiness.production
         {
             string mastercode = string.Empty;
             string jobid = string.Empty;
-            string cmdString = "select JOBID,MasterStatusCode from tbl_jobs where Creator_Workman=@Creator_Workman and JOBID_Status='Active' and YEAR(CreatedDate)='" + DateTime.Now.Year + "' and MONTH(CreatedDate)='" + DateTime.Now.Month + "'";
+            string cmdString = "select JOBID,MasterStatusCode from tbl_jobs where Creator_Workman=@Creator_Workman and JOBID_Status='Active' and MONTH(CreatedDate) = MONTH(GETDATE()) AND YEAR(CreatedDate) = YEAR(GETDATE())";
             Sqlconnection();
             ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdString, Conn);

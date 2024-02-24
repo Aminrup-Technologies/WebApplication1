@@ -418,13 +418,13 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator5;
         
         /// <summary>
-        /// CreateTBTIDRow control.
+        /// Panel1_Buttons control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl CreateTBTIDRow;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Panel1_Buttons;
         
         /// <summary>
         /// lbl_msg control.
@@ -445,13 +445,22 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Button btn_submit;
         
         /// <summary>
-        /// TBTID_CreatedMsg control.
+        /// btn_back control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl TBTID_CreatedMsg;
+        protected global::System.Web.UI.WebControls.Button btn_back;
+        
+        /// <summary>
+        /// Panel1_Success control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Panel1_Success;
         
         /// <summary>
         /// Img_Success1 control.
@@ -463,13 +472,22 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Image Img_Success1;
         
         /// <summary>
-        /// lbl_tbtidcreatedmsg control.
+        /// Img_Cross1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbl_tbtidcreatedmsg;
+        protected global::System.Web.UI.WebControls.Image Img_Cross1;
+        
+        /// <summary>
+        /// lbl_panel1_msg control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_panel1_msg;
         
         /// <summary>
         /// lbl_TBTID control.
@@ -481,6 +499,42 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Label lbl_TBTID;
         
         /// <summary>
+        /// Annexure0 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Annexure0;
+        
+        /// <summary>
+        /// Annexure1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Annexure1;
+        
+        /// <summary>
+        /// GridView2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView GridView2;
+        
+        /// <summary>
+        /// Annexure2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Annexure2;
+        
+        /// <summary>
         /// btn_newincidententry control.
         /// </summary>
         /// <remarks>
@@ -488,6 +542,15 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btn_newincidententry;
+        
+        /// <summary>
+        /// Annexure3 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Annexure3;
         
         /// <summary>
         /// txt_sftyintrst control.
@@ -508,6 +571,15 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.RequiredFieldValidator valSI;
         
         /// <summary>
+        /// Annexure4 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Annexure4;
+        
+        /// <summary>
         /// txt_sopno control.
         /// </summary>
         /// <remarks>
@@ -524,6 +596,15 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator valSOP;
+        
+        /// <summary>
+        /// Annexure5 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Annexure5;
         
         /// <summary>
         /// chkbxrspons control.
@@ -544,6 +625,15 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.CustomValidator cvmodulelist;
         
         /// <summary>
+        /// Annexure6 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Annexure6;
+        
+        /// <summary>
         /// txt_hazards control.
         /// </summary>
         /// <remarks>
@@ -560,6 +650,15 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator valHazard;
+        
+        /// <summary>
+        /// Annexure7 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Annexure7;
         
         /// <summary>
         /// txt_sftmsg control.
@@ -580,22 +679,13 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.RequiredFieldValidator valSftMsg;
         
         /// <summary>
-        /// btn_addfeedback control.
+        /// Panel2_Buttons control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btn_addfeedback;
-        
-        /// <summary>
-        /// SavePanel2Data control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl SavePanel2Data;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Panel2_Buttons;
         
         /// <summary>
         /// Label10 control.
@@ -616,13 +706,13 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Button btn_savetbtdata;
         
         /// <summary>
-        /// TBT_ItemsSavedMsg control.
+        /// Panel2_Success control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl TBT_ItemsSavedMsg;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Panel2_Success;
         
         /// <summary>
         /// Img_Success2 control.
@@ -634,31 +724,22 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Image Img_Success2;
         
         /// <summary>
-        /// lbl_tbtitemssavedmsg control.
+        /// Img_Cross2 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbl_tbtitemssavedmsg;
+        protected global::System.Web.UI.WebControls.Image Img_Cross2;
         
         /// <summary>
-        /// TBT_ItemsSavedMsgHR control.
+        /// lbl_panel2_msg control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl TBT_ItemsSavedMsgHR;
-        
-        /// <summary>
-        /// Div2 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Div2;
+        protected global::System.Web.UI.WebControls.Label lbl_panel2_msg;
         
         /// <summary>
         /// TBTPhotographRow control.
@@ -751,13 +832,13 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Label lblMessage;
         
         /// <summary>
-        /// SavePanel3Data control.
+        /// Panel3_Buttons control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl SavePanel3Data;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Panel3_Buttons;
         
         /// <summary>
         /// Label12 control.
@@ -778,31 +859,40 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Button btn_saveTBTPhoto;
         
         /// <summary>
-        /// TBTPhotoUploaded control.
+        /// Panel3_Success control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl TBTPhotoUploaded;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Panel3_Success;
         
         /// <summary>
-        /// Img_Success control.
+        /// Img_Success3 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Image Img_Success;
+        protected global::System.Web.UI.WebControls.Image Img_Success3;
         
         /// <summary>
-        /// Label11 control.
+        /// Img_Cross3 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label Label11;
+        protected global::System.Web.UI.WebControls.Image Img_Cross3;
+        
+        /// <summary>
+        /// lbl_panel3_msg control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_panel3_msg;
         
         /// <summary>
         /// lbl_tbtphotoid control.
@@ -812,6 +902,276 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_tbtphotoid;
+        
+        /// <summary>
+        /// Acn_Type_row control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Acn_Type_row;
+        
+        /// <summary>
+        /// DDL_AcType control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList DDL_AcType;
+        
+        /// <summary>
+        /// RFV_ACN_1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator RFV_ACN_1;
+        
+        /// <summary>
+        /// Acn_Descp_row control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Acn_Descp_row;
+        
+        /// <summary>
+        /// txt_acdescp control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txt_acdescp;
+        
+        /// <summary>
+        /// RFV_ACN_2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator RFV_ACN_2;
+        
+        /// <summary>
+        /// Acn_lvl_row control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Acn_lvl_row;
+        
+        /// <summary>
+        /// DDL_Priority control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList DDL_Priority;
+        
+        /// <summary>
+        /// RequiredFieldValidator6 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator6;
+        
+        /// <summary>
+        /// Acn_remarks_row control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Acn_remarks_row;
+        
+        /// <summary>
+        /// txt_acn_rmrks control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txt_acn_rmrks;
+        
+        /// <summary>
+        /// RequiredFieldValidator7 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator7;
+        
+        /// <summary>
+        /// Acn_btns_row control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Acn_btns_row;
+        
+        /// <summary>
+        /// lbl_acnbtn_msg control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_acnbtn_msg;
+        
+        /// <summary>
+        /// btn_sv_acn control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btn_sv_acn;
+        
+        /// <summary>
+        /// Acn_tempgrid_row control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Acn_tempgrid_row;
+        
+        /// <summary>
+        /// GridView1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView GridView1;
+        
+        /// <summary>
+        /// Panel4_Buttons control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Panel4_Buttons;
+        
+        /// <summary>
+        /// lbl_Panel4btn control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_Panel4btn;
+        
+        /// <summary>
+        /// btn_insertacns control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btn_insertacns;
+        
+        /// <summary>
+        /// Panel4_Success control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Panel4_Success;
+        
+        /// <summary>
+        /// Img_Success4 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Image Img_Success4;
+        
+        /// <summary>
+        /// Img_Cross4 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Image Img_Cross4;
+        
+        /// <summary>
+        /// lbl_panel4_msg control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_panel4_msg;
+        
+        /// <summary>
+        /// statustable control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl statustable;
+        
+        /// <summary>
+        /// Label1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label Label1;
+        
+        /// <summary>
+        /// Label2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label Label2;
+        
+        /// <summary>
+        /// Label3 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label Label3;
+        
+        /// <summary>
+        /// Label4 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label Label4;
+        
+        /// <summary>
+        /// LabelOverall control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label LabelOverall;
         
         /// <summary>
         /// TBTFinalStep control.
@@ -848,5 +1208,50 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btn_finalstep;
+        
+        /// <summary>
+        /// Default_Buttons control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Default_Buttons;
+        
+        /// <summary>
+        /// lbl_pagemsg control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_pagemsg;
+        
+        /// <summary>
+        /// btn_home control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btn_home;
+        
+        /// <summary>
+        /// Button2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button Button2;
+        
+        /// <summary>
+        /// btn_retry control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btn_retry;
     }
 }

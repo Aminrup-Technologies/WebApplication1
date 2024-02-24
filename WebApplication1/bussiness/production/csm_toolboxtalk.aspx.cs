@@ -84,7 +84,7 @@ namespace WebApplication1.bussiness.production
 
                 if (activeJobCount > 0)
                 {
-                    dbcl.FillCombo(DDL_JOBID, "SELECT CONCAT(JOBID, ' : ', CONVERT(VARCHAR, CreatedDate, 105)) AS JOBID FROM tbl_jobs WHERE Creator_Workman = '" + Session["WORKMAN"].ToString() + "' AND JOBID_Status = 'Active' AND [CreatedDate] >= DATEADD(DAY, -7, GETDATE()) ORDER BY CreatedDate DESC");
+                    dbcl.FillCombo(DDL_JOBID, "SELECT CONCAT(JOBID, ' : ', CONVERT(VARCHAR, CreatedDate, 105)) AS JOBID FROM tbl_jobs WHERE Creator_Workman = '" + Session["WORKMAN"].ToString() + "' AND JOBID_Status = 'Active' AND [CreatedDate] >= DATEADD(DAY, -3, GETDATE()) ORDER BY CreatedDate DESC");
 
                     // Return true if there are active jobs
                     return true;
@@ -508,7 +508,24 @@ namespace WebApplication1.bussiness.production
 
         private void CheckforAttachedAttendnace()
         {
-            string ddljobid = DDL_JOBID.SelectedItem.Text.ToString();
+            //string ddljobid = DDL_JOBID.SelectedItem.Text.ToString();
+            string jobID = DDL_JOBID.SelectedItem.Text.ToString();
+            string ddljobid = "";
+            string jobdate = "";
+            string[] parts = jobID.Split(new string[] { " : " }, StringSplitOptions.None);
+
+            if (parts.Length == 2)
+            {
+                ddljobid = parts[0]; // This will contain "JOB0095467"
+                jobdate = parts[1]; // This will contain "2024-02-02"
+
+                // Now you can use jobID and dateStr as needed.
+            }
+            else
+            {
+                // Handle the case where the string format is unexpected.
+            }
+
             dbcl.Sqlconnection();
             string cmdstring = "select count (Id) from tbl_attendance where JOBID= '" + ddljobid.ToString() + "' and Creator_Workman='" + Session["WORKMAN"].ToString() + "'  and AttendanceStatus = 'Entry'";
             dbcl.ConnectDb();
@@ -529,7 +546,24 @@ namespace WebApplication1.bussiness.production
 
         private void Bind_AttendanceGridView()
         {
-            string ddljobid = DDL_JOBID.SelectedItem.Text.ToString();
+            //string ddljobid = DDL_JOBID.SelectedItem.Text.ToString();
+            string jobID = DDL_JOBID.SelectedItem.Text.ToString();
+            string ddljobid = "";
+            string jobdate = "";
+            string[] parts = jobID.Split(new string[] { " : " }, StringSplitOptions.None);
+
+            if (parts.Length == 2)
+            {
+                ddljobid = parts[0]; // This will contain "JOB0095467"
+                jobdate = parts[1]; // This will contain "2024-02-02"
+
+                // Now you can use jobID and dateStr as needed.
+            }
+            else
+            {
+                // Handle the case where the string format is unexpected.
+            }
+
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             string CmdString = "Select * from tbl_attendance where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and JOBID='" + ddljobid + "' and AttendanceStatus = 'Entry' order by Id";

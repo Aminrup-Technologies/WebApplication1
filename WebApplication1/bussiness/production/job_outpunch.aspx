@@ -60,7 +60,7 @@
                                         <div class="clearfix"></div>
                                     </div>
                                     <div class="x_content">
-                                        <a class="btn btn-app" href="csm_toolboxtalk.aspx">
+                                        <a class="btn btn-app" href="csm_tbtform.aspx">
                                             <span class="badge bg-green">
                                                 <asp:Label ID="lbl_tbtcount" runat="server" Text="0"></asp:Label></span>
                                             <i class="fa fa-edit"></i>TBT Talk

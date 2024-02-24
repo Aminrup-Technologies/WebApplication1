@@ -48,24 +48,26 @@
                         </div>
                         <div class="x_content">
                             <a class="btn btn-app" href="create_jobid.aspx">
-                                <span class="badge bg-orange">
-                                    <asp:Label ID="lbl_activejobcount" runat="server" Text="Label"></asp:Label></span>
+                                <span class="badge bg-green">
+                                    <asp:Label ID="lbl_activejobcount" runat="server" Text="0"></asp:Label></span>
                                 <i class="fa fa-edit"></i>Create ID
 
-                            </a> 
+                            </a>  
                             <a class="btn btn-app" href="job_permitupload.aspx">
-                                <span class="badge bg-orange">
-                                    <asp:Label ID="lbl_prmtupldcount" runat="server" Text="Label"></asp:Label></span>
+                                <span class="badge bg-green">
+                                    <asp:Label ID="lbl_prmtupldcount" runat="server" Text="0"></asp:Label></span>
                                 <i class="fa fa-edit"></i>Permit Upload
                             </a>
+                                                    
                             <a class="btn btn-app" href="job_inpunch.aspx">
-                                <span class="badge bg-orange">
-                                    <asp:Label ID="lbl_inpunchcount" runat="server" Text="Label"></asp:Label></span>
+                                <span class="badge bg-green">
+                                    <asp:Label ID="lbl_inpunchcount" runat="server" Text="0"></asp:Label></span>
                                 <i class="fa fa-edit"></i>IN Punch
                             </a>
+                            
                             <a class="btn btn-app" href="job_outpunch.aspx">
-                                <span class="badge bg-orange">
-                                    <asp:Label ID="lbl_outpndgcount" runat="server" Text="Label"></asp:Label></span>
+                                <span class="badge bg-green">
+                                    <asp:Label ID="lbl_outpndgcount" runat="server" Text="0"></asp:Label></span>
                                 <i class="fa fa-users"></i>OUT Punch
 
                             </a>
