@@ -32,6 +32,9 @@ namespace WebApplication1.gentelella_master.production
                     ProfilePic_1.Src = "../../erp_images/ProfilePhoto/"+ Session["User_Photo"].ToString() + "";
                     ProfilePic_2.Src = "../../erp_images/ProfilePhoto/" + Session["User_Photo"].ToString() + "";
 
+                    //ProfilePic_1.Src = Session["User_Photo"].ToString();
+                    //ProfilePic_2.Src = Session["User_Photo"].ToString();
+
                     GetIpValue();
                     //GetIpAddress();
                     PermissionCheck();

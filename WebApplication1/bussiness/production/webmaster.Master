@@ -108,7 +108,11 @@
         document.addEventListener("mousemove", resetIdleTimer);
         document.addEventListener("keypress", resetIdleTimer);
     </script>
-
+    <script>
+        function logToConsole(message) {
+            console.log(message);
+        }
+    </script>
 </head>
 <body class="nav-md footer_fixed" onload="ShowCurrentTime()">
     <form id="form1" runat="server">
@@ -137,7 +141,8 @@
                                 <img id="ProfilePic_1" src="..." runat="server" alt="..." class="img-circle profile_img">
                             </div>
                             <div class="profile_info">
-                                Hi, <asp:Label ID="lbl_loginusername1" runat="server" Text="Login_Name" Font-Bold="true"></asp:Label>
+                                Hi,
+                                <asp:Label ID="lbl_loginusername1" runat="server" Text="Login_Name" Font-Bold="true"></asp:Label>
                             </div>
                         </div>
                         <!-- /menu profile quick info -->
