@@ -53,7 +53,7 @@ namespace WebApplication1.bussiness.production
                         AddDefaultActionableRecord();
                         AddDefaultLastReviewRecord();
 
-                        Default_Buttons.Visible = true;
+                        Default_Buttons.Visible = false;
 
                         TBT_Status_Panel_NoJOBDView();
 
@@ -275,7 +275,7 @@ namespace WebApplication1.bussiness.production
 
                 if (activeJobCount > 0)
                 {
-                    dbcl.FillCombo(DDL_JOBID, "SELECT CONCAT(JOBID, ' : ', CONVERT(VARCHAR, CreatedDate, 105)) AS JOBID FROM tbl_jobs WHERE Creator_Workman = '" + Session["WORKMAN"].ToString() + "' AND JOBID_Status = 'Active' AND [CreatedDate] >= DATEADD(DAY, -3, GETDATE())  and CSM_Documents='Yes' and TBT_Count='0' ORDER BY CreatedDate DESC");
+                    dbcl.FillCombo(DDL_JOBID, "SELECT CONCAT(JOBID, ' : ', CONVERT(VARCHAR, CreatedDate, 105)) AS JOBID FROM tbl_jobs WHERE Creator_Workman = '" + Session["WORKMAN"].ToString() + "' AND JOBID_Status = 'Active' AND [CreatedDate] >= DATEADD(DAY, -3, GETDATE())  and CSM_Documents='Yes' ORDER BY CreatedDate DESC");
 
                     // Return true if there are active jobs
                     return true;
@@ -2321,6 +2321,112 @@ namespace WebApplication1.bussiness.production
             }
         }
 
+        public bool UpdateActionablesAdded(string refJobId, string tbtId)
+        {
+            bool isSuccess = false;
+            dbcl.Sqlconnection();
 
+            using (SqlConnection connection = dbcl.Conn)
+            {
+                connection.Open();
+                SqlTransaction transaction = connection.BeginTransaction();
+
+                try
+                {
+                    SqlCommand command = connection.CreateCommand();
+                    command.Transaction = transaction;
+
+                    string sqlQuery = "UPDATE tbl_toolboxtalkdata SET ActionablesAdded = 3 WHERE Ref_JOBID = @Ref_JOBID AND TBT_ID = @TBT_ID";
+                    command.CommandType = CommandType.Text;
+                    command.CommandText = sqlQuery;
+
+                    command.Parameters.AddWithValue("@Ref_JOBID", refJobId);
+                    command.Parameters.AddWithValue("@TBT_ID", tbtId);
+
+                    int rowsAffected = command.ExecuteNonQuery();
+
+                    if (rowsAffected > 0)
+                    {
+                        transaction.Commit();
+                        isSuccess = true;
+                    }
+                    else
+                    {
+                        transaction.Rollback();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception or handle it as needed
+                    transaction.Rollback();
+                    string title = "Notifications :";
+                    string body = ex.Message;
+                    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                    {
+                        connection.Close();
+                    }
+                }
+            }
+
+            return isSuccess;
+        }
+
+        protected void btn_skip_Click(object sender, EventArgs e)
+        {
+            if (UpdateActionablesAdded(lbl_jobid.Text.ToString(), lbl_TBTID.Text.ToString()) == true)
+            {
+                Panel4_Success.Visible = true;
+                Img_Success4.Visible = true;
+                Img_Cross4.Visible = false;
+                lbl_panel4_msg.Visible = true;
+                lbl_panel4_msg.Text = "Step-4 : Completed";
+
+                Acn_Type_row.Visible = false;
+                Acn_Descp_row.Visible = false;
+                Acn_lvl_row.Visible = false;
+                Acn_remarks_row.Visible = false;
+
+                Panel4_Buttons.Visible = false;
+                Acn_btns_row.Visible = false;
+
+                Label1.Text = "Completed";
+                Label1.ForeColor = Color.Green;
+                Label2.Text = "Completed";
+                Label2.ForeColor = Color.Green;
+                Label3.Text = "Completed";
+                Label3.ForeColor = Color.Green;
+                Label4.Text = "Completed";
+                Label4.ForeColor = Color.Green;
+                LabelOverall.Text = "Pending";
+                LabelOverall.ForeColor = Color.Red;
+
+                TBTFinalStep.Visible = true;
+
+                ScriptManager.RegisterStartupScript(this, GetType(), "OpenFinalTab", "OpenFinalTab();", true);
+                string title = "Notifications :";
+                string body = "";
+                body = "Actionables Skipped Successfully";
+                // Display PNotify notification
+                string script = @"<script type='text/javascript'>
+                            new PNotify({
+                                title: '" + title + @"',
+                                text: '" + body + @"',
+                                type: 'success',
+                                styling: 'bootstrap3'
+                            });
+                        </script>";
+                ClientScript.RegisterStartupScript(this.GetType(), "PNotifyNotification", script, false);
+            }
+            else
+            {
+                Panel4_Success.Visible = false;
+                Panel4_Buttons.Visible = true;
+                Acn_btns_row.Visible = false;
+            }
+        }
     }
 }

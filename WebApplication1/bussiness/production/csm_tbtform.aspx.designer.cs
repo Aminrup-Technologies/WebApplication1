@@ -1075,6 +1075,15 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Label lbl_Panel4btn;
         
         /// <summary>
+        /// btn_skip control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btn_skip;
+        
+        /// <summary>
         /// btn_insertacns control.
         /// </summary>
         /// <remarks>

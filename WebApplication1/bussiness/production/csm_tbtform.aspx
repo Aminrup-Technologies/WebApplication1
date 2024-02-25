@@ -734,7 +734,7 @@
                                             </div>
                                             <div class="col-md-6 col-sm-12">
                                                 <button type="button" class="btn btn-danger btn-sm collapse-link">Cancel</button>
-                                                <button type="reset" class="btn btn-warning btn-sm">Reset</button>
+                                                <asp:Button ID="btn_skip" runat="server" Text="SKIP" CssClass="btn btn-warning btn-sm" OnClick="btn_skip_Click"/>
                                                 <asp:Button ID="btn_insertacns" runat="server" Text="SAVE ALL" Enabled="true" CausesValidation="true" CssClass="btn btn-success btn-sm" OnClick="btn_insertacns_Click" />
                                             </div>
                                         </div>
@@ -843,6 +843,5 @@
                 </div>
             </div>
         </div>
-    </div>
     </div>
 </asp:Content>

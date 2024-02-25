@@ -23,10 +23,10 @@ namespace WebApplication1.gentelella_master.production
                 }
                 else
                 {
-                    Label lbl1 = (Label)Page.Master.FindControl("lbl_loginusername1");
+                    Label lbl1 = (Label)Page.Master.FindControl("lbl_loginusername2");
                     lbl1.Text = Session["USERNAME"].ToString();
 
-                    Label lbl2 = (Label)Page.Master.FindControl("lbl_loginusername2");
+                    Label lbl2 = (Label)Page.Master.FindControl("lbl_loginusername1");
                     lbl2.Text = Session["USERFNAME"].ToString();
 
                     ProfilePic_1.Src = "../../erp_images/ProfilePhoto/"+ Session["User_Photo"].ToString() + "";

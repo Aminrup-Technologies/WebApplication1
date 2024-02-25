@@ -21,7 +21,7 @@ namespace WebApplication1.bussiness.production
                 string cmdString = "";
                 dbcl.Sqlconnection();
                 dbcl.ConnectDb();
-                cmdString = "SELECT COUNT([JOBID]) FROM [tbl_jobs] WHERE [Creator_Workman] = @Creator_Workman AND [JOBID_Status] = 'Active' AND [CreatedDate] >= DATEADD(DAY, -3, GETDATE()) and CSM_Documents='Yes' and CSM_Documents='Yes' and TBT_Count='0'";
+                cmdString = "SELECT COUNT([JOBID]) FROM [tbl_jobs] WHERE [Creator_Workman] = @Creator_Workman AND [JOBID_Status] = 'Active' AND [CreatedDate] >= DATEADD(DAY, -3, GETDATE()) and CSM_Documents='Yes'";
                 SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@Creator_Workman", workman);

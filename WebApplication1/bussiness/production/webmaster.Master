@@ -109,8 +109,6 @@
         document.addEventListener("keypress", resetIdleTimer);
     </script>
 
-
-
 </head>
 <body class="nav-md footer_fixed" onload="ShowCurrentTime()">
     <form id="form1" runat="server">
@@ -139,9 +137,7 @@
                                 <img id="ProfilePic_1" src="..." runat="server" alt="..." class="img-circle profile_img">
                             </div>
                             <div class="profile_info">
-                                <span>Welcome,</span>
-                                <h2>
-                                    <asp:Label ID="lbl_loginusername1" runat="server" Text="Login_Name"></asp:Label></h2>
+                                Hi, <asp:Label ID="lbl_loginusername1" runat="server" Text="Login_Name" Font-Bold="true"></asp:Label>
                             </div>
                         </div>
                         <!-- /menu profile quick info -->
