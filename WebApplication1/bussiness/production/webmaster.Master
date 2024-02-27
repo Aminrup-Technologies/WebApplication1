@@ -62,13 +62,20 @@
     </script>
     <script src="../../Scripts/jquery-1.7.2.min.js"></script>
     <script type="text/javascript">
-        var i = 0;
         var idleTimeout;
+        var logoutTime;
 
         function startIdleTimer() {
             idleTimeout = setTimeout(function () {
                 location.href = 'http://atswork.in/';
             }, 5 * 60 * 1000); // 5 minutes in milliseconds
+
+            // Calculate the logout time
+            logoutTime = new Date();
+            logoutTime.setMinutes(logoutTime.getMinutes() + 5); // Adding 5 minutes to the current time
+
+            // Update the display
+            updateDisplay();
         }
 
         function resetIdleTimer() {
@@ -76,43 +83,44 @@
             startIdleTimer();
         }
 
-        function ShowCurrentTime() {
+        function handleUserActivity() {
+            resetIdleTimer();
+        }
+
+        function updateDisplay() {
             var dt = new Date();
-            document.getElementById("lblTime1").innerHTML = 5 - i + " Minutes"; // Adjusted to 5 minutes
-            i++;
-            if (i == 6) { // Adjusted to 6 since you want to stop at i = 5
+            var currentTimeLabel = document.getElementById("lblTime");
+            var logoutTimeLabel = document.getElementById("lblTime1");
+
+            // Display current time
+            currentTimeLabel.innerHTML = dt.toLocaleTimeString();
+
+            // Calculate time left until auto logout
+            var timeLeft = Math.max(0, (logoutTime - dt) / 1000); // Time left in seconds
+            var minutesLeft = Math.floor(timeLeft / 60);
+            var secondsLeft = Math.floor(timeLeft % 60);
+            var timeLeftString = (minutesLeft < 10 ? "0" : "") + minutesLeft + ":" + (secondsLeft < 10 ? "0" : "") + secondsLeft;
+            logoutTimeLabel.innerHTML = timeLeftString;
+
+            // If we've reached 0 minutes and 0 seconds, initiate logout
+            if (timeLeft <= 0) {
                 location.href = 'http://atswork.in/';
                 return;
             }
-            resetIdleTimer(); // Reset idle timer on any activity
-            window.setTimeout(ShowCurrentTime, 60 * 1000); // Adjusted to 1 minute (60 seconds)
         }
 
         $(document).ready(function () {
-            startIdleTimer(); // Start idle timer when the page loads
-            ShowCurrentTime();
-            ShowTime();
+            startIdleTimer();
+
+            // Update display every second
+            setInterval(updateDisplay, 1000);
+
+            // Event listeners for user activity
+            document.addEventListener("mousemove", handleUserActivity);
+            document.addEventListener("keypress", handleUserActivity);
         });
-
-        function ShowTime() {
-            var dt = new Date();
-            document.getElementById("lblTime").innerHTML = dt.toLocaleTimeString();
-            window.setTimeout(ShowTime, 60 * 1000); // Adjusted to 1 minute (60 seconds)
-        }
-
-        function reloadPage() {
-            location.reload();
-        }
-
-        // Event listeners for user activity
-        document.addEventListener("mousemove", resetIdleTimer);
-        document.addEventListener("keypress", resetIdleTimer);
     </script>
-    <script>
-        function logToConsole(message) {
-            console.log(message);
-        }
-    </script>
+
 </head>
 <body class="nav-md footer_fixed" onload="ShowCurrentTime()">
     <form id="form1" runat="server">

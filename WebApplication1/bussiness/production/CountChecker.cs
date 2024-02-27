@@ -224,10 +224,13 @@ namespace WebApplication1.bussiness.production
         public Int32 CheckforPendingPermit(string jobid, string supvwrkman)
         {
             dbcl.Sqlconnection();
-            string cmdstring = "select count (JOBID) from tbl_jobs where JOBID= '" + jobid + "' and Creator_Workman='" + supvwrkman + "'  and FinalUpldStatus = 'No'";
+            string cmdstring = "select count (JOBID) from tbl_jobs where JOBID=@JOBID and Creator_Workman=@Creator_Workman and FinalUpldStatus = 'No'";
             dbcl.ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdstring, dbcl.Conn);
             cmd.CommandType = CommandType.Text;
+            cmd.CommandTimeout = 120;
+            cmd.Parameters.AddWithValue("@JOBID", jobid);
+            cmd.Parameters.AddWithValue("@Creator_Workman", supvwrkman);
             Int32 count = Convert.ToInt32(cmd.ExecuteScalar());
             dbcl.DisconnectDb();
             return count;
@@ -237,10 +240,11 @@ namespace WebApplication1.bussiness.production
         public Int32 GetPendingJOBApprovalCount(string inchargewrk)
         {
             dbcl.Sqlconnection();
-            string cmdstring = "select count (Id) from tbl_jobs where JOB_InchargeWrk='" + inchargewrk + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit'";
+            string cmdstring = "select count (Id) from tbl_jobs where [CreatedDate] >= DATEADD(DAY, -30, GETDATE()) and JOB_InchargeWrk='" + inchargewrk + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit'";
             dbcl.ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdstring, dbcl.Conn);
             cmd.CommandType = CommandType.Text;
+            cmd.CommandTimeout = 120;
             Int32 count = Convert.ToInt32(cmd.ExecuteScalar());
             dbcl.DisconnectDb();
             return count;

@@ -125,6 +125,26 @@ namespace WebApplication1.bussiness.production
             dbcl.DisconnectDb();
         }
 
+
+        public bool Is72HoursElapsed(DateTime startDate)
+        {
+            // Retrieve the threshold hours value from web.config
+            int thresholdHours = Convert.ToInt32(ConfigurationManager.AppSettings["TimeThresholdHours"]);
+
+            // Calculate the difference between current time and the start date
+            TimeSpan elapsedTime = DateTime.Now - startDate;
+
+            // Check if the elapsed time is greater than or equal to the threshold hours
+            return elapsedTime.TotalHours >= thresholdHours;
+        }
+
+        public string GetElapsedTime(DateTime startDate)
+        {
+            TimeSpan elapsedTime = DateTime.Now - startDate;
+            return string.Format("{0} days, {1} hours, {2} minutes, {3} seconds",
+                                  elapsedTime.Days, elapsedTime.Hours, elapsedTime.Minutes, elapsedTime.Seconds);
+        }
+
         private void Bind_JOBIDDetails(string jobid)
         {
             string CmdString2 = "select * from tbl_jobspermit where JOBID='" + jobid + "' order by Id desc";
@@ -141,7 +161,10 @@ namespace WebApplication1.bussiness.production
                 dt = dbcl.SPreturn_dt(query, pram);
                 if (dt.Rows.Count > 0)
                 {
-                    txt_jobdate.Text = dt.Rows[0]["CreatedDate"].ToString();
+                    DateTime createdDate = Convert.ToDateTime(dt.Rows[0]["CreatedDate"]);
+                    txt_jobdate.Text = createdDate.ToString("dd-MM-yyyy");
+                    bool isElapsed = Is72HoursElapsed(createdDate);
+                    
                     //lbl_jobcreatorname.Text = dt.Rows[0]["Creator_Name"].ToString();
                     //lbl_creatorwrk.Text = dt.Rows[0]["Creator_Workman"].ToString();
                     //lbl_creatorregion.Text = dt.Rows[0]["Creator_Region"].ToString();
@@ -215,13 +238,31 @@ namespace WebApplication1.bussiness.production
                     }
                     else
                     {
+                        if (isElapsed)
+                        {
+                            btn_approve.Enabled = false;
+                            btn_reject.Enabled = false;
+                            btn_update.Enabled = false;
+                            btn_update.Visible = false;
+                            string title = "Notifications :";
+                            string body = "72 hours have elapsed since the job creation. Elapsed Time: " + GetElapsedTime(createdDate);
+                            ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                        }
+                        else
+                        {
+                            btn_approve.Enabled = true;
+                            btn_reject.Enabled = true;
+                            btn_update.Enabled = true;
+                            btn_update.Visible = true;
+                        }
+
                         lbl_approvalstatus.Text = "Pending";
                         lbl_approvalstatus.ForeColor = Color.Red;
 
-                        btn_update.Enabled = true;
-                        btn_update.Visible = true;
-                        btn_approve.Enabled = true;
-                        btn_reject.Enabled = true;
+                        //btn_update.Enabled = true;
+                        //btn_update.Visible = true;
+                        //btn_approve.Enabled = true;
+                        //btn_reject.Enabled = true;
                     }
 
                     string billingtype = dt.Rows[0]["BillingCode"].ToString();
@@ -318,7 +359,7 @@ namespace WebApplication1.bussiness.production
         //        ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
         //    }
         //}
-        protected void DownloadFile(object sender, EventArgs e)
+        protected void DownloadFile_0(object sender, EventArgs e)
         {
             try
             {
@@ -329,7 +370,7 @@ namespace WebApplication1.bussiness.production
                 {
                     using (SqlCommand cmd = new SqlCommand())
                     {
-                        cmd.CommandText = "select * from tbl_jobspermit where Id=@Id";
+                        cmd.CommandText = "select Name from tbl_jobspermit where Id=@Id";
                         cmd.Parameters.AddWithValue("@Id", id);
                         cmd.Connection = con;
                         con.Open();
@@ -352,6 +393,7 @@ namespace WebApplication1.bussiness.production
                         Response.TransmitFile(Server.MapPath(@"\erp_images\Permits\") + fileName);
                         Response.End();
 
+                        Update_permitDownloadStatus(id.ToString());
                     }
                     else
                     {
@@ -369,10 +411,97 @@ namespace WebApplication1.bussiness.production
             }
             catch (Exception ex)
             {
-                //ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup();", true);
-                //lbl_msg.ForeColor = System.Drawing.Color.Red;
-                //lbl_msg.Text = "Error: " + ex.Message.ToString();
-                throw;
+                string title = "Notifications :";
+                string body = ex.Message;
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+            }
+        }
+
+        protected void DownloadFile(object sender, EventArgs e)
+        {
+            try
+            {
+                int id = int.Parse((sender as LinkButton).CommandArgument);
+                string fileName;
+                string folderPath = Server.MapPath(@"\erp_images\Permits\"); // Specify the folder path
+                string constr = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
+                using (SqlConnection con = new SqlConnection(constr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        cmd.CommandText = "select Name from tbl_jobspermit where Id=@Id";
+                        cmd.Parameters.AddWithValue("@Id", id);
+                        cmd.Connection = con;
+                        con.Open();
+                        using (SqlDataReader sdr = cmd.ExecuteReader())
+                        {
+                            sdr.Read();
+                            fileName = sdr["Name"].ToString();
+                        }
+                        con.Close();
+                    }
+                }
+                try
+                {
+                    string filePath = Path.Combine(folderPath, fileName);
+                    // Check if file exists with its full path
+                    if (File.Exists(filePath))
+                    {
+                        Update_permitDownloadStatus(id.ToString());
+
+                        Response.Clear();
+                        Response.ContentType = "application/octect-stream";
+                        Response.AppendHeader("content-disposition", "filename=" + fileName);
+                        Response.TransmitFile(filePath);
+                        Response.End();
+
+
+                    }
+                    else
+                    {
+                        string title = "Notifications :";
+                        string body = "NO Physical File Found...!!";
+                        ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                    }
+                }
+                catch (IOException ioExp)
+                {
+                    string title = "Notifications :";
+                    string body = ioExp.Message;
+                    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                }
+            }
+            catch (Exception ex)
+            {
+                string title = "Notifications :";
+                string body = ex.Message;
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+            }
+        }
+
+
+        private void Update_permitDownloadStatus(string dbid)
+        {
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = dbcl.Conn;
+                string CmdString = "UPDATE tbl_jobspermit set DownloadStatus=@DownloadStatus where JOBID=@JOBID and Id=@Id";
+                cmd.CommandText = CmdString;
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@Id", dbid);
+                cmd.Parameters.AddWithValue("@JOBID", txt_jobid.Text.ToString());
+                cmd.Parameters.AddWithValue("@DownloadStatus", 1);
+                cmd.ExecuteNonQuery();
+                cmd.Dispose();
+            }
+            catch (Exception ex)
+            {
+                string title = "Notifications :";
+                string body = "Error : " + ex.Message;
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
 
