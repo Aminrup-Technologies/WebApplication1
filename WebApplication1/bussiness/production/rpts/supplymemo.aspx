@@ -7,7 +7,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>ATS : Daily Supply Memo</title>
+    <title>Daily Supply Memo</title>
     <link rel="shortcut icon" href="../../../erp_images/ats_translogo.png" />
     <link href="A4.css" rel="stylesheet" />
     <style type="text/css">

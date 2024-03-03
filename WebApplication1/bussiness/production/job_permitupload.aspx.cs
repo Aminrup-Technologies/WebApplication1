@@ -147,6 +147,17 @@ namespace WebApplication1.bussiness.production
                 dt = dbcl.SPreturn_dt(query, pram);
                 if (dt.Rows.Count > 0)
                 {
+                    string jobtype = dt.Rows[0]["BillingType"].ToString();
+                    if (jobtype == "Non-Billing")
+                    {
+                        permituploaded.Visible = true;
+                        Img_Success.Visible = true;
+                        lbl_upldscs_msg.Text = "Permit Uploaded Successfully...!";
+                    }
+                    else
+                    {
+
+                    }
                     lbl_jobiddate.Text = dt.Rows[0]["CreatedDate"].ToString();
                     lbl_jobcreatorname.Text = dt.Rows[0]["Creator_Name"].ToString();
                     lbl_creatorwrk.Text = dt.Rows[0]["Creator_Workman"].ToString();

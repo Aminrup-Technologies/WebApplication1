@@ -37,7 +37,7 @@
 
 
                                 <div class="col-md-2 col-sm-6  form-group">
-                                    <label>ATS JOB ID </label>
+                                    <label>JOB ID </label>
                                 </div>
                                 <div class="col-md-2 col-sm-6  form-group">
                                     <asp:TextBox ID="txt_jobid" class="form-control form-control-sm rounded" runat="server" ReadOnly="true" Font-Bold="true" ForeColor="Blue"></asp:TextBox>

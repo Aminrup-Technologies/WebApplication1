@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title>ATS TBT Report</title>
+    <title>TBT Report</title>
     <link rel="shortcut icon" href="../../../erp_images/ats_translogo.png" />
     <style type="text/css">
         body {

@@ -1,4 +1,4 @@
-﻿<%@ Page Title="ATS : Permit Upload" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="job_permitupload.aspx.cs" Inherits="WebApplication1.bussiness.production.job_permitupload" %>
+﻿<%@ Page Title="Permit Upload" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="job_permitupload.aspx.cs" Inherits="WebApplication1.bussiness.production.job_permitupload" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
@@ -190,7 +190,7 @@
                             <div class="row" id="permituploaded" runat="server" visible="false">
                                 <div class="col-md-12 col-sm-12" style="vertical-align: middle; text-align: center;">
                                     <asp:Image ID="Img_Success" runat="server" ImageUrl="~/erp_images/success_gif.gif" Width="100px" Height="100px" />
-                                    <asp:Label ID="Label5" runat="server" Text="Permit Uploaded Successfully...!" Font-Bold="true" Font-Size="Large"></asp:Label>
+                                    <asp:Label ID="lbl_upldscs_msg" runat="server" Text="Permit Uploaded Successfully...!" Font-Bold="true" Font-Size="Large"></asp:Label>
                                 </div>
                             </div>
 

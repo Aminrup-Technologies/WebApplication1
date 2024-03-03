@@ -11,7 +11,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>ATS  | Login</title>
+    <title>Login</title>
     <!-- Bootstrap -->
     <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     <!-- Font Awesome -->
@@ -49,7 +49,7 @@
                 <div class="login_form">
                     <section class="login_content">
                         <asp:Image ID="Image1" runat="server" ImageUrl="~/erp_images/ats_translogo.png" Height="100" Width="100" />
-                        <h1>Automation & Technical Services</h1>
+                        <h1><asp:Label ID="lbl_companyname" runat="server" Text="Automation & Technical Services"></asp:Label></h1>
                         <div class="form-horizontal">
                             <div class="form-group row">
                                 <label class="control-label col-md-4 col-sm-6 ">User ID</label>
@@ -78,7 +78,8 @@
                             <div class="separator">
                                 <br />
                                 <div>
-                                    <p>© 2021-2024 All Rights Reserved. <span style="font-weight: bold; color: darkred;">ATS,JSR</span> Powered by <a href="#" target="_blank">Aminrup Technologies</a></p>
+                                    <p>© 2021-2024 All Rights Reserved. <span style="font-weight: bold; color: darkred;">
+                                        <asp:Label ID="lbl_compfooter" runat="server" Text="ATS,JSR"></asp:Label></span> Powered by <a href="#" target="_blank">Aminrup Technologies</a></p>
                                 </div>
                             </div>
                         </div>

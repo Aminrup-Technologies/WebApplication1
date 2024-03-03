@@ -361,24 +361,40 @@
                                                         <ItemStyle CssClass="grid" />
                                                     </asp:TemplateField>
 
-                                                    <asp:TemplateField HeaderText="Type" HeaderStyle-Width="10%">
+                                                    <asp:TemplateField HeaderText="ID" HeaderStyle-Width="20%">
                                                         <ItemTemplate>
-                                                            <asp:Label ID="lbl_ActionableType" runat="server" Text='<%# Bind("ActionableType") %>'></asp:Label>
+                                                            <asp:Label ID="lbl_AcnID" runat="server" Text='<%# Bind("AcnID") %>'></asp:Label><br />
+                                                            <asp:Label ID="lbl_RefCSMFormID" runat="server" Text='<%# Bind("RefCSMFormID") %>'></asp:Label>
                                                         </ItemTemplate>
                                                         <HeaderStyle CssClass="grid" />
                                                         <ItemStyle CssClass="grid" />
                                                     </asp:TemplateField>
 
-                                                    <asp:TemplateField HeaderText="Actionable" HeaderStyle-Width="50%">
+                                                    <asp:TemplateField HeaderText="Type" HeaderStyle-Width="10%">
                                                         <ItemTemplate>
-                                                            <asp:Label ID="lbl_ActionableDescription" runat="server" Text='<%# Bind("ActionableDescription") %>'></asp:Label>
+                                                            <asp:Label ID="lbl_AcnType" runat="server" Text='<%# Bind("AcnType") %>'></asp:Label>
+                                                        </ItemTemplate>
+                                                        <HeaderStyle CssClass="grid" />
+                                                        <ItemStyle CssClass="grid" />
+                                                    </asp:TemplateField>
+
+                                                    <asp:TemplateField HeaderText="Description" HeaderStyle-Width="40%">
+                                                        <ItemTemplate>
+                                                            <asp:Label ID="lbl_AcnDescription" runat="server" Text='<%# Bind("AcnDescription") %>'></asp:Label>
                                                         </ItemTemplate>
                                                         <HeaderStyle CssClass="grid" />
                                                     </asp:TemplateField>
 
-                                                    <asp:TemplateField HeaderText="Priority" Visible="true" HeaderStyle-Width="10%">
+                                                    <asp:TemplateField HeaderText="Assigned To" HeaderStyle-Width="20%">
                                                         <ItemTemplate>
-                                                            <asp:Label ID="lbl_Priority" runat="server" Text='<%# Bind("Priority") %>'></asp:Label>
+                                                            <asp:Label ID="lbl_AssignedToName" runat="server" Text='<%# Bind("AssignedToName") %>'></asp:Label>
+                                                        </ItemTemplate>
+                                                        <HeaderStyle CssClass="grid" />
+                                                    </asp:TemplateField>
+
+                                                    <asp:TemplateField HeaderText="Status" Visible="true" HeaderStyle-Width="10%">
+                                                        <ItemTemplate>
+                                                            <asp:Label ID="lbl_CurrentStatus" runat="server" Text='<%# Bind("CurrentStatus") %>'></asp:Label>
                                                         </ItemTemplate>
                                                         <HeaderStyle CssClass="grid" />
                                                     </asp:TemplateField>

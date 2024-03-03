@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="../../erp_images/ats_translogo.png" type="image/ico" />
 
-    <title>ATS</title>
+    <title>Cloud ERP</title>
 
     <!-- Bootstrap -->
     <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -209,7 +209,7 @@
 
                                             <li id="ATSSItes" runat="server" visible="false"><a>Work-sites<span class="fa fa-chevron-down"></span></a>
                                                 <ul class="nav child_menu">
-                                                    <li id="Worksites" runat="server" class="sub_menu"><a href="ats_work_sites.aspx">ATS Worksites</a></li>
+                                                    <li id="Worksites" runat="server" class="sub_menu"><a href="ats_work_sites.aspx">Worksites</a></li>
                                                     <li id="SiteIncharges" runat="server"><a href="atsworksite_incharges.aspx">Worksite In-Charges</a></li>
                                                 </ul>
                                             </li>

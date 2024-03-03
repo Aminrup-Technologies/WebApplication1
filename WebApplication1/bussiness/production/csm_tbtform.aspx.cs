@@ -51,7 +51,7 @@ namespace WebApplication1.bussiness.production
                         BindPriorityLevel(CmdString1);
 
                         AddDefaultActionableRecord();
-                        AddDefaultLastReviewRecord();
+                        //AddDefaultLastReviewRecord();
 
                         Default_Buttons.Visible = false;
 
@@ -369,6 +369,16 @@ namespace WebApplication1.bussiness.production
                 {
                     //Bind_JOBIDDetails(ddljobid, jobdate);
                     Bind_TBTDetails(ddljobid, jobdate);
+
+                    //Function call to bind the last TBT details
+                    string workState = Session["STATE"].ToString();
+                    string workRegion = Session["REGION"].ToString();
+                    string workCompany = Session["COMPANY_CODE"].ToString();
+                    string refCSMFormName = "CSM-TBT";
+                    string submittedByWrk = Session["WORKMAN"].ToString();
+                    DataTable feedbackData = GetFeedbackData(workState, workRegion, workCompany, refCSMFormName, submittedByWrk);
+                    GridView2.DataSource = feedbackData;
+                    GridView2.DataBind();
                 }
                 else
                 {
@@ -437,6 +447,28 @@ namespace WebApplication1.bussiness.production
                     ClientScript.RegisterStartupScript(this.GetType(), "PNotifyNotification", script, false);
                 }
             }
+        }
+
+        public DataTable GetFeedbackData(string workState, string workRegion, string workCompany, string refCSMFormName, string submittedByWrk)
+        {
+            DataTable dataTable = new DataTable();
+            using (SqlConnection connection = dbcl.Conn)
+            {
+                string query = "SELECT AcnID, RefCSMFormID, AcnType, AcnDescription, PriorityLevel, AssignedToName, CurrentStatus, TargetCompletionDate FROM CSM_Feedbacks WHERE WorkState = @WorkState AND WorkrRegion = @WorkrRegion AND WorkCompany = @WorkCompany AND RefCSMFormName = @RefCSMFormName AND SubmittedByWrk = @SubmittedByWrk and DateSubmitted >= DATEADD(DAY, -3, GETDATE())";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@WorkState", workState);
+                    command.Parameters.AddWithValue("@WorkrRegion", workRegion);
+                    command.Parameters.AddWithValue("@WorkCompany", workCompany);
+                    command.Parameters.AddWithValue("@RefCSMFormName", refCSMFormName);
+                    command.Parameters.AddWithValue("@SubmittedByWrk", submittedByWrk);
+
+                    SqlDataAdapter adapter = new SqlDataAdapter(command);
+                    adapter.Fill(dataTable);
+                }
+            }
+            return dataTable;
         }
 
         private void Panel1_Tags_Hidden()

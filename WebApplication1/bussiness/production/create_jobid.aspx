@@ -1,17 +1,17 @@
-﻿<%@ Page Title="ATS : Create JOBID" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="create_jobid.aspx.cs" Inherits="WebApplication1.bussiness.production.create_jobid" %>
+﻿<%@ Page Title="Create JOBID" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="create_jobid.aspx.cs" Inherits="WebApplication1.bussiness.production.create_jobid" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="right_col" role="main">
         <div class="container">
-            <div class="page-title">
+            <%--<div class="page-title">
                 <div class="title_left">
                     <h5>JOB ID Creation Page : **Permit Number</h5>
                 </div>
             </div>
 
-            <div class="clearfix"></div>
+            <div class="clearfix"></div>--%>
 
             <div class="row">
                 <div class="col-md-12 col-sm-12">

@@ -1,4 +1,4 @@
-﻿<%@ Page Title="ATS : JOB Approval" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" MaintainScrollPositionOnPostback="true" AutoEventWireup="true" CodeBehind="jobapprovalpage.aspx.cs" Inherits="WebApplication1.bussiness.production.jobapprovalpage" %>
+﻿<%@ Page Title="JOB Approval" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" MaintainScrollPositionOnPostback="true" AutoEventWireup="true" CodeBehind="jobapprovalpage.aspx.cs" Inherits="WebApplication1.bussiness.production.jobapprovalpage" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>

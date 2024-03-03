@@ -7,7 +7,7 @@
         <div class="">
             <div class="page-title">
                 <div class="title_left">
-                    <h5>ATS Worksites</h5>
+                    <h5>Worksites</h5>
                 </div>
 
                 <div class="title_right">
@@ -22,7 +22,7 @@
                 <div class="col-md-12 col-sm-12  ">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Add : ATS Work Sites</h2>
+                            <h2>Add : Work Sites</h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                             </ul>

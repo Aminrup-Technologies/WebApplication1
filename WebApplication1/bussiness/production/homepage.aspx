@@ -1,4 +1,4 @@
-﻿<%@ Page Title="ATS | Home" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="homepage.aspx.cs" Inherits="WebApplication1.bussiness.production.WebForm1" %>
+﻿<%@ Page Title="Home" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="homepage.aspx.cs" Inherits="WebApplication1.bussiness.production.WebForm1" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 	<script type="text/javascript">

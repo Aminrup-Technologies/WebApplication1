@@ -28,7 +28,7 @@ namespace WebApplication1.bussiness.production
         {
             try
             {
-                CredentialChecker();
+                CredentialChecker1();
             }
             catch (ThreadAbortException)
             {
@@ -248,23 +248,5 @@ namespace WebApplication1.bussiness.production
         }
 
 
-    }
-
-    public class UserActivity
-    {
-        private string UserID { get; set; }
-        private string Region { get; set; }
-        private string State { get; set; }
-        private string Company { get; set; }
-        private string Workman { get; set; }
-        private string User_FirstName { get; set; }
-        private string User_FullName { get; set; }
-        private string User_Type { get; set; }
-        private string User_Permission { get; set; }
-        private string User_Worksite { get; set; }
-        private string User_WRKSTCode { get; set; }
-        private string User_Skill { get; set; }
-        private string User_Desg { get; set; }
-        private string User_Photo { get; set; }
     }
 }
