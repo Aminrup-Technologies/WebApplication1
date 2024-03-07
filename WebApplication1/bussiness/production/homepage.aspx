@@ -1,11 +1,6 @@
 ﻿<%@ Page Title="Home" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="homepage.aspx.cs" Inherits="WebApplication1.bussiness.production.WebForm1" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-	<script type="text/javascript">
-		function preventBack() { window.history.forward(); }
-		setTimeout("preventBack()", 0);
-		window.onunload = function () { null };
-	</script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 	<div class="right_col" role="main">

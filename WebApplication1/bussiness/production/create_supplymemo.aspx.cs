@@ -1388,8 +1388,9 @@ namespace WebApplication1.bussiness.production
             }
             else
             {
-                Response.Write("<script>window.open ('rpts/supplymemo.aspx?JOBID=" + txt_jobid.Text.ToString() + "','_blank');</script>");
+                //Response.Write("<script>window.open ('rpts/supplymemo.aspx?JOBID=" + txt_jobid.Text.ToString() + "','_blank');</script>");
                 //Response.Redirect("rpts/supplymemo.aspx?JOBID=" + txt_jobid.Text.ToString() + "");
+                Response.Redirect("rpts/supplymemo.aspx?JOBID=" + txt_jobid.Text.ToString());
                 //Function 2 --------- PRINT the MEMO
             }
 

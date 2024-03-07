@@ -56,9 +56,9 @@
         gtag('js', new Date());
         gtag('config', 'UA-197761506-1');
 
-        function preventBack() { window.history.forward(); }
-        setTimeout("preventBack()", 0);
-        window.onunload = function () { null };
+        //function preventBack() { window.history.forward(); }
+        //setTimeout("preventBack()", 0);
+        //window.onunload = function () { null };
     </script>
     <script src="../../Scripts/jquery-1.7.2.min.js"></script>
     <script type="text/javascript">

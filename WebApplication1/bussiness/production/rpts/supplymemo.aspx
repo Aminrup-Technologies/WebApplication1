@@ -200,6 +200,12 @@
             text-align: center;
             padding-left: 2px;
         }
+
+        @media print {
+            .no-print {
+                display: none;
+            }
+        }
     </style>
 </head>
 
@@ -591,5 +597,6 @@
             </table>
         </div>
     </form>
+    <button class="no-print" onclick="history.back()">Back</button>
 </body>
 </html>
