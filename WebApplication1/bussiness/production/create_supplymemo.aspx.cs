@@ -28,7 +28,7 @@ namespace WebApplication1.bussiness.production
         public static string qry_permitdetails = "select * from tbl_jobspermit where JOBID=@JOBID order by Id desc";
         public static string qry_polineitems = "select Id, WODB_Code, WOI_DBCode, ItemNO, LineNumber, ServiceNumber, Service_Description, Order_Quantity, Rate, PerUnit_Value, '' as Shift_Skill  from tlb_WO_LineItems_Data where WO_Number=@WO_Number order by Id";
         public static string qry_polineitems2= "select Id, JOBID as WODB_Code, SMJID as WOI_DBCode, ItemNO, LineNumber, ServiceNumber, Service_Description, Order_Quantity, Rate, PerUnit_Value,Shift_Skill from tbl_SupMem_LineItems_Data where JOBID=@JOBID order by Id";
-        public static string qry_jobmanpower = "select a.Id, a.JOBID, a.CreatedDate, a.JOB_Region, a.JOB_Company, a.EmployeeWrk, a.EmployeeName, a.EmpCategory,a.PO_SkillCategory, a.EmpDesignation, a.Employee_Worksite, a.Employee_WorksiteCode, a.Inpunch_Time, a.Outpunch_Time, a.WorkedHours, a.WourkHours, a.LunchFactor, a.ProvidedOT, a.AttendanceStatus, a.AttendanceCode, a.GatePassNo,a.SafetyPassNo, Round(IIF(a.LunchFactor ='Yes',(WorkedHours-1)/8,WorkedHours/8),2) as ShiftCalc from tbl_attendance a, tbl_Employee_Mustertable b  where a.JOBID=@JOBID and a.EmployeeWrk=b.WorkmanSL order by a.Id desc";
+        public static string qry_jobmanpower = "select a.Id, a.JOBID, a.CreatedDate, a.JOB_Region, a.JOB_Company, a.EmployeeWrk, a.EmployeeName, a.EmpCategory,a.PO_SkillCategory, a.EmpDesignation as PO_EmpDesignation, a.Employee_Worksite, a.Employee_WorksiteCode, a.Inpunch_Time, a.Outpunch_Time, a.WorkedHours, a.WourkHours, a.LunchFactor, a.ProvidedOT, a.AttendanceStatus, a.AttendanceCode, a.GatePassNo,a.SafetyPassNo, Round(IIF(a.LunchFactor ='Yes',(WorkedHours-1)/8,WorkedHours/8),2) as ShiftCalc from tbl_attendance a, tbl_Employee_Mustertable b  where a.JOBID=@JOBID and a.EmployeeWrk=b.WorkmanSL order by a.Id desc";
 
 
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
@@ -847,8 +847,21 @@ namespace WebApplication1.bussiness.production
         protected void GridView2_RowEditing(object sender, GridViewEditEventArgs e)
         {
             GridView2.EditIndex = e.NewEditIndex;
-            //BindGrid2();
             BindMyGridview();
+
+            // After setting the EditIndex, find the DropDownList in the edited row
+            //GridViewRow row = GridView2.Rows[e.NewEditIndex];
+            //if (row != null)
+            //{
+            //    Label lbl_PO_EmpDesignation = row.FindControl("lbl_PO_EmpDesignation") as Label;
+            //    DropDownList DDL_EmpDesignation = row.FindControl("DDL_EmpDesignation") as DropDownList;
+
+            //    if (lbl_PO_EmpDesignation != null && DDL_EmpDesignation != null)
+            //    {
+            //        // Set the selected value of the DropDownList to match the label's text
+            //        DDL_EmpDesignation.SelectedValue = lbl_PO_EmpDesignation.Text;
+            //    }
+            //}
         }
 
         protected void GridView2_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e)
@@ -863,7 +876,7 @@ namespace WebApplication1.bussiness.production
         {
             //GridView2.EditIndex = -1;
             //string jobid = txt_jobid.Text.ToString();
-            //BindMyGridview();
+            //BindMyGridview(jobid);
         }
         protected void GridView2_RowDataBound(object sender, GridViewRowEventArgs e)
         {
@@ -874,6 +887,7 @@ namespace WebApplication1.bussiness.production
 
             if (e.Row.RowType == DataControlRowType.DataRow && GridView2.EditIndex == e.Row.RowIndex)
             {
+
                 if (e.Row.RowType == DataControlRowType.DataRow)
                 {
                     var DDL_AttendanceStatus = e.Row.FindControl("DDL_AttendanceStatus") as DropDownList;
@@ -896,18 +910,24 @@ namespace WebApplication1.bussiness.production
                             DDL_AttendanceStatus.DataTextField = "Status";
                             DDL_AttendanceStatus.DataValueField = "Status";
                             DDL_AttendanceStatus.DataBind();
+
                             string AttendanceStatus = DataBinder.Eval(e.Row.DataItem, "AttendanceStatus").ToString();
-                            DDL_AttendanceStatus.Items.FindByText(AttendanceStatus).Selected = true;
+                            ListItem selectedItem = DDL_AttendanceStatus.Items.FindByText(AttendanceStatus);
+                            if (selectedItem != null)
+                            {
+                                selectedItem.Selected = true; // Set the displayed value as the default selected value
+                            }
                         }
                         catch (Exception ex)
                         {
                             string title = "Error :";
-                            string body = "No Sttaus Code Mapping found...!! " + ex.Message;
+                            string body = "No Status Code Mapping found...!! " + ex.Message;
                             ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
                             ForceNoEdit();
                             //throw;
                         }
                     }
+
 
                     var DDL_AttendanceCode = e.Row.FindControl("DDL_AttendanceCode") as DropDownList;
                     if (DDL_AttendanceCode != null)
@@ -942,9 +962,53 @@ namespace WebApplication1.bussiness.production
                         }
                     }
 
-                    string EmpCategory = "";
+
                     string wrkodrno = txt_workorderno.Text.ToString();
                     var DDL_EmpCategory = e.Row.FindControl("DDL_EmpCategory") as DropDownList;
+                    string EmpCategory = "";
+                    EmpCategory = DataBinder.Eval(e.Row.DataItem, "PO_SkillCategory").ToString();
+
+                    //var DDL_EmpDesignation = e.Row.FindControl("DDL_EmpDesignation") as DropDownList;
+                    //if (DDL_EmpDesignation != null)
+                    //{
+                    //    try
+                    //    {
+                    //        var dt4 = new DataTable();
+                    //        string cnnString1 = System.Configuration.ConfigurationManager.ConnectionStrings["DbConn"].ToString();
+                    //        using (var con = new SqlConnection(cnnString1))
+                    //        {
+                    //            con.Open();
+                    //            var cmd1 = new SqlCommand("SELECT Designation_Type, Designation_DB FROM tlb_payroll_designation where WorkRegion_Code=@REGION and Category_Type=@EmpCategory order by Designation_Type", con);
+                    //            cmd1.Parameters.AddWithValue("@REGION", Session["REGION"].ToString());
+                    //            cmd1.Parameters.AddWithValue("@EmpCategory", DDL_EmpCategory);
+                    //            var da4 = new SqlDataAdapter(cmd1);
+                    //            da4.Fill(dt4);
+                    //            con.Close();
+                    //        }
+
+                    //        DDL_EmpDesignation.DataSource = dt4;
+                    //        DDL_EmpDesignation.DataTextField = "Designation_Type";
+                    //        DDL_EmpDesignation.DataValueField = "Designation_DB";
+                    //        DDL_EmpDesignation.DataBind();
+
+                    //        string EmpDesignation = DataBinder.Eval(e.Row.DataItem, "PO_EmpDesignation").ToString();
+                    //        ListItem selectedItem = DDL_EmpDesignation.Items.FindByText(EmpDesignation);
+                    //        if (selectedItem != null)
+                    //        {
+                    //            selectedItem.Selected = true; // Set the displayed value as the default selected value
+                    //        }
+                    //    }
+                    //    catch (Exception ex)
+                    //    {
+                    //        string title = "Error :";
+                    //        string body = ex.Message;
+                    //        ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                    //        ForceNoEdit();
+                    //        //throw;
+                    //    }
+                    //}
+
+                    string EmpDesignation = DataBinder.Eval(e.Row.DataItem, "PO_EmpDesignation").ToString();
                     if (DDL_EmpCategory != null)
                     {
                         try
@@ -955,25 +1019,40 @@ namespace WebApplication1.bussiness.production
                             using (var con = new SqlConnection(cnnString1))
                             {
                                 con.Open();
-                                //var cmd1 = new SqlCommand("SELECT Category_Type, Category_DB  FROM tlb_payroll_category where WorkRegion_Code='" + Session["REGION"].ToString() + "'", con);
-                                var cmd1 = new SqlCommand("SELECT distinct WO_Category_Type, WO_Category_Code  FROM tlb_WO_SkillCategory where Work_Region_Code='" + Session["REGION"].ToString() + "'  and WO_Number='" + wrkodrno + "'", con);
+                                var cmd1 = new SqlCommand("SELECT distinct WO_Category_Type, WO_Category_Code  FROM tlb_WO_SkillCategory where Work_Region_Code='" + Session["REGION"].ToString() + "'  and WO_Number='" + wrkodrno + "' AND Designation_Type='" + EmpDesignation.ToString() + "'", con);
                                 var da1 = new SqlDataAdapter(cmd1);
                                 da1.Fill(dt1);
                                 con.Close();
                             }
 
-                            DDL_EmpCategory.DataSource = dt1;
-                            DDL_EmpCategory.DataTextField = "WO_Category_Type";
-                            DDL_EmpCategory.DataValueField = "WO_Category_Code";
-                            //DDL_EmpCategory.DataTextField = "Category_Type";
-                            //DDL_EmpCategory.DataValueField = "Category_DB";
-                            DDL_EmpCategory.DataBind();
-                            EmpCategory = DataBinder.Eval(e.Row.DataItem, "PO_SkillCategory").ToString();
-                            DDL_EmpCategory.Items.FindByText(EmpCategory).Selected = true;
+                            if (dt1.Rows.Count > 0)
+                            {
+                                DDL_EmpCategory.DataSource = dt1;
+                                DDL_EmpCategory.DataTextField = "WO_Category_Type";
+                                DDL_EmpCategory.DataValueField = "WO_Category_Code";
+                                DDL_EmpCategory.DataBind();
+
+                                // Now, set the default selected value if needed
+                                //string defaultCategory = "YourDefaultValue"; // Provide your default value here
+                                //ListItem selectedItem = DDL_EmpCategory.Items.FindByText(defaultCategory);
+                                //if (selectedItem != null)
+                                //{
+                                //    selectedItem.Selected = true;
+                                //}
+                            }
+                            else
+                            {
+                                string title = "Error :";
+                                string body = "No PO Skill Category found mapped with PO...!";
+                                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                                ForceNoEdit();
+                            }
+
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
                             string title = "Error :";
+                            //string body = ex.Message;
                             string body = "No PO Skill Category found mapped with PO...!";
                             ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
                             ForceNoEdit();
@@ -981,39 +1060,7 @@ namespace WebApplication1.bussiness.production
                         }
                     }
 
-                    var DDL_EmpDesignation = e.Row.FindControl("DDL_EmpDesignation") as DropDownList;
-                    if (DDL_EmpDesignation != null)
-                    {
-                        try
-                        {
-                            var dt4 = new DataTable();
-                            string cnnString1 = System.Configuration.ConfigurationManager.ConnectionStrings["DbConn"].ToString();
-                            using (var con = new SqlConnection(cnnString1))
-                            {
-                                con.Open();
-                                //var cmd1 = new SqlCommand("SELECT Designation_Type, Designation_DB FROM tlb_payroll_designation where WorkRegion_Code='" + Session["REGION"].ToString() + "' and Category_Type='"+ EmpCategory + "' order by Designation_Type", con);
-                                var cmd1 = new SqlCommand("SELECT Designation_Type, Designation_DB FROM tlb_WO_SkillCategory where Work_Region_Code='" + Session["REGION"].ToString() + "' and WO_Number='" + wrkodrno + "' and WO_Category_Type='" + EmpCategory + "' order by Designation_Type", con);
-                                var da4 = new SqlDataAdapter(cmd1);
-                                da4.Fill(dt4);
-                                con.Close();
-                            }
-
-                            DDL_EmpDesignation.DataSource = dt4;
-                            DDL_EmpDesignation.DataTextField = "Designation_Type";
-                            DDL_EmpDesignation.DataValueField = "Designation_DB";
-                            DDL_EmpDesignation.DataBind();
-                            string EmpDesignation = DataBinder.Eval(e.Row.DataItem, "PO_EmpDesignation").ToString();
-                            DDL_EmpDesignation.Items.FindByText(EmpDesignation).Selected = true;
-                        }
-                        catch (Exception ex)
-                        {
-                            string title = "Error :";
-                            string body = "No PO Designation found mapped with PO...!";
-                            ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
-                            ForceNoEdit();
-                            //throw;
-                        }
-                    }
+                    
                 }
             }
 
@@ -1061,15 +1108,29 @@ namespace WebApplication1.bussiness.production
                 }
                 lbl_ShiftCalc.Text = FnlShiftCalc.ToString();
 
+                //string PO_Category = "";
+                //if (lbl_PO_SkillCategory == null)
+                //{
+                //    PO_Category = DDL_EmpCategory.SelectedItem.Text.ToString();
+                //}
+                //else
+                //{
+                //    PO_Category = Convert.ToString(lbl_PO_SkillCategory.Text.ToString());
+                //}
+
                 string PO_Category = "";
-                if (lbl_PO_SkillCategory == null)
+
+                // Check if lbl_PO_SkillCategory is found and not null
+                if (lbl_PO_SkillCategory != null)
                 {
-                    PO_Category = DDL_EmpCategory.SelectedItem.Text.ToString();
+                    PO_Category = lbl_PO_SkillCategory.Text;
                 }
                 else
                 {
-                    PO_Category = Convert.ToString(lbl_PO_SkillCategory.Text.ToString());
+                    // Use the selected item text of DDL_EmpCategory as fallback
+                    PO_Category = DDL_EmpCategory.SelectedItem?.Text ?? string.Empty;
                 }
+
 
                 if (PO_Category == "HIGHLY-SKILLED")
                 {
@@ -1166,7 +1227,7 @@ namespace WebApplication1.bussiness.production
             DataTable dt = (DataTable)ViewState["Manpower"];
             DataRow dr = dt.Rows[e.RowIndex];
             dr["PO_SkillCategory"] = EmpCategory;
-            dr["EmpDesignation"] = EmpDesignation;
+            dr["PO_EmpDesignation"] = EmpDesignation;
             dr["LunchFactor"] = lunchyesno;
             //dr["GatePassExpiry"] = GPExpiry;
             dr.AcceptChanges();

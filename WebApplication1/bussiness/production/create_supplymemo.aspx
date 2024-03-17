@@ -333,9 +333,9 @@
                                         <ItemTemplate>
                                             <asp:Label ID="lbl_PO_EmpDesignation" runat="server" Text='<%# Bind("PO_EmpDesignation") %>'></asp:Label>
                                         </ItemTemplate>
-                                        <EditItemTemplate>
-                                            <asp:DropDownList ID="DDL_EmpDesignation" class="form-control form-control-sm rounded no-padding" runat="server"></asp:DropDownList>
-                                        </EditItemTemplate>
+                                        <%--<EditItemTemplate>
+                                            <asp:DropDownList ID="DDL_EmpDesignation" class="form-control form-control-sm rounded no-padding" runat="server" Enabled="true"></asp:DropDownList>
+                                        </EditItemTemplate>--%>
                                         <ItemStyle CssClass="text text-center text-info" Font-Bold="true" />
                                     </asp:TemplateField>
 
