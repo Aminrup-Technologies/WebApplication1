@@ -5,8 +5,6 @@
 <html>
 <head runat="server">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <!-- Meta, title, CSS, favicons, etc. -->
-
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -120,352 +118,375 @@
             document.addEventListener("keypress", handleUserActivity);
         });
     </script>
+    <style type="text/css">
+        #loader {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            background-color: rgba(0, 0, 0, 0); /* Transparent background */
+        }
 
+        .loader img {
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
 </head>
-<body class="nav-md footer_fixed" onload="ShowCurrentTime()">
-    <form id="form1" runat="server">
-        <%-- Page loader removed on 03-07-2023, upon request from users --%>
-        <%--<div id="page-loader">
+<body class="nav-md footer_fixed">
+    <div id="loader">
+        <img src="../../erp_images/Hourglass.gif" alt="loadergif" />
+    </div>
+    <div style="display: none;" id="content">
+        <form id="form1" runat="server">
+            <%-- Page loader removed on 03-07-2023, upon request from users --%>
+            <%--<div id="page-loader">
 			<!-- Your page loader content goes here -->
 			<img src="../../erp_images/Hourglass.gif" alt="loadergif" />
 		</div>--%>
 
 
-        <div class="container body">
-            <div class="main_container">
-                <div class="col-md-3 left_col">
-                    <div class="left_col scroll-view">
-                        <div class="navbar nav_title" style="border: 0;">
-                            <a href="#" class="site_title">
-                                <asp:Image ID="Image1" runat="server" ImageUrl="~/erp_images/ats_logo.jpg" Height="50" Width="50" /><span>&nbsp;&nbsp;ATS</span>
-                            </a>
-                        </div>
-
-                        <div class="clearfix"></div>
-
-                        <!-- menu profile quick info -->
-                        <div class="profile clearfix">
-                            <div class="profile_pic">
-                                <img id="ProfilePic_1" src="..." runat="server" alt="..." class="img-circle profile_img">
+            <div class="container body">
+                <div class="main_container">
+                    <div class="col-md-3 left_col">
+                        <div class="left_col scroll-view">
+                            <div class="navbar nav_title" style="border: 0;">
+                                <a href="#" class="site_title">
+                                    <asp:Image ID="Image1" runat="server" ImageUrl="~/erp_images/ats_logo.jpg" Height="50" Width="50" /><span>&nbsp;&nbsp;ATS</span>
+                                </a>
                             </div>
-                            <div class="profile_info">
-                                Hi,
+
+                            <div class="clearfix"></div>
+
+                            <!-- menu profile quick info -->
+                            <div class="profile clearfix">
+                                <div class="profile_pic">
+                                    <img id="ProfilePic_1" src="..." runat="server" alt="..." class="img-circle profile_img">
+                                </div>
+                                <div class="profile_info">
+                                    Hi,
                                 <asp:Label ID="lbl_loginusername1" runat="server" Text="Login_Name" Font-Bold="true"></asp:Label>
+                                </div>
                             </div>
-                        </div>
-                        <!-- /menu profile quick info -->
+                            <!-- /menu profile quick info -->
 
-                        <br />
+                            <br />
 
-                        <!-- sidebar menu -->
-                        <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
-                            <div class="menu_section">
-                                <h3>General</h3>
-                                <ul class="nav side-menu">
-                                    <li id="HomePage" runat="server" visible="true"><a><i class="fa fa-home"></i>Home <span class="fa fa-chevron-down"></span></a>
-                                        <ul class="nav child_menu">
-                                            <li id="Home1" runat="server" visible="true"><a href="homepage.aspx">Dashboard-1<span class="label label-success pull-right">Click !!</span></a></li>
-                                            <li id="AttendnaceCal" runat="server" visible="true"><a href="vw_emp_attencal.aspx">Attendance<span class="label label-success pull-right">Click !!</span></a></li>
-                                        </ul>
-                                    </li>
+                            <!-- sidebar menu -->
+                            <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                                <div class="menu_section">
+                                    <h3>General</h3>
+                                    <ul class="nav side-menu">
+                                        <li id="HomePage" runat="server" visible="true"><a><i class="fa fa-home"></i>Home <span class="fa fa-chevron-down"></span></a>
+                                            <ul class="nav child_menu">
+                                                <li id="Home1" runat="server" visible="true"><a href="homepage.aspx">Dashboard-1<span class="label label-success pull-right">Click !!</span></a></li>
+                                                <li id="AttendnaceCal" runat="server" visible="true"><a href="vw_emp_attencal.aspx">Attendance<span class="label label-success pull-right">Click !!</span></a></li>
+                                            </ul>
+                                        </li>
 
-                                    <li id="DataMastering" runat="server" visible="false"><a><i class="fa fa-database"></i>Data Mastering <span class="fa fa-chevron-down"></span></a>
-                                        <ul class="nav child_menu">
-                                            <li id="Works" runat="server" visible="false"><a>Works<span class="fa fa-chevron-down"></span></a>
-                                                <ul class="nav child_menu">
-                                                    <li id="WorkCountry" runat="server" class="sub_menu"><a href="work_country.aspx">Work Country</a></li>
-                                                    <li id="WorkState" runat="server"><a href="work_states.aspx">Work States</a></li>
-                                                    <li id="WorkRegion" runat="server"><a href="work_region.aspx">Work Regions</a></li>
-                                                </ul>
-                                            </li>
+                                        <li id="DataMastering" runat="server" visible="false"><a><i class="fa fa-database"></i>Data Mastering <span class="fa fa-chevron-down"></span></a>
+                                            <ul class="nav child_menu">
+                                                <li id="Works" runat="server" visible="false"><a>Works<span class="fa fa-chevron-down"></span></a>
+                                                    <ul class="nav child_menu">
+                                                        <li id="WorkCountry" runat="server" class="sub_menu"><a href="work_country.aspx">Work Country</a></li>
+                                                        <li id="WorkState" runat="server"><a href="work_states.aspx">Work States</a></li>
+                                                        <li id="WorkRegion" runat="server"><a href="work_region.aspx">Work Regions</a></li>
+                                                    </ul>
+                                                </li>
 
-                                            <li id="Clients" runat="server" visible="false"><a>Company<span class="fa fa-chevron-down"></span></a>
-                                                <ul class="nav child_menu">
-                                                    <li id="WorkCompany" runat="server" class="sub_menu"><a href="work_company.aspx">Company</a></li>
-                                                    <li id="CompanyDept" runat="server"><a href="workcompany_dept.aspx">Company Dept.</a></li>
-                                                    <li id="DeptHeads" runat="server" visible="false"><a href="workcomp_deptheads.aspx">Dept. Heads</a></li>
-                                                    <li id="DeptLocations" runat="server"><a href="workcomp_dept_locations.aspx">Dept. Locations</a></li>
-                                                </ul>
-                                            </li>
+                                                <li id="Clients" runat="server" visible="false"><a>Company<span class="fa fa-chevron-down"></span></a>
+                                                    <ul class="nav child_menu">
+                                                        <li id="WorkCompany" runat="server" class="sub_menu"><a href="work_company.aspx">Company</a></li>
+                                                        <li id="CompanyDept" runat="server"><a href="workcompany_dept.aspx">Company Dept.</a></li>
+                                                        <li id="DeptHeads" runat="server" visible="false"><a href="workcomp_deptheads.aspx">Dept. Heads</a></li>
+                                                        <li id="DeptLocations" runat="server"><a href="workcomp_dept_locations.aspx">Dept. Locations</a></li>
+                                                    </ul>
+                                                </li>
 
-                                            <li id="WorkOrder" runat="server" visible="false"><a>Work-Order<span class="fa fa-chevron-down"></span></a>
-                                                <ul class="nav child_menu">
-                                                    <li id="AddWorkorder" runat="server" class="sub_menu"><a href="add_workorders.aspx">Add Work-Order</a></li>
-                                                    <li id="AddWO_SkillCategory" runat="server" class="sub_menu"><a href="add_wo_skillcategory.aspx">Add WO-Category</a></li>
-                                                    <li id="AddItemNo" runat="server"><a href="add_workorderdata.aspx">Add WO Items</a></li>
-                                                    <li id="AddLineItems" runat="server"><a href="add_workorder_lineitems.aspx">Add WO LineItem</a></li>
-                                                    <li id="UploadLineItems" runat="server"><a href="upload_wrkordrlineitems.aspx">Upload WO LineItem</a></li>
+                                                <li id="WorkOrder" runat="server" visible="false"><a>Work-Order<span class="fa fa-chevron-down"></span></a>
+                                                    <ul class="nav child_menu">
+                                                        <li id="AddWorkorder" runat="server" class="sub_menu"><a href="add_workorders.aspx">Add Work-Order</a></li>
+                                                        <li id="AddWO_SkillCategory" runat="server" class="sub_menu"><a href="add_wo_skillcategory.aspx">Add WO-Category</a></li>
+                                                        <li id="AddItemNo" runat="server"><a href="add_workorderdata.aspx">Add WO Items</a></li>
+                                                        <li id="AddLineItems" runat="server"><a href="add_workorder_lineitems.aspx">Add WO LineItem</a></li>
+                                                        <li id="UploadLineItems" runat="server"><a href="upload_wrkordrlineitems.aspx">Upload WO LineItem</a></li>
 
-                                                </ul>
-                                            </li>
+                                                    </ul>
+                                                </li>
 
-                                            <li id="Payroll" runat="server" visible="false"><a>Payroll<span class="fa fa-chevron-down"></span></a>
-                                                <ul class="nav child_menu">
-                                                    <li id="PayrollSkills" runat="server" class="sub_menu"><a href="emp_payrollcategory.aspx">Payroll Categories</a></li>
-                                                    <li id="PayrollWages" runat="server"><a href="emp_payroll_wages.aspx">Payroll Wages</a></li>
-                                                    <li id="PayrollDesg" runat="server"><a href="emp_payroll_designation.aspx">Payroll Designation</a></li>
-                                                </ul>
-                                            </li>
+                                                <li id="Payroll" runat="server" visible="false"><a>Payroll<span class="fa fa-chevron-down"></span></a>
+                                                    <ul class="nav child_menu">
+                                                        <li id="PayrollSkills" runat="server" class="sub_menu"><a href="emp_payrollcategory.aspx">Payroll Categories</a></li>
+                                                        <li id="PayrollWages" runat="server"><a href="emp_payroll_wages.aspx">Payroll Wages</a></li>
+                                                        <li id="PayrollDesg" runat="server"><a href="emp_payroll_designation.aspx">Payroll Designation</a></li>
+                                                    </ul>
+                                                </li>
 
-                                            <li id="ATSSItes" runat="server" visible="false"><a>Work-sites<span class="fa fa-chevron-down"></span></a>
-                                                <ul class="nav child_menu">
-                                                    <li id="Worksites" runat="server" class="sub_menu"><a href="ats_work_sites.aspx">Worksites</a></li>
-                                                    <li id="SiteIncharges" runat="server"><a href="atsworksite_incharges.aspx">Worksite In-Charges</a></li>
-                                                </ul>
-                                            </li>
+                                                <li id="ATSSItes" runat="server" visible="false"><a>Work-sites<span class="fa fa-chevron-down"></span></a>
+                                                    <ul class="nav child_menu">
+                                                        <li id="Worksites" runat="server" class="sub_menu"><a href="ats_work_sites.aspx">Worksites</a></li>
+                                                        <li id="SiteIncharges" runat="server"><a href="atsworksite_incharges.aspx">Worksite In-Charges</a></li>
+                                                    </ul>
+                                                </li>
 
-                                            <li id="HRSection" runat="server" visible="false"><a>Employee Section<span class="fa fa-chevron-down"></span></a>
-                                                <ul class="nav child_menu">
-                                                    <li id="AddEmployee" runat="server" class="sub_menu"><a href="emp_registration.aspx">Employee Registration</a></li>
-                                                    <li id="BulkRegistration" runat="server"><a href="emp_bulkregistration.aspx">Bulk Registration</a></li>
-                                                    <li id="ViewMasterData" runat="server"><a href="view_emp_mastertbldata.aspx">View Master Table</a></li>
-                                                    <li id="UpdateEmpMasterData" runat="server" visible="false"><a href="viewupdate_empmustertabledata.aspx">Update Employee Data</a></li>
-                                                </ul>
-                                            </li>
-                                        </ul>
-                                    </li>
+                                                <li id="HRSection" runat="server" visible="false"><a>Employee Section<span class="fa fa-chevron-down"></span></a>
+                                                    <ul class="nav child_menu">
+                                                        <li id="AddEmployee" runat="server" class="sub_menu"><a href="emp_registration.aspx">Employee Registration</a></li>
+                                                        <li id="BulkRegistration" runat="server"><a href="emp_bulkregistration.aspx">Bulk Registration</a></li>
+                                                        <li id="ViewMasterData" runat="server"><a href="view_emp_mastertbldata.aspx">View Master Table</a></li>
+                                                        <li id="UpdateEmpMasterData" runat="server" visible="false"><a href="viewupdate_empmustertabledata.aspx">Update Employee Data</a></li>
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        </li>
 
-                                    <li id="Analytics" runat="server" visible="false"><a><i class="fa fa-edit"></i>JOB Analytics<span class="fa fa-chevron-down"></span></a>
-                                        <ul class="nav child_menu">
-                                            <li id="monthlysummary" runat="server" class="sub_menu"><a href="view_monthlyjobs.aspx">Monthly Summary</a></li>
-                                            <li id="dailysummary" runat="server"><a href="view_dailyjobs.aspx">Daily Summary</a></li>
-                                            <li id="empsummary" runat="server"><a href="view_empmonthlyatt.aspx">Employee Summary</a></li>
-                                            <li id="swapjobdate" runat="server"><a href="swap_jobdate.aspx">Swap JOB Date</a></li>
-                                        </ul>
-                                    </li>
+                                        <li id="Analytics" runat="server" visible="false"><a><i class="fa fa-edit"></i>JOB Analytics<span class="fa fa-chevron-down"></span></a>
+                                            <ul class="nav child_menu">
+                                                <li id="monthlysummary" runat="server" class="sub_menu"><a href="view_monthlyjobs.aspx">Monthly Summary</a></li>
+                                                <li id="dailysummary" runat="server"><a href="view_dailyjobs.aspx">Daily Summary</a></li>
+                                                <li id="empsummary" runat="server"><a href="view_empmonthlyatt.aspx">Employee Summary</a></li>
+                                                <li id="swapjobdate" runat="server"><a href="swap_jobdate.aspx">Swap JOB Date</a></li>
+                                            </ul>
+                                        </li>
 
-                                    <li id="PayrollReports" runat="server" visible="false"><a><i class="fa fa-edit"></i>Payroll Data & Sheets<span class="fa fa-chevron-down"></span></a>
-                                        <ul class="nav child_menu">
-                                            <li id="mng_pyrl" runat="server"><a href="pyrl_managedashbrd.aspx">Manage Payroll</a></li>
-                                            <li id="gnrt_pyrl" runat="server" visible="false"><a href="#">Generate Payroll</a></li>
-                                        </ul>
-                                    </li>
+                                        <li id="PayrollReports" runat="server" visible="false"><a><i class="fa fa-edit"></i>Payroll Data & Sheets<span class="fa fa-chevron-down"></span></a>
+                                            <ul class="nav child_menu">
+                                                <li id="mng_pyrl" runat="server"><a href="pyrl_managedashbrd.aspx">Manage Payroll</a></li>
+                                                <li id="gnrt_pyrl" runat="server" visible="false"><a href="#">Generate Payroll</a></li>
+                                            </ul>
+                                        </li>
 
-                                    <li id="JOBManpower" runat="server" visible="false"><a><i class="fa fa-edit"></i>JOB & Manpower<span class="fa fa-chevron-down"></span></a>
-                                        <ul class="nav child_menu">
-                                            <li id="CreateJOBS" runat="server" visible="true"><a href="jobs_and_manpower.aspx">Create JOBID</a></li>
-                                            <li id="ManageJOBS" runat="server" visible="true"><a href="manage_jobid.aspx">Manage JOBID</a></li>
-                                            <li id="RejectedJOBS_Supv" runat="server" visible="true"><a href="view_rejectedjobs.aspx">Rejected JOB ID</a></li>
-                                            <li id="EmpSearch" runat="server" visible="true"><a href="searchemployee.aspx">Employee Search</a></li>
-                                        </ul>
-                                    </li>
+                                        <li id="JOBManpower" runat="server" visible="false"><a><i class="fa fa-edit"></i>JOB & Manpower<span class="fa fa-chevron-down"></span></a>
+                                            <ul class="nav child_menu">
+                                                <li id="CreateJOBS" runat="server" visible="true"><a href="jobs_and_manpower.aspx">Create JOBID</a></li>
+                                                <li id="ManageJOBS" runat="server" visible="true"><a href="manage_jobid.aspx">Manage JOBID</a></li>
+                                                <li id="RejectedJOBS_Supv" runat="server" visible="true"><a href="view_rejectedjobs.aspx">Rejected JOB ID</a></li>
+                                                <li id="EmpSearch" runat="server" visible="true"><a href="searchemployee.aspx">Employee Search</a></li>
+                                            </ul>
+                                        </li>
 
-                                    <li id="JOBApproval" runat="server" visible="false"><a><i class="fa fa-edit"></i>JOB Approval<span class="fa fa-chevron-down"></span></a>
-                                        <ul class="nav child_menu">
-                                            <li id="vwatten" runat="server"><a href="generate_appvrsite_atdncsheet.aspx">Monthly Attendance</a></li>
-                                            <li id="ViewJobforApp" runat="server"><a href="view_jobsforapproval.aspx">JOB's For Approval [<asp:Label ID="lbl_jobspendingcount" runat="server" Text="0" Font-Bold="true"></asp:Label>]</a></li>
-                                            <li id="ApprovedJOBS" runat="server"><a href="view_approvedjobs.aspx">Approved JOB & Manpower [<asp:Label ID="lbl_approvedjobs" runat="server" Text="0" Font-Bold="true"></asp:Label>]</a></li>
-                                            <li id="RejectedJOBS_inch" runat="server"><a href="#">Rejected JOB & Manpower [<asp:Label ID="lbl_rejectedjobs" runat="server" Text="0" Font-Bold="true"></asp:Label>]</a></li>
-                                        </ul>
-                                    </li>
+                                        <li id="JOBApproval" runat="server" visible="false"><a><i class="fa fa-edit"></i>JOB Approval<span class="fa fa-chevron-down"></span></a>
+                                            <ul class="nav child_menu">
+                                                <li id="vwatten" runat="server"><a href="generate_appvrsite_atdncsheet.aspx">Monthly Attendance</a></li>
+                                                <li id="ViewJobforApp" runat="server"><a href="view_jobsforapproval.aspx">JOB's For Approval [<asp:Label ID="lbl_jobspendingcount" runat="server" Text="0" Font-Bold="true"></asp:Label>]</a></li>
+                                                <li id="ApprovedJOBS" runat="server"><a href="view_approvedjobs.aspx">Approved JOB & Manpower [<asp:Label ID="lbl_approvedjobs" runat="server" Text="0" Font-Bold="true"></asp:Label>]</a></li>
+                                                <li id="RejectedJOBS_inch" runat="server"><a href="#">Rejected JOB & Manpower [<asp:Label ID="lbl_rejectedjobs" runat="server" Text="0" Font-Bold="true"></asp:Label>]</a></li>
+                                            </ul>
+                                        </li>
 
-                                    <li id="Memo_Billing" runat="server" visible="true"><a><i class="fa fa-edit"></i>Memo & Billing<span class="fa fa-chevron-down"></span></a>
-                                        <ul class="nav child_menu">
-                                            <li id="crt_spm" runat="server"><a href="vw_inchsupmem.aspx">Supply Memo</a></li>
-                                            <li id="crt_lim" runat="server"><a href="vw_lineitemjobs.aspx">Line Item Memo</a></li>
-                                            <li id="crt_memosum" runat="server"><a href="#">Memo Summary</a></li>
-                                        </ul>
-                                    </li>
+                                        <li id="Memo_Billing" runat="server" visible="true"><a><i class="fa fa-edit"></i>Memo & Billing<span class="fa fa-chevron-down"></span></a>
+                                            <ul class="nav child_menu">
+                                                <li id="crt_spm" runat="server"><a href="vw_inchsupmem.aspx">Supply Memo</a></li>
+                                                <li id="crt_lim" runat="server"><a href="vw_lineitemjobs.aspx">Line Item Memo</a></li>
+                                                <li id="crt_memosum" runat="server"><a href="#">Memo Summary</a></li>
+                                            </ul>
+                                        </li>
 
-                                    <li id="CSM" runat="server" visible="true"><a><i class="fa fa-edit"></i>CSM<span class="fa fa-chevron-down"></span></a>
-                                        <ul class="nav child_menu">
-                                            <li id="csms_mainview" runat="server"><a href="csms_mainview.aspx">CSM Forms</a></li>
-                                            <li id="csm_approvals" runat="server"><a href="csm_approvals.aspx">CSM Approval</a></li>
-                                            <li id="csm_reports" runat="server"><a href="csm_reports.aspx">CSM Reports</a></li>
-                                        </ul>
-                                    </li>
+                                        <li id="CSM" runat="server" visible="true"><a><i class="fa fa-edit"></i>CSM<span class="fa fa-chevron-down"></span></a>
+                                            <ul class="nav child_menu">
+                                                <li id="csms_mainview" runat="server"><a href="csms_mainview.aspx">CSM Forms</a></li>
+                                                <li id="csm_approvals" runat="server"><a href="csm_approvals.aspx">CSM Approval</a></li>
+                                                <li id="csm_reports" runat="server"><a href="csm_reports.aspx">CSM Reports</a></li>
+                                            </ul>
+                                        </li>
 
-                                    <li id="Reltab" runat="server" visible="true"><a><i class="fa fa-edit"></i>Expenses<span class="fa fa-chevron-down"></span></a>
-                                        <ul class="nav child_menu">
-                                            <li id="budget" runat="server" visible="false"><a href="#">Budget</a></li>
-                                            <li id="add_exphd" runat="server" visible="true"><a href="add_expense_heads.aspx">Expense Heads</a></li>
-                                            <li id="add_expsbhd" runat="server" visible="false"><a href="add_expense_subheads.aspx">Expense Sub-Heads</a></li>
-                                            <li id="add_exp" runat="server" visible="true"><a href="add_expenses.aspx">Add Expenses</a></li>
-                                            <li id="mng_exp" runat="server" visible="true"><a href="view_expenses.aspx">View & Manage Expenses</a></li>
-                                        </ul>
-                                    </li>
+                                        <li id="Reltab" runat="server" visible="true"><a><i class="fa fa-edit"></i>Expenses<span class="fa fa-chevron-down"></span></a>
+                                            <ul class="nav child_menu">
+                                                <li id="budget" runat="server" visible="false"><a href="#">Budget</a></li>
+                                                <li id="add_exphd" runat="server" visible="true"><a href="add_expense_heads.aspx">Expense Heads</a></li>
+                                                <li id="add_expsbhd" runat="server" visible="false"><a href="add_expense_subheads.aspx">Expense Sub-Heads</a></li>
+                                                <li id="add_exp" runat="server" visible="true"><a href="add_expenses.aspx">Add Expenses</a></li>
+                                                <li id="mng_exp" runat="server" visible="true"><a href="view_expenses.aspx">View & Manage Expenses</a></li>
+                                            </ul>
+                                        </li>
 
-                                    <li id="Helpdesk" runat="server" visible="true"><a><i class="fa fa-edit"></i>Grievances<span class="fa fa-chevron-down"></span></a>
-                                        <ul class="nav child_menu">
-                                            <li id="hlpdsk_new" runat="server" visible="true"><a href="add_nwhelpdsk.aspx">New Request</a></li>
-                                            <li id="hlpdsk_view" runat="server" visible="true"><a href="#">Track Request</a></li>
-                                        </ul>
-                                    </li>
+                                        <li id="Helpdesk" runat="server" visible="true"><a><i class="fa fa-edit"></i>Grievances<span class="fa fa-chevron-down"></span></a>
+                                            <ul class="nav child_menu">
+                                                <li id="hlpdsk_new" runat="server" visible="true"><a href="add_nwhelpdsk.aspx">New Request</a></li>
+                                                <li id="hlpdsk_view" runat="server" visible="true"><a href="#">Track Request</a></li>
+                                            </ul>
+                                        </li>
 
-                                </ul>
+                                    </ul>
+                                </div>
+
+                                <div class="menu_section">
+                                    <h3>Live On</h3>
+                                    <ul class="nav side-menu">
+                                        <li><a href="../../index.html" target="_blank"><i class="fa fa-laptop"></i>Landing Page <span class="label label-success pull-right">Click !!</span></a></li>
+                                    </ul>
+                                </div>
+
                             </div>
+                            <!-- /sidebar menu -->
 
-                            <div class="menu_section">
-                                <h3>Live On</h3>
-                                <ul class="nav side-menu">
-                                    <li><a href="../../index.html" target="_blank"><i class="fa fa-laptop"></i>Landing Page <span class="label label-success pull-right">Click !!</span></a></li>
-                                </ul>
+                            <!-- /menu footer buttons -->
+                            <div class="sidebar-footer hidden-small">
+                                <a data-toggle="tooltip" data-placement="top" title="Settings">
+                                    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                                </a>
+                                <a data-toggle="tooltip" data-placement="top" title="FullScreen">
+                                    <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+                                </a>
+                                <a data-toggle="tooltip" data-placement="top" title="Lock">
+                                    <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
+                                </a>
+                                <a data-toggle="tooltip" data-placement="top" title="Logout" href="#">
+                                    <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+                                </a>
                             </div>
-
+                            <!-- /menu footer buttons -->
                         </div>
-                        <!-- /sidebar menu -->
-
-                        <!-- /menu footer buttons -->
-                        <div class="sidebar-footer hidden-small">
-                            <a data-toggle="tooltip" data-placement="top" title="Settings">
-                                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-                            </a>
-                            <a data-toggle="tooltip" data-placement="top" title="FullScreen">
-                                <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
-                            </a>
-                            <a data-toggle="tooltip" data-placement="top" title="Lock">
-                                <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
-                            </a>
-                            <a data-toggle="tooltip" data-placement="top" title="Logout" href="#">
-                                <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
-                            </a>
-                        </div>
-                        <!-- /menu footer buttons -->
                     </div>
-                </div>
 
-                <!-- top navigation -->
-                <div class="top_nav">
-                    <div class="nav_menu">
-                        <div class="nav toggle">
-                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                    <!-- top navigation -->
+                    <div class="top_nav">
+                        <div class="nav_menu">
+                            <div class="nav toggle">
+                                <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                            </div>
+                            <nav class="nav navbar-nav">
+                                <ul class="navbar-right">
+                                    <li class="nav-item dropdown open" style="padding-left: 15px;">
+                                        <a href="javascript:;" class="user-profile dropdown-toggle" aria-haspopup="true" id="navbarDropdown" data-toggle="dropdown" aria-expanded="false">
+                                            <img id="ProfilePic_2" runat="server" alt="" src="...."><asp:Label ID="lbl_loginusername2" runat="server" Text="Login_Name"></asp:Label>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-usermenu pull-right" aria-labelledby="navbarDropdown">
+                                            <a class="dropdown-item" href="manage_profile.aspx">Manage Profile</a>
+                                            <a class="dropdown-item" target="_blank" href="https://wa.me/message/IWCQS7KUJRAHA1">Support</a>
+                                            <%--<a class="dropdown-item" href="#"><i class="fa fa-sign-out pull-right"></i>Log Out</a>--%>
+                                            <button type="button" class="dropdown-item btn btn-primary btn-sm" id="btn_Logout" data-toggle="modal" data-target="#MyModal_Logout">Logout</button>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </nav>
                         </div>
-                        <nav class="nav navbar-nav">
-                            <ul class="navbar-right">
-                                <li class="nav-item dropdown open" style="padding-left: 15px;">
-                                    <a href="javascript:;" class="user-profile dropdown-toggle" aria-haspopup="true" id="navbarDropdown" data-toggle="dropdown" aria-expanded="false">
-                                        <img id="ProfilePic_2" runat="server" alt="" src="...."><asp:Label ID="lbl_loginusername2" runat="server" Text="Login_Name"></asp:Label>
-                                    </a>
-                                    <div class="dropdown-menu dropdown-usermenu pull-right" aria-labelledby="navbarDropdown">
-                                        <a class="dropdown-item" href="manage_profile.aspx">Manage Profile</a>
-                                        <a class="dropdown-item" target="_blank" href="https://wa.me/message/IWCQS7KUJRAHA1">Support</a>
-                                        <%--<a class="dropdown-item" href="#"><i class="fa fa-sign-out pull-right"></i>Log Out</a>--%>
-                                        <button type="button" class="dropdown-item btn btn-primary btn-sm" id="btn_Logout" data-toggle="modal" data-target="#MyModal_Logout">Logout</button>
-                                    </div>
-                                </li>
-                            </ul>
-                        </nav>
                     </div>
+                    <!-- /top navigation -->
                 </div>
-                <!-- /top navigation -->
+                <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server"></asp:ContentPlaceHolder>
             </div>
-            <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server"></asp:ContentPlaceHolder>
-        </div>
 
-        <%--- Logout Modal --%>
-        <div class="modal fade" id="MyModal_Logout" data-backdrop="static">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Confirm your Log Out</h4>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <div class="col-md-6 col-sm-12 form-group">
-                                        <label><span class="text text-danger">Click to Close the Session</span></label>
-                                    </div>
-                                    <div class="col-md-6 col-sm-12 form-group">
-                                        <asp:Button ID="btn_lgout" runat="server" CausesValidation="false" Text="Yes" CssClass="btn btn-danger btn-sm" OnClick="btn_lgout_Click" />
-                                        <button type="button" class="btn btn-sm btn-success" data-dismiss="modal">No</button>
+            <%--- Logout Modal --%>
+            <div class="modal fade" id="MyModal_Logout" data-backdrop="static">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Confirm your Log Out</h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <div class="col-md-6 col-sm-12 form-group">
+                                            <label><span class="text text-danger">Click to Close the Session</span></label>
+                                        </div>
+                                        <div class="col-md-6 col-sm-12 form-group">
+                                            <asp:Button ID="btn_lgout" runat="server" CausesValidation="false" Text="Yes" CssClass="btn btn-danger btn-sm" OnClick="btn_lgout_Click" />
+                                            <button type="button" class="btn btn-sm btn-success" data-dismiss="modal">No</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <%--- Logout Modal -------- END --%>
+            <%--- Logout Modal -------- END --%>
 
-        <br />
-        <!-- footer content -->
-        <footer>
-            <div class="text-center" id="iprow" runat="server" visible="false">
-                Login from IP :
+            <br />
+            <!-- footer content -->
+            <footer>
+                <div class="text-center" id="iprow" runat="server" visible="false">
+                    Login from IP :
                 <asp:Label ID="lbl_IPAddress" runat="server" Text="N/A" Visible="false"></asp:Label>
-            </div>
-            <div class="text-right small">
-                Autologout >
+                </div>
+                <div class="text-right small">
+                    Autologout >
                 <asp:Label ID="lblTime1" runat="server" Text="N/A" Font-Bold="true" ForeColor="IndianRed" Visible="true"></asp:Label>
-                || Time :
+                    || Time :
 					<asp:Label ID="lblTime" runat="server" Text="N/A" Font-Bold="true" ForeColor="Black" Visible="true"></asp:Label>
-                || © 2021-2024 <span style="font-weight: bold; color: darkred;">ATS,JSR</span>
-                || Powered by <a href="#" target="_blank"><span style="font-weight: bold; color: blue;">Aminrup Technologies, JSR</span></a>
-            </div>
-            <div class="clearfix"></div>
-        </footer>
-        <!-- /footer content -->
+                    || © 2021-2024 <span style="font-weight: bold; color: darkred;">ATS,JSR</span>
+                    || Powered by <a href="#" target="_blank"><span style="font-weight: bold; color: blue;">Aminrup Technologies, JSR</span></a>
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+            <!-- /footer content -->
 
-        <%--<script type="text/javascript">
-			window.addEventListener('load', function () {
-				var pageLoader = document.getElementById('page-loader');
-				pageLoader.classList.add('active');
+            <script type="text/javascript">
+                //document.addEventListener("DOMContentLoaded", function () {
+                //    // Simulate a delay of 2 seconds (2000 milliseconds)
+                //    setTimeout(function () {
+                //        document.getElementById('content').style.display = 'block';
+                //        document.getElementById('loader').style.display = 'none';
+                //    }, 1000); // Change 2000 to the desired delay time in milliseconds
+                //});
 
-				setTimeout(function () {
-					pageLoader.style.display = 'none';
-				}, 2000); // Duration in milliseconds (5 seconds)
-			});
-		</script>--%>
+                document.addEventListener("DOMContentLoaded", function () {
+                    document.getElementById('content').style.display = 'block';
+                    document.getElementById('loader').style.display = 'none';
+                });
+            </script>
 
-        <!-- jQuery -->
-        <script src="../vendors/jquery/dist/jquery.min.js"></script>
+            <!-- jQuery -->
+            <script src="../vendors/jquery/dist/jquery.min.js"></script>
 
-        <!-- Bootstrap -->
-        <script src="../vendors/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+            <!-- Bootstrap -->
+            <script src="../vendors/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
-        <!-- FastClick -->
-        <script src="../vendors/fastclick/lib/fastclick.js"></script>
+            <!-- FastClick -->
+            <script src="../vendors/fastclick/lib/fastclick.js"></script>
 
-        <!-- NProgress -->
-        <script src="../vendors/nprogress/nprogress.js"></script>
+            <!-- NProgress -->
+            <script src="../vendors/nprogress/nprogress.js"></script>
 
-        <!-- Chart.js -->
-        <script src="../vendors/Chart.js/dist/Chart.min.js"></script>
+            <!-- Chart.js -->
+            <script src="../vendors/Chart.js/dist/Chart.min.js"></script>
 
-        <!-- gauge.js -->
-        <script src="../vendors/gauge.js/dist/gauge.min.js"></script>
+            <!-- gauge.js -->
+            <script src="../vendors/gauge.js/dist/gauge.min.js"></script>
 
-        <!-- bootstrap-progressbar -->
-        <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
-        <!-- iCheck -->
-        <script src="../vendors/iCheck/icheck.min.js"></script>
+            <!-- bootstrap-progressbar -->
+            <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+            <!-- iCheck -->
+            <script src="../vendors/iCheck/icheck.min.js"></script>
 
-        <!-- Skycons -->
-        <script src="../vendors/skycons/skycons.js"></script>
+            <!-- Skycons -->
+            <script src="../vendors/skycons/skycons.js"></script>
 
-        <!-- Flot -->
-        <script src="../vendors/Flot/jquery.flot.js"></script>
-        <script src="../vendors/Flot/jquery.flot.pie.js"></script>
-        <script src="../vendors/Flot/jquery.flot.time.js"></script>
-        <script src="../vendors/Flot/jquery.flot.stack.js"></script>
-        <script src="../vendors/Flot/jquery.flot.resize.js"></script>
+            <!-- Flot -->
+            <script src="../vendors/Flot/jquery.flot.js"></script>
+            <script src="../vendors/Flot/jquery.flot.pie.js"></script>
+            <script src="../vendors/Flot/jquery.flot.time.js"></script>
+            <script src="../vendors/Flot/jquery.flot.stack.js"></script>
+            <script src="../vendors/Flot/jquery.flot.resize.js"></script>
 
-        <!-- Flot plugins -->
-        <script src="../vendors/flot.orderbars/js/jquery.flot.orderBars.js"></script>
-        <script src="../vendors/flot-spline/js/jquery.flot.spline.min.js"></script>
-        <script src="../vendors/flot.curvedlines/curvedLines.js"></script>
+            <!-- Flot plugins -->
+            <script src="../vendors/flot.orderbars/js/jquery.flot.orderBars.js"></script>
+            <script src="../vendors/flot-spline/js/jquery.flot.spline.min.js"></script>
+            <script src="../vendors/flot.curvedlines/curvedLines.js"></script>
 
-        <!-- DateJS -->
-        <script src="../vendors/DateJS/build/date.js"></script>
-        <!-- bootstrap-daterangepicker -->
-        <script src="../vendors/moment/min/moment.min.js"></script>
-        <script src="../vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+            <!-- DateJS -->
+            <script src="../vendors/DateJS/build/date.js"></script>
+            <!-- bootstrap-daterangepicker -->
+            <script src="../vendors/moment/min/moment.min.js"></script>
+            <script src="../vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
 
-        <!-- Custom Theme Scripts -->
-        <script src="../build/js/custom.js"></script>
+            <!-- Custom Theme Scripts -->
+            <script src="../build/js/custom.js"></script>
 
-        <!-- PNotify -->
-        <script src="../vendors/pnotify/dist/pnotify.js"></script>
-        <script src="../vendors/pnotify/dist/pnotify.buttons.js"></script>
-        <script src="../vendors/pnotify/dist/pnotify.nonblock.js"></script>
+            <!-- PNotify -->
+            <script src="../vendors/pnotify/dist/pnotify.js"></script>
+            <script src="../vendors/pnotify/dist/pnotify.buttons.js"></script>
+            <script src="../vendors/pnotify/dist/pnotify.nonblock.js"></script>
 
-        <script src="../vendors/jQuery-Smart-Wizard/js/jquery.smartWizard.js"></script>
-    </form>
+            <script src="../vendors/jQuery-Smart-Wizard/js/jquery.smartWizard.js"></script>
+        </form>
+    </div>
 </body>
 </html>

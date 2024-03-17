@@ -102,8 +102,8 @@
 					</div>
 				</div>
 			</div>
-
 			<!-- Small Modal - END---->
+
 			<div class="col-md-6 col-sm-6 profile_details">
 				<div class="well profile_view col-sm-12 col-lg-12">
 					<div class="col-sm-12">
