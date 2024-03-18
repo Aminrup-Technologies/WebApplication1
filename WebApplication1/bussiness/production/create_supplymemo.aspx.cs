@@ -22,6 +22,7 @@ namespace WebApplication1.bussiness.production
         public static string viewid = string.Empty;
         public static string yr = string.Empty;
         public static string mnt = string.Empty;
+        public static string jobdate = string.Empty;
 
         public static string SQLQRY_MAX_SPID_NO = "SELECT TOP 1 TRM_REQUEST_NO FROM T_REQUEST_MASTER ORDER BY TRM_ID DESC";
         public static string qry_jobdetails = "select * from tbl_jobs where JOBID=@JOBID";
@@ -111,6 +112,7 @@ namespace WebApplication1.bussiness.production
             {
                 month = oDate.Month.ToString();
             }
+            jobdate = oDate.Year + "-" + month + "-" + day;
             return newdate = day + "-" + month + "-" + oDate.Year;
         }
 
@@ -126,16 +128,16 @@ namespace WebApplication1.bussiness.production
                 {
                     if (dt.Rows[0]["BillingCode"].ToString() == "MS")
                     {
-                        string jobdate = dt.Rows[0]["CreatedDate"].ToString();
+                        string jobdate1 = dt.Rows[0]["CreatedDate"].ToString();
 
-                        DateTime dt1 = DateTime.Parse(jobdate);
+                        DateTime dt1 = DateTime.Parse(jobdate1);
                         DayOfWeek dow = dt1.DayOfWeek; //enum
                         string str = dow.ToString(); //string
                         txt_jobday.Text = str;
 
                         txt_jobshift.Text = dt.Rows[0]["JOB_Shift"].ToString();
-                        txt_jobdate.Text = DateBinder(jobdate);
-                        string abc2 = DateBinder(jobdate) + " [" + str + "]" + " [" + dt.Rows[0]["JOB_Shift"].ToString() + "]";
+                        txt_jobdate.Text = DateBinder(jobdate1);
+                        string abc2 = DateBinder(jobdate1) + " [" + str + "]" + " [" + dt.Rows[0]["JOB_Shift"].ToString() + "]";
                         lbl_jobdaydetails.Text = abc2.ToString();
 
                         txt_jobsupv.Text = dt.Rows[0]["Creator_Name"].ToString();
@@ -262,7 +264,7 @@ namespace WebApplication1.bussiness.production
 
 
                         PermitData_Grid(qry_permitdetails);   
-                        ManpowerAtten_Grid(qry_jobmanpower);
+                        ManpowerAtten_Grid(qry_jobmanpower, NewGridrmemo);
                         //LineItemSelector_Grid(qry_polineitems, wo_number,"1");
 
                         btn_proceednxt.Enabled = false;
@@ -350,7 +352,7 @@ namespace WebApplication1.bussiness.production
             dbcl.Conn.Close();
         }
 
-        private void ManpowerAtten_Grid(string sqlqry)
+        private void ManpowerAtten_Grid(string sqlqry, Action callback)
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
@@ -362,15 +364,24 @@ namespace WebApplication1.bussiness.production
             if (dr.Read())
             {
                 FirstDatatable = dbcl.GetDataTableJOBID(sqlqry, jobid);
-                NewGridrmemo();
+                callback();
+                //NewGridrmemo();
             }
             dbcl.Conn.Close();
         }
 
         private void NewGridrmemo()
         {
-            DataTable dt1;
-            dt1 = FirstDatatable;
+            // Make sure FirstDatatable is not null before proceeding
+            if (FirstDatatable == null)
+            {
+                // Call ManpowerAtten_Grid with a callback to NewGridrmemo
+                ManpowerAtten_Grid(qry_jobmanpower, NewGridrmemo);
+                return; // Wait for callback to populate FirstDatatable
+            }
+
+            //DataTable dt1;
+            //dt1 = FirstDatatable;
             DataTable Dt1 = new DataTable("Table1");
             DataRow dr = null;
             DataColumn Id = new DataColumn("Id", typeof(Int32));
@@ -397,9 +408,9 @@ namespace WebApplication1.bussiness.production
             Dt1.Columns.Add(Employee_Worksite);
             DataColumn Employee_WorksiteCode = new DataColumn("Employee_WorksiteCode", typeof(string));
             Dt1.Columns.Add(Employee_WorksiteCode);
-            DataColumn Inpunch_Time = new DataColumn("Inpunch_Time", typeof(string));
+            DataColumn Inpunch_Time = new DataColumn("Inpunch_Time", typeof(DateTime));
             Dt1.Columns.Add(Inpunch_Time);
-            DataColumn Outpunch_Time = new DataColumn("Outpunch_Time", typeof(string));
+            DataColumn Outpunch_Time = new DataColumn("Outpunch_Time", typeof(DateTime));
             Dt1.Columns.Add(Outpunch_Time);
             DataColumn WorkedHours = new DataColumn("WorkedHours", typeof(decimal));
             Dt1.Columns.Add(WorkedHours);
@@ -424,7 +435,7 @@ namespace WebApplication1.bussiness.production
 
             try
             {
-                for (int i = 0; i <= dt1.Rows.Count - 1; i++)
+                for (int i = 0; i < FirstDatatable.Rows.Count; i++)
                 {
                     Int32 _Id = (Int32)FirstDatatable.Rows[i][0];
                     string _JOBID = (String)FirstDatatable.Rows[i][1];
@@ -474,7 +485,7 @@ namespace WebApplication1.bussiness.production
                             // Check the number of rows affected to determine if the update was successful
                             if (rowsAffected > 0)
                             {
-                                ManpowerAtten_Grid(qry_jobmanpower);
+                                ManpowerAtten_Grid(qry_jobmanpower, NewGridrmemo);
                                 //Console.WriteLine("Update successful. Rows affected: " + rowsAffected);
                             }
                             else
@@ -1221,7 +1232,8 @@ namespace WebApplication1.bussiness.production
 
 
             string EmpCategory = ((DropDownList)GridView2.Rows[e.RowIndex].FindControl("DDL_EmpCategory")).SelectedItem.Text.ToString();
-            string EmpDesignation = ((DropDownList)GridView2.Rows[e.RowIndex].FindControl("DDL_EmpDesignation")).SelectedItem.Text.ToString();
+            string EmpDesignation = ((Label)GridView2.Rows[e.RowIndex].FindControl("lbl_PO_EmpDesignation")).Text.ToString();
+            //string EmpDesignation = ((DropDownList)GridView2.Rows[e.RowIndex].FindControl("DDL_EmpDesignation")).SelectedItem.Text.ToString();
             string lunchyesno = ((DropDownList)GridView2.Rows[e.RowIndex].FindControl("DDL_LunchYesNo")).SelectedValue;
             //string GPExpiry = ((TextBox)GridView2.Rows[e.RowIndex].FindControl("txt_GatePassExpiry")).Text;
             DataTable dt = (DataTable)ViewState["Manpower"];
@@ -1451,7 +1463,9 @@ namespace WebApplication1.bussiness.production
             {
                 //Response.Write("<script>window.open ('rpts/supplymemo.aspx?JOBID=" + txt_jobid.Text.ToString() + "','_blank');</script>");
                 //Response.Redirect("rpts/supplymemo.aspx?JOBID=" + txt_jobid.Text.ToString() + "");
-                Response.Redirect("rpts/supplymemo.aspx?JOBID=" + txt_jobid.Text.ToString());
+                //Response.Redirect("rpts/supplymemo.aspx?JOBID=" + txt_jobid.Text.ToString());
+
+                Response.Redirect($"rpts/supplymemo.aspx?JOBID={txt_jobid.Text}&viewid={viewid}&y={yr}&m={mnt}");
                 //Function 2 --------- PRINT the MEMO
             }
 
@@ -1605,48 +1619,54 @@ namespace WebApplication1.bussiness.production
 
         private Int32 InsertIntoDB1(ref SqlTransaction sqlTran, string SuppluMemoIDNo)
         {
-            //string msg = "";
             int Count = 0;
-            using (SqlCommand cmdSPDetails = new SqlCommand("SP_InsertInto_SMJTable", dbcl.Conn, sqlTran))
+            try
             {
+                using (SqlCommand cmdSPDetails = new SqlCommand("SP_InsertInto_SMJTable", dbcl.Conn, sqlTran))
+                {
+                    decimal count1 = Convert.ToDecimal(lbl_HS_ShiftCount.Text);
+                    decimal count2 = Convert.ToDecimal(lbl_S_ShiftCount.Text);
+                    decimal count3 = Convert.ToDecimal(lbl_SS_ShiftCount.Text);
+                    decimal count4 = Convert.ToDecimal(lbl_US_ShiftCount.Text);
+                    decimal totalshift = count1 + count2 + count3 + count4;
 
-
-                decimal count1 = Convert.ToDecimal(lbl_HS_ShiftCount.Text.ToString());
-                decimal count2 = Convert.ToDecimal(lbl_S_ShiftCount.Text.ToString());
-                decimal count3 = Convert.ToDecimal(lbl_SS_ShiftCount.Text.ToString());
-                decimal count4 = Convert.ToDecimal(lbl_US_ShiftCount.Text.ToString());
-                decimal totalshift = count1 + count2 + count3 + count4;
-
-                cmdSPDetails.Parameters.Clear();
-                cmdSPDetails.CommandType = CommandType.StoredProcedure;
-                cmdSPDetails.Parameters.AddWithValue("@SMJID", SuppluMemoIDNo);
-                cmdSPDetails.Parameters.AddWithValue("@TimeStamp", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt"));
-                cmdSPDetails.Parameters.AddWithValue("@SMJ_Createdate", DateTime.Now.ToString("yyyy-MM-dd"));
-                cmdSPDetails.Parameters.AddWithValue("@CreatorName", Session["USERNAME"].ToString());
-                cmdSPDetails.Parameters.AddWithValue("@CreatorWorkmen", Session["WORKMAN"].ToString());
-                cmdSPDetails.Parameters.AddWithValue("@CreatorRegion", Session["REGION"]);
-                cmdSPDetails.Parameters.AddWithValue("@CreatorCompany", Session["COMPANY_CODE"].ToString());
-                cmdSPDetails.Parameters.AddWithValue("@Ref_JOBID", txt_jobid.Text.ToString());
-                cmdSPDetails.Parameters.AddWithValue("@Ref_JOBDate", Convert.ToDateTime(txt_jobdate.Text.ToString()));
-                cmdSPDetails.Parameters.AddWithValue("@Ref_JOBRegion", lbl_jobrgn.Text.ToString());
-                cmdSPDetails.Parameters.AddWithValue("@Ref_JOBCompany", lbl_jobcompay.Text.ToString());
-                cmdSPDetails.Parameters.AddWithValue("@Ref_JOBWorksite", txt_worksitename.Text.ToString());
-                cmdSPDetails.Parameters.AddWithValue("@Ref_JOBSiteCode", lbl_worksitedbcode.Text.ToString());
-                cmdSPDetails.Parameters.AddWithValue("@Ref_JOBSiteIncharge", lbl_inchargewrk.Text.ToString());
-                cmdSPDetails.Parameters.AddWithValue("@Ref_JOBInchargeName", txt_inchargename.Text.ToString());
-                cmdSPDetails.Parameters.AddWithValue("@Total_HSShiftCount", count1);
-                cmdSPDetails.Parameters.AddWithValue("@Total_SShiftCount", count2);
-                cmdSPDetails.Parameters.AddWithValue("@Total_SSShiftCount", count3);
-                cmdSPDetails.Parameters.AddWithValue("@Total_USShiftCount", count4);
-                cmdSPDetails.Parameters.AddWithValue("@Total_ShiftCount", totalshift);
-                cmdSPDetails.Parameters.AddWithValue("@DepartmentOfficer", String.Empty);
-                cmdSPDetails.Parameters.AddWithValue("@MemoType", DDL_MemoType.SelectedItem.Value);
-                //msg = "Done";
-                Count = cmdSPDetails.ExecuteNonQuery();
-
+                    cmdSPDetails.Parameters.Clear();
+                    cmdSPDetails.CommandType = CommandType.StoredProcedure;
+                    cmdSPDetails.Parameters.AddWithValue("@SMJID", SuppluMemoIDNo);
+                    cmdSPDetails.Parameters.AddWithValue("@TimeStamp", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt"));
+                    cmdSPDetails.Parameters.AddWithValue("@SMJ_Createdate", DateTime.Now.ToString("yyyy-MM-dd"));
+                    cmdSPDetails.Parameters.AddWithValue("@CreatorName", Session["USERNAME"].ToString());
+                    cmdSPDetails.Parameters.AddWithValue("@CreatorWorkmen", Session["WORKMAN"].ToString());
+                    cmdSPDetails.Parameters.AddWithValue("@CreatorRegion", Session["REGION"]);
+                    cmdSPDetails.Parameters.AddWithValue("@CreatorCompany", Session["COMPANY_CODE"].ToString());
+                    cmdSPDetails.Parameters.AddWithValue("@Ref_JOBID", txt_jobid.Text);
+                    cmdSPDetails.Parameters.AddWithValue("@Ref_JOBDate", jobdate);
+                    cmdSPDetails.Parameters.AddWithValue("@Ref_JOBRegion", lbl_jobrgn.Text);
+                    cmdSPDetails.Parameters.AddWithValue("@Ref_JOBCompany", lbl_jobcompay.Text);
+                    cmdSPDetails.Parameters.AddWithValue("@Ref_JOBWorksite", txt_worksitename.Text);
+                    cmdSPDetails.Parameters.AddWithValue("@Ref_JOBSiteCode", lbl_worksitedbcode.Text);
+                    cmdSPDetails.Parameters.AddWithValue("@Ref_JOBSiteIncharge", lbl_inchargewrk.Text);
+                    cmdSPDetails.Parameters.AddWithValue("@Ref_JOBInchargeName", txt_inchargename.Text);
+                    cmdSPDetails.Parameters.AddWithValue("@Total_HSShiftCount", count1);
+                    cmdSPDetails.Parameters.AddWithValue("@Total_SShiftCount", count2);
+                    cmdSPDetails.Parameters.AddWithValue("@Total_SSShiftCount", count3);
+                    cmdSPDetails.Parameters.AddWithValue("@Total_USShiftCount", count4);
+                    cmdSPDetails.Parameters.AddWithValue("@Total_ShiftCount", totalshift);
+                    cmdSPDetails.Parameters.AddWithValue("@DepartmentOfficer", String.Empty);
+                    cmdSPDetails.Parameters.AddWithValue("@MemoType", DDL_MemoType.SelectedItem.Value);
+                    Count = cmdSPDetails.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                string title = "Catch Box :";
+                string body = "Error 1662 : " + ex.Message;
+                dbcl.WriteToFile(body);
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
             return Count;
         }
+
 
         private string InsertIntoDB2(ref SqlTransaction sqlTran, string SuppluMemoIDNo, string RefDBID, string RefJOBID, string RefJOBdate, string EmpWrk, string EmpName, string PO_SC_name, string PO_DG_name, string shiftcalc)
         {
@@ -1659,7 +1679,7 @@ namespace WebApplication1.bussiness.production
                     cmdSPManpower.CommandType = CommandType.StoredProcedure;
                     cmdSPManpower.Parameters.AddWithValue("@RefDBId", RefDBID);
                     cmdSPManpower.Parameters.AddWithValue("@Ref_JOBID", RefJOBID);
-                    cmdSPManpower.Parameters.AddWithValue("@Ref_JOBDate", Convert.ToDateTime(RefJOBdate).ToString("yyyy-MM-dd"));
+                    cmdSPManpower.Parameters.AddWithValue("@Ref_JOBDate", jobdate);
                     cmdSPManpower.Parameters.AddWithValue("@SMJID", SuppluMemoIDNo);
                     cmdSPManpower.Parameters.AddWithValue("@SMJ_Createdate", DateTime.Now.ToString("yyyy-MM-dd"));
                     cmdSPManpower.Parameters.AddWithValue("@EmployeeName", EmpName);
@@ -1672,8 +1692,10 @@ namespace WebApplication1.bussiness.production
                 }
                 catch (Exception ex)
                 {
-
-                    //throw;
+                    string title = "Catch Box :";
+                    string body = "Error 1694 : " + ex.Message;
+                    dbcl.WriteToFile(body);
+                    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
                 }
             }
             return msg;

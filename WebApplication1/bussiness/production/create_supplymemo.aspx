@@ -324,7 +324,7 @@
                                             <asp:Label ID="lbl_PO_SkillCategory" runat="server" Text='<%# Bind("PO_SkillCategory") %>'></asp:Label>
                                         </ItemTemplate>
                                         <EditItemTemplate>
-                                            <asp:DropDownList ID="DDL_EmpCategory" class="form-control form-control-sm rounded no-padding" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DDL_EmpCategory_SelectedIndexChanged"></asp:DropDownList>
+                                            <asp:DropDownList ID="DDL_EmpCategory" class="form-control form-control-sm rounded no-padding" runat="server" AutoPostBack="true"></asp:DropDownList>
                                         </EditItemTemplate>
                                         <ItemStyle CssClass="text text-center small bold text-primary" Font-Bold="true" />
                                     </asp:TemplateField>
@@ -358,9 +358,9 @@
                                         <ItemTemplate>
                                             <asp:Label ID="lbl_Inpunch_Time" runat="server" Text='<%# Bind("Inpunch_Time","{0:dd-MM-yyyy hh:mm:ss tt}") %>'></asp:Label>
                                         </ItemTemplate>
-                                        <EditItemTemplate>
+                                        <%--<EditItemTemplate>
                                             <asp:TextBox ID="txt_Inpunch_Time" runat="server" class="form-control form-control-sm rounded no-padding" Text='<%# DataBinder.Eval(Container.DataItem,"Inpunch_Time", "{0:yyyy-MM-dd hh:mm:ss tt}") %> ' Width="100%"></asp:TextBox>
-                                        </EditItemTemplate>
+                                        </EditItemTemplate>--%>
                                         <ItemStyle CssClass="text text-center" />
                                     </asp:TemplateField>
 
@@ -368,9 +368,9 @@
                                         <ItemTemplate>
                                             <asp:Label ID="lbl_Outpunch_Time" runat="server" Text='<%# Bind("Outpunch_Time","{0:dd-MM-yyyy hh:mm:ss tt}") %>'></asp:Label>
                                         </ItemTemplate>
-                                        <EditItemTemplate>
+                                        <%--<EditItemTemplate>
                                             <asp:TextBox ID="txt_Outpunch_Time" runat="server" class="form-control form-control-sm rounded no-padding" Text='<%# DataBinder.Eval(Container.DataItem,"Outpunch_Time", "{0:yyyy-MM-dd hh:mm:ss tt}") %> ' Width="100%"></asp:TextBox>
-                                        </EditItemTemplate>
+                                        </EditItemTemplate>--%>
                                         <ItemStyle CssClass="text text-center" />
                                     </asp:TemplateField>
 

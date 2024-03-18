@@ -10,18 +10,28 @@ namespace WebApplication1.bussiness.production.rpts
 {
     public partial class supplymemo : System.Web.UI.Page
     {
+        public static string jobid = string.Empty;
+        public static string wo_number = string.Empty;
+        public static string viewid = string.Empty;
+        public static string yr = string.Empty;
+        public static string mnt = string.Empty;
+
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
         DataTable dt = new DataTable();
         private static int MemoType = 0;
         protected void Page_Load(object sender, EventArgs e)
         {
-            string JOBID = Request.QueryString["JOBID"];
+            jobid = Request.QueryString["JOBID"];
+            viewid = Request.QueryString["viewid"];
+            yr = Request.QueryString["y"];
+            mnt = Request.QueryString["m"];
+
             //string JOBID = "JOB0051152";
-            Bind_JOBIDDetails(JOBID);
-            Bind_SMJIDDetails(JOBID);
-            Bind_Manpower(JOBID);
-            Bind_ShiftData(JOBID);
-            Bind_LineItemData(JOBID);
+            Bind_JOBIDDetails(jobid);
+            Bind_SMJIDDetails(jobid);
+            Bind_Manpower(jobid);
+            Bind_ShiftData(jobid);
+            Bind_LineItemData(jobid);
         }
 
 
@@ -300,6 +310,11 @@ namespace WebApplication1.bussiness.production.rpts
 
                 }
             }
+        }
+
+        protected void btn_back_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("../create_supplymemo.aspx?JOBID=" + jobid + "&viewid=1&y=" + yr + "&m=" + mnt + "");
         }
     }
 }

@@ -158,21 +158,21 @@
 
         .SubHeading1 {
             text-align: center;
-            color: white;
+            color: black;
             border: 1px solid #595959;
             border-top: none;
             font-weight: bold;
-            background-color: brown;
+            background-color: lightgrey;
             width: 50%;
         }
 
         .SubHeading2 {
             text-align: center;
-            color: white;
+            color: black;
             border: 1px solid #595959;
             border-top: none;
             font-weight: bold;
-            background-color: brown;
+            background-color: lightgrey;
             width: 50%;
         }
 
@@ -242,10 +242,10 @@
                         <td class="DocHeaderRight">
                             <table class="ZeroBorderReportHeadingRight">
                                 <tr>
-                                    <td class="DocHeaderReportHeadingRight"><span>Office: +91-8093270154</span></td>
+                                    <td class="DocHeaderReportHeadingRight"><span>&nbsp;</span></td>
                                 </tr>
                                 <tr>
-                                    <td class="DocHeaderReportHeadingRight"><span>Personal: +91-9234395075</span></td>
+                                    <td class="DocHeaderReportHeadingRight"><span>&nbsp;</span></td>
                                 </tr>
                                 <tr>
                                     <td class="DocHeaderReportHeadingRight"><span>E-mail: accounts@atswork.in</span></td>
@@ -430,8 +430,8 @@
 
                                                 </Columns>
                                                 <EmptyDataRowStyle Font-Names="Monaco,monospace;" Font-Size="Small" Height="15px" HorizontalAlign="Center" VerticalAlign="Middle" />
-                                                <HeaderStyle BackColor="Brown" Font-Bold="True" Font-Size="9pt" ForeColor="White" Height="18px" BorderColor="Black" BorderStyle="Solid" BorderWidth="1px" />
-                                                <AlternatingRowStyle BackColor="#DFDFDF" />
+                                                <HeaderStyle BackColor="#cccccc" Font-Bold="True" Font-Size="9pt" ForeColor="Black" Height="18px" BorderColor="Black" BorderStyle="Solid" BorderWidth="1px" />
+                                                <%--<AlternatingRowStyle BackColor="#DFDFDF" />--%>
                                                 <RowStyle Font-Names="Monaco,monospace;" Font-Size="8pt" Font-Bold="true" ForeColor="Black" />
                                             </asp:GridView>
                                         </td>
@@ -485,8 +485,8 @@
                                                     </asp:TemplateField>
                                                 </Columns>
                                                 <EmptyDataRowStyle Font-Names="Monaco,monospace;" Font-Size="Small" Height="15px" HorizontalAlign="Center" VerticalAlign="Middle" />
-                                                <HeaderStyle BackColor="Brown" Font-Bold="True" Font-Size="12pt" ForeColor="White" Height="18px" BorderColor="Black" BorderStyle="Solid" BorderWidth="1px" />
-                                                <AlternatingRowStyle BackColor="#DFDFDF" />
+                                                <HeaderStyle BackColor="#cccccc" Font-Bold="True" Font-Size="12pt" ForeColor="Black" Height="18px" BorderColor="Black" BorderStyle="Solid" BorderWidth="1px" />
+                                                <%--<AlternatingRowStyle BackColor="#DFDFDF" />--%>
                                                 <RowStyle Font-Names="Monaco,monospace;" Font-Size="12pt" Font-Bold="true" ForeColor="Black" />
                                             </asp:GridView>
                                         </td>
@@ -561,8 +561,8 @@
                                                     </asp:TemplateField>
                                                 </Columns>
                                                 <EmptyDataRowStyle Font-Names="Monaco,monospace;" Font-Size="Small" Height="15px" HorizontalAlign="Center" VerticalAlign="Middle" />
-                                                <HeaderStyle BackColor="Brown" Font-Bold="True" Font-Size="12pt" ForeColor="White" Height="18px" BorderColor="Black" BorderStyle="Solid" BorderWidth="1px" />
-                                                <AlternatingRowStyle BackColor="#DFDFDF" />
+                                                <HeaderStyle BackColor="#cccccc" Font-Bold="True" Font-Size="12pt" ForeColor="Black" Height="18px" BorderColor="Black" BorderStyle="Solid" BorderWidth="1px" />
+                                                <%--<AlternatingRowStyle BackColor="#DFDFDF" />--%>
                                                 <RowStyle Font-Names="Monaco,monospace;" Font-Size="12pt" Font-Bold="true" ForeColor="Black" />
                                             </asp:GridView>
                                         </td>
@@ -596,7 +596,9 @@
                 </tbody>
             </table>
         </div>
+        <asp:Button ID="btn_back" CssClass="no-print" runat="server" Text="Go Back" OnClick="btn_back_Click"/>
     </form>
-    <button class="no-print" onclick="history.back()">Back</button>
+    
+    <%--<button class="no-print" onclick="history.back()">Back</button>--%>
 </body>
 </html>
