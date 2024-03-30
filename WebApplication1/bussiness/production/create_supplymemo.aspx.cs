@@ -1477,7 +1477,7 @@ namespace WebApplication1.bussiness.production
             DataTable dtDraftedCalc = (DataTable)ViewState["Manpower"];
 
             Int32 distinctCalc = dtDraftedCalc.Rows.Count;
-            if (dtDraftedCalc != null && distinctCalc > 1)
+            if (dtDraftedCalc != null && distinctCalc > 0) //changed to ZERO for processing MEMO which has only single record 30-03-2024
             {
                 dbcl.Sqlconnection();
                 int ExeValue = 0;
