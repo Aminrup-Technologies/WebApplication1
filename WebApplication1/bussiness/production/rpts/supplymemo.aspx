@@ -372,6 +372,14 @@
                                                         <ItemStyle CssClass="ManpowerGridCenter" />
                                                     </asp:TemplateField>
 
+                                                    <asp:TemplateField HeaderText="Safetypass" HeaderStyle-Width="16%">
+                                                        <ItemTemplate>
+                                                            <asp:Label ID="lbl_safetypassno" runat="server" Text='<%# Bind("safetypassno") %>'></asp:Label>
+                                                        </ItemTemplate>
+                                                        <HeaderStyle CssClass="headergrid" />
+                                                        <ItemStyle CssClass="ManpowerGridCenter" />
+                                                    </asp:TemplateField>
+
                                                     <asp:TemplateField HeaderText="Employee Name" HeaderStyle-Width="25%">
                                                         <ItemTemplate>
                                                             <asp:Label ID="lbl_employeename" runat="server" Text='<%# Bind("employeename") %>'></asp:Label>
@@ -412,13 +420,6 @@
                                                         <ItemStyle CssClass="ManpowerGridCenter" />
                                                     </asp:TemplateField>
 
-                                                    <asp:TemplateField HeaderText="Safetypass" HeaderStyle-Width="16%">
-                                                        <ItemTemplate>
-                                                            <asp:Label ID="lbl_safetypassno" runat="server" Text='<%# Bind("safetypassno") %>'></asp:Label>
-                                                        </ItemTemplate>
-                                                        <HeaderStyle CssClass="headergrid" />
-                                                        <ItemStyle CssClass="ManpowerGridCenter" />
-                                                    </asp:TemplateField>
 
                                                     <asp:TemplateField HeaderText="Shift" HeaderStyle-Width="3%">
                                                         <ItemTemplate>
@@ -598,7 +599,7 @@
         </div>
         <asp:Button ID="btn_back" CssClass="no-print" runat="server" Text="Go Back" OnClick="btn_back_Click"/>
     </form>
-    
+
     <%--<button class="no-print" onclick="history.back()">Back</button>--%>
 </body>
 </html>

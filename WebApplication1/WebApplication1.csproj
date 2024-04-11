@@ -351,7 +351,6 @@
     <Content Include="bussiness\production\pyrl_approvedeductions.aspx" />
     <Content Include="bussiness\production\pyrl_deductionlist.aspx" />
     <Content Include="bussiness\production\pyrl_deductions.aspx" />
-    <Content Include="bussiness\production\pyrl_emiselector.aspx" />
     <Content Include="bussiness\production\pyrl_generate_f29.aspx" />
     <Content Include="bussiness\production\pyrl_managedashbrd.aspx" />
     <Content Include="bussiness\production\pyrl_upldadvc.aspx" />
@@ -753,13 +752,6 @@
     </Compile>
     <Compile Include="bussiness\production\pyrl_deductions.aspx.designer.cs">
       <DependentUpon>pyrl_deductions.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="bussiness\production\pyrl_emiselector.aspx.cs">
-      <DependentUpon>pyrl_emiselector.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="bussiness\production\pyrl_emiselector.aspx.designer.cs">
-      <DependentUpon>pyrl_emiselector.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\pyrl_generate_f29.aspx.cs">
       <DependentUpon>pyrl_generate_f29.aspx</DependentUpon>
