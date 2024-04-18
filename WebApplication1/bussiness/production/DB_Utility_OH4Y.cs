@@ -714,7 +714,7 @@ namespace WebApplication1.bussiness.production
 
         }
 
-        public void FindEmployeeWorkedTime(string emp_intime, string emp_outtime, ref Int32 totalmin, ref decimal Hours)
+        public void FindEmployeeWorkedTime_old(string emp_intime, string emp_outtime, ref Int32 totalmin, ref decimal Hours)
         {
             DateTime intm = DateTime.Parse(emp_intime.ToString());
             DateTime outm = DateTime.Parse(emp_outtime.ToString());
@@ -732,6 +732,29 @@ namespace WebApplication1.bussiness.production
             totalmin = daysmin + hrstomin + min;
             Hours = Math.Round(Convert.ToDecimal(totalmin) / 60, 2);
         }
+
+        public void FindEmployeeWorkedTime(string emp_intime, string emp_outtime, ref Int32 totalmin, ref decimal Hours)
+        {
+            DateTime intm;
+            DateTime outm;
+
+            // Parsing input strings to DateTime objects
+            if (!DateTime.TryParse(emp_intime, out intm) || !DateTime.TryParse(emp_outtime, out outm))
+            {
+                // Handle parsing errors, such as invalid date formats
+                throw new ArgumentException("Invalid date format");
+            }
+
+            // Calculating duration
+            TimeSpan duration = outm.Subtract(intm);
+
+            // Total minutes calculation
+            totalmin = (int)duration.TotalMinutes;
+
+            // Converting total minutes to decimal hours
+            Hours = Math.Round(Convert.ToDecimal(totalmin) / 60, 2);
+        }
+
 
         public void Findworktime1(string emp_intime, string emp_outtime, ref Int32 totalmin)
         {
