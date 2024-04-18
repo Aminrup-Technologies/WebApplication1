@@ -204,6 +204,13 @@
                                 <ItemStyle CssClass="text text-center" />
                             </asp:TemplateField>
 
+                            <asp:TemplateField HeaderText="Man power" HeaderStyle-Width="5%">
+                                <ItemTemplate>
+                                    <asp:Label ID="lbl_ManpowerCount" runat="server" Font-Bold="true" Text='<%# Eval("ManpowerCount") %>' />
+                                </ItemTemplate>
+                                <ItemStyle CssClass="text text-center" />
+                            </asp:TemplateField>
+
                             <asp:TemplateField HeaderText="Approval Status" Visible="false">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_FinalUpldStatus" runat="server" Text='<%# Eval("FinalUpldStatus") %>' />

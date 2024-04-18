@@ -372,7 +372,15 @@
                                                         <ItemStyle CssClass="ManpowerGridCenter" />
                                                     </asp:TemplateField>
 
-                                                    <asp:TemplateField HeaderText="Employee Name" HeaderStyle-Width="25%">
+                                                    <asp:TemplateField HeaderText="Safetypass" HeaderStyle-Width="12%">
+                                                        <ItemTemplate>
+                                                            <asp:Label ID="lbl_safetypassno" runat="server" Text='<%# Bind("safetypassno") %>'></asp:Label>
+                                                        </ItemTemplate>
+                                                        <HeaderStyle CssClass="headergrid" />
+                                                        <ItemStyle CssClass="ManpowerGridCenter" />
+                                                    </asp:TemplateField>
+
+                                                    <asp:TemplateField HeaderText="Employee Name" HeaderStyle-Width="20%">
                                                         <ItemTemplate>
                                                             <asp:Label ID="lbl_employeename" runat="server" Text='<%# Bind("employeename") %>'></asp:Label>
                                                         </ItemTemplate>
@@ -380,7 +388,7 @@
                                                         <ItemStyle CssClass="ManpowerGridLeft" />
                                                     </asp:TemplateField>
 
-                                                    <asp:TemplateField HeaderText="Grade" HeaderStyle-Width="15%">
+                                                    <asp:TemplateField HeaderText="Grade" HeaderStyle-Width="14%">
                                                         <ItemTemplate>
                                                             <asp:Label ID="lbl_PO_SkillCategory" runat="server" Text='<%# Bind("PO_SkillCategory") %>'></asp:Label>
                                                         </ItemTemplate>
@@ -388,7 +396,7 @@
                                                         <ItemStyle CssClass="ManpowerGridCenter" />
                                                     </asp:TemplateField>
 
-                                                    <asp:TemplateField HeaderText="Designation" HeaderStyle-Width="16%">
+                                                    <asp:TemplateField HeaderText="Designation" HeaderStyle-Width="15%">
                                                         <ItemTemplate>
                                                             <asp:Label ID="lbl_PO_EmpDesignation" runat="server" Text='<%# Bind("PO_EmpDesignation") %>'></asp:Label>
                                                         </ItemTemplate>
@@ -407,14 +415,6 @@
                                                     <asp:TemplateField HeaderText="Out-Time" HeaderStyle-Width="18%">
                                                         <ItemTemplate>
                                                             <asp:Label ID="lbl_Outpunch_Time" runat="server" Text='<%# Bind("Outpunch_Time","{0:dd-MM-yyyy hh:mm tt}") %>'></asp:Label>
-                                                        </ItemTemplate>
-                                                        <HeaderStyle CssClass="headergrid" />
-                                                        <ItemStyle CssClass="ManpowerGridCenter" />
-                                                    </asp:TemplateField>
-
-                                                    <asp:TemplateField HeaderText="Safetypass" HeaderStyle-Width="16%">
-                                                        <ItemTemplate>
-                                                            <asp:Label ID="lbl_safetypassno" runat="server" Text='<%# Bind("safetypassno") %>'></asp:Label>
                                                         </ItemTemplate>
                                                         <HeaderStyle CssClass="headergrid" />
                                                         <ItemStyle CssClass="ManpowerGridCenter" />
