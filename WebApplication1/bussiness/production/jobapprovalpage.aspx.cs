@@ -905,7 +905,7 @@ namespace WebApplication1.bussiness.production
                 dbcl.ConnectDb();
                 SqlCommand cmd = new SqlCommand();
                 cmd.Connection = dbcl.Conn;
-                string CmdString = "UPDATE tbl_jobs set JOBID_Status=@JOBID_Status, JOB_Status=@JOB_Status, MasterStatusCode=@MasterStatusCode , Incharge_Approval=@Incharge_Approval, Incharge_Remarks=@Incharge_Remarks, Incharge_ApprovalDate=@Incharge_ApprovalDate, BillingType=@BillingType where JOBID=@JOBID";
+                string CmdString = "UPDATE tbl_jobs set JOBID_Status=@JOBID_Status, JOB_Status=@JOB_Status, MasterStatusCode=@MasterStatusCode , Incharge_Approval=@Incharge_Approval, Incharge_Remarks=@Incharge_Remarks, Incharge_ApprovalDate=@Incharge_ApprovalDate, BillingType=@BillingType , BillingCode=@BillingCode where JOBID=@JOBID";
                 cmd.CommandText = CmdString;
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@JOBID", jobid);
@@ -916,6 +916,7 @@ namespace WebApplication1.bussiness.production
                 cmd.Parameters.AddWithValue("@Incharge_Remarks", remarks);
                 cmd.Parameters.AddWithValue("@Incharge_ApprovalDate", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt"));
                 cmd.Parameters.AddWithValue("@BillingType", DDL_BillingType.SelectedItem.Text.ToString());
+                cmd.Parameters.AddWithValue("@BillingCode", DDL_BillingType.SelectedValue.ToString());
                 cmd.ExecuteNonQuery();
                 cmd.Dispose();
 
