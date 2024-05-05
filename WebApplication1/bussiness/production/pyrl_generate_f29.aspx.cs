@@ -181,7 +181,7 @@ namespace WebApplication1.bussiness.production
                 TTL_NetPay2 = .0m;
 
                 Binder(current_year, current_month1, Region);
-                Binder2(current_year, current_month1, Region);
+                //Binder2(current_year, current_month1, Region);
                 BindDefaultHeaderYES(current_year, current_month1, Region, CalMonthDays);
                 BindSecondHeader(current_year, current_month1, CalMonthDays, StartDay, EndDay);
                 BindEMployeeData(current_year, current_month1, Region, CalMonthDays, StartDay, EndDay);
@@ -206,6 +206,7 @@ namespace WebApplication1.bussiness.production
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
+            dt_firsthalf.Clear();
             string cmdString2 = "select a.WorkmanSL, a.FullName, b.SafetyPassNo, b.Fathername, FORMAT (b.DOB, 'dd-MM-yyyy') as dob, a.SkillCategory, a.SkillDesignation, FORMAT (b.DOJ, 'dd-MM-yyyy') as doj, b.ESICNo, b.UANNo, a.Present, a.OverTime, a.BasicSalary,a.OTSalary,a.OthersPay,a.HRAPay,a.ConvPay,a.WashPay, a.ActualGross,a.ESICGross, a.PFPay,a.ESICPay,a.NetPay1,a.NetPay2, a.Advance,a.Fines,a.Others,a.TotalDeduction,a.NetPayFinal, a.Date from tbl_trialpayroll a, tbl_Employee_Mustertable b where a.SalaryYear='" + Year + "' and a.SalaryMonth='" + Month + "' and a.Region='" + Region + "' and b.WorkmanSL=a.WorkmanSL order by a.Id";
             SqlCommand cmd2 = new SqlCommand(cmdString2, dbcl.Conn);
             SqlDataAdapter da2 = new SqlDataAdapter(cmd2);
@@ -217,7 +218,20 @@ namespace WebApplication1.bussiness.production
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
+            dt_present.Clear();
             string cmdString2 = "select CreatedDate, EmployeeWrk,EmployeeName, AttendanceStatus,AttendanceCode, SUM(ProvidedOT) as ProvidedOT from tbl_attendance where YEAR(CreatedDate)='" + Year + "' and  MONTH(CreatedDate)='" + Month + "' and SiteIncharge_Approval='Approved' and JOB_Region='" + Region + "' Group by CreatedDate, EmployeeWrk,EmployeeName, AttendanceStatus,AttendanceCode order by CreatedDate";
+            SqlCommand cmd2 = new SqlCommand(cmdString2, dbcl.Conn);
+            SqlDataAdapter da2 = new SqlDataAdapter(cmd2);
+            da2.Fill(dt_present);
+            dbcl.Sqlconnection(); dbcl.ConnectDb();
+        }
+
+        public void EmployeeAttendanceBinder(string Year, string Month, string EmployeeWrk)
+        {
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
+            dt_present.Clear();
+            string cmdString2 = "select CreatedDate, EmployeeWrk,EmployeeName, AttendanceStatus,AttendanceCode, SUM(ProvidedOT) as ProvidedOT from tbl_attendance where YEAR(CreatedDate)='" + Year + "' and  MONTH(CreatedDate)='" + Month + "' and SiteIncharge_Approval='Approved' and EmployeeWrk='" + EmployeeWrk + "' Group by CreatedDate, EmployeeWrk,EmployeeName, AttendanceStatus,AttendanceCode order by CreatedDate";
             SqlCommand cmd2 = new SqlCommand(cmdString2, dbcl.Conn);
             SqlDataAdapter da2 = new SqlDataAdapter(cmd2);
             da2.Fill(dt_present);
@@ -371,6 +385,7 @@ namespace WebApplication1.bussiness.production
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
+            dt_emps.Clear();
             string cmdString = "select WorkmanSL from tbl_trialpayroll where SalaryYear='" + Year + "' and SalaryMonth='" + Month + "' and Region='" + Region + "' order by Id";
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
             cmd.CommandType = CommandType.Text;
@@ -388,7 +403,9 @@ namespace WebApplication1.bussiness.production
                     EmpWrk = dt_emps.Rows[i][0].ToString();
                     str = str + "<table width='100%' style='border-collapse:collapse; color:black;'><tr><td height='70' width='3%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>" + Sl + "</td>";
                     //FindFirstHalfData(Year, Month, Region, CalMonthDays, StartDay, EndDay, EmpWrk);
+                    EmployeeAttendanceBinder(Year, Month, EmpWrk);
                     BindFirstHalfData(Year, Month, Region, CalMonthDays, StartDay, EndDay, EmpWrk);
+                    
                     Sl = Sl + 1;
                     lblTotalData.Text = str;
                 }
@@ -444,7 +461,10 @@ namespace WebApplication1.bussiness.production
                 }
 
                 str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + row["Present"].ToString() + "</td>";
+                //str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + decimal.Parse(daycount.ToString()) + "</td>";
                 TTL_Present = TTL_Present + decimal.Parse(row["Present"].ToString());
+
+                //TTL_Present = decimal.Parse(daycount.ToString());
 
                 str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + row["OverTime"].ToString() + "</td>";
                 TTL_OverTime = TTL_OverTime + decimal.Parse(row["OverTime"].ToString());
