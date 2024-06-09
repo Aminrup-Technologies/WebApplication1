@@ -359,6 +359,9 @@
     <Content Include="bussiness\production\rpts\supplymemo.aspx" />
     <Content Include="bussiness\production\rpts\testing.aspx" />
     <Content Include="bussiness\production\str\strdshbrd.aspx" />
+    <Content Include="bussiness\production\str_add_cstores.aspx" />
+    <Content Include="bussiness\production\str_add_warehouse.aspx" />
+    <Content Include="bussiness\production\str_masters.aspx" />
     <Content Include="bussiness\production\vw_emp_attencal.aspx" />
     <Content Include="bussiness\production\vw_inchsupmem.aspx" />
     <Content Include="bussiness\production\vw_lineitemjobs.aspx" />
@@ -802,6 +805,27 @@
     </Compile>
     <Compile Include="bussiness\production\str\strdshbrd.aspx.designer.cs">
       <DependentUpon>strdshbrd.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\str_add_cstores.aspx.cs">
+      <DependentUpon>str_add_cstores.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\str_add_cstores.aspx.designer.cs">
+      <DependentUpon>str_add_cstores.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\str_add_warehouse.aspx.cs">
+      <DependentUpon>str_add_warehouse.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\str_add_warehouse.aspx.designer.cs">
+      <DependentUpon>str_add_warehouse.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\str_masters.aspx.cs">
+      <DependentUpon>str_masters.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\str_masters.aspx.designer.cs">
+      <DependentUpon>str_masters.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\vw_emp_attencal.aspx.cs">
       <DependentUpon>vw_emp_attencal.aspx</DependentUpon>

@@ -679,6 +679,42 @@ namespace WebApplication1.gentelella_master.production {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl hlpdsk_view;
         
         /// <summary>
+        /// Store control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Store;
+        
+        /// <summary>
+        /// store_master control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl store_master;
+        
+        /// <summary>
+        /// store_trans control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl store_trans;
+        
+        /// <summary>
+        /// store_reports control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl store_reports;
+        
+        /// <summary>
         /// ProfilePic_2 control.
         /// </summary>
         /// <remarks>
