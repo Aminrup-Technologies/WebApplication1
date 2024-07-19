@@ -53,7 +53,7 @@ namespace WebApplication1.bussiness.production
                         string CmdString1 = "select Country_Name, Country_Code from tlb_work_country";
                         BindCountry(CmdString1);
 
-                        string CmdString2 = "select * from tlb_payroll_wages and Status='Active' order by Id";
+                        string CmdString2 = "select * from tlb_payroll_wages where Status='Active' order by Id";
                         BindGrid(CmdString2);
                     }
                     else

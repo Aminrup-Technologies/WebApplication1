@@ -279,7 +279,7 @@
                                             <ul class="nav child_menu">
                                                 <li id="crt_spm" runat="server"><a href="vw_inchsupmem.aspx">Supply Memo</a></li>
                                                 <li id="crt_lim" runat="server"><a href="vw_lineitemjobs.aspx">Line Item Memo</a></li>
-                                                <li id="crt_memosum" runat="server"><a href="#">Memo Summary</a></li>
+                                                <li id="crt_memosum" runat="server"><a href="job_create_summary.aspx">Memo Summary</a></li>
                                             </ul>
                                         </li>
 

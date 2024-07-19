@@ -15,6 +15,10 @@ namespace WebApplication1.bussiness.production
     public partial class view_emp_mastertbldata : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
+        public static string state = string.Empty;
+        public static string region = string.Empty;
+        public static string comp = string.Empty;
+        public static string datalock = string.Empty;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -26,7 +30,24 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-                    string CmdString2 = "select * from tbl_Employee_Mustertable where WorkRegion = '" + Session["REGION"].ToString() + "' and WorkCompany='" + Session["COMPANY_CODE"].ToString() + "' order by Id desc";
+                    if (Session["Changer"] != null)
+                    {
+                        string[] retrievedArray = (string[])Session["Changer"];
+                        region = retrievedArray[1].ToString();
+                        comp = retrievedArray[2].ToString();
+                        state = retrievedArray[0].ToString();
+                        datalock = retrievedArray[3].ToString();
+                        //Session["Changer"]= null;
+                    }
+                    else
+                    {
+                        region = Session["REGION"].ToString();
+                        comp = Session["COMPANY_CODE"].ToString();
+                        state = Session["STATE"].ToString();
+                        datalock = "0";
+                    }
+
+                    string CmdString2 = "select * from tbl_Employee_Mustertable where WorkRegion = '" + region + "' and WorkCompany='" + comp + "' order by Id desc";
                     BindGrid(CmdString2);
                 }
             }
@@ -37,7 +58,7 @@ namespace WebApplication1.bussiness.production
             string constr = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
             using (SqlConnection con = new SqlConnection(constr))
             {
-                using (SqlCommand cmd = new SqlCommand("select ROW_NUMBER() OVER (ORDER BY Id) AS SlNo,WorkStatus, LoginID, WorkRegion, WorkCompany, WorkmanSL, FirstName, MiddleName, LastName, FullName, Fathername, BloodGroup, MobileNo, DOB, Qualification, DOJ, DOR, WorkSite, SkillCategory, SkillDesignation, User_RoleType, Role_Permission, WorkHours, OTFactor, SafetyPassNo, SafetyPassExpiry, GatePassNo, GatePassExpiry, PVExpiry, UANNo, ESICNo, Payment_Bank, Payment_Account, Payment_IFSC, BankBranch, QualificationDB, FixedSalary_YesNo, FixedAmount, DA_VDA, HRA, Conv_Allowance, Medical_Allowance, Washing_Allowance, ATT_Allowance, SPCL_Allowance, Misc_Earnings, OTMultiplier, OT_Divisibility from tbl_Employee_Mustertable where WorkRegion = '" + Session["REGION"].ToString() + "' and WorkCompany='" + Session["COMPANY_CODE"].ToString() + "' order by Id"))
+                using (SqlCommand cmd = new SqlCommand("select ROW_NUMBER() OVER (ORDER BY Id) AS SlNo,WorkStatus, LoginID, WorkRegion, WorkCompany, WorkmanSL, FirstName, MiddleName, LastName, FullName, Fathername, BloodGroup, MobileNo, DOB, Qualification, DOJ, DOR, WorkSite, SkillCategory, SkillDesignation, User_RoleType, Role_Permission, WorkHours, OTFactor, SafetyPassNo, SafetyPassExpiry, GatePassNo, GatePassExpiry, PVExpiry, UANNo, ESICNo, Payment_Bank, Payment_Account, Payment_IFSC, BankBranch, QualificationDB, FixedSalary_YesNo, FixedAmount, DA_VDA, HRA, Conv_Allowance, Medical_Allowance, Washing_Allowance, ATT_Allowance, SPCL_Allowance, Misc_Earnings, OTMultiplier, OT_Divisibility from tbl_Employee_Mustertable where WorkRegion = '" + region + "' and WorkCompany='" + comp + "' order by Id"))
                 {
                     using (SqlDataAdapter sda = new SqlDataAdapter())
                     {
@@ -85,7 +106,7 @@ namespace WebApplication1.bussiness.production
         protected void OnPageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             GridView1.PageIndex = e.NewPageIndex;
-            string CmdString2 = "select * from tbl_Employee_Mustertable where WorkRegion = '" + Session["REGION"].ToString() + "' and WorkCompany='" + Session["COMPANY_CODE"].ToString() + "' order by Id desc";
+            string CmdString2 = "select * from tbl_Employee_Mustertable where WorkRegion = '" + region + "' and WorkCompany='" + comp + "' order by Id desc";
             BindGrid(CmdString2);
         }
 
@@ -142,7 +163,7 @@ namespace WebApplication1.bussiness.production
                     string body = "Status Changed";
                     ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
                 }
-                string CmdString2 = "select * from tbl_Employee_Mustertable where WorkRegion = '" + Session["REGION"].ToString() + "' and WorkCompany='" + Session["COMPANY_CODE"].ToString() + "' order by Id desc";
+                string CmdString2 = "select * from tbl_Employee_Mustertable where WorkRegion = '" + region + "' and WorkCompany='" + comp + "' order by Id desc";
                 BindGrid(CmdString2);
             }
             else if (e.CommandName == "View_Details")

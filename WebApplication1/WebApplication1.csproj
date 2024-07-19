@@ -346,6 +346,7 @@
     <Content Include="bussiness\production\images\visa.png" />
     <Content Include="bussiness\production\jobstatus_flow.ascx" />
     <Content Include="bussiness\production\jobs_approverdash.aspx" />
+    <Content Include="bussiness\production\job_create_summary.aspx" />
     <Content Include="bussiness\production\js\jquery-1.9.1.js" />
     <Content Include="bussiness\production\manage_profile.aspx" />
     <Content Include="bussiness\production\pyrl_approvedeductions.aspx" />
@@ -430,7 +431,9 @@
     <Content Include="bussiness\production\work_region.aspx" />
     <Content Include="bussiness\production\work_states.aspx" />
     <Content Include="bussiness\production\vw_emp_paymentbankdetails.aspx" />
-    <Content Include="packages.config" />
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="bussiness\.bowerrc" />
     <Content Include="bussiness\bower.json" />
     <Content Include="bussiness\changelog.md" />
@@ -646,6 +649,7 @@
     <Compile Include="bussiness\production\csm_tbtform.aspx.designer.cs">
       <DependentUpon>csm_tbtform.aspx</DependentUpon>
     </Compile>
+    <Compile Include="bussiness\production\DatabaseHelper.cs" />
     <Compile Include="bussiness\production\emp_payroll_wages.aspx.cs">
       <DependentUpon>emp_payroll_wages.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -723,6 +727,13 @@
     </Compile>
     <Compile Include="bussiness\production\jobs_approverdash.aspx.designer.cs">
       <DependentUpon>jobs_approverdash.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\job_create_summary.aspx.cs">
+      <DependentUpon>job_create_summary.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\job_create_summary.aspx.designer.cs">
+      <DependentUpon>job_create_summary.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\LoginUserData.cs" />
     <Compile Include="bussiness\production\manage_profile.aspx.cs">

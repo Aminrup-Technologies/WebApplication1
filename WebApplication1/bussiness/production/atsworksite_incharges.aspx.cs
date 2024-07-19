@@ -12,6 +12,11 @@ namespace WebApplication1.bussiness.production
     public partial class atsworksite_incharges : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
+        public static string state = string.Empty;
+        public static string region = string.Empty;
+        public static string comp = string.Empty;
+        public static string datalock = string.Empty;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -22,11 +27,39 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-                    string CmdString1 = "select Worksite_Name, DB_Code from tlb_atsworksites where WorkRegion_Code = '" + Session["REGION"].ToString() + "'";
-                    BindWorksites(CmdString1);
+                    if (Session["Changer"] != null)
+                    {
+                        string[] retrievedArray = (string[])Session["Changer"];
+                        region = retrievedArray[1].ToString();
+                        comp = retrievedArray[2].ToString();
+                        state = retrievedArray[0].ToString();
+                        datalock = retrievedArray[3].ToString();
+                        //Session["Changer"]= null;
+                    }
+                    else
+                    {
+                        region = Session["REGION"].ToString();
+                        comp = Session["COMPANY_CODE"].ToString();
+                        state = Session["STATE"].ToString();
+                        datalock = "0";
+                    }
 
-                    string CmdString2 = "select * from tlb_atsworksiteIncharges where Region_Code = '" + Session["REGION"].ToString() + "' order by Id";
-                    BindGrid(CmdString2);
+                    if (state == "PI")
+                    {
+                        string CmdString1 = "select Worksite_Name, DB_Code from tlb_atsworksites";
+                        BindWorksites(CmdString1);
+
+                        string CmdString2 = "select * from tlb_atsworksiteIncharges order by Id";
+                        BindGrid(CmdString2);
+                    }
+                    else
+                    {
+                        string CmdString1 = "select Worksite_Name, DB_Code from tlb_atsworksites where WorkRegion_Code = '" + Session["REGION"].ToString() + "'";
+                        BindWorksites(CmdString1);
+
+                        string CmdString2 = "select * from tlb_atsworksiteIncharges where Region_Code = '" + Session["REGION"].ToString() + "' order by Id";
+                        BindGrid(CmdString2);
+                    }
                 }
             }
         }

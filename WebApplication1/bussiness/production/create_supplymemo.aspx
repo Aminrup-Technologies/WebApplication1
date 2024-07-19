@@ -824,7 +824,7 @@
                         </div>
                     </div>
                     <%--form buttons div ---- start--%>
-                    <div class="col-md-6 center-margin" runat="server" visible="true">
+                    <div id="btn_panel_" class="col-md-6 center-margin" runat="server" visible="true">
                         <div class="ln_solid"></div>
                         <div class="row center col-md-12">
                             <div class="col-7">
@@ -858,7 +858,7 @@
             });
 
             if (!checked) {
-                alert("Please select at least one line item.");
+                alert("Please select at least one JOBID....!!!");
                 return false;
             }
 

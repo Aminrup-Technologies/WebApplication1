@@ -2,25 +2,25 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <style>
-    .thumbnail {
-        position: relative;
-        overflow: hidden;
-        width: 100px; /* Set the initial width of the thumbnail */
-        height: 100px; /* Set the initial height of the thumbnail */
-        transition: width 0.3s, height 0.3s; /* Add smooth transition effect */
-    }
+        .thumbnail {
+            position: relative;
+            overflow: hidden;
+            width: 100px; /* Set the initial width of the thumbnail */
+            height: 100px; /* Set the initial height of the thumbnail */
+            transition: width 0.3s, height 0.3s; /* Add smooth transition effect */
+        }
 
-    .thumbnail:hover {
-        width: 150px; /* Set the enlarged width on hover */
-        height: 150px; /* Set the enlarged height on hover */
-    }
+            .thumbnail:hover {
+                width: 150px; /* Set the enlarged width on hover */
+                height: 150px; /* Set the enlarged height on hover */
+            }
 
-    .thumbnail-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover; /* Ensure the image covers the entire container */
-    }
-</style>
+        .thumbnail-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensure the image covers the entire container */
+        }
+    </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -104,7 +104,7 @@
                                     PWD:<asp:Label ID="lbl_LoginPassword" runat="server" Text='<%# Eval("LoginPassword") %>' />
                                     <br />
                                     ActiveOn:<asp:Label ID="lbl_LastLogin" runat="server" Text='<%# Eval("LastLogin") %>' />
-                                    
+
                                 </ItemTemplate>
                                 <HeaderStyle CssClass="GridHeaderText-Center" />
                                 <ItemStyle CssClass="grid" />
@@ -127,7 +127,7 @@
                                     <!-- Replace "YourImagePathField" with the actual field name containing the image path in your data source -->
                                     <%--<asp:Image ID="imgPhoto" runat="server" ImageUrl='<%# Eval("PrfPicPath") %>' Height="70" Width="70" />--%>
                                     <div class="thumbnail">
-                                        <asp:Image ID="Image1" runat="server" ImageUrl='<%# Eval("PrfPicPath") %>' CssClass="thumbnail-image"/>
+                                        <asp:Image ID="Image1" runat="server" ImageUrl='<%# Eval("PrfPicPath") %>' CssClass="thumbnail-image" />
                                     </div>
                                 </ItemTemplate>
                             </asp:TemplateField>
@@ -165,9 +165,9 @@
                             <asp:TemplateField HeaderText="Working Details" HeaderStyle-Width="10%">
                                 <ItemTemplate>
                                     Site:<asp:Label ID="lbl_WorkSite" runat="server" Text='<%# Eval("WorkSite") %>' Font-Bold="true" /><br />
-                                    SP:<asp:Label ID="lbl_SafetyPassNo" runat="server" Text='<%# Eval("SafetyPassNo") %>' Font-Bold="true"  />
+                                    SP:<asp:Label ID="lbl_SafetyPassNo" runat="server" Text='<%# Eval("SafetyPassNo") %>' Font-Bold="true" />
                                     <br />
-                                    GP:<asp:Label ID="lbl_GatePassNo" runat="server" Text='<%# Eval("GatePassNo") %>' Font-Bold="true"  />
+                                    GP:<asp:Label ID="lbl_GatePassNo" runat="server" Text='<%# Eval("GatePassNo") %>' Font-Bold="true" />
                                 </ItemTemplate>
                                 <HeaderStyle CssClass="GridHeaderText-Center" />
                                 <ItemStyle CssClass="grid" />

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -88,9 +90,37 @@ namespace WebApplication1.gentelella_master.production
             }
         }
 
+        // Method to get allowed regions from the database
+        public HashSet<string> GetAllowedRegions()
+        {
+            var allowedRegions = new HashSet<string>();
+
+            string connectionString = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
+            string query = "SELECT Work_Region_Code FROM tlb_work_state_region where JOBID_Menu='Yes'";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                SqlCommand command = new SqlCommand(query, connection);
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    allowedRegions.Add(reader["Work_Region_Code"].ToString());
+                }
+
+                reader.Close();
+            }
+
+            return allowedRegions;
+        }
+
         protected void PermissionCheck()
         {
-            if (Session["REGION"].ToString() != "KPO" && Session["REGION"].ToString() != "AGL" && Session["REGION"].ToString() != "JSR" && Session["REGION"].ToString() != "NINL")
+            var allowedRegions = GetAllowedRegions();
+
+            if (!allowedRegions.Contains(Session["REGION"].ToString()))
+            //if (Session["REGION"].ToString() != "KPO" && Session["REGION"].ToString() != "AGL" && Session["REGION"].ToString() != "JSR" && Session["REGION"].ToString() != "NINL")
             {
                 if (Session["USERTYPE"].ToString() == "Office Staff")
                 {
