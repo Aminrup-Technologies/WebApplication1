@@ -126,14 +126,14 @@ namespace WebApplication1.bussiness.production
                         AGL_F17.Visible = false; KPO_F17.Visible = false; NINL_F17.Visible = false; JSR_F17.Visible = false; ATS_F17.Visible = true;
                         StateSelector.Visible = true; RegionSelector.Visible = true; RegionComSelector.Visible = true;
                         //CheckforUser();
-                        f17_row.Visible = true;
+                        f17_row.Visible = true; rpts_row.Visible = true;
                         control_panel.Visible = true;
                     }
                     else
                     {
                         AGL_F17.Visible = false; KPO_F17.Visible = false; NINL_F17.Visible = false; JSR_F17.Visible = false; ATS_F17.Visible = false;
                         StateSelector.Visible = false; DDL_WorkStates.Enabled = false;
-                        control_panel.Visible = false;
+                        control_panel.Visible = false; rpts_row.Visible = false;
                         f17_row.Visible = false;
                     }
 
