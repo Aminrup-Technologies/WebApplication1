@@ -122,15 +122,13 @@
                                 <ItemStyle CssClass="grid" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Photo" HeaderStyle-Width="10%">
+                            <%--<asp:TemplateField HeaderText="Photo" HeaderStyle-Width="10%">
                                 <ItemTemplate>
-                                    <!-- Replace "YourImagePathField" with the actual field name containing the image path in your data source -->
-                                    <%--<asp:Image ID="imgPhoto" runat="server" ImageUrl='<%# Eval("PrfPicPath") %>' Height="70" Width="70" />--%>
                                     <div class="thumbnail">
                                         <asp:Image ID="Image1" runat="server" ImageUrl='<%# Eval("PrfPicPath") %>' CssClass="thumbnail-image" />
                                     </div>
                                 </ItemTemplate>
-                            </asp:TemplateField>
+                            </asp:TemplateField>--%>
 
                             <asp:TemplateField HeaderText="Employee Name" HeaderStyle-Width="20%">
                                 <ItemTemplate>
