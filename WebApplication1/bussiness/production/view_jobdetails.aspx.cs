@@ -33,7 +33,7 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
                     Response.Redirect("login.aspx");
                 }
@@ -200,7 +200,7 @@ namespace WebApplication1.bussiness.production
                     }
                     else
                     {
-                        attachmanpowerrow.Visible = true;
+                        //attachmanpowerrow.Visible = true;
                         if (entryexitstatus == "Entry")
                         {
                             GridView1.Columns[5].Visible = true;

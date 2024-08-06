@@ -32,7 +32,7 @@ namespace WebApplication1.bussiness.production
         public static Int32 WashBreak = 1000; //Added for Calculating Washing Allowances
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+            if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
             {
                 Response.Redirect("login.aspx");
             }

@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using WebApplication1.bussiness.production;
+using System.Web.UI.HtmlControls;
 
 namespace WebApplication1.gentelella_master.production
 {
@@ -19,7 +21,7 @@ namespace WebApplication1.gentelella_master.production
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null)
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null)
                 {
                     Response.Redirect("login.aspx");
                 }
@@ -31,7 +33,7 @@ namespace WebApplication1.gentelella_master.production
                     Label lbl2 = (Label)Page.Master.FindControl("lbl_loginusername1");
                     lbl2.Text = Session["USERFNAME"].ToString();
 
-                    ProfilePic_1.Src = "../../erp_images/ProfilePhoto/"+ Session["User_Photo"].ToString() + "";
+                    ProfilePic_1.Src = "../../erp_images/ProfilePhoto/" + Session["User_Photo"].ToString() + "";
                     ProfilePic_2.Src = "../../erp_images/ProfilePhoto/" + Session["User_Photo"].ToString() + "";
 
                     //ProfilePic_1.Src = Session["User_Photo"].ToString();
@@ -39,7 +41,12 @@ namespace WebApplication1.gentelella_master.production
 
                     GetIpValue();
                     //GetIpAddress();
-                    PermissionCheck();
+                    //PermissionLoader loader = new PermissionLoader();
+                    //LoadPermissions(Session["RolePermissionDB"].ToString());
+
+                    DataTable permissions = LoadPermissions(Session["RolePermissionDB"].ToString());
+                    ApplyPermissions(permissions);
+                    //PermissionCheck();
 
                     //Label lbl_pendingforappjob = (Label)Page.Master.FindControl("lbl_jobspendingcount");
                     //lbl_pendingforappjob.Text = Convert.ToString(CC.GetPendingJOBApprovalCount(Session["WORKMAN"].ToString()));
@@ -61,11 +68,11 @@ namespace WebApplication1.gentelella_master.production
             if (string.IsNullOrEmpty(ipAdd))
             {
                 ipAdd = Request.ServerVariables["REMOTE_ADDR"];
-                lbl_IPAddress.Text = ipAdd;
+                lbl_IPAddress.Text = HttpUtility.HtmlEncode(ipAdd);
             }
             else
             {
-                lbl_IPAddress.Text = ipAdd;
+                lbl_IPAddress.Text = HttpUtility.HtmlEncode(ipAdd);
             }
         }
 
@@ -84,7 +91,7 @@ namespace WebApplication1.gentelella_master.production
                     }
                     else
                     {
-                        lbl_IPAddress.Text = userip;
+                        lbl_IPAddress.Text = HttpUtility.HtmlEncode(userip);
                     }
                 }
             }
@@ -126,19 +133,14 @@ namespace WebApplication1.gentelella_master.production
                 {
                     if (Session["PERMISSION"].ToString() == "Human Resource")
                     {
-                        Reltab.Visible = true;
-
-                        DataMastering.Visible = true; Works.Visible = true; Clients.Visible = true; WorkOrder.Visible = true;
-                        Payroll.Visible = true; ATSSItes.Visible = true; HRSection.Visible = true;
-
+                        Expenses.Visible = true;
+                        DataMastering.Visible = true;
                         Analytics.Visible = false;
-                        PayrollReports.Visible = false;
+                        Payroll.Visible = false;
                         JOBManpower.Visible = false;
                         CSM.Visible = false;
                         JOBApproval.Visible = false;
-
                         Memo_Billing.Visible = true;
-
                         budget.Visible = true;
                         add_exphd.Visible = true;
                         add_expsbhd.Visible = true;
@@ -148,21 +150,14 @@ namespace WebApplication1.gentelella_master.production
                     }
                     else
                     {
-                        Reltab.Visible = true;
+                        Expenses.Visible = true;
                         DataMastering.Visible = false;
-                        Works.Visible = true;
-                        Clients.Visible = true;
-                        WorkOrder.Visible = true;
-                        Payroll.Visible = true;
-                        ATSSItes.Visible = true;
-                        HRSection.Visible = true;
                         Memo_Billing.Visible = true;
                         Analytics.Visible = false;
-                        PayrollReports.Visible = false;
+                        Payroll.Visible = false;
                         JOBManpower.Visible = false;
                         CSM.Visible = false;
                         JOBApproval.Visible = false;
-
                         budget.Visible = false;
                         add_exphd.Visible = false;
                         add_expsbhd.Visible = false;
@@ -172,21 +167,13 @@ namespace WebApplication1.gentelella_master.production
                 }
                 else
                 {
-                    Reltab.Visible = true;
+                    Expenses.Visible = true;
                     DataMastering.Visible = false;
-                    Works.Visible = true;
-                    Clients.Visible = true;
-                    WorkOrder.Visible = true;
-                    Payroll.Visible = true;
-                    ATSSItes.Visible = true;
-                    HRSection.Visible = true;
-
                     Analytics.Visible = false;
-                    PayrollReports.Visible = false;
+                    Payroll.Visible = false;
                     JOBManpower.Visible = false;
                     CSM.Visible = false;
                     JOBApproval.Visible = false;
-
                     Memo_Billing.Visible = true;
                     budget.Visible = false;
                     add_exphd.Visible = false;
@@ -203,56 +190,35 @@ namespace WebApplication1.gentelella_master.production
                     if (Session["PERMISSION"].ToString() == "Human Resource")
                     {
                         DataMastering.Visible = true;
-                        Works.Visible = true;
-                        Clients.Visible = true;
-                        WorkOrder.Visible = true;
-                        Payroll.Visible = true;
-                        ATSSItes.Visible = true;
-                        HRSection.Visible = true;
-
                         Analytics.Visible = true;
-                        PayrollReports.Visible = true;
+                        Payroll.Visible = true;
                         JOBManpower.Visible = true;
                         JOBApproval.Visible = true;
                         Memo_Billing.Visible = true;
                         CSM.Visible = true;
-                        Reltab.Visible = true;
+                        Expenses.Visible = true;
                     }
                     else if (Session["PERMISSION"].ToString() == "Billing")
                     {
                         DataMastering.Visible = true;
-                            Works.Visible = false;
-                            Clients.Visible = false;
-                            WorkOrder.Visible = true;
-                            Payroll.Visible = false;
-                            ATSSItes.Visible = false;
-                            HRSection.Visible = false;
-
                         Analytics.Visible = false;
-                        PayrollReports.Visible = false;
+                        Payroll.Visible = false;
                         JOBManpower.Visible = false;
                         JOBApproval.Visible = false;
                         Memo_Billing.Visible = true;
                         CSM.Visible = false;
-                        Reltab.Visible = true;
+                        Expenses.Visible = true;
                     }
                     else if (Session["PERMISSION"].ToString() == "Special Access")
                     {
                         DataMastering.Visible = false;
-                        Works.Visible = false;
-                        Clients.Visible = false;
-                        WorkOrder.Visible = false;
-                        Payroll.Visible = false;
-                        ATSSItes.Visible = false;
-                        HRSection.Visible = false;
-
                         Analytics.Visible = false;
-                        PayrollReports.Visible = false;
+                        Payroll.Visible = false;
                         JOBManpower.Visible = true;
                         JOBApproval.Visible = true;
                         Memo_Billing.Visible = true;
                         CSM.Visible = true;
-                        Reltab.Visible = true;
+                        Expenses.Visible = true;
                     }
                 }
                 //The below block is for Site Staff
@@ -261,114 +227,72 @@ namespace WebApplication1.gentelella_master.production
                     if (Session["PERMISSION"].ToString() == "Site Incharge")
                     {
                         DataMastering.Visible = false;
-                        Works.Visible = false;
-                        Clients.Visible = false;
-                        WorkOrder.Visible = false;
-                        Payroll.Visible = false;
-                        ATSSItes.Visible = false;
-                        HRSection.Visible = false;
-
                         Analytics.Visible = false;
-                        PayrollReports.Visible = false;
+                        Payroll.Visible = false;
                         JOBManpower.Visible = true;
                         JOBApproval.Visible = true;
                         Memo_Billing.Visible = true;
                         CSM.Visible = true;
-                        Reltab.Visible = true;
+                        Expenses.Visible = true;
                     }
                     else if (Session["PERMISSION"].ToString() == "Safety Officer")
                     {
                         DataMastering.Visible = false;
-                        Works.Visible = false;
-                        Clients.Visible = false;
-                        WorkOrder.Visible = false;
-                        Payroll.Visible = false;
-                        ATSSItes.Visible = false;
-                        HRSection.Visible = false;
-
                         Analytics.Visible = false;
-                        PayrollReports.Visible = false;
+                        Payroll.Visible = false;
                         JOBManpower.Visible = false;
                         JOBApproval.Visible = false;
                         Memo_Billing.Visible = true;
                         CSM.Visible = true;
-                        Reltab.Visible = true;
+                        Expenses.Visible = true;
                     }
 
                     else if (Session["PERMISSION"].ToString() == "Supervisor")
                     {
                         DataMastering.Visible = false;
-                        Works.Visible = false;
-                        Clients.Visible = false;
-                        WorkOrder.Visible = false;
-                        Payroll.Visible = false;
-                        ATSSItes.Visible = false;
-                        HRSection.Visible = false;
-
                         Analytics.Visible = false;
-                        PayrollReports.Visible = false;
+                        Payroll.Visible = false;
                         JOBManpower.Visible = true;
                         JOBApproval.Visible = false;
                         Memo_Billing.Visible = true;
                         CSM.Visible = true;
-                        Reltab.Visible = true;
+                        Expenses.Visible = true;
                     }
 
                     else if (Session["PERMISSION"].ToString() == "Safety Supervisor")
                     {
                         DataMastering.Visible = false;
-                        Works.Visible = false;
-                        Clients.Visible = false;
-                        WorkOrder.Visible = false;
-                        Payroll.Visible = false;
-                        ATSSItes.Visible = false;
-                        HRSection.Visible = false;
-
                         Analytics.Visible = false;
-                        PayrollReports.Visible = false;
+                        Payroll.Visible = false;
                         JOBManpower.Visible = true;
                         JOBApproval.Visible = false;
                         Memo_Billing.Visible = true;
                         CSM.Visible = true;
-                        Reltab.Visible = true;
+                        Expenses.Visible = true;
                     }
 
                     else if (Session["PERMISSION"].ToString() == "Special Access")
                     {
                         DataMastering.Visible = false;
-                        Works.Visible = false;
-                        Clients.Visible = false;
-                        WorkOrder.Visible = false;
-                        Payroll.Visible = false;
-                        ATSSItes.Visible = false;
-                        HRSection.Visible = false;
-
                         Analytics.Visible = false;
-                        PayrollReports.Visible = false;
+                        Payroll.Visible = false;
                         JOBManpower.Visible = true;
                         JOBApproval.Visible = true;
                         Memo_Billing.Visible = true;
                         CSM.Visible = true;
-                        Reltab.Visible = true;
+                        Expenses.Visible = true;
                     }
 
                     else if (Session["PERMISSION"].ToString() == "Worker")
                     {
                         DataMastering.Visible = false;
-                        Works.Visible = false;
-                        Clients.Visible = false;
-                        WorkOrder.Visible = false;
-                        Payroll.Visible = false;
-                        ATSSItes.Visible = false;
-                        HRSection.Visible = false;
-
                         Analytics.Visible = false;
-                        PayrollReports.Visible = false;
+                        Payroll.Visible = false;
                         JOBManpower.Visible = false;
                         JOBApproval.Visible = false;
                         Memo_Billing.Visible = true;
                         CSM.Visible = true;
-                        Reltab.Visible = true;
+                        Expenses.Visible = true;
                     }
                 }
 
@@ -376,20 +300,13 @@ namespace WebApplication1.gentelella_master.production
                 {
                     //This is for ATS management
                     DataMastering.Visible = true;
-                    Works.Visible = true;
-                    Clients.Visible = true;
-                    WorkOrder.Visible = true;
-                    Payroll.Visible = true;
-                    ATSSItes.Visible = true;
-                    HRSection.Visible = true;
-
                     Analytics.Visible = true;
-                    PayrollReports.Visible = true;
+                    Payroll.Visible = true;
                     JOBManpower.Visible = true;
                     JOBApproval.Visible = true;
                     Memo_Billing.Visible = true;
                     CSM.Visible = true;
-                    Reltab.Visible = true;
+                    Expenses.Visible = true;
                 }
             }
         }
@@ -403,5 +320,214 @@ namespace WebApplication1.gentelella_master.production
             Session.Abandon();
             Response.Redirect("login.aspx");
         }
+
+
+        //-------------- below code is added on 03-08-2024------------//
+
+        private void LoadUserPermissions(int userId)
+        {
+            string connectionString = "YourConnectionString";
+            string query = @"
+            SELECT ep.ParentKey, ep.ChildKey, ep.IsVisible
+            FROM UserGroupMapping ugm
+            JOIN GroupRoleMapping grm ON ugm.GroupID = grm.GroupID
+            JOIN tlb_EmployeePermissions ep ON grm.RoleID = ep.RoleID
+            WHERE ugm.UserID = @UserID";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@UserID", userId);
+
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    string parentKey = reader["ParentKey"].ToString();
+                    string childKey = reader["ChildKey"].ToString();
+                    bool isVisible = Convert.ToBoolean(reader["IsVisible"]);
+
+                    Control parentControl = FindControlRecursive(this, parentKey);
+                    if (parentControl != null)
+                    {
+                        Control childControl = FindControlRecursive(parentControl, childKey);
+                        if (childControl != null)
+                        {
+                            childControl.Visible = isVisible;
+                        }
+                    }
+                }
+
+                reader.Close();
+            }
+        }
+
+        private Control FindControlRecursive_0(Control root, string id)
+        {
+            //if (root.ID == id)
+            //{
+            //    return root;
+            //}
+
+            //foreach (Control c in root.Controls)
+            //{
+            //    Control t = FindControlRecursive(c, id);
+            //    if (t != null)
+            //    {
+            //        return t;
+            //    }
+            //}
+
+            return null;
+        }
+
+
+        public void LoadPermissions_0(string empTypeValue, MasterPage masterPage)
+        {
+            //DataTable permissionsTable = GetPermissions(empTypeValue);
+
+            //foreach (DataRow row in permissionsTable.Rows)
+            //{
+            //    string parentKey = row["ParentKey"].ToString();
+            //    string childKey = row["ChildKey"].ToString();
+            //    bool isVisible = Convert.ToBoolean(row["IsVisible"]);
+
+            //    Control parentControl = masterPage.FindControl(parentKey);
+            //    if (parentControl != null)
+            //    {
+            //        if (!string.IsNullOrEmpty(childKey))
+            //        {
+            //            Control childControl = parentControl.FindControl(childKey);
+            //            if (childControl != null)
+            //            {
+            //                childControl.Visible = isVisible;
+            //            }
+            //        }
+            //        else
+            //        {
+            //            parentControl.Visible = isVisible;
+            //        }
+            //    }
+            //}
+        }
+
+        private DataTable LoadPermissions(string roleId)
+        {
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
+
+            SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT ParentKey, ChildKey, IsVisible FROM tlb_EmployeePermissions WHERE Emp_PermissionValue = @Emp_PermissionValue", dbcl.Conn);
+            sqlDa.SelectCommand.Parameters.AddWithValue("@Emp_PermissionValue", roleId);
+            sqlDa.SelectCommand.CommandType = CommandType.Text;
+            DataTable dtbl = new DataTable();
+            sqlDa.Fill(dtbl);
+            dbcl.Conn.Close();
+
+            return dtbl;
+        }
+
+
+
+        public DataTable GetPermissions_0(string empTypeValue)
+        {
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
+
+            string query = "SELECT [Id], [Emp_PermissionValue], [ParentKey], [ChildKey], [IsVisible] " +
+                           "FROM [ats_erp].[dbo].[tlb_EmployeePermissions] " +
+                           "WHERE [Emp_PermissionValue] = @EmpTypeValue";
+
+            SqlDataAdapter sqlDa = new SqlDataAdapter(query, dbcl.Conn);
+            sqlDa.SelectCommand.Parameters.AddWithValue("@EmpTypeValue", empTypeValue);
+            sqlDa.SelectCommand.CommandType = CommandType.Text;
+
+            DataTable dtbl = new DataTable();
+            sqlDa.Fill(dtbl);
+            dbcl.Conn.Close();
+
+            return dtbl;
+        }
+
+        private void ApplyPermissions(DataTable permissions)
+        {
+            foreach (DataRow row in permissions.Rows)
+            {
+                string parentKey = row["ParentKey"].ToString();
+                bool isVisible = Convert.ToBoolean(row["IsVisible"]);
+
+                switch (parentKey)
+                {
+                    case "HomePage":
+                        HomePage.Visible = isVisible;
+                        break;
+                    case "DataMastering":
+                        DataMastering.Visible = isVisible;
+                        break;
+                    case "JOBManpower":
+                        JOBManpower.Visible = isVisible;
+                        break;
+                    case "Memo_Billing":
+                        Memo_Billing.Visible = isVisible;
+                        break;
+                    case "CSM":
+                        CSM.Visible = isVisible;
+                        break;
+                    case "loans_adeductions":
+                        loans_adeductions.Visible = isVisible;
+                        break;
+                    case "leaves_attendance":
+                        leaves_attendance.Visible = isVisible;
+                        break;
+                    case "Payroll":
+                        Payroll.Visible = isVisible;
+                        break;
+                    case "Expenses":
+                        Expenses.Visible = isVisible;
+                        break;
+                    case "Helpdesk":
+                        Helpdesk.Visible = isVisible;
+                        break;
+                    case "Analytics":
+                        Analytics.Visible = isVisible;
+                        break;
+                }
+
+                // Control visibility of child items
+                if (!string.IsNullOrEmpty(row["ChildKey"].ToString()))
+                {
+                    Control parentControl = FindControlRecursive(this, parentKey) as HtmlGenericControl;
+                    if (parentControl != null)
+                    {
+                        Control childControl = parentControl.FindControl(row["ChildKey"].ToString()) as HtmlGenericControl;
+                        if (childControl != null)
+                        {
+                            childControl.Visible = isVisible;
+                        }
+                    }
+                }
+            }
+        }
+
+        private Control FindControlRecursive(Control root, string id)
+        {
+            if (root.ID == id)
+            {
+                return root;
+            }
+
+            foreach (Control child in root.Controls)
+            {
+                Control foundControl = FindControlRecursive(child, id);
+                if (foundControl != null)
+                {
+                    return foundControl;
+                }
+            }
+
+            return null;
+        }
+
     }
+
 }

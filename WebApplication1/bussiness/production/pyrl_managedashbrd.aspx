@@ -40,9 +40,9 @@
                     </div>
                 </div>
             </div>
-            </div>
+        </div>
 
-            <div class="row">
+        <div class="row">
 
             <div class="col-md-6" id="Div1" runat="server" visible="true">
                 <div class="x_panel">

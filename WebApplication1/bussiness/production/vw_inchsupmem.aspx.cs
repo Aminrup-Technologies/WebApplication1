@@ -21,7 +21,7 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
                     Response.Redirect("login.aspx");
                 }
@@ -31,12 +31,12 @@ namespace WebApplication1.bussiness.production
                     mnt = Request.QueryString["m"];
                     if (yr != null && mnt != null)
                     {
-                        lbl_year.Text = yr;
-                        lbl_monthcode.Text = mnt;
+                        lbl_year.Text = HttpUtility.HtmlEncode(yr);
+                        lbl_monthcode.Text = HttpUtility.HtmlEncode(mnt);
                         DateTime date = new DateTime(Convert.ToInt32(yr), Convert.ToInt32(mnt), 1);
                         lbl_month.Text = date.ToString("MMMM");
 
-                        string CmdString2 = "select Id,CreatedDate,Creator_Workman,WorkOrderNo,JOBID,IIF(JOB_Status !='Level1MemoCreated',JOBID_Status,Level1_BillingCode) as JOBID_Status,JOBID_Status,JOB_Site,JOB_InchargeName,JOB_Shift,JOB_Title,JOB_PermitNo,JOB_Status,FinalUpldStatus,Incharge_Approval from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_InchargeName='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + yr + "' and MONTH(CreatedDate)='" + mnt + "' and JOBID_Status='Blocked' and EntryExit='Exit' and FinalUpldStatus='Yes' and Incharge_Approval='Approved' and BillingCode='MS' order by CreatedDate desc";
+                        string CmdString2 = "select Id,CreatedDate, Creator_Workman,Creator_Name, WorkOrderNo, JOBID,IIF(JOB_Status !='Level1MemoCreated',JOBID_Status,Level1_BillingCode) as JOBID_Status,JOBID_Status,JOB_Site, JOB_InchargeName, JOB_Shift,JOB_Title, JOB_PermitNo, JOB_Status, FinalUpldStatus, Incharge_Approval from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_InchargeName='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + yr + "' and MONTH(CreatedDate)='" + mnt + "' and JOBID_Status='Blocked' and EntryExit='Exit' and FinalUpldStatus='Yes' and Incharge_Approval='Approved' and BillingCode='MS' order by CreatedDate desc";
 
 
                         BindGrid(CmdString2);
@@ -51,7 +51,7 @@ namespace WebApplication1.bussiness.production
 
                         //string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + DateTime.Now.Year.ToString() + "' and JOBID_Status='Blocked' and MONTH(CreatedDate)='" + DateTime.Now.Month.ToString() + "' and JOBID_Status='Blocked' and EntryExit='Exit' and FinalUpldStatus='Yes' and Incharge_Approval='Approved' and BillingCode='MS' order by CreatedDate desc";
 
-                        string CmdString2 = "select Id,CreatedDate,Creator_Workman,WorkOrderNo,JOBID,IIF(JOB_Status !='Level1MemoCreated',JOBID_Status,Level1_BillingCode) as JOBID_Status,JOBID_Status,JOB_Site,JOB_InchargeName,JOB_Shift,JOB_Title,JOB_PermitNo,JOB_Status,FinalUpldStatus,Incharge_Approval from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_InchargeName='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + DateTime.Now.Year.ToString() + "' and JOBID_Status='Blocked' and MONTH(CreatedDate)='" + DateTime.Now.Month.ToString() + "' and JOBID_Status='Blocked' and EntryExit='Exit' and FinalUpldStatus='Yes' and Incharge_Approval='Approved' and BillingCode='MS' order by CreatedDate desc";
+                        string CmdString2 = "select Id,CreatedDate,Creator_Workman,Creator_Name,WorkOrderNo,JOBID,IIF(JOB_Status !='Level1MemoCreated',JOBID_Status,Level1_BillingCode) as JOBID_Status,JOBID_Status,JOB_Site,JOB_InchargeName,JOB_Shift,JOB_Title,JOB_PermitNo,JOB_Status,FinalUpldStatus,Incharge_Approval from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_InchargeName='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + DateTime.Now.Year.ToString() + "' and JOBID_Status='Blocked' and MONTH(CreatedDate)='" + DateTime.Now.Month.ToString() + "' and JOBID_Status='Blocked' and EntryExit='Exit' and FinalUpldStatus='Yes' and Incharge_Approval='Approved' and BillingCode='MS' order by CreatedDate desc";
 
 
                         BindGrid(CmdString2);

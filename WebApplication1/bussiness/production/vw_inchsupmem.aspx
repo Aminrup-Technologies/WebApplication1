@@ -18,7 +18,7 @@
 			<div class="clearfix"></div>
 
 			<!-- Small modal -->
-			<asp:Button ID="ShowPopup" runat="server" Text="Button" class="btn btn-primary" Visible="false" data-toggle="modal" data-target=".bs-example-modal-sm" />
+			<asp:Button ID="ShowPopup" runat="server" Text="Button" CssClass="btn btn-primary" Visible="false"/>
 			<div id="MyPopup" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-hidden="true">
 				<div class="modal-dialog modal-sm">
 					<div class="modal-content">
@@ -61,7 +61,7 @@
 
 			<div class="row">
 				<div class="card-box col-md-12 col-sm-12 small" style="width: 100%; height: 450px; overflow: scroll;">
-					<asp:GridView ID="GridView1" runat="server" Width="100%" class="table table-striped table-hover table-bordered table-responsive table-sm table-condensed text-wrap" AutoGenerateColumns="false" ShowHeaderWhenEmpty="true" EmptyDataText="No Data Found" OnRowDataBound="GridView1_RowDataBound" OnRowCommand="GridView1_RowCommand">
+					<asp:GridView ID="GridView1" runat="server" Width="100%" CssClass="table table-striped table-hover table-bordered table-responsive table-sm table-condensed text-wrap" AutoGenerateColumns="false" ShowHeaderWhenEmpty="true" EmptyDataText="No Data Found" OnRowDataBound="GridView1_RowDataBound" OnRowCommand="GridView1_RowCommand">
 						<Columns>
 							<asp:TemplateField HeaderText="SL" Visible="True" HeaderStyle-Width="2%">
 								<ItemTemplate>
@@ -77,12 +77,7 @@
 								<ItemStyle CssClass="text text-center" />
 							</asp:TemplateField>
 
-							<asp:TemplateField HeaderText="DBID" Visible="false">
-								<ItemTemplate>
-									<asp:Label ID="lbl_Creator_Workman" runat="server" Text='<%# Eval("Creator_Workman") %>' />
-								</ItemTemplate>
-								<ItemStyle CssClass="text text-center" />
-							</asp:TemplateField>
+							
 
 							<asp:TemplateField HeaderText="Date" HeaderStyle-Width="5%">
 								<ItemTemplate>
@@ -114,9 +109,17 @@
 								<ItemStyle CssClass="text text-center small" />
 							</asp:TemplateField>
 
-							<asp:TemplateField HeaderText="Approver Name" HeaderStyle-Width="10%">
+							<asp:TemplateField HeaderText="Approver Name" Visible="false">
 								<ItemTemplate>
 									<asp:Label ID="lbl_JOB_InchargeName" runat="server" Text='<%# Eval("JOB_InchargeName") %>' Font-Bold="true" />
+								</ItemTemplate>
+								<ItemStyle CssClass="text text-center" />
+							</asp:TemplateField>
+
+                            <asp:TemplateField HeaderText="JOB Supervisor" Visible="true" HeaderStyle-Width="10%">
+								<ItemTemplate>
+                                    <asp:Label ID="lbl_Creator_Name" runat="server" Text='<%# Eval("Creator_Name") %>' />
+									[<asp:Label ID="lbl_Creator_Workman" runat="server" Text='<%# Eval("Creator_Workman") %>' />]
 								</ItemTemplate>
 								<ItemStyle CssClass="text text-center" />
 							</asp:TemplateField>

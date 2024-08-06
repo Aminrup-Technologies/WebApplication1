@@ -242,63 +242,155 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="bin\BouncyCastle.Crypto.dll" />
-    <Content Include="bin\ClosedXML.dll" />
-    <Content Include="bin\DocumentFormat.OpenXml.dll" />
-    <Content Include="bin\ExcelNumberFormat.dll" />
-    <Content Include="bin\Irony.dll" />
-    <Content Include="bin\itext.barcodes.dll" />
-    <Content Include="bin\itext.commons.dll" />
-    <Content Include="bin\itext.forms.dll" />
-    <Content Include="bin\itext.io.dll" />
-    <Content Include="bin\itext.kernel.dll" />
-    <Content Include="bin\itext.layout.dll" />
-    <Content Include="bin\itext.pdfa.dll" />
-    <Content Include="bin\itext.sign.dll" />
-    <Content Include="bin\itext.styledxmlparser.dll" />
-    <Content Include="bin\itext.svg.dll" />
-    <Content Include="bin\itextsharp.dll" />
-    <Content Include="bin\Microsoft.AspNet.SignalR.Core.dll" />
-    <Content Include="bin\Microsoft.AspNet.SignalR.SystemWeb.dll" />
-    <Content Include="bin\Microsoft.Bcl.AsyncInterfaces.dll" />
-    <Content Include="bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll" />
-    <Content Include="bin\Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
-    <Content Include="bin\Microsoft.Extensions.DependencyInjection.dll" />
-    <Content Include="bin\Microsoft.Extensions.Logging.Abstractions.dll" />
-    <Content Include="bin\Microsoft.Extensions.Logging.dll" />
-    <Content Include="bin\Microsoft.Extensions.Options.dll" />
-    <Content Include="bin\Microsoft.Extensions.Primitives.dll" />
-    <Content Include="bin\Microsoft.Owin.dll" />
-    <Content Include="bin\Microsoft.Owin.Host.SystemWeb.dll" />
-    <Content Include="bin\Microsoft.Owin.Security.dll" />
-    <Content Include="bin\Microsoft.SqlServer.Types.dll" />
-    <Content Include="bin\Newtonsoft.Json.dll" />
-    <Content Include="bin\Owin.dll" />
-    <Content Include="bin\Quartz.dll" />
-    <Content Include="bin\roslyn\csc.exe" />
-    <Content Include="bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll" />
-    <Content Include="bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll" />
-    <Content Include="bin\roslyn\Microsoft.CodeAnalysis.dll" />
-    <Content Include="bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll" />
-    <Content Include="bin\roslyn\System.Collections.Immutable.dll" />
-    <Content Include="bin\roslyn\System.Reflection.Metadata.dll" />
-    <Content Include="bin\roslyn\vbc.exe" />
-    <Content Include="bin\roslyn\VBCSCompiler.exe" />
-    <Content Include="bin\SixLabors.Fonts.dll" />
-    <Content Include="bin\System.Buffers.dll" />
-    <Content Include="bin\System.Diagnostics.DiagnosticSource.dll" />
-    <Content Include="bin\System.IO.Compression.dll" />
-    <Content Include="bin\System.IO.FileSystem.Primitives.dll" />
-    <Content Include="bin\System.IO.Packaging.dll" />
-    <Content Include="bin\System.IO.UnmanagedMemoryStream.dll" />
-    <Content Include="bin\System.Memory.dll" />
-    <Content Include="bin\System.Numerics.Vectors.dll" />
-    <Content Include="bin\System.Runtime.CompilerServices.Unsafe.dll" />
-    <Content Include="bin\System.Threading.Tasks.Extensions.dll" />
-    <Content Include="bin\System.ValueTuple.dll" />
-    <Content Include="bin\WebApplication1.dll" />
-    <Content Include="bin\WebApplication1.pdb" />
-    <Content Include="bin\XLParser.dll" />
+    <Content Include="About.aspx" />
+    <Content Include="assets\css\animate.css" />
+    <Content Include="assets\css\bootstrap-touchspin.css" />
+    <Content Include="assets\css\bootstrap.min.css" />
+    <Content Include="assets\css\flaticon.css" />
+    <Content Include="assets\css\jquery.fancybox.css" />
+    <Content Include="assets\css\odometer-theme-default.css" />
+    <Content Include="assets\css\owl.carousel.css" />
+    <Content Include="assets\css\owl.theme.css" />
+    <Content Include="assets\css\owl.transitions.css" />
+    <Content Include="assets\css\owl.video.play.html" />
+    <Content Include="assets\css\slick-theme.css" />
+    <Content Include="assets\css\slick.css" />
+    <Content Include="assets\css\style.css" />
+    <Content Include="assets\css\themify-icons.css" />
+    <Content Include="assets\fonts\Flaticon.eot" />
+    <Content Include="assets\fonts\Flaticon.svg" />
+    <Content Include="assets\fonts\Flaticon.ttf" />
+    <Content Include="assets\fonts\Flaticon.woff" />
+    <Content Include="assets\fonts\Flaticond41d.eot" />
+    <Content Include="assets\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="assets\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="assets\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="assets\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="assets\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="assets\fonts\glyphicons-halflings-regulard41d.eot" />
+    <Content Include="assets\fonts\slick.eot" />
+    <Content Include="assets\fonts\slick.svg" />
+    <Content Include="assets\fonts\slick.ttf" />
+    <Content Include="assets\fonts\slick.woff" />
+    <Content Include="assets\fonts\slickd41d.eot" />
+    <Content Include="assets\fonts\themify9f24.eot" />
+    <Content Include="assets\fonts\themify9f24.svg" />
+    <Content Include="assets\fonts\themify9f24.ttf" />
+    <Content Include="assets\fonts\themify9f24.woff" />
+    <Content Include="assets\fonts\themifyd41d.eot" />
+    <Content Include="assets\images\about-pic-2.jpg" />
+    <Content Include="assets\images\about-pic.jpg" />
+    <Content Include="assets\images\about-s2-bg.jpg" />
+    <Content Include="assets\images\ajax-loader.gif" />
+    <Content Include="assets\images\blog-details\blog-author.jpg" />
+    <Content Include="assets\images\blog-details\comments-author\img-1.jpg" />
+    <Content Include="assets\images\blog-details\comments-author\img-2.jpg" />
+    <Content Include="assets\images\blog-details\comments-author\img-3.jpg" />
+    <Content Include="assets\images\blog\img-1.jpg" />
+    <Content Include="assets\images\blog\img-2.jpg" />
+    <Content Include="assets\images\blog\img-3.jpg" />
+    <Content Include="assets\images\blog\img-4.jpg" />
+    <Content Include="assets\images\blog\img-5.jpg" />
+    <Content Include="assets\images\blog\img-6.jpg" />
+    <Content Include="assets\images\blog\img-7.jpg" />
+    <Content Include="assets\images\ceo.jpg" />
+    <Content Include="assets\images\contact-bg.jpg" />
+    <Content Include="assets\images\cta-bg-s2.jpg" />
+    <Content Include="assets\images\cta-bg.jpg" />
+    <Content Include="assets\images\fancybox\blank.gif" />
+    <Content Include="assets\images\fancybox\fancybox_loading%402x.gif" />
+    <Content Include="assets\images\fancybox\fancybox_loading.gif" />
+    <Content Include="assets\images\fancybox\fancybox_overlay.png" />
+    <Content Include="assets\images\fancybox\fancybox_sprite%402x.png" />
+    <Content Include="assets\images\fancybox\fancybox_sprite.png" />
+    <Content Include="assets\images\features-pic.jpg" />
+    <Content Include="assets\images\footer-logo.png" />
+    <Content Include="assets\images\logo-2.png" />
+    <Content Include="assets\images\logo.png" />
+    <Content Include="assets\images\page-title.jpg" />
+    <Content Include="assets\images\partners\img-1.png" />
+    <Content Include="assets\images\partners\img-2.png" />
+    <Content Include="assets\images\partners\img-3.png" />
+    <Content Include="assets\images\partners\img-4.png" />
+    <Content Include="assets\images\project-single.jpg" />
+    <Content Include="assets\images\projects\img-1.jpg" />
+    <Content Include="assets\images\projects\img-10.jpg" />
+    <Content Include="assets\images\projects\img-11.jpg" />
+    <Content Include="assets\images\projects\img-2.jpg" />
+    <Content Include="assets\images\projects\img-3.jpg" />
+    <Content Include="assets\images\projects\img-4.jpg" />
+    <Content Include="assets\images\projects\img-5.jpg" />
+    <Content Include="assets\images\projects\img-6.jpg" />
+    <Content Include="assets\images\projects\img-7.jpg" />
+    <Content Include="assets\images\projects\img-8.jpg" />
+    <Content Include="assets\images\projects\img-9.jpg" />
+    <Content Include="assets\images\recent-posts\img-1.jpg" />
+    <Content Include="assets\images\recent-posts\img-2.jpg" />
+    <Content Include="assets\images\recent-posts\img-3.jpg" />
+    <Content Include="assets\images\select-icon.html" />
+    <Content Include="assets\images\service-single\img-1.jpg" />
+    <Content Include="assets\images\service-single\img-2.jpg" />
+    <Content Include="assets\images\service-single\img-3.jpg" />
+    <Content Include="assets\images\service-single\img-4.jpg" />
+    <Content Include="assets\images\service-single\img-5.jpg" />
+    <Content Include="assets\images\service-single\img-6.jpg" />
+    <Content Include="assets\images\service-video-bg.jpg" />
+    <Content Include="assets\images\services\img-1.jpg" />
+    <Content Include="assets\images\services\img-2.jpg" />
+    <Content Include="assets\images\services\img-3.jpg" />
+    <Content Include="assets\images\services\img-4.jpg" />
+    <Content Include="assets\images\services\img-5.jpg" />
+    <Content Include="assets\images\services\img-6.jpg" />
+    <Content Include="assets\images\shop\img-1.jpg" />
+    <Content Include="assets\images\shop\img-2.jpg" />
+    <Content Include="assets\images\shop\img-3.jpg" />
+    <Content Include="assets\images\shop\img-4.jpg" />
+    <Content Include="assets\images\shop\img-5.jpg" />
+    <Content Include="assets\images\shop\img-6.jpg" />
+    <Content Include="assets\images\shop\img-7.jpg" />
+    <Content Include="assets\images\shop\img-8.jpg" />
+    <Content Include="assets\images\shop\img-9.jpg" />
+    <Content Include="assets\images\shop\mini\img-1.jpg" />
+    <Content Include="assets\images\shop\mini\img-2.jpg" />
+    <Content Include="assets\images\shop\popular-product\img-1.jpg" />
+    <Content Include="assets\images\shop\popular-product\img-2.jpg" />
+    <Content Include="assets\images\shop\popular-product\img-3.jpg" />
+    <Content Include="assets\images\shop\shop-single\img-1.jpg" />
+    <Content Include="assets\images\shop\shop-single\img-2.jpg" />
+    <Content Include="assets\images\shop\shop-single\img-3.jpg" />
+    <Content Include="assets\images\shop\shop-single\img-4.jpg" />
+    <Content Include="assets\images\shop\shop-single\img-5.jpg" />
+    <Content Include="assets\images\shop\shop-single\img-6.jpg" />
+    <Content Include="assets\images\shop\shop-single\review\img-1.jpg" />
+    <Content Include="assets\images\shop\shop-single\review\img-2.jpg" />
+    <Content Include="assets\images\shop\shop-single\review\img-3.jpg" />
+    <Content Include="assets\images\shop\shop-single\thumb\img-1.jpg" />
+    <Content Include="assets\images\shop\shop-single\thumb\img-2.jpg" />
+    <Content Include="assets\images\shop\shop-single\thumb\img-3.jpg" />
+    <Content Include="assets\images\shop\shop-single\thumb\img-4.jpg" />
+    <Content Include="assets\images\shop\shop-single\thumb\img-5.jpg" />
+    <Content Include="assets\images\shop\shop-single\thumb\img-6.jpg" />
+    <Content Include="assets\images\signature.png" />
+    <Content Include="assets\images\slider\slide-1.jpg" />
+    <Content Include="assets\images\slider\slide-2.jpg" />
+    <Content Include="assets\images\slider\slide-3.jpg" />
+    <Content Include="assets\images\slider\slide-4.jpg" />
+    <Content Include="assets\images\team\img-1.jpg" />
+    <Content Include="assets\images\team\img-2.jpg" />
+    <Content Include="assets\images\team\img-3.jpg" />
+    <Content Include="assets\images\team\img-4.jpg" />
+    <Content Include="assets\images\team\img-5.jpg" />
+    <Content Include="assets\images\team\img-6.jpg" />
+    <Content Include="assets\images\team\img-7.jpg" />
+    <Content Include="assets\images\team\img-8.jpg" />
+    <Content Include="assets\images\testimonials\img-1.jpg" />
+    <Content Include="assets\images\testimonials\img-2.jpg" />
+    <Content Include="assets\images\testimonials\img-3.jpg" />
+    <Content Include="assets\js\bootstrap.min.js" />
+    <Content Include="assets\js\jquery-plugin-collection.js" />
+    <Content Include="assets\js\jquery.min.js" />
+    <Content Include="assets\js\script.js" />
+    <Content Include="Awards_Associations.aspx" />
     <Content Include="bussiness\.gitignore" />
     <Content Include="bussiness\production\add_expenses.aspx" />
     <Content Include="bussiness\production\add_expense_heads.aspx" />
@@ -309,6 +401,9 @@
     <Content Include="bussiness\production\add_wo_skillcategory.aspx" />
     <Content Include="bussiness\production\aminrup\adda.aspx" />
     <Content Include="bussiness\production\aminrup\manage_roles.aspx" />
+    <Content Include="bussiness\production\anlys_employees.aspx" />
+    <Content Include="bussiness\production\anlys_jobsdeta.aspx" />
+    <Content Include="bussiness\production\anlys_musterdeta.aspx" />
     <Content Include="bussiness\production\attach_manpower.aspx" />
     <Content Include="bussiness\production\BlankTabs.aspx" />
     <Content Include="bussiness\production\blank_page.aspx" />
@@ -316,6 +411,8 @@
     <Content Include="bussiness\production\csm_tbtform.aspx" />
     <Content Include="bussiness\production\css\loader.css" />
     <Content Include="bussiness\production\css\Site.css" />
+    <Content Include="bussiness\production\deta_employeemaster.aspx" />
+    <Content Include="bussiness\production\deta_mustering.aspx" />
     <Content Include="bussiness\production\emp_payroll_wages.aspx" />
     <Content Include="bussiness\production\emp_profilepic.aspx" />
     <Content Include="bussiness\production\emp_pwdchange.aspx" />
@@ -345,6 +442,7 @@
     <Content Include="bussiness\production\images\user.png" />
     <Content Include="bussiness\production\images\visa.png" />
     <Content Include="bussiness\production\jobstatus_flow.ascx" />
+    <Content Include="bussiness\production\jobs_approval.aspx" />
     <Content Include="bussiness\production\jobs_approverdash.aspx" />
     <Content Include="bussiness\production\job_create_summary.aspx" />
     <Content Include="bussiness\production\js\jquery-1.9.1.js" />
@@ -430,6 +528,13 @@
     <Content Include="bussiness\production\work_region.aspx" />
     <Content Include="bussiness\production\work_states.aspx" />
     <Content Include="bussiness\production\vw_emp_paymentbankdetails.aspx" />
+    <Content Include="career.aspx" />
+    <Content Include="clients.aspx" />
+    <Content Include="contact_us.aspx" />
+    <Content Include="csr.aspx" />
+    <Content Include="Director%27s_Desk.aspx" />
+    <Content Include="home.aspx" />
+    <Content Include="hse.aspx" />
     <Content Include="packages.config">
       <SubType>Designer</SubType>
     </Content>
@@ -476,10 +581,7 @@
     <Content Include="bussiness\production\webmaster.Master" />
     <Content Include="bussiness\production\aminrup\aminrup.Master" />
     <Content Include="bussiness\production\templates\DeductionUploader.xlsx" />
-    <Content Include="bin\roslyn\Microsoft.CSharp.Core.targets" />
-    <Content Include="bin\roslyn\Microsoft.VisualBasic.Core.targets" />
-    <Content Include="bin\roslyn\VBCSCompiler.exe.config" />
-    <Content Include="bin\WebApplication1.dll.config" />
+    <Content Include="atsSite.Master" />
     <None Include="Properties\PublishProfiles\deploy.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -531,18 +633,33 @@
     <Content Include="bussiness\src\js\examples.js" />
     <Content Include="bussiness\src\js\helpers\smartresize.js" />
     <Content Include="index.html" />
-    <None Include="Scripts\jquery-1.6.4-vsdoc.js" />
-    <Content Include="Scripts\jquery-1.6.4.js" />
-    <Content Include="Scripts\jquery-1.6.4.min.js" />
-    <Content Include="Scripts\jquery-1.7.2.min.js" />
-    <Content Include="Scripts\jquery-3.6.4.min.js" />
-    <Content Include="Scripts\jquery.signalR-2.4.3.js" />
-    <Content Include="Scripts\jquery.signalR-2.4.3.min.js" />
+    <Content Include="service.aspx" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="About.aspx.cs">
+      <DependentUpon>About.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="About.aspx.designer.cs">
+      <DependentUpon>About.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="atsSite.Master.cs">
+      <DependentUpon>atsSite.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="atsSite.Master.designer.cs">
+      <DependentUpon>atsSite.Master</DependentUpon>
+    </Compile>
+    <Compile Include="Awards_Associations.aspx.cs">
+      <DependentUpon>Awards_Associations.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Awards_Associations.aspx.designer.cs">
+      <DependentUpon>Awards_Associations.aspx</DependentUpon>
+    </Compile>
     <Compile Include="bussiness\production\add_expenses.aspx.cs">
       <DependentUpon>add_expenses.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -613,6 +730,27 @@
     <Compile Include="bussiness\production\aminrup\manage_roles.aspx.designer.cs">
       <DependentUpon>manage_roles.aspx</DependentUpon>
     </Compile>
+    <Compile Include="bussiness\production\anlys_employees.aspx.cs">
+      <DependentUpon>anlys_employees.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\anlys_employees.aspx.designer.cs">
+      <DependentUpon>anlys_employees.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\anlys_jobsdeta.aspx.cs">
+      <DependentUpon>anlys_jobsdeta.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\anlys_jobsdeta.aspx.designer.cs">
+      <DependentUpon>anlys_jobsdeta.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\anlys_musterdeta.aspx.cs">
+      <DependentUpon>anlys_musterdeta.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\anlys_musterdeta.aspx.designer.cs">
+      <DependentUpon>anlys_musterdeta.aspx</DependentUpon>
+    </Compile>
     <Compile Include="bussiness\production\attach_manpower.aspx.cs">
       <DependentUpon>attach_manpower.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -649,6 +787,20 @@
       <DependentUpon>csm_tbtform.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\DatabaseHelper.cs" />
+    <Compile Include="bussiness\production\deta_employeemaster.aspx.cs">
+      <DependentUpon>deta_employeemaster.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\deta_employeemaster.aspx.designer.cs">
+      <DependentUpon>deta_employeemaster.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\deta_mustering.aspx.cs">
+      <DependentUpon>deta_mustering.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\deta_mustering.aspx.designer.cs">
+      <DependentUpon>deta_mustering.aspx</DependentUpon>
+    </Compile>
     <Compile Include="bussiness\production\emp_payroll_wages.aspx.cs">
       <DependentUpon>emp_payroll_wages.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -719,6 +871,13 @@
     </Compile>
     <Compile Include="bussiness\production\jobstatus_flow.ascx.designer.cs">
       <DependentUpon>jobstatus_flow.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\jobs_approval.aspx.cs">
+      <DependentUpon>jobs_approval.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\jobs_approval.aspx.designer.cs">
+      <DependentUpon>jobs_approval.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\jobs_approverdash.aspx.cs">
       <DependentUpon>jobs_approverdash.aspx</DependentUpon>
@@ -1321,11 +1480,67 @@
     <Compile Include="bussiness\production\vw_emp_paymentbankdetails.aspx.designer.cs">
       <DependentUpon>vw_emp_paymentbankdetails.aspx</DependentUpon>
     </Compile>
+    <Compile Include="career.aspx.cs">
+      <DependentUpon>career.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="career.aspx.designer.cs">
+      <DependentUpon>career.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="clients.aspx.cs">
+      <DependentUpon>clients.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="clients.aspx.designer.cs">
+      <DependentUpon>clients.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="contact_us.aspx.cs">
+      <DependentUpon>contact_us.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="contact_us.aspx.designer.cs">
+      <DependentUpon>contact_us.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="csr.aspx.cs">
+      <DependentUpon>csr.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="csr.aspx.designer.cs">
+      <DependentUpon>csr.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Director%27s_Desk.aspx.cs">
+      <DependentUpon>Director%27s_Desk.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Director%27s_Desk.aspx.designer.cs">
+      <DependentUpon>Director%27s_Desk.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="home.aspx.cs">
+      <DependentUpon>home.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="home.aspx.designer.cs">
+      <DependentUpon>home.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="hse.aspx.cs">
+      <DependentUpon>hse.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="hse.aspx.designer.cs">
+      <DependentUpon>hse.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="service.aspx.cs">
+      <DependentUpon>service.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="service.aspx.designer.cs">
+      <DependentUpon>service.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -1363,6 +1578,7 @@
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft Chart Controls\Assemblies\System.Web.DataVisualization.dll" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

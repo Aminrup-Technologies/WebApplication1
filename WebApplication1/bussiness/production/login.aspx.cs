@@ -51,7 +51,7 @@ namespace WebApplication1.bussiness.production
                 string id = txt_loginid.Text;
                 string pass = txt_password.Text;
 
-                string query = "select WorkStatus,LoginID,WorkRegion,WorkState,WorkCompany,WorkmanSL,FirstName,FullName,User_RoleType,Role_Permission,WorkSite,Worksite_Code,SkillCategory,SkillDesignation,PrfPicFile from tbl_Employee_Mustertable where LoginID=@LoginID and LoginPassword=@LoginPassword";
+                string query = "select WorkStatus,LoginID,WorkRegion,WorkState,WorkCompany,WorkmanSL,FirstName,FullName,User_RoleType,UserRoleDB,RolePermissionDB,WorkSite,Worksite_Code,SkillCategory,SkillDesignation,PrfPicFile from tbl_Employee_Mustertable where LoginID=@LoginID and LoginPassword=@LoginPassword";
                 SqlParameter[] pram = {
                                           new SqlParameter("@LoginID",id),
                                           new SqlParameter("@LoginPassword",pass),
@@ -70,8 +70,9 @@ namespace WebApplication1.bussiness.production
                         string Workman = dt.Rows[0]["WorkmanSL"].ToString();
                         string User_FirstName = dt.Rows[0]["FirstName"].ToString();
                         string User_FullName = dt.Rows[0]["FullName"].ToString();
-                        string User_Type = dt.Rows[0]["User_RoleType"].ToString();
-                        string User_Permission = dt.Rows[0]["Role_Permission"].ToString();
+                        string User_RoleType = dt.Rows[0]["User_RoleType"].ToString();
+                        string User_Type = dt.Rows[0]["UserRoleDB"].ToString();
+                        string User_Permission = dt.Rows[0]["RolePermissionDB"].ToString();
                         string User_Worksite = dt.Rows[0]["WorkSite"].ToString();
                         string User_WRKSTCode = dt.Rows[0]["Worksite_Code"].ToString();
                         string User_Skill = dt.Rows[0]["SkillCategory"].ToString();
@@ -85,8 +86,9 @@ namespace WebApplication1.bussiness.production
                         Session["WORKMAN"] = Workman;
                         Session["USERFNAME"] = User_FirstName;
                         Session["USERNAME"] = User_FullName;
-                        Session["USERTYPE"] = User_Type;
-                        Session["PERMISSION"] = User_Permission;
+                        Session["USERTYPE"] = User_RoleType;
+                        Session["UserRoleDB"] = User_Type;
+                        Session["RolePermissionDB"] = User_Permission;
                         Session["REGION"] = Region;
                         Session["STATE"] = State;
                         Session["COMPANY_CODE"] = Company;

@@ -18,7 +18,7 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
                     Response.Redirect("login.aspx");
                 }
@@ -36,8 +36,8 @@ namespace WebApplication1.bussiness.production
                     //string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' order by CreatedDate desc";
                     //BindGrid(CmdString2);
 
-                    Label lbl_pendingforappjob = (Label)Page.Master.FindControl("lbl_jobspendingcount");
-                    lbl_pendingforappjob.Text = Convert.ToString(CC.GetPendingJOBApprovalCount(Session["WORKMAN"].ToString()));
+                    //Label lbl_pendingforappjob = (Label)Page.Master.FindControl("lbl_jobspendingcount");
+                    //lbl_pendingforappjob.Text = Convert.ToString(CC.GetPendingJOBApprovalCount(Session["WORKMAN"].ToString()));
 
                     string CmdString = "select BilingType, BillingCode from tlb_JOB_BillingType order by Id";
                     Bind_BillingType(CmdString);

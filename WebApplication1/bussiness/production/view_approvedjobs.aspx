@@ -4,24 +4,11 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 	<div class="right_col" role="main">
 		<div class="">
-			<div class="page-title">
-				<div class="title_left">
-					<h5>View & Manage : <asp:Label ID="lbl_month" runat="server"></asp:Label><asp:Label ID="lbl_monthcode" Visible="false" runat="server"></asp:Label>, <asp:Label ID="lbl_year" runat="server"></asp:Label></h5>
-				</div>
-
-				<div class="title_right">
-					<div class="col-md-5 col-sm-5 form-group pull-right top_search"></div>
-				</div>
-
-			</div>
-
-			<div class="clearfix"></div>
-
 			<div class="row">
 				<div class="col-md-12 col-sm-12  ">
 					<div class="x_panel">
 						<div class="x_title">
-							<h2>Search View Parameters</h2>
+							<h2>View & Manage Approved JOB-ID's for : <asp:Label ID="lbl_month" runat="server"></asp:Label><asp:Label ID="lbl_monthcode" Visible="false" runat="server"></asp:Label>, <asp:Label ID="lbl_year" runat="server"></asp:Label></h2>
 							<ul class="nav navbar-right panel_toolbox">
 								<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
 							</ul>
@@ -30,7 +17,7 @@
 						<div class="x_content">
 							<div class="row">
 
-								<div class="col-12 text-center">
+								<div class="col-6 text-center">
 									<div class="btn-group" role="group" aria-label="">
 									  <asp:Button ID="btn_prevmonth" runat="server" Text="Prev Month" CssClass="btn btn-success btn-sm" OnClick="btn_prevmonth_Click" />
 									  <asp:Button ID="btn_currentdata" runat="server" Text="Current Month" CssClass="btn btn-primary btn-sm" OnClick="btn_currentdata_Click" />
@@ -38,9 +25,9 @@
 									</div>
 								</div>
 
-								<div class="col-12">
+								<%--<div class="col-12">
 									<hr />
-								</div>
+								</div>--%>
 
 
 								<div class="col-md-3 col-sm-6 col-xs-6 form-group" id="row1" runat="server" visible="false">
