@@ -40,13 +40,13 @@ namespace atsweb {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl company_contact;
         
         /// <summary>
-        /// social_handle control.
+        /// social_handle1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl social_handle;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl social_handle1;
         
         /// <summary>
         /// form1 control.
@@ -65,5 +65,14 @@ namespace atsweb {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.ContentPlaceHolder ContentPlaceHolder1;
+        
+        /// <summary>
+        /// social_handle2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl social_handle2;
     }
 }

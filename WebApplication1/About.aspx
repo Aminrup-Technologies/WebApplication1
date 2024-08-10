@@ -8,7 +8,7 @@
         <div class="container">
             <div class="row">
                 <div class="col col-xs-12">
-                    <h2>About</h2>
+                    <h3>&nbsp;</h3>
                     <ol class="breadcrumb">
                         <li><a href="home.aspx">Home</a></li>
                         <li>About</li>
@@ -19,8 +19,7 @@
         </div>
         <!-- end container -->
     </section>
-    <!-- end page-title -->
-    <!-- start about-pg-section -->
+    <br />
     <section class="about-pg-section section-padding">
         <div class="container">
             <div class="row">
@@ -132,7 +131,7 @@
                                 <i class="fi flaticon-mine"></i>
                             </span>
                             <div>
-                                <h3><span class="odometer" data-count="300">00</span>+</h3>
+                                <h3><span class="odometer" data-count="500">00</span>+</h3>
                             </div>
                             <p>Certified Engineers</p>
                         </div>
@@ -141,7 +140,7 @@
                                 <i class="fi flaticon-face"></i>
                             </span>
                             <div>
-                                <h3><span class="odometer" data-count="150">00</span>+</h3>
+                                <h3><span class="odometer" data-count="15">00</span>+</h3>
                             </div>
                             <p>Happy Clients</p>
                         </div>
@@ -150,7 +149,7 @@
                                 <i class="fi flaticon-trophy-1"></i>
                             </span>
                             <div>
-                                <h3><span class="odometer" data-count="100">00</span>+</h3>
+                                <h3><span class="odometer" data-count="20"></span>+</h3>
                             </div>
                             <p>Award Won</p>
                         </div>

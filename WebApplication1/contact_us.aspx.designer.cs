@@ -7,13 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace atsweb
-{
-
-
-    public partial class contact_us
-    {
-
+namespace atsweb {
+    
+    
+    public partial class contact_us {
+        
         /// <summary>
         /// name control.
         /// </summary>
@@ -22,7 +20,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox name;
-
+        
         /// <summary>
         /// RFV_name control.
         /// </summary>
@@ -31,7 +29,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator RFV_name;
-
+        
         /// <summary>
         /// email control.
         /// </summary>
@@ -40,7 +38,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox email;
-
+        
         /// <summary>
         /// RFV_email control.
         /// </summary>
@@ -49,7 +47,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator RFV_email;
-
+        
         /// <summary>
         /// phone control.
         /// </summary>
@@ -58,7 +56,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox phone;
-
+        
         /// <summary>
         /// RFV_phone control.
         /// </summary>
@@ -67,7 +65,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator RFV_phone;
-
+        
         /// <summary>
         /// address control.
         /// </summary>
@@ -76,7 +74,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox address;
-
+        
         /// <summary>
         /// RFV_address control.
         /// </summary>
@@ -85,7 +83,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator RFV_address;
-
+        
         /// <summary>
         /// note control.
         /// </summary>
@@ -94,7 +92,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox note;
-
+        
         /// <summary>
         /// RFV_note control.
         /// </summary>
@@ -103,7 +101,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator RFV_note;
-
+        
         /// <summary>
         /// submitBtn control.
         /// </summary>
@@ -112,7 +110,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button submitBtn;
-
+        
         /// <summary>
         /// success control.
         /// </summary>
@@ -121,7 +119,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label success;
-
+        
         /// <summary>
         /// error control.
         /// </summary>
@@ -130,5 +128,14 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label error;
+        
+        /// <summary>
+        /// social_handle control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl social_handle;
     }
 }

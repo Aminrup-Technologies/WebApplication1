@@ -7,47 +7,18 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace atsweb
-{
-
-
-    public partial class Awards_Associations
-    {
-
+namespace atsweb {
+    
+    
+    public partial class Awards_Associations {
+        
         /// <summary>
-        /// img_award1 control.
+        /// rptProjects control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Image img_award1;
-
-        /// <summary>
-        /// img_award2 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Image img_award2;
-
-        /// <summary>
-        /// img_award3 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Image img_award3;
-
-        /// <summary>
-        /// img_award4 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Image img_award4;
+        protected global::System.Web.UI.WebControls.Repeater rptProjects;
     }
 }

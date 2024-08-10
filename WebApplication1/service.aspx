@@ -3,21 +3,23 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-     <!-- start page-title -->
-        <section class="page-title">
-            <div class="container">
-                <div class="row">
-                    <div class="col col-xs-12">
-                        <h2>Services</h2>
-                        <ol class="breadcrumb">
-                            <li><a href="home.aspx">Home</a></li>
-                            <li>Services</li>
-                        </ol>
-                    </div>
-                </div> <!-- end row -->
-            </div> <!-- end container -->
-        </section>
-        <!-- end page-title -->
+    <!-- start page-title -->
+    <section class="page-title">
+        <div class="container">
+            <div class="row">
+                <div class="col col-xs-12">
+                    <h3>&nbsp;</h3>
+                    <ol class="breadcrumb">
+                        <li><a href="home.aspx">Home</a></li>
+                        <li>Services</li>
+                    </ol>
+                </div>
+            </div>
+            <!-- end row -->
+        </div>
+        <!-- end container -->
+    </section>
+    <!-- end page-title -->
     <section class="services-pg-section section-padding bg-dark-black">
         <div class="container">
             <div class="row">
@@ -31,57 +33,59 @@
                     </div>
                 </div>
             </div>
-        
-        <div class="container">
 
-            <div class="row">
-                <div class="col col-xs-12">
-                    <div class="service-grids clearfix">
-                        <div class="grid">
-                            <div class="img-holder">
-                                <asp:Image ID="img1" runat="server" Height="350" Width="360" />
+            <br />
+
+            <div class="container">
+
+                <div class="row">
+                    <div class="col col-xs-12">
+                        <div class="service-grids clearfix">
+                            <div class="grid">
+                                <div class="img-holder">
+                                    <asp:Image ID="img1" runat="server" Height="350" Width="360" />
 
 
+                                </div>
+                                <div class="details">
+                                    <h3><a href="#">COKE PLANT, CDQ BUCKET REPLACEMENT</a></h3>
+                                    <ul class="list-inline text-muted text-small mb-0">
+                                        <li class="list-inline-item">Tata Steel,</li>
+                                        <li class="list-inline-item">Kalinganagar</li>
+                                    </ul>
+                                </div>
                             </div>
-                            <div class="details">
-                                <h3><a href="#">COKE PLANT, CDQ BUCKET REPLACEMENT</a></h3>
-                                <ul class="list-inline text-muted text-small mb-0">
-                                    <li class="list-inline-item">Tata Steel,</li>
-                                    <li class="list-inline-item">Kalinganagar</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="grid">
-                            <div class="img-holder">
-                                <asp:Image ID="img2" runat="server" Height="350" Width="360" />
+                            <div class="grid">
+                                <div class="img-holder">
+                                    <asp:Image ID="img2" runat="server" Height="350" Width="360" />
 
+                                </div>
+                                <div class="details">
+                                    <h3><a href="#">RMHS STACKER WHEEL REPLACEMENT</a></h3>
+                                    <ul class="list-inline text-muted text-small mb-0">
+                                        <li class="list-inline-item">Tata Steel,</li>
+                                        <li class="list-inline-item">Meramandali</li>
+                                    </ul>
+                                </div>
                             </div>
-                            <div class="details">
-                                <h3><a href="#">RMHS STACKER WHEEL REPLACEMENT</a></h3>
-                                <ul class="list-inline text-muted text-small mb-0">
-                                    <li class="list-inline-item">Tata Steel,</li>
-                                    <li class="list-inline-item">Meramandali</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="grid">
-                            <div class="img-holder">
-                                <asp:Image ID="img3" runat="server" Height="350" Width="360" />
+                            <div class="grid">
+                                <div class="img-holder">
+                                    <asp:Image ID="img3" runat="server" Height="350" Width="360" />
 
-                            </div>
-                            <div class="details">
-                                <h3><a href="#">CONVEYOR LINE BELT REPLACEMENT</a></h3>
-                                <ul class="list-inline text-muted text-small mb-0">
-                                    <li class="list-inline-item">Factory,</li>
-                                    <li class="list-inline-item">Jamshedpu</li>
-                                </ul>
+                                </div>
+                                <div class="details">
+                                    <h3><a href="#">CONVEYOR LINE BELT REPLACEMENT</a></h3>
+                                    <ul class="list-inline text-muted text-small mb-0">
+                                        <li class="list-inline-item">Factory,</li>
+                                        <li class="list-inline-item">Jamshedpu</li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-            </div>
     </section>
     <!-- stat cta-s2-section -->
     <div class="container">
@@ -99,7 +103,7 @@
                     <div class="col col-sm-3">
                         <asp:LinkButton href="contact_us.aspx" ID="contact" runat="server" CssClass="theme-btn-s4">Contact With Us</asp:LinkButton>
                     </div>
-                   
+
                 </div>
             </div>
         </section>
@@ -153,7 +157,7 @@
                 </div>
             </div>
         </div>
-       
+
         <!-- end container -->
         <!-- end services-pg-section -->
     </section>

@@ -1,0 +1,65 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace atsweb
+{
+    public partial class magic_lgn : System.Web.UI.Page
+    {
+        SqlConnection con;
+        SqlCommand cmd;
+        SqlDataAdapter sda;
+        DataTable dt;
+        protected void Page_Load(object sender, EventArgs e)
+        {
+
+            //if (Session["userId"] != null)
+            //{
+            //    Response.Redirect("Home.aspx");
+            //}
+
+        }
+
+        protected void btnLogin_Click(object sender, EventArgs e)
+        {
+            if (txtAdminname.Text.Trim() == "Admin" && txtPassword.Text.Trim() == "123")
+            {
+                Session["admin"] = txtAdminname.Text.Trim();
+                Response.Redirect("Admin/Dashboard.aspx");
+            }
+            else
+            {
+                con = new SqlConnection(Conection.GetConnectionString());
+                cmd = new SqlCommand("User_Crud", con);
+                cmd.Parameters.AddWithValue("@Action", "SELECT4LOGIN");
+                cmd.Parameters.AddWithValue("@Username", txtAdminname.Text.Trim());
+                cmd.Parameters.AddWithValue("@Password", txtPassword.Text.Trim());
+                cmd.CommandType = CommandType.StoredProcedure;
+                sda = new SqlDataAdapter(cmd);
+                dt = new DataTable();
+                sda.Fill(dt);
+
+                //if (dt.Rows.Count == 1)
+                //{
+
+                //    Session["userId"] = dt.Rows[0]["UserId"];
+                //    Response.Redirect("Dashboard.aspx");
+                //}
+                //else
+                //{
+                //    lblMsg.Visible = true;
+                //    lblMsg.Text = "invalid Credentials.......!";
+                //    lblMsg.CssClass = "alert alert-danger";
+                //}
+
+            }
+        }
+    }
+}
+            
+        

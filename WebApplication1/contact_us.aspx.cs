@@ -51,7 +51,7 @@ namespace atsweb
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 success.Visible = false;
                 error.Visible = true;

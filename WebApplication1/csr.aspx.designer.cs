@@ -8,64 +8,27 @@
 //------------------------------------------------------------------------------
 
 namespace atsweb
-{
-
-
-    public partial class csr
-    {
-
+{   
+    
+    public partial class csr {
+        
         /// <summary>
-        /// img_comp_csr1 control.
+        /// pagetitle control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Image img_comp_csr1;
-
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl pagetitle;
+        
         /// <summary>
-        /// img_comp_csr2 control.
+        /// rptCSRActivities control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Image img_comp_csr2;
-
-        /// <summary>
-        /// img_comp_csr3 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Image img_comp_csr3;
-
-        /// <summary>
-        /// img_comp_csr4 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Image img_comp_csr4;
-
-        /// <summary>
-        /// img_comp_csr5 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Image img_comp_csr5;
-
-        /// <summary>
-        /// img_comp_csr6 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Image img_comp_csr6;
+        protected global::System.Web.UI.WebControls.Repeater rptCSRActivities;
+        
     }
 }

@@ -12,6 +12,7 @@
 
     <title>Automation & Technical Services</title>
     <link rel="shortcut icon" href="erp_images/ats_translogo.png" />
+
     <!-- Icon fonts -->
     <link href="assets/css/themify-icons.css" rel="stylesheet" />
     <link href="assets/css/flaticon.css" rel="stylesheet" />
@@ -28,9 +29,16 @@
     <link href="assets/css/owl.transitions.css" rel="stylesheet" />
     <link href="assets/css/jquery.fancybox.css" rel="stylesheet" />
     <link href="assets/css/odometer-theme-default.css" rel="stylesheet" />
+    <link href="../TemplateFiles/css/style.css" rel="stylesheet" />
+    <!-- responsive style -->
+    <link href="../TemplateFiles/css/responsive.css" rel="stylesheet" />
+    <!-- jQery -->
+    <script src="../TemplateFiles/js/jquery-3.4.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <!-- Custom styles for this template -->
     <link href="assets/css/style.css" rel="stylesheet" />
+
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -49,17 +57,17 @@
         <div class="preloader">
             <div class="load">
                 <div class="gear one">
-                    <svg viewbox="0 0 100 100" fill="#94DDFF">
+                    <svg viewBox="0 0 100 100" fill="#94DDFF">
                         <path d="M97.6,55.7V44.3l-13.6-2.9c-0.8-3.3-2.1-6.4-3.9-9.3l7.6-11.7l-8-8L67.9,20c-2.9-1.7-6-3.1-9.3-3.9L55.7,2.4H44.3l-2.9,13.6      c-3.3,0.8-6.4,2.1-9.3,3.9l-11.7-7.6l-8,8L20,32.1c-1.7,2.9-3.1,6-3.9,9.3L2.4,44.3v11.4l13.6,2.9c0.8,3.3,2.1,6.4,3.9,9.3      l-7.6,11.7l8,8L32.1,80c2.9,1.7,6,3.1,9.3,3.9l2.9,13.6h11.4l2.9-13.6c3.3-0.8,6.4-2.1,9.3-3.9l11.7,7.6l8-8L80,67.9      c1.7-2.9,3.1-6,3.9-9.3L97.6,55.7z M50,65.6c-8.7,0-15.6-7-15.6-15.6s7-15.6,15.6-15.6s15.6,7,15.6,15.6S58.7,65.6,50,65.6z"></path>
                     </svg>
                 </div>
                 <div class="gear two">
-                    <svg viewbox="0 0 100 100" fill="#ffbd34">
+                    <svg viewBox="0 0 100 100" fill="#ffbd34">
                         <path d="M97.6,55.7V44.3l-13.6-2.9c-0.8-3.3-2.1-6.4-3.9-9.3l7.6-11.7l-8-8L67.9,20c-2.9-1.7-6-3.1-9.3-3.9L55.7,2.4H44.3l-2.9,13.6      c-3.3,0.8-6.4,2.1-9.3,3.9l-11.7-7.6l-8,8L20,32.1c-1.7,2.9-3.1,6-3.9,9.3L2.4,44.3v11.4l13.6,2.9c0.8,3.3,2.1,6.4,3.9,9.3      l-7.6,11.7l8,8L32.1,80c2.9,1.7,6,3.1,9.3,3.9l2.9,13.6h11.4l2.9-13.6c3.3-0.8,6.4-2.1,9.3-3.9l11.7,7.6l8-8L80,67.9      c1.7-2.9,3.1-6,3.9-9.3L97.6,55.7z M50,65.6c-8.7,0-15.6-7-15.6-15.6s7-15.6,15.6-15.6s15.6,7,15.6,15.6S58.7,65.6,50,65.6z"></path>
                     </svg>
                 </div>
                 <div class="gear three">
-                    <svg viewbox="0 0 100 100" fill="#0a172b">
+                    <svg viewBox="0 0 100 100" fill="#0a172b">
                         <path d="M97.6,55.7V44.3l-13.6-2.9c-0.8-3.3-2.1-6.4-3.9-9.3l7.6-11.7l-8-8L67.9,20c-2.9-1.7-6-3.1-9.3-3.9L55.7,2.4H44.3l-2.9,13.6      c-3.3,0.8-6.4,2.1-9.3,3.9l-11.7-7.6l-8,8L20,32.1c-1.7,2.9-3.1,6-3.9,9.3L2.4,44.3v11.4l13.6,2.9c0.8,3.3,2.1,6.4,3.9,9.3      l-7.6,11.7l8,8L32.1,80c2.9,1.7,6,3.1,9.3,3.9l2.9,13.6h11.4l2.9-13.6c3.3-0.8,6.4-2.1,9.3-3.9l11.7,7.6l8-8L80,67.9      c1.7-2.9,3.1-6,3.9-9.3L97.6,55.7z M50,65.6c-8.7,0-15.6-7-15.6-15.6s7-15.6,15.6-15.6s15.6,7,15.6,15.6S58.7,65.6,50,65.6z"></path>
                     </svg>
                 </div>
@@ -71,7 +79,7 @@
         <header id="header" class="site-header header-style-1">
             <div class="topbar">
                 <div class="container">
-                    <div class="row" id="top_row_header" runat="server" visible="false">
+                    <div class="row" id="top_row_header" runat="server" visible="true">
                         <div class="col col-md-10 col-sm-9">
                             <div class="contact-info" id="company_contact" runat="server" visible="false">
                                 <ul>
@@ -80,7 +88,7 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="col col-md-2 col-sm-3" id="social_handle" runat="server" visible="false">
+                        <div class="col col-md-2 col-sm-3" id="social_handle1" runat="server" visible="false">
                             <div class="social-icons">
                                 <ul>
                                     <li><a href="#"><i class="ti-facebook"></i></a></li>
@@ -94,6 +102,7 @@
                     </div>
                 </div>
             </div>
+
             <nav class="navigation navbar navbar-default bg-info">
                 <div class="container">
                     <div class="navbar-header">
@@ -104,7 +113,7 @@
                             <span class="icon-bar"></span>
                         </button>
                         <a class="navbar-brand" href="home.aspx">
-                            <img src="erp_images/ats_webheader.png" width="340" height="60" alt></a>
+                            <img src="erp_images/ats_webheader.png" width="340" height="60" /></a>
                     </div>
                     <div id="navbar" class="navbar-collapse collapse navbar-right navigation-holder">
                         <button class="close-navbar"><i class="ti-close"></i></button>
@@ -112,12 +121,7 @@
                             <li class="menu-item-has-children">
                                 <a href="home.aspx">Home</a>
                             </li>
-                            <li class="menu-item-has-children">
-                                <a href="service.aspx">Services</a>
-                                <ul class="sub-menu">
-                                    <li><a href="clients.aspx">Clients</a></li>
-                                </ul>
-                            </li>
+                            
                             <li class="menu-item-has-children">
                                 <a href="About.aspx">About Us</a>
                                 <ul class="sub-menu">
@@ -127,26 +131,32 @@
                                     <li><a href="hse.aspx">HSE</a></li>
                                     <li><a href="csr.aspx">CSR Initiatives</a></li>
                                 </ul>
-
                             </li>
+
+                            <li class="menu-item-has-children">
+                                <a href="#">Services</a>
+                                <ul class="sub-menu">
+                                    <li><a href="service.aspx">Services</a></li>
+                                    <li><a href="clients.aspx">Clients</a></li>
+                                </ul>
+                            </li>
+
                             <li class="menu-item-has-children">
                                 <a href="career.aspx">CAREER</a>
                             </li>
                             <li class="menu-item-has-children">
                                 <a href="contact_us.aspx">Contact</a>
                             </li>
-
                         </ul>
                     </div>
                     <!-- end of nav-collapse -->
-
                     <div class="cart-search-contact">
                         <div class="get-quote">
-                            <a href="bussiness/production/login.aspx" class="theme-btn">ERP Login</a>
+                            <a href="#" class="theme-btn">ERP Login</a>
                         </div>
                     </div>
                 </div>
-                <!-- end of container -->
+
             </nav>
         </header>
         <!-- end of header -->
@@ -168,10 +178,10 @@
                         <div class="col col-lg-4 col-md-3 col-sm-6">
                             <div class="widget about-widget">
                                 <div class="logo widget-title">
-                                    <img src="erp_images/ats_webheader.png" alt>
+                                    <img src="erp_images/ats_webheader.png" alt="" />
                                 </div>
                                 <p>It showed a lady fitted out with a fur hat and fur boa who sat upright, raising a heavy fur muff that covered the whole of her lower arm towards the viewer.</p>
-                                <div class="social-icons">
+                                <div class="social-icons" id="social_handle2" runat="server" visible="false">
                                     <ul>
                                         <li><a href="#"><i class="ti-facebook"></i></a></li>
                                         <li><a href="#"><i class="ti-twitter-alt"></i></a></li>
@@ -188,12 +198,9 @@
                                     <h3>Navigation</h3>
                                 </div>
                                 <ul>
-                                    <li><a href="#">About us</a></li>
-                                    <li><a href="#">Contact us</a></li>
-                                    <li><a href="#">Our Services</a></li>
-                                    <li><a href="#">Privacy Policy </a></li>
-                                    <li><a href="#">Recent Projects</a></li>
-                                    <li><a href="#">Washing history</a></li>
+                                    <li><a href="About.aspx">About us</a></li>
+                                    <li><a href="contact_us.aspx">Contact us</a></li>
+                                    <li><a href="service.aspx">Our Services</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -235,10 +242,10 @@
                         <div class="col col-xs-12">
                             <p class="copyright">Design & Development by <a target="_blank" href="https://www.aminruptechnologies.co.in/">Aminrup Technologies</a></p>
                             <ul>
-                                <li><a href="#">About Us</a></li>
-                                <li><a href="#">News</a></li>
-                                <li><a href="#">Privacy Policy</a></li>
-                                <li><a href="#">Contact</a></li>
+                                <li><a href="About.aspx">About Us</a></li>
+                                <%--<li><a href="#">News</a></li>--%>
+                                <%--<li><a href="#">Privacy Policy</a></li>--%>
+                                <li><a href="contact_us.aspx">Contact</a></li>
                             </ul>
                         </div>
                     </div>
@@ -257,5 +264,7 @@
 
     <!-- Custom script for this template -->
     <script src="assets/js/script.js"></script>
+
+
 </body>
 </html>

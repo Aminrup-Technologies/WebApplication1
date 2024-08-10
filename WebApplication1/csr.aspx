@@ -1,23 +1,84 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/atsSite.Master" AutoEventWireup="true" CodeBehind="csr.aspx.cs" Inherits="atsweb.csr" %>
+
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+
+    <style type="text/css">
+        /* General Styles */
+        .csr-pg-section-s2 {
+            padding: 20px 0;
+        }
+
+        .csr-activities-grids {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .grid {
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+            flex: 1 1 calc(33.333% - 20px); /* 3 columns with 20px gap */
+            box-sizing: border-box;
+        }
+
+        .activity-pic img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .details {
+            padding: 10px;
+            text-align: center;
+        }
+
+            .details h3 {
+                margin: 10px 0;
+                font-size: 18px;
+            }
+
+            .details p {
+                font-size: 14px;
+                color: #555;
+            }
+
+            .details span {
+                color: #777;
+                font-size: 14px;
+                display: block;
+                margin-top: 5px;
+            }
+
+        /* Responsive Styles */
+        @media (max-width: 767px) {
+            .grid {
+                flex: 1 1 100%; /* Full width on mobile devices */
+            }
+        }
+    </style>
+
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
-                <!-- start page-title -->
-        <section class="page-title">
-            <div class="container">
-                <div class="row">
-                    <div class="col col-xs-12">
-                        <h2>CSR</h2>
-                        <ol class="breadcrumb">
-                            <li><a href="home.aspx">Home</a></li>
-                            <li>CSR</li>
-                        </ol>
-                    </div>
-                </div> <!-- end row -->
-            </div> <!-- end container -->
-        </section>
-        <!-- end page-title -->
+    <!-- start page-title -->
+    <section class="page-title" id="pagetitle" runat="server" visible="true">
+        <div class="container">
+            <div class="row">
+                <div class="col col-xs-12">
+                    <h3>&nbsp;</h3>
+                    <ol class="breadcrumb">
+                        <li><a href="home.aspx">Home</a></li>
+                        <li>CSR</li>
+                    </ol>
+                </div>
+            </div>
+            <!-- end row -->
+        </div>
+        <!-- end container -->
+    </section>
+    <!-- end page-title -->
 
     <!--  start recent-blog-section -->
     <section class="recent-blog-section section-padding">
@@ -32,73 +93,35 @@
                 </div>
             </div>
 
+            <section class="csr-pg-section-s2 section-padding">
+                <div class="container">
+                    <div class="row">
+                        <div class="col col-xs-12">
+                            <div class="csr-activities-grids">
+                                <asp:Repeater ID="rptCSRActivities" runat="server">
+                                    <ItemTemplate>
+                                        <div class="grid">
+                                            <div class="activity-pic">
+                                                <img src='<%# Eval("ActivityImage") %>' alt='<%# Eval("ActivityTitle") %>' />
+                                            </div>
+                                            <div class="details">
+                                                <h3><a href="#"><%# Eval("ActivityTitle") %></a></h3>
+                                                <p><%# Eval("ActivityDescription") %></p>
+                                                <span>Date: <%# Eval("ActivityDate", "{0:MMM dd, yyyy}") %></span>
+                                                <span>Location: <%# Eval("Location") %></span>
+                                                <span>Outcomes: <%# Eval("Outcomes") %></span>
+                                            </div>
+                                        </div>
+                                    </ItemTemplate>
+                                </asp:Repeater>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-                    <section class="projects-pg-section-s2 section-padding">
-
-<div class="row">
-    <div class="col col-xs-12">
-        <div class="projects-grids clearfix">
-            <div class="grid">
-                <div class="project-pic">
-                    <asp:Image ID="img_comp_csr1" runat="server" />
-                </div>
-                <div class="details">
-                    <h3><a href="#">Metal and Non - Metals</a></h3>
-                    <span>Recent Project</span>
-                </div>
-            </div>
-            <div class="grid">
-                <div class="project-pic">
-                    <asp:Image ID="img_comp_csr2" runat="server" />
-                </div>
-                <div class="details">
-                    <h3><a href="#">Construction Materials</a></h3>
-                    <span>Recent Project</span>
-                </div>
-            </div>
-            <div class="grid">
-                <div class="project-pic">
-                    <asp:Image ID="img_comp_csr3" runat="server" />
-                </div>
-                <div class="details">
-                    <h3><a href="#">Paper and Packaging</a></h3>
-                    <span>Recent Project</span>
-                </div>
-            </div>
-            <div class="grid">
-                <div class="project-pic">
-                    <asp:Image ID="img_comp_csr4" runat="server" />
-                </div>
-                <div class="details">
-                    <h3><a href="#">Metal and Non - Metals</a></h3>
-                    <span>Recent Project</span>
-                </div>
-            </div>
-            <div class="grid">
-                <div class="project-pic">
-                    <asp:Image ID="img_comp_csr5" runat="server" />
-                </div>
-                <div class="details">
-                    <h3><a href="#">Construction Materials</a></h3>
-                    <span>Recent Project</span>
-                </div>
-            </div>
-            <div class="grid">
-                <div class="project-pic">
-                    <asp:Image ID="img_comp_csr6" runat="server" />
-                </div>
-                <div class="details">
-                    <h3><a href="#">Paper and Packaging</a></h3>
-                    <span>Recent Project</span>
-                </div>
-            </div>
         </div>
-    </div>
-</div>
-                                </section>
-
-
-        </div> <!-- end container -->
+        <!-- end container -->
     </section>
     <!-- end recent-blog-section -->
 
