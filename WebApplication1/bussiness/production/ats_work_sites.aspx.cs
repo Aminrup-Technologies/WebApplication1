@@ -12,6 +12,11 @@ namespace WebApplication1.bussiness.production
     public partial class work_sites : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
+        public static string state = string.Empty;
+        public static string region = string.Empty;
+        public static string comp = string.Empty;
+        public static string datalock = string.Empty;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -22,10 +27,27 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
+                    if (Session["Changer"] != null)
+                    {
+                        string[] retrievedArray = (string[])Session["Changer"];
+                        region = retrievedArray[1].ToString();
+                        comp = retrievedArray[2].ToString();
+                        state = retrievedArray[0].ToString();
+                        datalock = retrievedArray[3].ToString();
+                        //Session["Changer"]= null;
+                    }
+                    else
+                    {
+                        region = Session["REGION"].ToString();
+                        comp = Session["COMPANY_CODE"].ToString();
+                        state = Session["STATE"].ToString();
+                        datalock = "0";
+                    }
+
                     string CmdString1 = "select Country_Name, Country_Code from tlb_work_country";
                     BindCountry(CmdString1);
 
-                    string CmdString2 = "select * from tlb_atsworksites where WorkRegion_Code = '" + Session["REGION"].ToString() + "' order by Id";
+                    string CmdString2 = "select * from tlb_atsworksites where WorkRegion_Code = '" + region + "' order by Id";
                     BindGrid(CmdString2);
                 }
             }
@@ -62,6 +84,9 @@ namespace WebApplication1.bussiness.production
         {
             string CmdString3 = "select State_Name, State_Code from tlb_work_state where Country_Code = '" + DDL_WorkCountry.SelectedValue.ToString() + "'";
             BindCountryState(CmdString3);
+
+            string CmdString2 = "select * from tlb_atsworksites where WorkRegion_Code = '" + region + "' order by Id";
+            BindGrid(CmdString2);
         }
 
         private void BindCountryState(string CmdString)
@@ -82,6 +107,9 @@ namespace WebApplication1.bussiness.production
         {
             string CmdString3 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = '" + DDL_WorkCountry.SelectedValue.ToString() + "' and State_Code ='" + DDL_WorkStates.SelectedValue.ToString() + "' order by Id ";
             BindRegions(CmdString3);
+
+            string CmdString2 = "select * from tlb_atsworksites where State_Code = '" + DDL_WorkStates.SelectedValue.ToString() + "' order by Id";
+            BindGrid(CmdString2);
         }
 
         private void BindRegions(string CmdString)
@@ -102,6 +130,9 @@ namespace WebApplication1.bussiness.production
         {
             string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = '" + DDL_WorkCountry.SelectedValue.ToString() + "' and State_Code ='" + DDL_WorkStates.SelectedValue.ToString() + "' and Work_Region_Code = '" + DDL_Region.SelectedValue.ToString() + "' order by Id ";
             BindCompany(CmdString3);
+
+            string CmdString2 = "select * from tlb_atsworksites where State_Code = '" + DDL_WorkStates.SelectedValue.ToString() + "' and WorkRegion_Code = '" + DDL_Region.SelectedValue.ToString() + "' order by Id";
+            BindGrid(CmdString2);
         }
 
         private void BindCompany(string CmdString)
@@ -122,6 +153,9 @@ namespace WebApplication1.bussiness.production
         {
             string CmdString3 = "select Company_Department, DB_Code from tlb_workregion_compdept where Country_Code = '" + DDL_WorkCountry.SelectedValue.ToString() + "' and State_Code ='" + DDL_WorkStates.SelectedValue.ToString() + "' and Work_Region_Code = '" + DDL_Region.SelectedValue.ToString() + "' and Company_Code = '" + DDL_Company.SelectedValue.ToString() + "'  order by Id ";
             BindCompanyDept(CmdString3);
+
+            string CmdString2 = "select * from tlb_atsworksites where State_Code = '" + DDL_WorkStates.SelectedValue.ToString() + "' and WorkRegion_Code = '" + DDL_Region.SelectedValue.ToString() + "' and Company_Code = '" + DDL_Company.SelectedValue.ToString() + "' order by Id";
+            BindGrid(CmdString2);
         }
 
         private void BindCompanyDept(string CmdString)
@@ -200,7 +234,7 @@ namespace WebApplication1.bussiness.production
                     txt_worksite_Name.Text = "";
                     txt_worksite_code.Text = "";
 
-                    string CmdString2 = "select * from tlb_atsworksites where WorkRegion_Code = '" + Session["REGION"].ToString() + "' order by Id";
+                    string CmdString2 = "select * from tlb_atsworksites where State_Code = '" + DDL_WorkStates.SelectedValue.ToString() + "' and WorkRegion_Code = '" + DDL_Region.SelectedValue.ToString() + "' and Company_Code = '" + DDL_Company.SelectedValue.ToString() + "' order by Id";
                     BindGrid(CmdString2);
 
                     lbl_msg.Text = "Success : Data Saved";

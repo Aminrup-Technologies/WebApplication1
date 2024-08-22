@@ -58,7 +58,8 @@ namespace WebApplication1.bussiness.production
                 else if (Session["REGION"].ToString() == "JSR")
                 {
                     CheckforUser();
-                    GorssBreaker = 20500;
+                    //GorssBreaker = 20500; -- Commented on 21-Aug-2024 Based on mail from Anupam Sharma dated : 19-Aug-2024 for changing ESIC Gross Breaker Amount from 19500 to 20999
+                    GorssBreaker = 20999;
                 }
             }
         }
@@ -578,12 +579,7 @@ namespace WebApplication1.bussiness.production
                         netpay1final = netpay1 - ttldeductions;
                     }
                 }
-                else if (workregion == "AGL")
-                {
-                    netpay2_finalaftrded = netpay2;
-                    netpay1final = netpay1 - ttldeductions;
-                }
-                else if (workregion == "JSR")
+                else if (workregion == "AGL" || workregion == "JSR" || workregion == "NINL" || workregion == "RSP")
                 {
                     netpay2_finalaftrded = netpay2;
                     netpay1final = netpay1 - ttldeductions;

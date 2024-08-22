@@ -4,19 +4,6 @@
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="right_col" role="main">
-        <%--<div class="">
-            <div class="page-title">
-                <div class="title_left">
-                    <h3>Employee Payroll Inputs</h3>
-                </div>
-            </div>
-
-            <div class="title_right">
-                <div class="col-md-5 col-sm-5 form-group row pull-right top_search"></div>
-            </div>
-        </div>--%>
-
-        <%-- <div class="clearfix"></div>--%>
 
         <div class="row">
             <div class="col-md-12" id="Supvkpirow" runat="server" visible="true">
