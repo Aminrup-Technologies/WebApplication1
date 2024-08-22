@@ -22,6 +22,24 @@ namespace atsweb {
         protected global::System.Web.UI.WebControls.ContentPlaceHolder head;
         
         /// <summary>
+        /// top_row_bar control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl top_row_bar;
+        
+        /// <summary>
+        /// top_row_cont control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl top_row_cont;
+        
+        /// <summary>
         /// top_row_header control.
         /// </summary>
         /// <remarks>

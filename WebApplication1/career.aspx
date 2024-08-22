@@ -2,6 +2,38 @@
 
 <%@ Import Namespace="atsweb" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+    <style type="text/css">
+        .panel-heading a {
+            font-size: 12px;
+            font-weight: bold;
+            text-decoration: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-heading a .badge {
+            font-size: 10px;
+            background-color: #007bff;
+            color: #fff;
+            padding: 3px 5px;
+        }
+
+        .panel-body p {
+            margin: 3px 0;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+
+    </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <section class="page-title">
@@ -11,7 +43,7 @@
                     <h3>&nbsp;</h3>
                     <ol class="breadcrumb">
                         <li><a href="home.aspx">Home</a></li>
-                        <li>CAREER</li>
+                        <li>Career</li>
                     </ol>
                 </div>
             </div>
@@ -49,7 +81,7 @@
                                                 <p><strong>Min Qualification:</strong> <%# Eval("MinQualification") %></p>
                                                 <p><strong>Min Experience:</strong> <%# Eval("MinExperience") %></p>
                                                 <p id="p_salary" runat="server" visible="false"><strong>Salary:</strong> <%# Eval("Salary") %></p>
-                                                <asp:Button ID="btn_apply" runat="server" CssClass="btn btn-sm btn-primary" Text="Apply Now" />
+                                                <asp:Button ID="btnApplyNow" runat="server" Text="Apply Now" OnClick="btnApplyNow_Click" CommandArgument='<%# Eval("JobID") %>' CssClass="btn btn-primary" />
                                             </div>
                                         </div>
                                     </div>

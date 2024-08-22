@@ -243,6 +243,118 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="About.aspx" />
+    <Content Include="apply.aspx" />
+    <Content Include="assets1\css\animate.css\css\animate.css" />
+    <Content Include="assets1\css\bootstrap\css\bootstrap.min.css" />
+    <Content Include="assets1\css\jquery.mCustomScrollbar.css" />
+    <Content Include="assets1\css\morris.js\css\morris.css" />
+    <Content Include="assets1\css\style.css" />
+    <Content Include="assets1\datatables\css\dataTables.bootstrap4.min.css" />
+    <Content Include="assets1\datatables\css\icon-font.min.css" />
+    <Content Include="assets1\datatables\css\jquery.dataTables.min.css" />
+    <Content Include="assets1\datatables\css\responsive.bootstrap4.min.css" />
+    <Content Include="assets1\datatables\css\responsive.dataTables.min.css" />
+    <Content Include="assets1\datatables\images\sort_asc.png" />
+    <Content Include="assets1\datatables\images\sort_asc_disabled.png" />
+    <Content Include="assets1\datatables\images\sort_both.png" />
+    <Content Include="assets1\datatables\images\sort_desc.png" />
+    <Content Include="assets1\datatables\images\sort_desc_disabled.png" />
+    <Content Include="assets1\datatables\js\buttons.bootstrap4.min.js" />
+    <Content Include="assets1\datatables\js\buttons.flash.min.js" />
+    <Content Include="assets1\datatables\js\buttons.html5.min.js" />
+    <Content Include="assets1\datatables\js\buttons.print.min.js" />
+    <Content Include="assets1\datatables\js\datatable-setting.js" />
+    <Content Include="assets1\datatables\js\dataTables.bootstrap4.min.js" />
+    <Content Include="assets1\datatables\js\dataTables.buttons.min.js" />
+    <Content Include="assets1\datatables\js\dataTables.responsive.min.js" />
+    <Content Include="assets1\datatables\js\jquery.dataTables.min.js" />
+    <Content Include="assets1\datatables\js\jszip.min.js" />
+    <Content Include="assets1\datatables\js\pdfmake.min.js" />
+    <Content Include="assets1\datatables\js\responsive.bootstrap4.min.js" />
+    <Content Include="assets1\datatables\js\vfs_fonts.js" />
+    <Content Include="assets1\icon\icofont\css\icofont.css" />
+    <Content Include="assets1\icon\icofont\fonts\icofont.svg" />
+    <Content Include="assets1\icon\themify-icons\fonts\themify.svg" />
+    <Content Include="assets1\icon\themify-icons\themify-icons.css" />
+    <Content Include="assets1\images\auth\logo-dark.png" />
+    <Content Include="assets1\images\auth\Logo-small-bottom.png" />
+    <Content Include="assets1\images\auth\logo.png" />
+    <Content Include="assets1\images\avatar-1.jpg" />
+    <Content Include="assets1\images\avatar-2.jpg" />
+    <Content Include="assets1\images\avatar-3.jpg" />
+    <Content Include="assets1\images\avatar-4.jpg" />
+    <Content Include="assets1\images\bg.jpg" />
+    <Content Include="assets1\images\favicon.ico" />
+    <Content Include="assets1\images\flags\ENGLISH.jpg" />
+    <Content Include="assets1\images\flags\FRANCE.jpg" />
+    <Content Include="assets1\images\flags\PORTO.jpg" />
+    <Content Include="assets1\images\flags\SPAIN.jpg" />
+    <Content Include="assets1\images\IMG.jpg" />
+    <Content Include="assets1\images\Login.jpg" />
+    <Content Include="assets1\images\logo.png" />
+    <Content Include="assets1\images\mega-menu\01.jpg" />
+    <Content Include="assets1\images\mega-menu\02.jpg" />
+    <Content Include="assets1\images\mega-menu\03.jpg" />
+    <Content Include="assets1\images\mega-menu\04.jpg" />
+    <Content Include="assets1\images\mega-menu\05.jpg" />
+    <Content Include="assets1\images\mega-menu\06.jpg" />
+    <Content Include="assets1\images\pattern2.jpg" />
+    <Content Include="assets1\images\user.png" />
+    <Content Include="assets1\js\bootstrap-growl.min.js" />
+    <Content Include="assets1\js\bootstrap\js\bootstrap.min.js" />
+    <Content Include="assets1\js\classie.js" />
+    <Content Include="assets1\js\classie\classie.js" />
+    <Content Include="assets1\js\common-pages.js" />
+    <Content Include="assets1\js\demo-12.js" />
+    <Content Include="assets1\js\jquery-slimscroll\jquery.slimscroll.js" />
+    <Content Include="assets1\js\jquery-ui\jquery-ui.min.js" />
+    <Content Include="assets1\js\jquery.mCustomScrollbar.concat.min.js" />
+    <Content Include="assets1\js\jquery.mousewheel.min.js" />
+    <Content Include="assets1\js\jquery\jquery.min.js" />
+    <Content Include="assets1\js\modernizr\css-scrollbars.js" />
+    <Content Include="assets1\js\modernizr\modernizr.js" />
+    <Content Include="assets1\js\morris.js\morris.js" />
+    <Content Include="assets1\js\pcoded.min.js" />
+    <Content Include="assets1\js\popper.js\popper.min.js" />
+    <Content Include="assets1\js\raphael\raphael.min.js" />
+    <Content Include="assets1\js\script.js" />
+    <Content Include="assets1\js\script.min.js" />
+    <Content Include="assets1\js\SmoothScroll.js" />
+    <Content Include="assets1\pages\accordion\accordion.js" />
+    <Content Include="assets1\pages\accordion\accordion.min.js" />
+    <Content Include="assets1\pages\chart\morris\morris-custom-chart.js" />
+    <Content Include="assets1\pages\dashboard\amchart\css\amchart.css" />
+    <Content Include="assets1\pages\dashboard\amchart\css\export.css" />
+    <Content Include="assets1\pages\dashboard\amchart\js\amcharts.js" />
+    <Content Include="assets1\pages\dashboard\amchart\js\custom-amchart.js" />
+    <Content Include="assets1\pages\dashboard\amchart\js\export.min.js" />
+    <Content Include="assets1\pages\dashboard\amchart\js\images\dragIconRoundBig.svg" />
+    <Content Include="assets1\pages\dashboard\amchart\js\images\dragIconRoundBigH.svg" />
+    <Content Include="assets1\pages\dashboard\amchart\js\light.js" />
+    <Content Include="assets1\pages\dashboard\amchart\js\serial.js" />
+    <Content Include="assets1\pages\dashboard\custom-dashboard.js" />
+    <Content Include="assets1\pages\google-maps\gmaps.min.js" />
+    <Content Include="assets1\pages\google-maps\jquery.gmaps.js" />
+    <Content Include="assets1\pages\icon-modal.js" />
+    <Content Include="assets1\pages\notification\notification.css" />
+    <Content Include="assets1\pages\notification\notification.js" />
+    <Content Include="assets1\pages\todo\todo.js" />
+    <Content Include="assets1\pages\widget\amchart\amcharts.js" />
+    <Content Include="assets1\pages\widget\amchart\amcharts.min.js" />
+    <Content Include="assets1\pages\widget\amchart\ammap.js" />
+    <Content Include="assets1\pages\widget\amchart\ammap.min.js" />
+    <Content Include="assets1\pages\widget\amchart\continentsLow.js" />
+    <Content Include="assets1\pages\widget\amchart\continentsLow.min.js" />
+    <Content Include="assets1\pages\widget\amchart\gauge.js" />
+    <Content Include="assets1\pages\widget\amchart\gauge.min.js" />
+    <Content Include="assets1\pages\widget\amchart\light.js" />
+    <Content Include="assets1\pages\widget\amchart\light.min.js" />
+    <Content Include="assets1\pages\widget\amchart\pie.js" />
+    <Content Include="assets1\pages\widget\amchart\pie.min.js" />
+    <Content Include="assets1\pages\widget\amchart\serial.js" />
+    <Content Include="assets1\pages\widget\amchart\serial.min.js" />
+    <Content Include="assets1\pages\widget\amchart\worldLow.js" />
+    <Content Include="assets1\pages\widget\amchart\worldLow.min.js" />
     <Content Include="assets\css\animate.css" />
     <Content Include="assets\css\bootstrap-touchspin.css" />
     <Content Include="assets\css\bootstrap.min.css" />
@@ -446,7 +558,10 @@
     <Content Include="bussiness\production\jobs_approverdash.aspx" />
     <Content Include="bussiness\production\job_create_summary.aspx" />
     <Content Include="bussiness\production\js\jquery-1.9.1.js" />
+    <Content Include="bussiness\production\magician.aspx" />
     <Content Include="bussiness\production\manage_profile.aspx" />
+    <Content Include="bussiness\production\manage_rolls.aspx" />
+    <Content Include="bussiness\production\manage_rollsaccess.aspx" />
     <Content Include="bussiness\production\pyrl_approvedeductions.aspx" />
     <Content Include="bussiness\production\pyrl_deductionlist.aspx" />
     <Content Include="bussiness\production\pyrl_deductions.aspx" />
@@ -535,6 +650,21 @@
     <Content Include="Director%27s_Desk.aspx" />
     <Content Include="home.aspx" />
     <Content Include="hse.aspx" />
+    <Content Include="Images\Category\209c725a-9e70-4d52-b639-329c51977eac.png" />
+    <Content Include="Images\Category\356c72ec-f714-4ee1-96eb-1d8a3fe246b6.jpeg" />
+    <Content Include="Images\Category\46eac499-2aa9-4a6b-a307-b4b5a3e4d846.jpeg" />
+    <Content Include="Images\Category\a4ca4a90-adec-4226-b02a-e44999fdccb2.png" />
+    <Content Include="Images\Category\ad9c70d3-512f-46b1-8522-30316b078990.jpeg" />
+    <Content Include="Images\Category\c1c68370-3634-4329-aeee-6e18624527c1.jpg" />
+    <Content Include="Images\Login.jpg" />
+    <Content Include="Images\Product\29cefc2f-2033-48ab-9d8e-c70db08ddae9.jpeg" />
+    <Content Include="Images\Product\3cf999f0-1764-4eaf-908e-ec6fb40614d4.png" />
+    <Content Include="Images\Product\50f2ac59-c336-427b-b416-1b59a19efdb3.jpeg" />
+    <Content Include="Images\Product\8662a321-4f76-4815-8aeb-d5fe44201a08.jpg" />
+    <Content Include="Images\Product\9031f5c2-482a-43e8-b20d-82666bfe2970.jpeg" />
+    <Content Include="Images\Product\a793a4f9-c0d8-4b7b-a7b7-3cf9ffe5a1b3.jpeg" />
+    <Content Include="Images\Product\e6af9b89-e2dd-45d8-b4bc-67a5313eac73.jpeg" />
+    <Content Include="Login.aspx" />
     <Content Include="packages.config">
       <SubType>Designer</SubType>
     </Content>
@@ -582,11 +712,26 @@
     <Content Include="bussiness\production\aminrup\aminrup.Master" />
     <Content Include="bussiness\production\templates\DeductionUploader.xlsx" />
     <Content Include="atsSite.Master" />
+    <Content Include="assets1\datatables\fonts\ionicons.ttf" />
+    <Content Include="assets1\datatables\fonts\ionicons.woff" />
+    <Content Include="assets1\datatables\fonts\themify.ttf" />
+    <Content Include="assets1\datatables\fonts\themify.woff" />
+    <Content Include="assets1\icon\icofont\fonts\icofont.eot" />
+    <Content Include="assets1\icon\icofont\fonts\icofont.ttf" />
+    <Content Include="assets1\icon\icofont\fonts\icofont.woff" />
+    <Content Include="assets1\icon\themify-icons\fonts\themify.eot" />
+    <Content Include="assets1\icon\themify-icons\fonts\themify.ttf" />
+    <Content Include="assets1\icon\themify-icons\fonts\themify.woff" />
     <None Include="Properties\PublishProfiles\deploy.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Content Include="TemplateFiles\css\style.css.map" />
+    <Content Include="TemplateFiles\css\style.scss" />
+    <Content Include="TemplateFiles\fonts\fontawesome-webfont.ttf" />
+    <Content Include="TemplateFiles\fonts\fontawesome-webfont.woff" />
+    <Content Include="TemplateFiles\fonts\fontawesome-webfont.woff2" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -634,6 +779,35 @@
     <Content Include="bussiness\src\js\helpers\smartresize.js" />
     <Content Include="index.html" />
     <Content Include="service.aspx" />
+    <Content Include="TemplateFiles\css\bootstrap.css" />
+    <Content Include="TemplateFiles\css\font-awesome.min.css" />
+    <Content Include="TemplateFiles\css\responsive.css" />
+    <Content Include="TemplateFiles\css\style.css" />
+    <Content Include="TemplateFiles\images\about-img.png" />
+    <Content Include="TemplateFiles\images\aboutimg.png" />
+    <Content Include="TemplateFiles\images\client1.jpg" />
+    <Content Include="TemplateFiles\images\client2.jpg" />
+    <Content Include="TemplateFiles\images\f1.png" />
+    <Content Include="TemplateFiles\images\f2.png" />
+    <Content Include="TemplateFiles\images\f3.png" />
+    <Content Include="TemplateFiles\images\f4.png" />
+    <Content Include="TemplateFiles\images\f5.png" />
+    <Content Include="TemplateFiles\images\f6.png" />
+    <Content Include="TemplateFiles\images\f7.png" />
+    <Content Include="TemplateFiles\images\f8.png" />
+    <Content Include="TemplateFiles\images\f9.png" />
+    <Content Include="TemplateFiles\images\favicon.png" />
+    <Content Include="TemplateFiles\images\fruit salad.jpg" />
+    <Content Include="TemplateFiles\images\hero-bg.jpg" />
+    <Content Include="TemplateFiles\images\herobg.jpg" />
+    <Content Include="TemplateFiles\images\indian-food.jpg" />
+    <Content Include="TemplateFiles\images\o1.jpg" />
+    <Content Include="TemplateFiles\images\o2.jpg" />
+    <Content Include="TemplateFiles\images\user2.jpeg" />
+    <Content Include="TemplateFiles\images\vishal.jpeg" />
+    <Content Include="TemplateFiles\js\bootstrap.js" />
+    <Content Include="TemplateFiles\js\custom.js" />
+    <Content Include="TemplateFiles\js\jquery-3.4.1.min.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -646,6 +820,14 @@
     <Compile Include="About.aspx.designer.cs">
       <DependentUpon>About.aspx</DependentUpon>
     </Compile>
+    <Compile Include="apply.aspx.cs">
+      <DependentUpon>apply.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="apply.aspx.designer.cs">
+      <DependentUpon>apply.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ApplyFormHandler.cs" />
     <Compile Include="atsSite.Master.cs">
       <DependentUpon>atsSite.Master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -894,12 +1076,33 @@
       <DependentUpon>job_create_summary.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\LoginUserData.cs" />
+    <Compile Include="bussiness\production\magician.aspx.cs">
+      <DependentUpon>magician.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\magician.aspx.designer.cs">
+      <DependentUpon>magician.aspx</DependentUpon>
+    </Compile>
     <Compile Include="bussiness\production\manage_profile.aspx.cs">
       <DependentUpon>manage_profile.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="bussiness\production\manage_profile.aspx.designer.cs">
       <DependentUpon>manage_profile.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\manage_rolls.aspx.cs">
+      <DependentUpon>manage_rolls.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\manage_rolls.aspx.designer.cs">
+      <DependentUpon>manage_rolls.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\manage_rollsaccess.aspx.cs">
+      <DependentUpon>manage_rollsaccess.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\manage_rollsaccess.aspx.designer.cs">
+      <DependentUpon>manage_rollsaccess.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\NotificationHub.cs" />
     <Compile Include="bussiness\production\pyrl_approvedeductions.aspx.cs">
@@ -1494,6 +1697,7 @@
     <Compile Include="clients.aspx.designer.cs">
       <DependentUpon>clients.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Conection.cs" />
     <Compile Include="contact_us.aspx.cs">
       <DependentUpon>contact_us.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -1528,6 +1732,13 @@
     </Compile>
     <Compile Include="hse.aspx.designer.cs">
       <DependentUpon>hse.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Login.aspx.cs">
+      <DependentUpon>Login.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Login.aspx.designer.cs">
+      <DependentUpon>Login.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -1578,7 +1789,10 @@
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft Chart Controls\Assemblies\System.Web.DataVisualization.dll" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Images\Application\" />
+    <Folder Include="Images\User\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

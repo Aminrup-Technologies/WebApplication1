@@ -77,9 +77,9 @@
 
         <!-- Start header -->
         <header id="header" class="site-header header-style-1">
-            <div class="topbar">
-                <div class="container">
-                    <div class="row" id="top_row_header" runat="server" visible="true">
+            <div class="topbar" id="top_row_bar" runat="server" visible="false">
+                <div class="container" id="top_row_cont" runat="server" visible="false">
+                    <div class="row" id="top_row_header" runat="server" visible="false">
                         <div class="col col-md-10 col-sm-9">
                             <div class="contact-info" id="company_contact" runat="server" visible="false">
                                 <ul>
@@ -121,15 +121,15 @@
                             <li class="menu-item-has-children">
                                 <a href="home.aspx">Home</a>
                             </li>
-                            
+
                             <li class="menu-item-has-children">
-                                <a href="About.aspx">About Us</a>
+                                <a href="#">Company Overview</a>
                                 <ul class="sub-menu">
-                                    <li><a href="About.aspx">Company Overview</a></li>
+                                    <li><a href="About.aspx">About Us</a></li>
                                     <li><a href="Director's_Desk.aspx">Director's Desk</a></li>
-                                    <li><a href="Awards_Associations.aspx">Awards and Associations</a></li>
                                     <li><a href="hse.aspx">HSE</a></li>
                                     <li><a href="csr.aspx">CSR Initiatives</a></li>
+                                    <li><a href="Awards_Associations.aspx">Awards and Associations</a></li>
                                 </ul>
                             </li>
 
@@ -142,17 +142,24 @@
                             </li>
 
                             <li class="menu-item-has-children">
-                                <a href="career.aspx">CAREER</a>
+                                <a href="#">Career</a>
+                                <ul class="sub-menu">
+                                    <li><a href="career.aspx">Career</a></li>
+                                </ul>
                             </li>
+
                             <li class="menu-item-has-children">
-                                <a href="contact_us.aspx">Contact</a>
+                                <a href="#">Contact</a>
+                                <ul class="sub-menu">
+                                    <li><a href="contact_us.aspx">Contact Us</a></li>
+                                </ul>
                             </li>
                         </ul>
                     </div>
                     <!-- end of nav-collapse -->
                     <div class="cart-search-contact">
                         <div class="get-quote">
-                            <a href="#" class="theme-btn">ERP Login</a>
+                            <a href="bussiness/production/login.aspx" class="theme-btn">ERP Login</a>
                         </div>
                     </div>
                 </div>
@@ -210,11 +217,9 @@
                                     <h3>Our Services</h3>
                                 </div>
                                 <ul>
-                                    <li><a href="#">Petroleum and Gas</a></li>
-                                    <li><a href="#">Pharmaceutical Research</a></li>
-                                    <li><a href="#">Agricultural Processing</a></li>
-                                    <li><a href="#">Oil And Lubricant</a></li>
-                                    <li><a href="#">Material Engineering</a></li>
+                                    <li><a href="#">CONVEYOR LINE BELT REPLACEMENT</a></li>
+                                    <li><a href="#">GLOBAL FABRICATION JOB</a></li>
+                                    <li><a href="#">SHUTDOWN-BREAKDOWN JOB</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -227,7 +232,6 @@
                                     <li>House no, 2005  dreem city insprine urrine London.</li>
                                     <li><span>Email: </span>regulation@info.com</li>
                                     <li><span>Phone: </span>325456.1245</li>
-                                    <li><span>Fax: </span>6548651231</li>
                                 </ul>
                             </div>
                         </div>

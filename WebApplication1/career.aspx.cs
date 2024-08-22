@@ -13,9 +13,7 @@ namespace atsweb
         {
             if (!IsPostBack)
             {
-                //getCategories();
-                //getProducts();
-                BindJobOpeningsData();
+                BindJobOpeningsDatafromDB();
 
             }
         }
@@ -41,7 +39,7 @@ namespace atsweb
         }
 
 
-        private void BindJobOpeningsData()
+        private void BindJobOpeningsDataOld()
         {
             DataTable dt = new DataTable();
             dt.Columns.Add("PositionName", typeof(string));
@@ -59,6 +57,15 @@ namespace atsweb
                          "Bachelor''s Degree", "5 years");
             rptJobOpenings.DataSource = dt;
             rptJobOpenings.DataBind();
+        }
+
+        protected void btnApplyNow_Click(object sender, EventArgs e)
+        {
+            Button btnApplyNow = (Button)sender;
+            int jobId = int.Parse(btnApplyNow.CommandArgument);
+
+            // Redirect to the application page with the job ID as a query parameter
+            Response.Redirect($"apply.aspx?jobId={jobId}");
         }
     }
 }

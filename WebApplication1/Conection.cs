@@ -16,7 +16,7 @@ namespace atsweb
     {
         public static string GetConnectionString()
         {
-            return ConfigurationManager.ConnectionStrings["cs"].ConnectionString;
+            return ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
         }
 
     }

@@ -13,20 +13,26 @@ namespace atsweb
 {
     public partial class Awards_Associations : System.Web.UI.Page
     {
-        string DbConnection = ConfigurationManager.ConnectionStrings["atsDBConnectionString"].ConnectionString;
+        //string DbConnection = ConfigurationManager.ConnectionStrings["atsDBConnectionString"].ConnectionString;
         
         protected void Page_Load(object sender, EventArgs e)
         {
-            SqlConnection conn = new SqlConnection(DbConnection);
-            conn.Open();
-            string SelectQuery = "SELECT * FROM Projects";
-            SqlCommand SelectQueryCmd = new SqlCommand(SelectQuery, conn);
-            SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(SelectQueryCmd);
-            DataTable dt = new DataTable();
-            sqlDataAdapter.Fill(dt);
-            rptProjects.DataSource = dt;
-            rptProjects.DataBind();
             BindProjects();
+        }
+
+
+        private void Loader()
+        {
+            //SqlConnection conn = new SqlConnection(DbConnection);
+            //conn.Open();
+            //string SelectQuery = "SELECT * FROM Projects";
+            //SqlCommand SelectQueryCmd = new SqlCommand(SelectQuery, conn);
+            //SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(SelectQueryCmd);
+            //DataTable dt = new DataTable();
+            //sqlDataAdapter.Fill(dt);
+            //rptProjects.DataSource = dt;
+            //rptProjects.DataBind();
+            //BindProjects();
         }
 
         public class Project

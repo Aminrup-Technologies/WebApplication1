@@ -1,7 +1,6 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/atsSite.Master" AutoEventWireup="true" CodeBehind="Awards_Associations.aspx.cs" Inherits="atsweb.Awards_Associations" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <!-- start page-title -->
@@ -12,7 +11,7 @@
                     <h3>&nbsp;</h3>
                     <ol class="breadcrumb">
                         <li><a href="home.aspx">Home</a></li>
-                        <li>About</li>
+                        <li>Awards & Associations</li>
                     </ol>
                 </div>
             </div>
@@ -20,8 +19,8 @@
         </div>
         <!-- end container -->
     </section>
-            <!-- start projects-pg-section -->
-     <section class="projects-pg-section section-padding">
+    <!-- start projects-pg-section -->
+    <section class="projects-pg-section section-padding">
         <div class="container">
             <div class="row">
                 <div class="col col-xs-12">
@@ -58,7 +57,9 @@
                         </asp:Repeater>
                     </div>
                 </div>
-            </div> <!-- end container -->
-        </section>--%>
+            </div>
+            <!-- end container -->
+        </div>
+    </section>
     <!-- end projects-pg-section -->
 </asp:Content>

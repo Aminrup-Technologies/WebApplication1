@@ -7,13 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace atsweb
-{
-
-
-    public partial class apply
-    {
-
+namespace atsweb {
+    
+    
+    public partial class apply {
+        
         /// <summary>
         /// lblMsg control.
         /// </summary>
@@ -22,7 +20,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblMsg;
-
+        
         /// <summary>
         /// rfvName control.
         /// </summary>
@@ -31,7 +29,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvName;
-
+        
         /// <summary>
         /// revName control.
         /// </summary>
@@ -40,7 +38,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RegularExpressionValidator revName;
-
+        
         /// <summary>
         /// txtName control.
         /// </summary>
@@ -49,7 +47,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtName;
-
+        
         /// <summary>
         /// rfvEmail control.
         /// </summary>
@@ -58,7 +56,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvEmail;
-
+        
         /// <summary>
         /// txtEmail control.
         /// </summary>
@@ -67,7 +65,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtEmail;
-
+        
         /// <summary>
         /// rfvMobile control.
         /// </summary>
@@ -76,7 +74,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvMobile;
-
+        
         /// <summary>
         /// revMobile control.
         /// </summary>
@@ -85,7 +83,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RegularExpressionValidator revMobile;
-
+        
         /// <summary>
         /// txtMobile control.
         /// </summary>
@@ -94,7 +92,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtMobile;
-
+        
         /// <summary>
         /// rfvAddress control.
         /// </summary>
@@ -103,7 +101,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvAddress;
-
+        
         /// <summary>
         /// txtAddress control.
         /// </summary>
@@ -112,7 +110,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtAddress;
-
+        
         /// <summary>
         /// rfvPostCode control.
         /// </summary>
@@ -121,7 +119,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvPostCode;
-
+        
         /// <summary>
         /// revPostCode control.
         /// </summary>
@@ -130,7 +128,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RegularExpressionValidator revPostCode;
-
+        
         /// <summary>
         /// txtPostCode control.
         /// </summary>
@@ -139,7 +137,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtPostCode;
-
+        
         /// <summary>
         /// fuUserImage control.
         /// </summary>
@@ -148,7 +146,7 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.FileUpload fuUserImage;
-
+        
         /// <summary>
         /// Button1 control.
         /// </summary>
@@ -157,14 +155,14 @@ namespace atsweb
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button Button1;
-
+        
         /// <summary>
-        /// imgUser control.
+        /// ButtonBack control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Image imgUser;
+        protected global::System.Web.UI.WebControls.Button ButtonBack;
     }
 }
