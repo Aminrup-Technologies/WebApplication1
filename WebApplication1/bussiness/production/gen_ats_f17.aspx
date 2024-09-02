@@ -145,7 +145,7 @@
                                 <ItemStyle CssClass="text text-center" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="W SL" Visible="true">
+                            <asp:TemplateField HeaderText="W SL" Visible="true" HeaderStyle-Width="3%">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_WorkmanSL" runat="server" Text='<%# Bind("WorkmanSL") %>' />
                                 </ItemTemplate>
@@ -159,14 +159,14 @@
                                 <ItemStyle CssClass="text text-center" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Employee Name" Visible="true" HeaderStyle-Width="25%">
+                            <asp:TemplateField HeaderText="Employee Name" Visible="true" HeaderStyle-Width="15%">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_FullName" runat="server" Text='<%# Bind("FullName") %>' />
                                 </ItemTemplate>
                                 <ItemStyle CssClass="text text-left" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="SKill Category" Visible="true">
+                            <asp:TemplateField HeaderText="SKill Category" Visible="true" HeaderStyle-Width="10%">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_SkillCategory" runat="server" Text='<%# Bind("SkillCategory") %>' />
                                 </ItemTemplate>
@@ -403,7 +403,7 @@
                                 <ItemStyle CssClass="grid" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="SPCL Pay" HeaderStyle-Width="2%" Visible="false">
+                            <asp:TemplateField HeaderText="SPCL Pay" HeaderStyle-Width="2%" Visible="true">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_SPCLPay" runat="server"></asp:Label>
                                 </ItemTemplate>
@@ -427,7 +427,7 @@
                                 <ItemStyle CssClass="grid" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Actual Gross" HeaderStyle-Width="2%">
+                            <asp:TemplateField HeaderText="Actual Gross" HeaderStyle-Width="3%">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_actualgross" runat="server"></asp:Label>
                                 </ItemTemplate>
@@ -435,7 +435,7 @@
                                 <ItemStyle CssClass="grid" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="ESIC Gross" HeaderStyle-Width="2%">
+                            <asp:TemplateField HeaderText="ESIC Gross" HeaderStyle-Width="3%">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_grossamount" runat="server"></asp:Label>
                                 </ItemTemplate>
@@ -443,7 +443,7 @@
                                 <ItemStyle CssClass="grid" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="PF Pay" HeaderStyle-Width="2%">
+                            <asp:TemplateField HeaderText="PF Pay" HeaderStyle-Width="3%">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_PFPay" runat="server"></asp:Label>
                                 </ItemTemplate>
@@ -451,7 +451,7 @@
                                 <ItemStyle CssClass="grid" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="ESIC Pay" HeaderStyle-Width="2%">
+                            <asp:TemplateField HeaderText="ESIC Pay" HeaderStyle-Width="3%">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_esicpay" runat="server"></asp:Label>
                                 </ItemTemplate>
@@ -459,7 +459,7 @@
                                 <ItemStyle CssClass="grid" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="NET Pay - 1" HeaderStyle-Width="2%">
+                            <asp:TemplateField HeaderText="NET Pay - 1" HeaderStyle-Width="3%">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_netpay1" runat="server"></asp:Label>
                                 </ItemTemplate>
@@ -467,7 +467,7 @@
                                 <ItemStyle CssClass="grid" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Total Ded" HeaderStyle-Width="2%">
+                            <asp:TemplateField HeaderText="Total Ded" HeaderStyle-Width="3%">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_ttlded" runat="server"></asp:Label>
                                 </ItemTemplate>
@@ -475,7 +475,7 @@
                                 <ItemStyle CssClass="grid" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Final Net Pay-1" HeaderStyle-Width="2%">
+                            <asp:TemplateField HeaderText="Final Net Pay-1" HeaderStyle-Width="3%">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_netpayfnl" runat="server"></asp:Label>
                                 </ItemTemplate>
@@ -483,7 +483,7 @@
                                 <ItemStyle CssClass="grid" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="NET Pay - 2" HeaderStyle-Width="2%">
+                            <asp:TemplateField HeaderText="NET Pay - 2" HeaderStyle-Width="3%">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_netpay2" runat="server"></asp:Label>
                                 </ItemTemplate>
