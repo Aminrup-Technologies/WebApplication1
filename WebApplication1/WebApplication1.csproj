@@ -242,9 +242,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="About.aspx" />
-    <Content Include="apply.aspx" />
-    <Content Include="Awards_Associations.aspx" />
     <Content Include="bussiness\.gitignore" />
     <Content Include="bussiness\production\add_expenses.aspx" />
     <Content Include="bussiness\production\add_expense_heads.aspx" />
@@ -385,14 +382,6 @@
     <Content Include="bussiness\production\work_region.aspx" />
     <Content Include="bussiness\production\work_states.aspx" />
     <Content Include="bussiness\production\vw_emp_paymentbankdetails.aspx" />
-    <Content Include="career.aspx" />
-    <Content Include="clients.aspx" />
-    <Content Include="contact_us.aspx" />
-    <Content Include="csr.aspx" />
-    <Content Include="Director%27s_Desk.aspx" />
-    <Content Include="home.aspx" />
-    <Content Include="hse.aspx" />
-    <Content Include="Login.aspx" />
     <Content Include="packages.config">
       <SubType>Designer</SubType>
     </Content>
@@ -439,17 +428,11 @@
     <Content Include="bussiness\production\webmaster.Master" />
     <Content Include="bussiness\production\aminrup\aminrup.Master" />
     <Content Include="bussiness\production\templates\DeductionUploader.xlsx" />
-    <Content Include="atsSite.Master" />
     <None Include="Properties\PublishProfiles\deploy.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Content Include="TemplateFiles\css\style.css.map" />
-    <Content Include="TemplateFiles\css\style.scss" />
-    <Content Include="TemplateFiles\fonts\fontawesome-webfont.ttf" />
-    <Content Include="TemplateFiles\fonts\fontawesome-webfont.woff" />
-    <Content Include="TemplateFiles\fonts\fontawesome-webfont.woff2" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -495,71 +478,11 @@
     <Content Include="bussiness\src\js\custom.js" />
     <Content Include="bussiness\src\js\examples.js" />
     <Content Include="bussiness\src\js\helpers\smartresize.js" />
-    <Content Include="index.html" />
-    <Content Include="service.aspx" />
-    <Content Include="TemplateFiles\css\bootstrap.css" />
-    <Content Include="TemplateFiles\css\font-awesome.min.css" />
-    <Content Include="TemplateFiles\css\responsive.css" />
-    <Content Include="TemplateFiles\css\style.css" />
-    <Content Include="TemplateFiles\images\about-img.png" />
-    <Content Include="TemplateFiles\images\aboutimg.png" />
-    <Content Include="TemplateFiles\images\client1.jpg" />
-    <Content Include="TemplateFiles\images\client2.jpg" />
-    <Content Include="TemplateFiles\images\f1.png" />
-    <Content Include="TemplateFiles\images\f2.png" />
-    <Content Include="TemplateFiles\images\f3.png" />
-    <Content Include="TemplateFiles\images\f4.png" />
-    <Content Include="TemplateFiles\images\f5.png" />
-    <Content Include="TemplateFiles\images\f6.png" />
-    <Content Include="TemplateFiles\images\f7.png" />
-    <Content Include="TemplateFiles\images\f8.png" />
-    <Content Include="TemplateFiles\images\f9.png" />
-    <Content Include="TemplateFiles\images\favicon.png" />
-    <Content Include="TemplateFiles\images\fruit salad.jpg" />
-    <Content Include="TemplateFiles\images\hero-bg.jpg" />
-    <Content Include="TemplateFiles\images\herobg.jpg" />
-    <Content Include="TemplateFiles\images\indian-food.jpg" />
-    <Content Include="TemplateFiles\images\o1.jpg" />
-    <Content Include="TemplateFiles\images\o2.jpg" />
-    <Content Include="TemplateFiles\images\user2.jpeg" />
-    <Content Include="TemplateFiles\images\vishal.jpeg" />
-    <Content Include="TemplateFiles\js\bootstrap.js" />
-    <Content Include="TemplateFiles\js\custom.js" />
-    <Content Include="TemplateFiles\js\jquery-3.4.1.min.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="About.aspx.cs">
-      <DependentUpon>About.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="About.aspx.designer.cs">
-      <DependentUpon>About.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="apply.aspx.cs">
-      <DependentUpon>apply.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="apply.aspx.designer.cs">
-      <DependentUpon>apply.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="ApplyFormHandler.cs" />
-    <Compile Include="atsSite.Master.cs">
-      <DependentUpon>atsSite.Master</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="atsSite.Master.designer.cs">
-      <DependentUpon>atsSite.Master</DependentUpon>
-    </Compile>
-    <Compile Include="Awards_Associations.aspx.cs">
-      <DependentUpon>Awards_Associations.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Awards_Associations.aspx.designer.cs">
-      <DependentUpon>Awards_Associations.aspx</DependentUpon>
-    </Compile>
     <Compile Include="bussiness\production\add_expenses.aspx.cs">
       <DependentUpon>add_expenses.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -1401,75 +1324,11 @@
     <Compile Include="bussiness\production\vw_emp_paymentbankdetails.aspx.designer.cs">
       <DependentUpon>vw_emp_paymentbankdetails.aspx</DependentUpon>
     </Compile>
-    <Compile Include="career.aspx.cs">
-      <DependentUpon>career.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="career.aspx.designer.cs">
-      <DependentUpon>career.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="clients.aspx.cs">
-      <DependentUpon>clients.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="clients.aspx.designer.cs">
-      <DependentUpon>clients.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Conection.cs" />
-    <Compile Include="contact_us.aspx.cs">
-      <DependentUpon>contact_us.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="contact_us.aspx.designer.cs">
-      <DependentUpon>contact_us.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="csr.aspx.cs">
-      <DependentUpon>csr.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="csr.aspx.designer.cs">
-      <DependentUpon>csr.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Director%27s_Desk.aspx.cs">
-      <DependentUpon>Director%27s_Desk.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Director%27s_Desk.aspx.designer.cs">
-      <DependentUpon>Director%27s_Desk.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="home.aspx.cs">
-      <DependentUpon>home.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="home.aspx.designer.cs">
-      <DependentUpon>home.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="hse.aspx.cs">
-      <DependentUpon>hse.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="hse.aspx.designer.cs">
-      <DependentUpon>hse.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Login.aspx.cs">
-      <DependentUpon>Login.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Login.aspx.designer.cs">
-      <DependentUpon>Login.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Include="service.aspx.cs">
-      <DependentUpon>service.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="service.aspx.designer.cs">
-      <DependentUpon>service.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

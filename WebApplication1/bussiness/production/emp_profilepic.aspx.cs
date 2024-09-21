@@ -32,8 +32,73 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-
+                    CheckAndDisplayEmpProfilePic();
                 }
+            }
+        }
+
+
+        public void CheckAndDisplayEmpProfilePic()
+        {
+            try
+            {
+                // Connect to the database
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = dbcl.Conn;
+
+                // SQL query to retrieve profile picture details
+                string CmdString = "SELECT PrfPicPath, PrfPicFile FROM tbl_Employee_Mustertable WHERE WorkmanSL = @WorkmanSL";
+                cmd.CommandText = CmdString;
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@WorkmanSL", Session["WORKMAN"].ToString());
+
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    string prfPicPath = reader["PrfPicPath"].ToString();
+                    string prfPicFile = reader["PrfPicFile"].ToString();
+
+                    // Check if both path and file are valid
+                    if (!string.IsNullOrEmpty(prfPicPath) && !string.IsNullOrEmpty(prfPicFile))
+                    {
+                        // Combine the path and file name
+                        string fullPath = Server.MapPath(prfPicPath);
+
+                        // Check if the physical file exists on the server
+                        if (File.Exists(fullPath))
+                        {
+                            // Set the image URL to the ImgDisplay control
+                            ImgDisplay.ImageUrl = prfPicPath;
+
+                            // Display the panel with the image
+                            PanelViewPhoto.Visible = true;
+                            Photouploaded.Visible = true;
+                        }
+                        else
+                        {
+                            // Hide the panel if the file doesn't exist
+                            PanelViewPhoto.Visible = false;
+                            Photouploaded.Visible = false;
+                        }
+                    }
+                    else
+                    {
+                        // Hide the panel if the path or file is missing in the database
+                        PanelViewPhoto.Visible = false;
+                        Photouploaded.Visible = false;
+                    }
+                }
+
+                reader.Close();
+                cmd.Dispose();
+                dbcl.Conn.Close();
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception (log or display error)
             }
         }
 
@@ -159,6 +224,8 @@ namespace WebApplication1.bussiness.production
                 cmd.ExecuteNonQuery();
                 cmd.Dispose();
                 dbcl.Conn.Close();
+
+                UploadMessage_Div.Visible = true;
             }
             catch (Exception ex)
             {
