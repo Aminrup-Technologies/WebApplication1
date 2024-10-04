@@ -5,21 +5,43 @@ using System.Data;
 
 namespace WebApplication1.bussiness.production
 {
-    public partial class manage_jobid : System.Web.UI.Page
+    public partial class add_manpower : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
         CountChecker CC = new CountChecker();
+
+        public static string state = string.Empty;
+        public static string region = string.Empty;
+        public static string comp = string.Empty;
+        public static string datalock = string.Empty;
 
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
                     Response.Redirect("~/login.aspx");
                 }
                 else
                 {
+
+                    if (Session["Changer"] != null)
+                    {
+                        string[] retrievedArray = (string[])Session["Changer"];
+                        region = retrievedArray[1].ToString();
+                        comp = retrievedArray[2].ToString();
+                        state = retrievedArray[0].ToString();
+                        datalock = retrievedArray[3].ToString();
+                        //Session["Changer"]= null;
+                    }
+                    else
+                    {
+                        region = Session["REGION"].ToString();
+                        comp = Session["COMPANY_CODE"].ToString();
+                        state = Session["STATE"].ToString();
+                        datalock = "0";
+                    }
 
                     string CmdString = "select BilingType, BillingCode from tlb_JOB_BillingType order by Id";
                     Bind_BillingType(CmdString);
@@ -30,11 +52,52 @@ namespace WebApplication1.bussiness.production
                     lbl_monthcode.Text = DateTime.Now.Month.ToString();
                     lbl_month.Text = now.ToString("MMMM");
 
-                    string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='"+ DateTime.Now.Year.ToString() + "' and MONTH(CreatedDate)='"+ DateTime.Now.Month.ToString() + "' order by CreatedDate desc";
+                    //string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + DateTime.Now.Year.ToString() + "' and MONTH(CreatedDate)='" + DateTime.Now.Month.ToString() + "' order by CreatedDate desc";
+                    //BindGrid(CmdString2);
+
+                    string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + DateTime.Now.Year.ToString() + "' and MONTH(CreatedDate)='" + DateTime.Now.Month.ToString() + "' and JOB_Region='"+ region + "' and JOB_Company='"+ comp + "' order by CreatedDate desc";
                     BindGrid(CmdString2);
+
+                    string CmdString3 = "select distinct JOB_Site, JOB_SiteCode  from tbl_jobs where  YEAR(CreatedDate)='" + DateTime.Now.Year.ToString() + "' and MONTH(CreatedDate)='" + DateTime.Now.Month.ToString() + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' order by JOB_Site";
+                    Bind_Worksites(CmdString3);
+
+                    string CmdString4 = "select distinct Creator_Name, Creator_Workman from tbl_jobs where YEAR(CreatedDate)='" + DateTime.Now.Year.ToString() + "' and MONTH(CreatedDate)='" + DateTime.Now.Month.ToString() + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "'  order by Creator_Name";
+                    Bind_Supervisor(CmdString4);
                 }
             }
         }
+
+
+
+        private void Bind_Worksites(string CmdString)
+        {
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
+            SqlCommand Cmd = new SqlCommand(CmdString, dbcl.Conn);
+            Cmd.CommandType = CommandType.Text;
+            DDL_Worksites.DataSource = Cmd.ExecuteReader();
+            DDL_Worksites.DataTextField = "JOB_Site";
+            DDL_Worksites.DataValueField = "JOB_SiteCode";
+            DDL_Worksites.DataBind();
+            DDL_Worksites.Items.Insert(0, "Please Select Option");
+            dbcl.DisconnectDb();
+        }
+
+        private void Bind_Supervisor(string CmdString)
+        {
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
+            SqlCommand Cmd = new SqlCommand(CmdString, dbcl.Conn);
+            Cmd.CommandType = CommandType.Text;
+            DDL_Supervisor.DataSource = Cmd.ExecuteReader();
+            DDL_Supervisor.DataTextField = "Creator_Name";
+            DDL_Supervisor.DataValueField = "Creator_Workman";
+            DDL_Supervisor.DataBind();
+            DDL_Supervisor.Items.Insert(0, "Please Select Option");
+            dbcl.DisconnectDb();
+        }
+
+
         private void Bind_BillingType(string CmdString)
         {
             dbcl.Sqlconnection();
@@ -62,6 +125,9 @@ namespace WebApplication1.bussiness.production
         }
         protected void JOBID_Delete(string id, string dbcode)
         {
+            Int32 year = Convert.ToInt32(lbl_year.Text.ToString());
+            Int32 month = Convert.ToInt32(lbl_monthcode.Text.ToString());
+
             try
             {
                 Delete_from_JOBTable(id, dbcode);
@@ -80,7 +146,7 @@ namespace WebApplication1.bussiness.production
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
 
-            string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_InchargeName='" + Session["USERNAME"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' order by CreatedDate desc";
+            string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + year + "' and MONTH(CreatedDate)='" + month + "'and JOB_Region='" + region + "' and JOB_Company='" + comp + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' order by CreatedDate desc";
             BindGrid(CmdString2);
             Response.Redirect(Request.Url.AbsoluteUri);
         }
@@ -251,20 +317,25 @@ namespace WebApplication1.bussiness.production
             }
             else if (e.CommandName == "View_Details")
             {
-                Response.Redirect("view_jobdetails.aspx?JOBID=" + jobid + "");
+                //Response.Redirect("view_jobdetails.aspx?JOBID=" + jobid + "");
+                string url = "view_jobdetails.aspx?JOBID=" + jobid;
+                ClientScript.RegisterStartupScript(this.GetType(), "OpenWindow", "window.open('" + url + "','_blank');", true);
             }
-            else if(e.CommandName == "Delete")
+            else if (e.CommandName == "Delete")
             {
                 JOBID_Delete(dbid, jobid);
             }
         }
         private void JOBID_Status_Swaper(string jobid, string dbid)
         {
+            Int32 year = Convert.ToInt32(lbl_year.Text.ToString());
+            Int32 month = Convert.ToInt32(lbl_monthcode.Text.ToString());
+
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             string statusdata = "";
             string statusdata1 = "";
-            string cmdstring = "select JOBID_Status from tbl_jobs where JOBID='" + jobid + "' and Id = '"+dbid+"'";
+            string cmdstring = "select JOBID_Status from tbl_jobs where JOBID='" + jobid + "' and Id = '" + dbid + "'";
             SqlCommand cmd = new SqlCommand(cmdstring, dbcl.Conn);
             SqlDataReader re = cmd.ExecuteReader();
             if (re.Read())
@@ -286,7 +357,7 @@ namespace WebApplication1.bussiness.production
             }
             dbcl.Conn.Close();
 
-            string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' order by CreatedDate desc";
+            string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + year + "' and MONTH(CreatedDate)='" + month + "'and JOB_Region='" + region + "' and JOB_Company='" + comp + "' order by CreatedDate desc";
             BindGrid(CmdString2);
         }
         protected void btn_prevmonth_Click(object sender, EventArgs e)
@@ -315,6 +386,12 @@ namespace WebApplication1.bussiness.production
                 Month = month.ToString();
             }
 
+            string CmdString3 = "select distinct JOB_Site, JOB_SiteCode  from tbl_jobs where  YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' order by JOB_Site";
+            Bind_Worksites(CmdString3);
+
+            string CmdString4 = "select distinct Creator_Name, Creator_Workman from tbl_jobs where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "'  order by Creator_Name";
+            Bind_Supervisor(CmdString4);
+
             GridBinder(Year, Month);
         }
         protected void btn_currentdata_Click(object sender, EventArgs e)
@@ -322,6 +399,12 @@ namespace WebApplication1.bussiness.production
 
             string Year = DateTime.Now.Year.ToString();
             string Month = DateTime.Now.Month.ToString();
+
+            string CmdString3 = "select distinct JOB_Site, JOB_SiteCode  from tbl_jobs where  YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' order by JOB_Site";
+            Bind_Worksites(CmdString3);
+
+            string CmdString4 = "select distinct Creator_Name, Creator_Workman from tbl_jobs where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "'  order by Creator_Name";
+            Bind_Supervisor(CmdString4);
 
             GridBinder(Year, Month);
         }
@@ -351,6 +434,12 @@ namespace WebApplication1.bussiness.production
                 Month = month.ToString();
             }
 
+            string CmdString3 = "select distinct JOB_Site, JOB_SiteCode  from tbl_jobs where  YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' order by JOB_Site";
+            Bind_Worksites(CmdString3);
+
+            string CmdString4 = "select distinct Creator_Name, Creator_Workman from tbl_jobs where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "'  order by Creator_Name";
+            Bind_Supervisor(CmdString4);
+
             GridBinder(Year, Month);
         }
         private void GridBinder(string Year, string Month)
@@ -363,114 +452,114 @@ namespace WebApplication1.bussiness.production
 
             if (DDL_JobStatus.SelectedIndex == 0 && DDL_BillingType.SelectedIndex == 0)
             {
-                string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' order by CreatedDate desc";
+                string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' order by CreatedDate desc";
                 BindGrid(CmdString2);
             }
             else if (DDL_JobStatus.SelectedIndex != 0 && DDL_BillingType.SelectedIndex == 0)
             {
                 if (DDL_JobStatus.SelectedValue == "0")
                 {
-                    string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' order by CreatedDate desc";
+                    string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "'and JOB_Region='" + region + "' and JOB_Company='" + comp + "' order by CreatedDate desc";
                     BindGrid(CmdString2);
                 }
                 else if (DDL_JobStatus.SelectedValue == "1")
                 {
-                    string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOBID_Status='Active' order by CreatedDate desc";
+                    string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' and JOBID_Status='Active' order by CreatedDate desc";
                     BindGrid(CmdString2);
                 }
                 else if (DDL_JobStatus.SelectedValue == "2")
                 {
-                    string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOBID_Status!='Active' order by CreatedDate desc";
+                    string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' and JOBID_Status!='Active' order by CreatedDate desc";
                     BindGrid(CmdString2);
                 }
                 else if (DDL_JobStatus.SelectedValue == "3")
                 {
-                    string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and FinalUpldStatus!='Yes' order by CreatedDate desc";
+                    string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' and FinalUpldStatus!='Yes' order by CreatedDate desc";
                     BindGrid(CmdString2);
                 }
                 else if (DDL_JobStatus.SelectedValue == "4")
                 {
-                    string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and FinalUpldStatus='Yes' order by CreatedDate desc";
+                    string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' and FinalUpldStatus='Yes' order by CreatedDate desc";
                     BindGrid(CmdString2);
                 }
                 else if (DDL_JobStatus.SelectedValue == "5")
                 {
-                    string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and Incharge_Approval='Pending' order by CreatedDate desc";
+                    string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' and Incharge_Approval='Pending' order by CreatedDate desc";
                     BindGrid(CmdString2);
                 }
                 else if (DDL_JobStatus.SelectedValue == "6")
                 {
-                    string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and Incharge_Approval='Approved' order by CreatedDate desc";
+                    string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' and Incharge_Approval='Approved' order by CreatedDate desc";
                     BindGrid(CmdString2);
                 }
                 else if (DDL_JobStatus.SelectedValue == "7")
                 {
-                    string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and Incharge_Approval='Returned' order by CreatedDate desc";
+                    string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' and Incharge_Approval='Returned' order by CreatedDate desc";
                     BindGrid(CmdString2);
                 }
                 else if (DDL_JobStatus.SelectedValue == "8")
                 {
-                    string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and Incharge_Approval='Rejected' order by CreatedDate desc";
+                    string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' and Incharge_Approval='Rejected' order by CreatedDate desc";
                     BindGrid(CmdString2);
                 }
             }
             else if (DDL_JobStatus.SelectedIndex == 0 && DDL_BillingType.SelectedIndex != 0)
             {
-                string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and BillingCode='"+DDL_BillingType.SelectedValue.ToString()+"' order by CreatedDate desc";
+                string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' order by CreatedDate desc";
                 BindGrid(CmdString2);
             }
             else if (DDL_JobStatus.SelectedIndex != 0 && DDL_BillingType.SelectedIndex != 0)
             {
                 if (DDL_JobStatus.SelectedValue == "0")
                 {
-                    string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' order by CreatedDate desc";
+                    string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' order by CreatedDate desc";
                     BindGrid(CmdString2);
                 }
                 else if (DDL_JobStatus.SelectedValue == "1")
                 {
-                    string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOBID_Status='Active' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' order by CreatedDate desc";
+                    string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOBID_Status='Active' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' order by CreatedDate desc";
                     BindGrid(CmdString2);
                 }
                 else if (DDL_JobStatus.SelectedValue == "2")
                 {
-                    string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOBID_Status!='Active' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' order by CreatedDate desc";
+                    string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOBID_Status!='Active' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' order by CreatedDate desc";
                     BindGrid(CmdString2);
                 }
                 else if (DDL_JobStatus.SelectedValue == "3")
                 {
-                    string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and FinalUpldStatus!='Yes' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' order by CreatedDate desc";
+                    string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and FinalUpldStatus!='Yes' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' order by CreatedDate desc";
                     BindGrid(CmdString2);
                 }
                 else if (DDL_JobStatus.SelectedValue == "4")
                 {
-                    string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and FinalUpldStatus='Yes' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' order by CreatedDate desc";
+                    string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and FinalUpldStatus='Yes' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' order by CreatedDate desc";
                     BindGrid(CmdString2);
                 }
                 else if (DDL_JobStatus.SelectedValue == "5")
                 {
-                    string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and Incharge_Approval='Pending' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' order by CreatedDate desc";
+                    string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and Incharge_Approval='Pending' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' order by CreatedDate desc";
                     BindGrid(CmdString2);
                 }
                 else if (DDL_JobStatus.SelectedValue == "6")
                 {
-                    string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and Incharge_Approval='Approved' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' order by CreatedDate desc";
+                    string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and Incharge_Approval='Approved' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' order by CreatedDate desc";
                     BindGrid(CmdString2);
                 }
                 else if (DDL_JobStatus.SelectedValue == "7")
                 {
-                    string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and Incharge_Approval='Returned' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' order by CreatedDate desc";
+                    string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and Incharge_Approval='Returned' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' order by CreatedDate desc";
                     BindGrid(CmdString2);
                 }
                 else if (DDL_JobStatus.SelectedValue == "8")
                 {
-                    string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and Incharge_Approval='Rejected' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' order by CreatedDate desc";
+                    string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and Incharge_Approval='Rejected' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' order by CreatedDate desc";
                     BindGrid(CmdString2);
                 }
             }
         }
         protected void btn_reset_Click(object sender, EventArgs e)
         {
-            string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + DateTime.Now.Year.ToString() + "' and MONTH(CreatedDate)='" + DateTime.Now.Month.ToString() + "' order by CreatedDate desc";
+            string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + DateTime.Now.Year.ToString() + "' and MONTH(CreatedDate)='" + DateTime.Now.Month.ToString() + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' order by CreatedDate desc";
             BindGrid(CmdString2);
         }
         protected void btn_submit_Click(object sender, EventArgs e)
@@ -478,6 +567,50 @@ namespace WebApplication1.bussiness.production
             string Year = lbl_year.Text.ToString();
             string Month = lbl_monthcode.Text.ToString();
             GridBinder(Year, Month);
+        }
+
+        protected void DDL_Worksites_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+            Int32 year = Convert.ToInt32(lbl_year.Text.ToString());
+            Int32 month = Convert.ToInt32(lbl_monthcode.Text.ToString());
+
+            string ddlworksites = DDL_Worksites.SelectedValue;
+            string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + year + "' and MONTH(CreatedDate)='" + month + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' and JOB_SiteCode='"+ ddlworksites + "' order by CreatedDate desc";
+            BindGrid(CmdString2);
+
+            string CmdString4 = "select distinct Creator_Name, Creator_Workman from tbl_jobs where YEAR(CreatedDate)='" + year + "' and MONTH(CreatedDate)='" + month + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' and JOB_SiteCode='"+ ddlworksites + "' order by Creator_Name";
+            Bind_Supervisor(CmdString4);
+        }
+
+        protected void DDL_Supervisor_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Int32 year = Convert.ToInt32(lbl_year.Text.ToString());
+            Int32 month = Convert.ToInt32(lbl_monthcode.Text.ToString());
+
+            string ddlworksites = DDL_Worksites.SelectedValue;
+            string ddlsup = DDL_Supervisor.SelectedValue;
+
+            if (DDL_Worksites.SelectedIndex != 0 && DDL_Supervisor.SelectedIndex == 0)
+            {
+                string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + year + "' and MONTH(CreatedDate)='" + month + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' and JOB_SiteCode='" + ddlworksites + "' order by CreatedDate desc";
+                BindGrid(CmdString2);
+            }
+            else if (DDL_Supervisor.SelectedIndex != 0 && DDL_Worksites.SelectedIndex == 0)
+            {
+                string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + year + "' and MONTH(CreatedDate)='" + month + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' and Creator_Workman='" + ddlsup + "' order by CreatedDate desc";
+                BindGrid(CmdString2);
+            }
+            else if (DDL_Worksites.SelectedIndex != 0 && DDL_Supervisor.SelectedIndex != 0)
+            {
+                string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + year + "' and MONTH(CreatedDate)='" + month + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' and Creator_Workman='" + ddlsup + "' and JOB_SiteCode='" + ddlworksites + "' order by CreatedDate desc";
+                BindGrid(CmdString2);
+            }
+            else
+            {
+                string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + year + "' and MONTH(CreatedDate)='" + month + "' and JOB_Region='" + region + "' and JOB_Company='" + comp + "' order by CreatedDate desc";
+                BindGrid(CmdString2);
+            }
         }
     }
 }

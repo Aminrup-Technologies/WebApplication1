@@ -192,17 +192,20 @@
                                 <asp:Label ID="lbl_activeworksites" runat="server" Text="0" Visible="false"></asp:Label>
                             </div>
                             <i class="fa fa-edit"></i>Worksite
-
                         </a>
                         <a class="btn btn-app" href="generate_atdncsheet.aspx">
                             <asp:Label ID="Label1" runat="server" Text="0" Visible="false"></asp:Label>
                             <i class="fa fa-users"></i>Workregion
-
                         </a>
                         <a class="btn btn-app" href="vw_manpowerusage.aspx">
                             <asp:Label ID="Label20" runat="server" Text="0" Visible="false"></asp:Label>
                             <i class="fa fa-users"></i>Manpower Usage
-
+                        </a>
+                        <a class="btn btn-app" href="add_manpower.aspx">
+                            <div id="div15" class="badge bg-red" runat="server">
+                                <asp:Label ID="Label24" runat="server" Text="New" Visible="true"></asp:Label>
+                            </div>
+                            <i class="fa fa-users"></i>Add Manpower
                         </a>
                     </div>
                 </div>
@@ -282,7 +285,7 @@
 
                         <a class="btn btn-app" href="pyrl_generate_f29.aspx">
                             <div id="div7" class="badge bg-green" runat="server">
-                                <asp:Label ID="Label16" runat="server" Text="New" Visible="true"></asp:Label>
+                                <asp:Label ID="Label16" runat="server" Text="Ok" Visible="true"></asp:Label>
                             </div>
                             <i class="fa fa-users"></i>Form-29
                         </a>

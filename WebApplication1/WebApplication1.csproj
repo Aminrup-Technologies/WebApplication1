@@ -246,6 +246,7 @@
     <Content Include="bussiness\production\add_expenses.aspx" />
     <Content Include="bussiness\production\add_expense_heads.aspx" />
     <Content Include="bussiness\production\add_expense_subheads.aspx" />
+    <Content Include="bussiness\production\add_manpower.aspx" />
     <Content Include="bussiness\production\add_nwhelpdsk.aspx" />
     <Content Include="bussiness\production\add_workorderdata.aspx" />
     <Content Include="bussiness\production\add_workorders.aspx" />
@@ -382,6 +383,7 @@
     <Content Include="bussiness\production\work_region.aspx" />
     <Content Include="bussiness\production\work_states.aspx" />
     <Content Include="bussiness\production\vw_emp_paymentbankdetails.aspx" />
+    <Content Include="login.aspx" />
     <Content Include="packages.config">
       <SubType>Designer</SubType>
     </Content>
@@ -474,7 +476,6 @@
     <Content Include="bussiness\production\css\maps\jquery-jvectormap-2.0.3.css" />
     <Content Include="bussiness\production\js\datepicker\daterangepicker.js" />
     <Content Include="bussiness\production\js\moment\moment.min.js" />
-    <Content Include="bussiness\production\login.aspx" />
     <Content Include="bussiness\src\js\custom.js" />
     <Content Include="bussiness\src\js\examples.js" />
     <Content Include="bussiness\src\js\helpers\smartresize.js" />
@@ -503,6 +504,13 @@
     </Compile>
     <Compile Include="bussiness\production\add_expense_subheads.aspx.designer.cs">
       <DependentUpon>add_expense_subheads.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\add_manpower.aspx.cs">
+      <DependentUpon>add_manpower.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\add_manpower.aspx.designer.cs">
+      <DependentUpon>add_manpower.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\add_nwhelpdsk.aspx.cs">
       <DependentUpon>add_nwhelpdsk.aspx</DependentUpon>
@@ -1142,13 +1150,6 @@
     <Compile Include="bussiness\production\job_permitupload.aspx.designer.cs">
       <DependentUpon>job_permitupload.aspx</DependentUpon>
     </Compile>
-    <Compile Include="bussiness\production\login.aspx.cs">
-      <DependentUpon>login.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="bussiness\production\login.aspx.designer.cs">
-      <DependentUpon>login.aspx</DependentUpon>
-    </Compile>
     <Compile Include="bussiness\production\emp_personal_details.aspx.cs">
       <DependentUpon>emp_personal_details.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -1323,6 +1324,13 @@
     </Compile>
     <Compile Include="bussiness\production\vw_emp_paymentbankdetails.aspx.designer.cs">
       <DependentUpon>vw_emp_paymentbankdetails.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="login.aspx.cs">
+      <DependentUpon>login.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="login.aspx.designer.cs">
+      <DependentUpon>login.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">

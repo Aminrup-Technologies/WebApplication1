@@ -20,7 +20,7 @@ namespace WebApplication1.bussiness.production
         {
             if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null)
             {
-                Response.Redirect("login.aspx");
+                Response.Redirect("~/login.aspx");
             }
             else
             {

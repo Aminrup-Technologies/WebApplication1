@@ -29,7 +29,7 @@ namespace WebApplication1.bussiness.production
             {
                 if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null)
                 {
-                    Response.Redirect("login.aspx");
+                    Response.Redirect("~/login.aspx");
                 }
                 else
                 {
@@ -751,7 +751,6 @@ namespace WebApplication1.bussiness.production
 
                 btn_relogin.Enabled = true;
                 //Session.Abandon();
-                //Response.Redirect("login.aspx");
                 btn_closecvpass.Enabled = false;
 
             }
@@ -828,12 +827,12 @@ namespace WebApplication1.bussiness.production
             //ClientScript.RegisterStartupScript(this.GetType(), "alert8", "ShowPasswordModal();", true);
 
             Session.Abandon();
-            Response.Redirect("login.aspx");
+            Response.Redirect("~/login.aspx");
         }
         protected void btn_relogin_Click(object sender, EventArgs e)
         {
             Session.Abandon();
-            Response.Redirect("login.aspx");
+            Response.Redirect("~/login.aspx");
         }
         protected void btn_lgout_Click(object sender, EventArgs e)
         {
@@ -846,7 +845,7 @@ namespace WebApplication1.bussiness.production
             dbcl.UPDT_EmpMuster_LogoutInfo(Session["WORKMAN"].ToString(), Session["USERID"].ToString());
 
             Session.Abandon();
-            Response.Redirect("login.aspx");
+            Response.Redirect("~/login.aspx");
         }
 
         public int GetContactUpdateStatus(string workmanSL)
@@ -1145,7 +1144,7 @@ namespace WebApplication1.bussiness.production
             dbcl.UPDT_EmpMuster_LogoutInfo(Session["WORKMAN"].ToString(), Session["USERID"].ToString());
 
             Session.Abandon();
-            Response.Redirect("login.aspx");
+            Response.Redirect("~/login.aspx");
         }
 
         protected void btn_validateoldpassword_Click(object sender, EventArgs e)

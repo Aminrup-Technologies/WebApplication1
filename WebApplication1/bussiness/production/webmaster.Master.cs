@@ -23,7 +23,7 @@ namespace WebApplication1.gentelella_master.production
             {
                 if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null)
                 {
-                    Response.Redirect("login.aspx");
+                    Response.Redirect("~/login.aspx");
                 }
                 else
                 {
@@ -316,9 +316,8 @@ namespace WebApplication1.gentelella_master.production
             dbcl.WriteToFile("User :" + lbl_loginusername1.Text.ToString() + " Singout Successfully");
             //Update loginstatus and Last Login Information i.e. date
             dbcl.UPDT_EmpMuster_LogoutInfo(Session["WORKMAN"].ToString(), Session["USERID"].ToString());
-
             Session.Abandon();
-            Response.Redirect("login.aspx");
+            Response.Redirect("~/login.aspx");
         }
 
 

@@ -20,7 +20,7 @@ namespace WebApplication1.bussiness.production
                 //ClientScript.RegisterStartupScript(this.GetType(), "Popup", "Loader();", true);
                 if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
-                    Response.Redirect("login.aspx");
+                    Response.Redirect("~/login.aspx");
                 }
                 else
                 {
