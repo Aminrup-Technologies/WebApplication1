@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Threading;
+using System.Web.Hosting;
 
 namespace WebApplication1.bussiness.production
 {
@@ -13,8 +14,10 @@ namespace WebApplication1.bussiness.production
         DataTable dt = new DataTable();
         static string User_Photo = string.Empty;
         // Default folders
-        static readonly string rootFolder = @"C:\atswork.in\wwwroot\erp_images\ProfilePhoto";
-        static readonly string localFolder = @"D:\RnD\OH4Y_19May23\WebApplication1\WebApplication1\erp_images\ProfilePhoto";
+        static readonly string rootFolder = HostingEnvironment.MapPath("~/erp_images/ProfilePhoto");
+        //static readonly string rootFolder = @"C:\atswork.in\wwwroot\erp_images\ProfilePhoto";
+        static readonly string localFolder = HostingEnvironment.MapPath("~/erp_images/ProfilePhoto");
+        //static readonly string localFolder = @"D:\RnD\OH4Y_19May23\WebApplication1\WebApplication1\erp_images\ProfilePhoto";
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -26,6 +29,7 @@ namespace WebApplication1.bussiness.production
 
         protected void Button1_Click1(object sender, EventArgs e)
         {
+            dbcl.WriteToFile($"Login attempt with User ID: {txt_loginid.Text}");
             try
             {
                 CredentialChecker1();
@@ -146,10 +150,10 @@ namespace WebApplication1.bussiness.production
             //string hashedPassword = HashPassword(pass);
 
             string query = "SELECT WorkStatus, LoginID, WorkRegion, WorkState, WorkCompany, WorkmanSL, FirstName, FullName, User_RoleType, Role_Permission, WorkSite, Worksite_Code, SkillCategory, SkillDesignation, PrfPicFile FROM tbl_Employee_Mustertable WHERE LoginID=@LoginID AND LoginPassword=@LoginPassword";
-            SqlParameter[] pram = {
-            new SqlParameter("@LoginID", id),
-            new SqlParameter("@LoginPassword", pass),
-        };
+                SqlParameter[] pram = {
+                new SqlParameter("@LoginID", id),
+                new SqlParameter("@LoginPassword", pass),
+            };
 
             try
             {

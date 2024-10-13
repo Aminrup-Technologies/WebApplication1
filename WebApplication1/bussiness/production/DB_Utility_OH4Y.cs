@@ -863,6 +863,98 @@ namespace WebApplication1.bussiness.production
             emp_calOThrs = Math.Round(result, 2);
         }
 
+        public void CalculateOvertimeRev(Int32 EmpWorkHours, Int32 wrdtym, string lunch, ref decimal emp_calOThrs)
+        {
+            decimal emp_calOTMins = .0m;
+            decimal emp_calOTMins1 = .0m;
+            decimal emp_calOTMins2 = .0m;
+
+            decimal result = .0m;
+            if (EmpWorkHours == 1440)
+            {
+                emp_calOTMins = .0m;
+            }
+            else if (EmpWorkHours == 720)
+            {
+                if (wrdtym > 720)
+                {
+                    if (lunch == "YES" || lunch == "Yes")
+                    {
+                        emp_calOTMins1 = wrdtym - EmpWorkHours - 30;
+                        if (emp_calOTMins1 < 0)
+                        {
+                            emp_calOTMins = .0m;
+                        }
+                        else
+                        {
+                            emp_calOTMins = emp_calOTMins1;
+                        }
+                    }
+                    else
+                    {
+                        emp_calOTMins1 = wrdtym - EmpWorkHours + 30;
+                        if (emp_calOTMins1 < .0m)
+                        {
+                            emp_calOTMins = .0m;
+                        }
+                        else
+                        {
+                            emp_calOTMins = emp_calOTMins1;
+                        }
+                    }
+                }
+                else
+                {
+                    if (lunch == "YES" || lunch == "Yes")
+                    {
+                        emp_calOTMins = .0m;
+                    }
+                    else
+                    {
+                        emp_calOTMins = 1;
+                    }
+                }
+            }
+            else if (EmpWorkHours == 480)
+            {
+                if (wrdtym > 480)
+                {
+                    if (lunch == "YES" || lunch == "Yes")
+                    {
+                        emp_calOTMins2 = wrdtym - EmpWorkHours - 30;
+                        if (emp_calOTMins2 < .0m)
+                        {
+                            emp_calOTMins = .0m;
+                        }
+                        else
+                        {
+                            emp_calOTMins = emp_calOTMins2;
+                        }
+                    }
+                    else
+                    {
+                        emp_calOTMins2 = wrdtym - EmpWorkHours;
+                        if (emp_calOTMins2 < .0m)
+                        {
+                            emp_calOTMins = .0m;
+                        }
+                        else
+                        {
+                            emp_calOTMins = emp_calOTMins2;
+                        }
+                    }
+                }
+                else
+                {
+                    emp_calOTMins = .0m;
+                }
+            }
+            //emp_calOThrs = emp_calOTMins;
+            result = emp_calOTMins / 60;
+
+            emp_calOThrs = Math.Round(result, 2);
+        }
+
         public void calmonth(DropDownList cmbM1)
         {
             cmbM1.Items.Add("January");

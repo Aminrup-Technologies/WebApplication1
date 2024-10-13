@@ -446,6 +446,7 @@ namespace WebApplication1.bussiness.production
             Boolean flag = false;
 
             string jobID = DDL_JOBID.SelectedItem.Text.ToString();
+            string region = lbl_jobrgn.Text.ToString();
             string ddljobid = "";
             string jobdate = "";
             string[] parts = jobID.Split(new string[] { " : " }, StringSplitOptions.None);
@@ -490,7 +491,15 @@ namespace WebApplication1.bussiness.production
                 decimal workedhours = .0m;
                 dbcl.FindEmployeeWorkedTime(intime, outtime, ref workedmins, ref workedhours);
                 decimal emp_calOThrs = .0m;
-                dbcl.CalculateOvertime(emp_wrkmnis, workedmins, lunchyesno, ref emp_calOThrs);
+
+                if (region == "NINL")
+                {
+                    dbcl.CalculateOvertimeRev(emp_wrkmnis, workedmins, lunchyesno, ref emp_calOThrs);
+                }
+                else
+                {
+                    dbcl.CalculateOvertime(emp_wrkmnis, workedmins, lunchyesno, ref emp_calOThrs);
+                }
 
                 try
                 {
