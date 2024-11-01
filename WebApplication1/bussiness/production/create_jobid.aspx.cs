@@ -169,12 +169,12 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_reset_Click(object sender, EventArgs e)
         {
-            Response.Redirect("create_jobid.aspx");
+            Response.Redirect("create_jobid.aspx", false);
         }
 
         protected void btn_cancel_Click(object sender, EventArgs e)
         {
-            Response.Redirect("homepage.aspx");
+            Response.Redirect("homepage.aspx", false);
         }
 
         protected void DDL_Workorder_SelectedIndexChanged(object sender, EventArgs e)
@@ -594,12 +594,12 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_inpunch_Click(object sender, EventArgs e)
         {
-            Response.Redirect("job_inpunch.aspx");
+            Response.Redirect("job_inpunch.aspx", false);
         }
 
         protected void btn_upload_Click(object sender, EventArgs e)
         {
-            Response.Redirect("job_permitupload.aspx");
+            Response.Redirect("job_permitupload.aspx", false);
         }
 
 

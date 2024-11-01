@@ -1379,12 +1379,12 @@ namespace WebApplication1.bussiness.production
             //object refUrl = ViewState["RefUrl"];
             //if (refUrl != null)
             //    Response.Redirect((string)refUrl);
-            Response.Redirect("vw_supplyjobs.aspx");
+            Response.Redirect("vw_supplyjobs.aspx", false);
         }
 
         protected void btn_attachmanpower_Click(object sender, EventArgs e)
         {
-            Response.Redirect("attach_manpower.aspx?JOBID=" + txt_jobid.Text.ToString() + "");
+            Response.Redirect("attach_manpower.aspx?JOBID=" + txt_jobid.Text.ToString() + "", false);
         }
 
         protected void btn_delete_Click(object sender, EventArgs e)
@@ -1478,17 +1478,17 @@ namespace WebApplication1.bussiness.production
         {
             if (viewid == "1")
             {
-                Response.Redirect("vw_inchsupmem.aspx?y=" + yr + "&m=" + mnt + "");
+                Response.Redirect("vw_inchsupmem.aspx?y=" + yr + "&m=" + mnt + "", false);
             }
             else if (viewid == "2")
             {
-                Response.Redirect("vw_supplyjobs.aspx");
+                Response.Redirect("vw_supplyjobs.aspx", false);
             }
         }
 
         protected void btn_home_Click(object sender, EventArgs e)
         {
-            Response.Redirect("homepage.aspx");
+            Response.Redirect("homepage.aspx", false);
         }
 
         protected void btn_crtspm_Click(object sender, EventArgs e)
@@ -1521,7 +1521,7 @@ namespace WebApplication1.bussiness.production
                 //Response.Redirect("rpts/supplymemo.aspx?JOBID=" + txt_jobid.Text.ToString());
 
                 //Response.Redirect($"rpts/supplymemo.aspx?JOBID={txt_jobid.Text}&viewid={viewid}&y={yr}&m={mnt}");
-                Response.Redirect($"rpts/supplymemo.aspx?JOBID={txt_jobid.Text}&dbid={dbid}&supv={supv}&viewid={viewid}&y={yr}&m={mnt}");
+                Response.Redirect($"rpts/supplymemo.aspx?JOBID={txt_jobid.Text}&dbid={dbid}&supv={supv}&viewid={viewid}&y={yr}&m={mnt}", false);
 
                 //Function 2 --------- PRINT the MEMO
             }

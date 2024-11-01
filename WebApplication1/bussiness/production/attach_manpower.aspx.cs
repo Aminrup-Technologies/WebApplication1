@@ -735,11 +735,11 @@ namespace WebApplication1.bussiness.production
         {
             if (Session["WORKMAN"].ToString() == lbl_inchargewrk.Text.ToString())
             {
-                Response.Redirect("jobapprovalpage.aspx?JOBID=" + lbl_jobid.Text.ToString() + "");
+                Response.Redirect("jobapprovalpage.aspx?JOBID=" + lbl_jobid.Text.ToString() + "", false);
             }
             else
             {
-                Response.Redirect("view_dailyjobs.aspx?Date=" + lbl_jobiddate.Text.ToString() + "");
+                Response.Redirect("view_dailyjobs.aspx?Date=" + lbl_jobiddate.Text.ToString() + "", false);
             }
         }
     }

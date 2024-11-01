@@ -16,7 +16,7 @@ namespace WebApplication1.bussiness.production
             {
                 if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
-                    Response.Redirect("~/login.aspx");
+                    Response.Redirect("~/login.aspx", false);
                 }
                 else
                 {
@@ -82,7 +82,7 @@ namespace WebApplication1.bussiness.production
 
             string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_InchargeName='" + Session["USERNAME"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' order by CreatedDate desc";
             BindGrid(CmdString2);
-            Response.Redirect(Request.Url.AbsoluteUri);
+            Response.Redirect(Request.Url.AbsoluteUri, false);
         }
         private void Delete_from_JOBTable(string id, string dbcode)
         {
@@ -254,7 +254,7 @@ namespace WebApplication1.bussiness.production
                 //Response.Redirect("view_jobdetails.aspx?JOBID=" + jobid + "");
 
                 //The below code is added on 28-10-2024 and above is commented
-                Response.Redirect("view_jobdetails.aspx?JOBID=" + jobid + "&dbid=" + dbid + "&supv=" + supv);
+                Response.Redirect("view_jobdetails.aspx?JOBID=" + jobid + "&dbid=" + dbid + "&supv=" + supv, false);
 
             }
             else if(e.CommandName == "Delete")

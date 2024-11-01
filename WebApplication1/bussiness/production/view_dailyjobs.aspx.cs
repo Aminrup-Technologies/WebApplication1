@@ -235,7 +235,11 @@ namespace WebApplication1.bussiness.production
             }
             else if (e.CommandName == "View_Details")
             {
-                Response.Write("<script>window.open ('view_jobdetails.aspx?JOBID=" + jobid + "','_blank');</script>");
+                Response.Write("<script>window.open('view_jobdetails.aspx?JOBID=" + jobid + "&dbid=" + dbid + "&supv=" + supv + "', '_blank');</script>");
+
+                //Response.Write("<script>window.open ('view_jobdetails.aspx?JOBID=" + jobid + "','_blank');</script>");
+
+                //Response.Redirect("view_jobdetails.aspx?JOBID=" + jobid + "&dbid=" + dbid + "&supv=" + supv, false);
                 //Response.Redirect("view_jobdetails.aspx?JOBID=" + jobid + "");
             }
             else if (e.CommandName == "Delete")

@@ -148,7 +148,7 @@ namespace WebApplication1.bussiness.production
 
             string CmdString2 = "select * from tbl_jobs where YEAR(CreatedDate)='" + year + "' and MONTH(CreatedDate)='" + month + "'and JOB_Region='" + region + "' and JOB_Company='" + comp + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' order by CreatedDate desc";
             BindGrid(CmdString2);
-            Response.Redirect(Request.Url.AbsoluteUri);
+            Response.Redirect(Request.Url.AbsoluteUri, false);
         }
         private void Delete_from_JOBTable(string id, string dbcode)
         {

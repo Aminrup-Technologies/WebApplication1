@@ -905,7 +905,7 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_reset_Click(object sender, EventArgs e)
         {
-            Response.Redirect("add_expenses.aspx");
+            Response.Redirect("add_expenses.aspx", false);
         }
     }
 }

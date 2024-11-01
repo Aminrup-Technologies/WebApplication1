@@ -54,7 +54,7 @@ namespace WebApplication1.bussiness.production.aminrup
             dbcl.UPDT_EmpMuster_LogoutInfo(Session["WORKMAN"].ToString(), Session["USERID"].ToString());
 
             Session.Abandon();
-            Response.Redirect("/login.aspx");
+            Response.Redirect("/login.aspx", false);
         }
     }
 }
