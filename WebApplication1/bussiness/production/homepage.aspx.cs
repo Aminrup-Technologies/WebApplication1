@@ -29,7 +29,7 @@ namespace WebApplication1.bussiness.production
             {
                 if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null)
                 {
-                    Response.Redirect("~/login.aspx");
+                    Response.Redirect("~/login.aspx", false);
                 }
                 else
                 {
@@ -59,8 +59,8 @@ namespace WebApplication1.bussiness.production
                     // RegisterStartupScript adds the JavaScript code to the page
                     ClientScript.RegisterStartupScript(this.GetType(), "ShowWelcomeNotification", PN_WelcomeBack_script, false);
 
-                    IHubContext hubContext = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
-                    hubContext.Clients.All.newNotification("Hello from the server!");
+                    //IHubContext hubContext = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+                    //hubContext.Clients.All.newNotification("Hello from the server!");
                 }
             }
         }
@@ -216,7 +216,7 @@ namespace WebApplication1.bussiness.production
 
                         //Instead of displaying a popup to change the login credentails, redirect the user to a separate page to change the password
 
-                        Response.Redirect("emp_pwdchange.aspx");
+                        Response.Redirect("emp_pwdchange.aspx", false);
                     }
 
                     string bankname = dt.Rows[0]["Payment_Bank"].ToString();
@@ -404,7 +404,7 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_vwmntlyattn_Click(object sender, EventArgs e)
         {
-            Response.Redirect("vw_monthlyatten.aspx");
+            Response.Redirect("vw_monthlyatten.aspx", false);
         }
 
         protected void btn_bankedit_Click(object sender, EventArgs e)
@@ -485,7 +485,7 @@ namespace WebApplication1.bussiness.production
 
         private void Refresh()
         {
-            Response.Redirect("homepage.aspx");
+            Response.Redirect("homepage.aspx", false);
         }
 
         protected void btn_gtpsedit_Click(object sender, EventArgs e)
@@ -827,12 +827,12 @@ namespace WebApplication1.bussiness.production
             //ClientScript.RegisterStartupScript(this.GetType(), "alert8", "ShowPasswordModal();", true);
 
             Session.Abandon();
-            Response.Redirect("~/login.aspx");
+            Response.Redirect("~/login.aspx", false);
         }
         protected void btn_relogin_Click(object sender, EventArgs e)
         {
             Session.Abandon();
-            Response.Redirect("~/login.aspx");
+            Response.Redirect("~/login.aspx", false);
         }
         protected void btn_lgout_Click(object sender, EventArgs e)
         {
@@ -845,7 +845,7 @@ namespace WebApplication1.bussiness.production
             dbcl.UPDT_EmpMuster_LogoutInfo(Session["WORKMAN"].ToString(), Session["USERID"].ToString());
 
             Session.Abandon();
-            Response.Redirect("~/login.aspx");
+            Response.Redirect("~/login.aspx", false);
         }
 
         public int GetContactUpdateStatus(string workmanSL)
@@ -1144,7 +1144,7 @@ namespace WebApplication1.bussiness.production
             dbcl.UPDT_EmpMuster_LogoutInfo(Session["WORKMAN"].ToString(), Session["USERID"].ToString());
 
             Session.Abandon();
-            Response.Redirect("~/login.aspx");
+            Response.Redirect("~/login.aspx", false);
         }
 
         protected void btn_validateoldpassword_Click(object sender, EventArgs e)

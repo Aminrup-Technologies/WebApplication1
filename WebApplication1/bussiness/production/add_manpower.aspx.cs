@@ -318,7 +318,8 @@ namespace WebApplication1.bussiness.production
             else if (e.CommandName == "View_Details")
             {
                 //Response.Redirect("view_jobdetails.aspx?JOBID=" + jobid + "");
-                string url = "view_jobdetails.aspx?JOBID=" + jobid;
+                //string url = "view_jobdetails.aspx?JOBID=" + jobid;
+                string url = "view_jobdetails.aspx?JOBID=" + jobid + "&dbid=" + dbid + "&supv=" + supv;
                 ClientScript.RegisterStartupScript(this.GetType(), "OpenWindow", "window.open('" + url + "','_blank');", true);
             }
             else if (e.CommandName == "Delete")

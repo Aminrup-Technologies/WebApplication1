@@ -58,7 +58,7 @@ namespace WebApplication1.bussiness.production
         {
             try
             {
-                string query = "select * from tbl_jobs where JOBID=@JOBID";
+                string query = "select CreatedDate, Creator_Name, Creator_Workman, Creator_Region, Creator_Company, Creator_Site, Creator_SiteCode, WorkOrderNo, JOBID, JOB_Region, JOB_Company, JOB_Site, JOB_SiteCode, JOB_InchargeWrk, JOB_InchargeName, JOB_Dept, JOB_Location, JOB_Shift, JOB_PermitNo from tbl_jobs where JOBID=@JOBID";
                 SqlParameter[] pram = {
                                           new SqlParameter("@JOBID",jobid),
                                       };
@@ -356,6 +356,7 @@ namespace WebApplication1.bussiness.production
                 DataTable dtCurrentTable = (DataTable)ViewState["Attendance"];
                 DataRow drCurrentRow = null;
 
+                string region = lbl_jobrgn.Text.ToString();
                 string emp_wrkhrs = lbl_workhours.Text.ToString();
                 Int32 emp_wrkhours = Convert.ToInt32(emp_wrkhrs);
                 Int32 emp_wrkmnis = emp_wrkhours * 60;
@@ -373,7 +374,17 @@ namespace WebApplication1.bussiness.production
                 decimal workedhours = .0m;
                 dbcl.FindEmployeeWorkedTime(intime, outtime, ref workedmins, ref workedhours);
                 decimal emp_calOThrs = .0m;
-                dbcl.CalculateOvertime(emp_wrkmnis, workedmins, lunchyesno, ref emp_calOThrs);
+
+                if (region == "NINL")
+                {
+                    dbcl.CalculateOvertimeRev(emp_wrkmnis, workedmins, lunchyesno, ref emp_calOThrs);
+                }
+                else
+                {
+                    dbcl.CalculateOvertime(emp_wrkmnis, workedmins, lunchyesno, ref emp_calOThrs);
+                }
+
+                //dbcl.CalculateOvertime(emp_wrkmnis, workedmins, lunchyesno, ref emp_calOThrs);
 
                 if (dtCurrentTable.Rows.Count > 0)
                 {

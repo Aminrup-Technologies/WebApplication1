@@ -8,6 +8,7 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Globalization;
 using DocumentFormat.OpenXml.Math;
+using System.Configuration;
 
 namespace WebApplication1.bussiness.production
 {
@@ -470,8 +471,12 @@ namespace WebApplication1.bussiness.production
             string emp_wrkhrs = lbl_workhours.Text.ToString();
             Int32 emp_wrkhours = Convert.ToInt32(emp_wrkhrs);
 
+
             // Employee Working Hours for OT Calucaltions ----------- (8 / 12 / 24) Hours ----- (480 / 720 / 1440) Minutes
             Int32 emp_wrkmnis = emp_wrkhours * 60;
+
+            // Construct out-time by combining date and time fields
+            //string outtimeString = $"{txt_date.Text.Trim()} {txt_time.Text}";
 
             string outtime = txt_date.Text.TrimEnd().ToString() + " " + txt_time.Text.ToString();
             string intime = txt_inpunchtime.Text.ToString();
@@ -485,11 +490,14 @@ namespace WebApplication1.bussiness.production
             DateTime crnttym = DateTime.ParseExact(current, "yyyy-MM-dd hh:mm:ss tt", CultureInfo.InvariantCulture);
             dbcl.Findworktime1(outtime, current, ref workdmins);
 
-            if (workdmins <= 2880) //32=2880
+
+            //if (workdmins <= 2880) //32=2880
+            if (CanPunchOutWithin32Hours(intime))
             {
                 Int32 workedmins = 0;
                 decimal workedhours = .0m;
                 dbcl.FindEmployeeWorkedTime(intime, outtime, ref workedmins, ref workedhours);
+                //Above function returns work minutes and work hours from IN and OUT time
                 decimal emp_calOThrs = .0m;
 
                 if (region == "NINL")
@@ -540,6 +548,21 @@ namespace WebApplication1.bussiness.production
             }
             return flag;
         }
+
+        public bool CanPunchOutWithin32Hours(string emp_intime)
+        {
+            DateTime intm = DateTime.Parse(emp_intime);
+            DateTime outm = DateTime.Now; // Current time as punch-out attempt
+
+            // Get the punch-out duration from web.config
+            int punchOutDurationMinutes = int.Parse(ConfigurationManager.AppSettings["PunchOutDurationMinutes"]);
+
+            TimeSpan duration = outm - intm;
+
+            // Allow punch-out only if within the configured duration
+            return duration.TotalMinutes <= punchOutDurationMinutes;
+        }
+
 
         protected void btn_cancel_Click(object sender, EventArgs e)
         {

@@ -55,7 +55,7 @@ namespace WebApplication1.bussiness.production
                 string id = txt_loginid.Text;
                 string pass = txt_password.Text;
 
-                string query = "select WorkStatus,LoginID,WorkRegion,WorkState,WorkCompany,WorkmanSL,FirstName,FullName,User_RoleType,UserRoleDB,RolePermissionDB,WorkSite,Worksite_Code,SkillCategory,SkillDesignation,PrfPicFile from tbl_Employee_Mustertable where LoginID=@LoginID and LoginPassword=@LoginPassword";
+                string query = "select TOP 1 WorkStatus,LoginID,WorkRegion,WorkState,WorkCompany,WorkmanSL,FirstName,FullName,User_RoleType,UserRoleDB,RolePermissionDB,WorkSite,Worksite_Code,SkillCategory,SkillDesignation,PrfPicFile from tbl_Employee_Mustertable where LoginID=@LoginID and LoginPassword=@LoginPassword";
                 SqlParameter[] pram = {
                                           new SqlParameter("@LoginID",id),
                                           new SqlParameter("@LoginPassword",pass),
@@ -118,7 +118,7 @@ namespace WebApplication1.bussiness.production
                             }
                         }
                         dbcl.WriteToFile("User " + User_FullName + "[" + Workman + "]" + " Logined Successfully");
-                        Response.Redirect("~/bussiness/production/homepage.aspx");
+                        Response.Redirect("~/bussiness/production/homepage.aspx", false);
                     }
                     else
                     {

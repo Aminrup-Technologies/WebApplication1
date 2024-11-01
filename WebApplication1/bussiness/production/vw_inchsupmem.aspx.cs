@@ -6,6 +6,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data.SqlClient;
 using System.Data;
+using System.Configuration;
 
 namespace WebApplication1.bussiness.production
 {
@@ -36,10 +37,44 @@ namespace WebApplication1.bussiness.production
                         DateTime date = new DateTime(Convert.ToInt32(yr), Convert.ToInt32(mnt), 1);
                         lbl_month.Text = date.ToString("MMMM");
 
-                        string CmdString2 = "select Id,CreatedDate, Creator_Workman,Creator_Name, WorkOrderNo, JOBID,IIF(JOB_Status !='Level1MemoCreated',JOBID_Status,Level1_BillingCode) as JOBID_Status,JOBID_Status,JOB_Site, JOB_InchargeName, JOB_Shift,JOB_Title, JOB_PermitNo, JOB_Status, FinalUpldStatus, Incharge_Approval from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_InchargeName='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + yr + "' and MONTH(CreatedDate)='" + mnt + "' and JOBID_Status='Blocked' and EntryExit='Exit' and FinalUpldStatus='Yes' and Incharge_Approval='Approved' and BillingCode='MS' order by CreatedDate desc";
+                        string CmdString2 = "select top 100 Id,CreatedDate, Creator_Workman,Creator_Name, WorkOrderNo, JOBID,IIF(JOB_Status !='Level1MemoCreated',JOBID_Status,Level1_BillingCode) as JOBID_Status,JOBID_Status,JOB_Site, JOB_InchargeName, JOB_Shift,JOB_Title, JOB_PermitNo, JOB_Status, FinalUpldStatus, Incharge_Approval from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_InchargeName='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + yr + "' and MONTH(CreatedDate)='" + mnt + "' and JOBID_Status='Blocked' and EntryExit='Exit' and FinalUpldStatus='Yes' and Incharge_Approval='Approved' and BillingCode='MS' order by CreatedDate desc";
+                        //BindGrid(CmdString2);
 
+                        // Define start and end date range for the specified month and year
+                        DateTime startDate = new DateTime(Convert.ToInt32(yr), Convert.ToInt32(mnt), 1);
+                        DateTime endDate = startDate.AddMonths(1);
 
-                        BindGrid(CmdString2);
+                        string cmdString2 = @"
+                            SELECT TOP 100 
+                                Id, CreatedDate, Creator_Workman, Creator_Name, WorkOrderNo, JOBID,
+                                IIF(JOB_Status != 'Level1MemoCreated', JOBID_Status, Level1_BillingCode) AS JOBID_Status,
+                                JOBID_Status, JOB_Site, JOB_InchargeName, JOB_Shift, JOB_Title, JOB_PermitNo,
+                                JOB_Status, FinalUpldStatus, Incharge_Approval
+                            FROM 
+                                tbl_jobs
+                            WHERE 
+                                JOB_InchargeWrk = @Workman
+                                AND JOB_InchargeName = @Username
+                                AND CreatedDate >= @StartDate
+                                AND CreatedDate < @EndDate
+                                AND JOBID_Status = 'Blocked'
+                                AND EntryExit = 'Exit'
+                                AND FinalUpldStatus = 'Yes'
+                                AND Incharge_Approval = 'Approved'
+                                AND BillingCode = 'MS'
+                            ORDER BY 
+                                CreatedDate DESC";
+
+                                                // Define parameters to be passed into the query
+                                                SqlParameter[] parameters = {
+                            new SqlParameter("@Workman", Session["WORKMAN"].ToString()),
+                            new SqlParameter("@Username", Session["USERNAME"].ToString()),
+                            new SqlParameter("@StartDate", startDate),
+                            new SqlParameter("@EndDate", endDate)
+                        };
+
+                        // Call BindGrid with the parameterized query
+                        BindGrid(cmdString2, parameters);
                     }
 
                     else
@@ -51,10 +86,44 @@ namespace WebApplication1.bussiness.production
 
                         //string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + DateTime.Now.Year.ToString() + "' and JOBID_Status='Blocked' and MONTH(CreatedDate)='" + DateTime.Now.Month.ToString() + "' and JOBID_Status='Blocked' and EntryExit='Exit' and FinalUpldStatus='Yes' and Incharge_Approval='Approved' and BillingCode='MS' order by CreatedDate desc";
 
-                        string CmdString2 = "select Id,CreatedDate,Creator_Workman,Creator_Name,WorkOrderNo,JOBID,IIF(JOB_Status !='Level1MemoCreated',JOBID_Status,Level1_BillingCode) as JOBID_Status,JOBID_Status,JOB_Site,JOB_InchargeName,JOB_Shift,JOB_Title,JOB_PermitNo,JOB_Status,FinalUpldStatus,Incharge_Approval from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_InchargeName='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + DateTime.Now.Year.ToString() + "' and JOBID_Status='Blocked' and MONTH(CreatedDate)='" + DateTime.Now.Month.ToString() + "' and JOBID_Status='Blocked' and EntryExit='Exit' and FinalUpldStatus='Yes' and Incharge_Approval='Approved' and BillingCode='MS' order by CreatedDate desc";
+                        string CmdString2 = "select top 100 Id,CreatedDate,Creator_Workman,Creator_Name,WorkOrderNo,JOBID,IIF(JOB_Status !='Level1MemoCreated',JOBID_Status,Level1_BillingCode) as JOBID_Status,JOBID_Status,JOB_Site,JOB_InchargeName,JOB_Shift,JOB_Title,JOB_PermitNo,JOB_Status,FinalUpldStatus,Incharge_Approval from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_InchargeName='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + DateTime.Now.Year.ToString() + "' and JOBID_Status='Blocked' and MONTH(CreatedDate)='" + DateTime.Now.Month.ToString() + "' and JOBID_Status='Blocked' and EntryExit='Exit' and FinalUpldStatus='Yes' and Incharge_Approval='Approved' and BillingCode='MS' order by CreatedDate desc";
+                        //BindGrid(CmdString2);
 
+                        // Define start and end date for the current year and month
+                        DateTime startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                        DateTime endDate = startDate.AddMonths(1);
 
-                        BindGrid(CmdString2);
+                        string cmdString2 = @"
+                            SELECT TOP 100 
+                                Id, CreatedDate, Creator_Workman, Creator_Name, WorkOrderNo, JOBID,
+                                IIF(JOB_Status != 'Level1MemoCreated', JOBID_Status, Level1_BillingCode) AS JOBID_Status,
+                                JOBID_Status, JOB_Site, JOB_InchargeName, JOB_Shift, JOB_Title, JOB_PermitNo,
+                                JOB_Status, FinalUpldStatus, Incharge_Approval
+                            FROM 
+                                tbl_jobs
+                            WHERE 
+                                JOB_InchargeWrk = @Workman
+                                AND JOB_InchargeName = @Username
+                                AND CreatedDate >= @StartDate
+                                AND CreatedDate < @EndDate
+                                AND JOBID_Status = 'Blocked'
+                                AND EntryExit = 'Exit'
+                                AND FinalUpldStatus = 'Yes'
+                                AND Incharge_Approval = 'Approved'
+                                AND BillingCode = 'MS'
+                            ORDER BY 
+                                CreatedDate DESC";
+
+                                                // Define parameters to pass to the query
+                                                SqlParameter[] parameters = {
+                            new SqlParameter("@Workman", Session["WORKMAN"].ToString()),
+                            new SqlParameter("@Username", Session["USERNAME"].ToString()),
+                            new SqlParameter("@StartDate", startDate),
+                            new SqlParameter("@EndDate", endDate)
+                        };
+
+                        // Call BindGrid with the parameterized query and parameters
+                        BindGrid(cmdString2, parameters);
                     }
                 }
             }
@@ -72,6 +141,46 @@ namespace WebApplication1.bussiness.production
             GridView1.DataBind();
             dbcl.Conn.Close();
         }
+
+
+        private void BindGrid(string cmdString, SqlParameter[] parameters)
+        {
+            string constr = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
+            using (SqlConnection con = new SqlConnection(constr))
+            {
+                using (SqlCommand cmd = new SqlCommand(cmdString, con)) // Set the connection for cmd
+                {
+                    // Attach parameters to the command, if provided
+                    if (parameters != null)
+                    {
+                        cmd.Parameters.AddRange(parameters);
+                    }
+
+                    try
+                    {
+                        // Open connection
+                        con.Open();
+
+                        using (SqlDataAdapter ad = new SqlDataAdapter(cmd))
+                        {
+                            DataSet ds = new DataSet();
+                            ad.Fill(ds);
+                            GridView1.DataSource = ds;
+                            GridView1.DataBind();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log or handle the error as needed
+                        string title = "Error loading data";
+                        string message = ex.Message;
+                        ClientScript.RegisterStartupScript(this.GetType(), "Popup", $"ShowPopup('{title}', '{message}');", true);
+                    }
+                }
+            }
+        }
+
+
 
         protected void btn_prevmonth_Click(object sender, EventArgs e)
         {
@@ -208,11 +317,18 @@ namespace WebApplication1.bussiness.production
 
             if (e.CommandName == "View_Details")
             {
-                Response.Redirect("view_jobdetails.aspx?JOBID=" + jobid + "");
+                Response.Redirect("view_jobdetails.aspx?JOBID=" + jobid + "&dbid=" + dbid + "&supv=" + supv);
             }
             else if (e.CommandName == "CSUPMEM")
             {
-                Response.Redirect("create_supplymemo.aspx?JOBID=" + jobid + "&viewid=1&y="+lbl_year.Text.ToString()+"&m="+lbl_monthcode.Text.ToString()+"");
+                //Response.Redirect("create_supplymemo.aspx?JOBID=" + jobid + "&viewid=1&y="+lbl_year.Text.ToString()+"&m="+lbl_monthcode.Text.ToString()+"");
+                Response.Redirect("create_supplymemo.aspx?JOBID=" + jobid
+                 + "&dbid=" + dbid
+                 + "&supv=" + supv
+                 + "&viewid=1"
+                 + "&y=" + lbl_year.Text.ToString()
+                 + "&m=" + lbl_monthcode.Text.ToString());
+
             }
         }
     }

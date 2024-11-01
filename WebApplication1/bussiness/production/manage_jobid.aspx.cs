@@ -251,7 +251,11 @@ namespace WebApplication1.bussiness.production
             }
             else if (e.CommandName == "View_Details")
             {
-                Response.Redirect("view_jobdetails.aspx?JOBID=" + jobid + "");
+                //Response.Redirect("view_jobdetails.aspx?JOBID=" + jobid + "");
+
+                //The below code is added on 28-10-2024 and above is commented
+                Response.Redirect("view_jobdetails.aspx?JOBID=" + jobid + "&dbid=" + dbid + "&supv=" + supv);
+
             }
             else if(e.CommandName == "Delete")
             {
