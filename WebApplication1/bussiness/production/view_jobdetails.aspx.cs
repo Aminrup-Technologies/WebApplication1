@@ -248,7 +248,7 @@ namespace WebApplication1.bussiness.production
             {
                 ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup();", true);
                 lbl_msg.ForeColor = System.Drawing.Color.Red;
-                lbl_msg.Text = "Error: " + ex.Message.ToString();
+                lbl_msg.Text = "Error-251: " + ex.Message.ToString();
             }
         }
 
