@@ -40,6 +40,22 @@
 
         gtag('config', 'UA-197761506-1');
     </script>
+
+    <!-- Matomo -->
+    <script>
+        var _paq = window._paq = window._paq || [];
+        /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+        _paq.push(['trackPageView']);
+        _paq.push(['enableLinkTracking']);
+        (function () {
+            var u = "//www.optimistic-blackwell.150-242-202-11.plesk.page/";
+            _paq.push(['setTrackerUrl', u + 'matomo.php']);
+            _paq.push(['setSiteId', '3']);
+            var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+            g.async = true; g.src = u + 'matomo.js'; s.parentNode.insertBefore(g, s);
+        })();
+    </script>
+    <!-- End Matomo Code -->
 </head>
 <body class="login">
     <form id="form1" runat="server">
@@ -49,7 +65,8 @@
                 <div class="login_form">
                     <section class="login_content">
                         <asp:Image ID="Image1" runat="server" ImageUrl="~/erp_images/ats_translogo.png" Height="100" Width="100" />
-                        <h1><asp:Label ID="lbl_companyname" runat="server" Text="Automation & Technical Services"></asp:Label></h1>
+                        <h1>
+                            <asp:Label ID="lbl_companyname" runat="server" Text="Automation & Technical Services"></asp:Label></h1>
                         <div class="form-horizontal">
                             <div class="form-group row">
                                 <label class="control-label col-md-4 col-sm-6 ">User ID</label>
@@ -78,8 +95,10 @@
                             <div class="separator">
                                 <br />
                                 <div>
-                                    <p>© 2021-2024 All Rights Reserved. <span style="font-weight: bold; color: darkred;">
-                                        <asp:Label ID="lbl_compfooter" runat="server" Text="ATS,JSR"></asp:Label></span> Powered by <a href="#" target="_blank">Aminrup Technologies</a></p>
+                                    <p>
+                                        © 2021-2024 All Rights Reserved. <span style="font-weight: bold; color: darkred;">
+                                            <asp:Label ID="lbl_compfooter" runat="server" Text="ATS,JSR"></asp:Label></span> Powered by <a href="#" target="_blank">Aminrup Technologies</a>
+                                    </p>
                                 </div>
                             </div>
                         </div>
