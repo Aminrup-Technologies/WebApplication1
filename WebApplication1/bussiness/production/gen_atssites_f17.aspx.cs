@@ -26,7 +26,7 @@ namespace WebApplication1.bussiness.production
         public static string date2 = "";
         public static Int32 CalWorkingDays = 0;
         public static Int32 CalWorkingDaysF = 0;
-        public static Int32 TotalPresents = 0;
+        public static decimal TotalPresents = 0;
         public static decimal GorssBreaker = 20500;
 
         public static Int32 WashBreak = 1000; //Added for Calculating Washing Allowances

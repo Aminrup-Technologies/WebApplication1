@@ -26,7 +26,7 @@ namespace WebApplication1.bussiness.production
         public static string date2 = "";
         public static Int32 CalWorkingDays = 0;
         public static Int32 CalWorkingDaysF = 0;
-        public static Int32 TotalPresents = 0;
+        public static decimal TotalPresents = .0m;
         public static decimal GorssBreaker = 0;
 
         public static Int32 WashBreak = 1000; //Added for Calculating Washing Allowances
@@ -773,7 +773,7 @@ namespace WebApplication1.bussiness.production
             dt.Columns.Add("ATT_Allowance", typeof(decimal));
             dt.Columns.Add("SPCL_Allowance", typeof(decimal));
             dt.Columns.Add("Misc_Earnings", typeof(decimal));
-            dt.Columns.Add("Present", typeof(Int32));
+            dt.Columns.Add("Present", typeof(decimal));
             dt.Columns.Add("OverTime", typeof(decimal));
             dt.Columns.Add("BasicSalary", typeof(decimal));
             dt.Columns.Add("FixedRateSalary", typeof(decimal));
@@ -875,7 +875,7 @@ namespace WebApplication1.bussiness.production
                 decimal Misc_Earnings = Convert.ToDecimal(lbl_Misc_Earnings.Text.ToString());
 
                 Label lbl_presents = (Label)GridView.Rows[i].FindControl("lbl_presents");
-                Int32 Present = Convert.ToInt32(lbl_presents.Text.ToString());
+                decimal Present = Convert.ToDecimal(lbl_presents.Text.ToString());
 
                 Label lbl_ttlot = (Label)GridView.Rows[i].FindControl("lbl_ttlot");
                 decimal OverTime = Convert.ToDecimal(lbl_ttlot.Text.ToString());

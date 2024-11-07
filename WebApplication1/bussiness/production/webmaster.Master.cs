@@ -317,7 +317,7 @@ namespace WebApplication1.gentelella_master.production
             //Update loginstatus and Last Login Information i.e. date
             dbcl.UPDT_EmpMuster_LogoutInfo(Session["WORKMAN"].ToString(), Session["USERID"].ToString());
             Session.Abandon();
-            Response.Redirect("~/login.aspx");
+            Response.Redirect("~/login.aspx", false);
         }
 
 

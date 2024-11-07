@@ -374,8 +374,8 @@ namespace WebApplication1.bussiness.production
             Int32 caldays = DateTime.DaysInMonth(year, d.Month);
             lbl_caldays.Text = caldays.ToString();
 
-            Int32 ttldays = 0;
-            Int32 ttldayapproved = 0;
+            decimal ttldays = 0;
+            decimal ttldayapproved = 0;
             PayRoll.HP_FindEmployeeTotalDaysByMonth(month.ToString(), year.ToString(), empwrk, ref ttldays);
             PayRoll.FindEmployeeTotalDaysByMonth(month.ToString(), year.ToString(), empwrk, ref ttldayapproved);
             lbl_totalpresent.Text = ttldayapproved.ToString();

@@ -732,7 +732,7 @@ namespace WebApplication1.bussiness.production
             Int32 caldays = DateTime.DaysInMonth(int_year, int_month);
             lbl_caldays.Text = caldays.ToString();
 
-            Int32 ttl_days = 0;
+            decimal ttl_days = 0;
             PayRoll.FindEmployeeTotalDaysByMonth(Month, Year, empwrk, ref ttl_days);
             lbl_totalpresent.Text = ttl_days.ToString();
             lbl_dayswrkd.Text = ttl_days.ToString();

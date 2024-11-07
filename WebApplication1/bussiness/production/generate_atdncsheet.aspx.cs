@@ -13,8 +13,8 @@ namespace WebApplication1.bussiness.production
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
 
         string str = string.Empty;
-        Int32 dayss = 0;
-        Int32 ots = 0;
+        decimal dayss = 0;
+        decimal ots = 0;
         DataTable dt_emps = new DataTable();
 
         public static string date1 = string.Empty;
@@ -209,8 +209,8 @@ namespace WebApplication1.bussiness.production
             {
                 while (re.Read())
                 {
-                    Int32 daycount = 0;
-                    Int32 ttlot = 0;
+                    decimal daycount = 0;
+                    decimal ttlot = 0;
                     string wrkman = re["WorkmanSL"].ToString();
                     string emp_name = re["FullName"].ToString();
                     string emp_desg = re["SkillDesignation"].ToString();
@@ -239,7 +239,7 @@ namespace WebApplication1.bussiness.production
                 }
             }
         }
-        private void FindAttendance1(string day, string month, string year, string wrk, ref Int32 dayss, ref Int32 ttlot, string region)
+        private void FindAttendance1(string day, string month, string year, string wrk, ref decimal dayss, ref decimal ttlot, string region)
         {
             string date = year + "-" + month + "-" + day;
             dbcl.Sqlconnection();
@@ -275,6 +275,23 @@ namespace WebApplication1.bussiness.production
                                 str = str + "<td width='2%' style='background-color: #00cbf3; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + status + "|" + dbot + "</td>";
                                 break;
 
+                            //Half-day
+                            case "HD":
+                                dayss = dayss + 0.5m;
+                                str = str + "<td width='2%' style='background-color: #91ee3a; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + status + "|" + dbot + "</td>";
+                                break;
+                            // NH Present
+                            case "HP":
+                                dayss = dayss + 2;
+                                str = str + "<td width='2%' style='background-color: #00cbf3; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + status + "|" + dbot + "</td>";
+                                break;
+                            
+                            //------Festival Leave Present--------//
+                            case "FP":
+                                dayss = dayss + 2;
+                                str = str + "<td width='2%' style='background-color: #00cbf3; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + status + "|" + dbot + "</td>";
+                                break;
+
                             case "FL":
                                 dayss = dayss + 1;
                                 str = str + "<td width='2%' style='background-color: #00cbf3; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + status + "|" + dbot + "</td>";
@@ -306,8 +323,8 @@ namespace WebApplication1.bussiness.production
         {
             int Sl = 1;
             Int32 daycount = 0;
-            Int32 ots = 0;
-            Int32 ttlot = 0;
+            decimal ots = 0;
+            decimal ttlot = 0;
             str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='5%' style='background-color:white; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'></td>";
             str = str + "<td width='5%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + wrkman + "</td>";
             str = str + "<td width='18%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + emp_name + "</td>";
@@ -332,7 +349,7 @@ namespace WebApplication1.bussiness.production
             dayss = 0;
             ttlot = 0;
         }
-        private void FindAttendanceOT1(string day, string month, string year, string wrk, ref Int32 dayss, ref Int32 ots, string region)
+        private void FindAttendanceOT1(string day, string month, string year, string wrk, ref Int32 dayss, ref decimal ots, string region)
         {
             string date = year + "-" + month + "-" + day;
             dbcl.Sqlconnection();
@@ -346,7 +363,7 @@ namespace WebApplication1.bussiness.production
                 while (re1.Read())
                 {
                     string dbot = re1["OT"].ToString();
-                    Int32 OT = Convert.ToInt32(dbot);
+                    decimal OT = Convert.ToDecimal(dbot);
                     if (OT > 0)
                     {
                         dayss = dayss + 1;
@@ -422,7 +439,7 @@ namespace WebApplication1.bussiness.production
                 string EmpWrk = string.Empty;
                 string EmpName = string.Empty;
                 string EmpDesg = string.Empty;
-                Int32 TotaPresentCount = 0;
+                decimal TotaPresentCount = .0m;
 
                 for (int i = 0; i < dt_emps.Rows.Count; i++)
                 {
@@ -443,8 +460,8 @@ namespace WebApplication1.bussiness.production
                     dbcl.Conn.Close();
 
 
-                    Int32 daycount = 0;
-                    Int32 halfdaycount = 0;
+                    decimal daycount = 0;
+                    decimal halfdaycount = 0;
                     str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='5%' style='background-color:white; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + Sl + "</td>";
                     str = str + "<td width='5%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + EmpWrk + "</td>";
                     str = str + "<td width='9%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + EmpName + "</td>";
@@ -504,11 +521,11 @@ namespace WebApplication1.bussiness.production
             //}
         }
 
-        private void Calculate_TTLpresent(Int32 daycount, Int32 TOtalHalfPresents, ref Int32 TotaPresentCount)
+        private void Calculate_TTLpresent(decimal daycount, decimal TOtalHalfPresents, ref decimal TotaPresentCount)
         {
-            Int32 HPtoP = 0;
-            Int32 HP2 = 0;
-            Int32 HP3 = 0;
+            decimal HPtoP = 0;
+            decimal HP2 = 0;
+            decimal HP3 = 0;
 
             if (TOtalHalfPresents % 2 == 0)
             {
@@ -530,10 +547,10 @@ namespace WebApplication1.bussiness.production
                     }
                 }
             }
-            Int32 TOtalPresents = daycount + TOtalHalfPresents;
+            decimal TOtalPresents = daycount + TOtalHalfPresents;
             TotaPresentCount = TOtalPresents + HPtoP;
         }
-        private void Find_Present(string day, string month, string year, string wrk, ref Int32 dayss, ref Int32 Halfdays)
+        private void Find_Present(string day, string month, string year, string wrk, ref decimal dayss, ref decimal Halfdays)
         {
             string date = year + "-" + month + "-" + day;
             DataRow[] result = new DataRow[0];
@@ -566,6 +583,24 @@ namespace WebApplication1.bussiness.production
 
                                 case "FL":
                                     dayss = dayss + 1;
+                                    str = str + "<td width='2%' style='background-color: #00cbf3; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + status + "</td>";
+                                    break;
+
+                                //Half-day
+                                case "HD":
+                                    dayss = dayss + 0.5m;
+                                    str = str + "<td width='2%' style='background-color: #91ee3a; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + status + "</td>";
+                                    break;
+
+                                // NH Present
+                                case "HP":
+                                    dayss = dayss + 2;
+                                    str = str + "<td width='2%' style='background-color: #00cbf3; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + status + "</td>";
+                                    break;
+
+                                //------Festival Leave Present--------//
+                                case "FP":
+                                    dayss = dayss + 2;
                                     str = str + "<td width='2%' style='background-color: #00cbf3; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + status + "</td>";
                                     break;
 
@@ -948,7 +983,7 @@ namespace WebApplication1.bussiness.production
                 string EmpWrk = string.Empty;
                 string EmpName = string.Empty;
                 string EmpDesg = string.Empty;
-                Int32 TotaPresentCount = 0;
+                decimal TotaPresentCount = 0;
 
                 for (int i = 0; i < dt_emps.Rows.Count; i++)
                 {
@@ -966,8 +1001,8 @@ namespace WebApplication1.bussiness.production
                     dbcl.DisconnectDb();
                     dbcl.Conn.Close();
 
-                    Int32 daycount = 0;
-                    Int32 halfdaycount = 0;
+                    decimal daycount = 0;
+                    decimal halfdaycount = 0;
                     str = str + "<table width='100%' rowspan=2 style='border-collapse:collapse;'><tr><td width='5%' style='background-color:white; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + Sl + "</td>";
                     str = str + "<td width='5%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + EmpWrk + "</td>";
                     str = str + "<td width='9%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + EmpName + "</td>";
@@ -1076,7 +1111,7 @@ namespace WebApplication1.bussiness.production
             //}
         }
 
-        private void Find_CombPresent(string day, string month, string year, string wrk, ref Int32 dayss, ref Int32 Halfdays)
+        private void Find_CombPresent(string day, string month, string year, string wrk, ref decimal dayss, ref decimal Halfdays)
         {
             string date = year + "-" + month + "-" + day;
             DataRow[] result = new DataRow[0];
@@ -1109,6 +1144,24 @@ namespace WebApplication1.bussiness.production
 
                                 case "FL":
                                     dayss = dayss + 1;
+                                    str = str + "<td width='2%' style='background-color: #00cbf3; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + status + "</td>";
+                                    break;
+
+                                //Half-day
+                                case "HD":
+                                    dayss = dayss + 0.5m;
+                                    str = str + "<td width='2%' style='background-color: #91ee3a; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + status + "</td>";
+                                    break;
+
+                                // NH Present
+                                case "HP":
+                                    dayss = dayss + 2;
+                                    str = str + "<td width='2%' style='background-color: #00cbf3; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + status + "</td>";
+                                    break;
+
+                                //------Festival Leave Present--------//
+                                case "FP":
+                                    dayss = dayss + 2;
                                     str = str + "<td width='2%' style='background-color: #00cbf3; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + status + "</td>";
                                     break;
 
@@ -1188,7 +1241,7 @@ namespace WebApplication1.bussiness.production
             //dbcl.Conn.Close();
         }
 
-        private void FindAttendance4(string day, string month, string year, string wrk, ref Int32 dayss, string region)
+        private void FindAttendance4(string day, string month, string year, string wrk, ref decimal dayss, string region)
         {
             string date = year + "-" + month + "-" + day;
             dbcl.Sqlconnection();
@@ -1220,6 +1273,24 @@ namespace WebApplication1.bussiness.production
 
                             case "FL":
                                 dayss = dayss + 1;
+                                str = str + "<td width='2%' style='background-color: #00cbf3; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + status + "</td>";
+                                break;
+
+                            //Half-day
+                            case "HD":
+                                dayss = dayss + 0.5m;
+                                str = str + "<td width='2%' style='background-color: #91ee3a; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + status + "</td>";
+                                break;
+
+                            // NH Present
+                            case "HP":
+                                dayss = dayss + 2;
+                                str = str + "<td width='2%' style='background-color: #00cbf3; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + status + "</td>";
+                                break;
+
+                            //------Festival Leave Present--------//
+                            case "FP":
+                                dayss = dayss + 2;
                                 str = str + "<td width='2%' style='background-color: #00cbf3; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + status + "</td>";
                                 break;
 
