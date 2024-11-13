@@ -118,6 +118,23 @@
             document.addEventListener("keypress", handleUserActivity);
         });
     </script>
+
+    <!-- Matomo -->
+    <script>
+        var _paq = window._paq = window._paq || [];
+        /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+        _paq.push(['trackPageView']);
+        _paq.push(['enableLinkTracking']);
+        (function () {
+            var u = "//www.optimistic-blackwell.150-242-202-11.plesk.page/";
+            _paq.push(['setTrackerUrl', u + 'matomo.php']);
+            _paq.push(['setSiteId', '3']);
+            var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+            g.async = true; g.src = u + 'matomo.js'; s.parentNode.insertBefore(g, s);
+        })();
+    </script>
+    <!-- End Matomo Code -->
+
     <style type="text/css">
         #loader {
             position: fixed;
@@ -190,8 +207,8 @@
                                                 <li id="DM_OrgData" runat="server" visible="false" class="sub_menu"><a href="deta_mustering.aspx">Organization Data</a></li>
                                                 <li id="DM_EmpData" runat="server" visible="false"><a href="deta_employeemaster.aspx">Employee Data</a></li>
                                             </ul>
-                                        </li> 
-                                        
+                                        </li>
+
                                         <li id="JOBManpower" runat="server" visible="false"><a><i class="fa fa-edit"></i>JOB & Manpower<span class="fa fa-chevron-down"></span></a>
                                             <ul class="nav child_menu">
                                                 <li id="CreateJOBS" runat="server" visible="false"><a href="jobs_and_manpower.aspx">Create JOBID</a></li>
@@ -199,8 +216,8 @@
                                                 <li id="JOBApproval" runat="server" visible="false"><a href="jobs_approval.aspx">JOB Approval</a></li>
                                                 <li id="EmpSearch" runat="server" visible="false"><a href="searchemployee.aspx">Employee Search</a></li>
                                             </ul>
-                                        </li> 
-                                        
+                                        </li>
+
                                         <li id="Memo_Billing" runat="server" visible="false"><a><i class="fa fa-edit"></i>Memo & Billing<span class="fa fa-chevron-down"></span></a>
                                             <ul class="nav child_menu">
                                                 <li id="crt_spm" runat="server"><a href="vw_inchsupmem.aspx">Supply Memo</a></li>
@@ -208,15 +225,15 @@
                                                 <li id="crt_memosum" runat="server"><a href="job_create_summary.aspx">Memo Summary</a></li>
                                             </ul>
                                         </li>
-                                        
+
                                         <li id="CSM" runat="server" visible="false"><a><i class="fa fa-edit"></i>CSM<span class="fa fa-chevron-down"></span></a>
                                             <ul class="nav child_menu">
                                                 <li id="csms_mainview" runat="server" visible="false"><a href="csms_mainview.aspx">CSM Forms</a></li>
                                                 <li id="csm_approvals" runat="server" visible="false"><a href="csm_approvals.aspx">CSM Approval</a></li>
                                                 <li id="csm_reports" runat="server" visible="false"><a href="csm_reports.aspx">CSM Reports</a></li>
                                             </ul>
-                                        </li>     
-                                        
+                                        </li>
+
                                         <li id="loans_adeductions" runat="server" visible="false"><a><i class="fa fa-edit"></i>Loans & Deductions<span class="fa fa-chevron-down"></span></a>
                                             <ul class="nav child_menu">
                                                 <li id="manage_loans" runat="server" visible="false"><a href="#">Manage Loans</a></li>
@@ -229,7 +246,7 @@
                                                 <li id="manage_lvs" runat="server" visible="false"><a href="#">Manage Leaves</a></li>
                                                 <li id="manage_atten" runat="server" visible="false"><a href="#">Manage Attendance</a></li>
                                             </ul>
-                                        </li>           
+                                        </li>
 
                                         <li id="Payroll" runat="server" visible="false"><a><i class="fa fa-edit"></i>Organization Payroll<span class="fa fa-chevron-down"></span></a>
                                             <ul class="nav child_menu">
