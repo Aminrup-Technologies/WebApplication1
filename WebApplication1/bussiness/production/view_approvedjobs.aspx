@@ -121,6 +121,13 @@
 								<ItemStyle CssClass="text text-center" />
 							</asp:TemplateField>
 
+                            <asp:TemplateField HeaderText="Creator_Workman" Visible="false">
+								<ItemTemplate>
+									<asp:Label ID="lbl_Creator_Workman" runat="server" Text='<%# Eval("Creator_Workman") %>' />
+								</ItemTemplate>
+								<ItemStyle CssClass="text text-center" />
+							</asp:TemplateField>
+
 							<asp:TemplateField HeaderText="Supervisor / Submitter Name" HeaderStyle-Width="10%">
 								<ItemTemplate>
 									<asp:Label ID="lbl_Creator_Name" runat="server" Text='<%# Eval("Creator_Name") %>' />
