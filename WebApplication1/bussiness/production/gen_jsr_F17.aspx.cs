@@ -25,13 +25,13 @@ namespace WebApplication1.bussiness.production
         public static string date1 = "";
         public static string date2 = "";
         public static Int32 CalWorkingDays = 0;
-        public static Int32 TotalPresents = 0;
+        public static decimal TotalPresents = 0;
         public static decimal GorssBreaker = 0;
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+            if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
             {
-                Response.Redirect("login.aspx");
+                Response.Redirect("~/login.aspx");
             }
             if (!IsPostBack)
             {
@@ -58,7 +58,8 @@ namespace WebApplication1.bussiness.production
                 else if (Session["REGION"].ToString() == "JSR")
                 {
                     CheckforUser();
-                    GorssBreaker = 20500;
+                    //GorssBreaker = 20500; -- Commented on 21-Aug-2024 Based on mail from Anupam Sharma dated : 19-Aug-2024 for changing ESIC Gross Breaker Amount from 19500 to 20999
+                    GorssBreaker = 20999;
                 }
             }
         }
@@ -578,12 +579,7 @@ namespace WebApplication1.bussiness.production
                         netpay1final = netpay1 - ttldeductions;
                     }
                 }
-                else if (workregion == "AGL")
-                {
-                    netpay2_finalaftrded = netpay2;
-                    netpay1final = netpay1 - ttldeductions;
-                }
-                else if (workregion == "JSR")
+                else if (workregion == "AGL" || workregion == "JSR" || workregion == "NINL" || workregion == "RSP")
                 {
                     netpay2_finalaftrded = netpay2;
                     netpay1final = netpay1 - ttldeductions;

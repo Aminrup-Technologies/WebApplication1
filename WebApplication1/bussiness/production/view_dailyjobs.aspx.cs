@@ -19,9 +19,9 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
-                    Response.Redirect("login.aspx");
+                    Response.Redirect("~/login.aspx");
                 }
                 else
                 {
@@ -235,7 +235,11 @@ namespace WebApplication1.bussiness.production
             }
             else if (e.CommandName == "View_Details")
             {
-                Response.Write("<script>window.open ('view_jobdetails.aspx?JOBID=" + jobid + "','_blank');</script>");
+                Response.Write("<script>window.open('view_jobdetails.aspx?JOBID=" + jobid + "&dbid=" + dbid + "&supv=" + supv + "', '_blank');</script>");
+
+                //Response.Write("<script>window.open ('view_jobdetails.aspx?JOBID=" + jobid + "','_blank');</script>");
+
+                //Response.Redirect("view_jobdetails.aspx?JOBID=" + jobid + "&dbid=" + dbid + "&supv=" + supv, false);
                 //Response.Redirect("view_jobdetails.aspx?JOBID=" + jobid + "");
             }
             else if (e.CommandName == "Delete")

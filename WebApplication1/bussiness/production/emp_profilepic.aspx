@@ -1,22 +1,22 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="emp_profilepic.aspx.cs" Inherits="WebApplication1.bussiness.production.emp_profilepic" %>
-<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="right_col" role="main">
         <div class="">
-            <div class="page-title">
+            <%--<div class="page-title">
                 <div class="title_left">
-                    <h3>Work Permit Upload</h3>
+                    <h3>Profile Picture Upload</h3>
                 </div>
             </div>
-            <div class="clearfix"></div>
+            <div class="clearfix"></div>--%>
 
             <div class="row">
                 <div class="col-md-12 col-sm-12">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Permit Attachment Status & View</h2>
+                            <h2>Photo Upload Status & View</h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                             </ul>
@@ -25,14 +25,15 @@
                         <div class="x_content">
                             <div class="row">
                                 <div class="col-md-3 col-sm-12 form-group" id="pdfuploadbuttonrow1" runat="server" visible="true">
-                                    <label>Upload Permit (.pdf / .jpg) <span class="text text-danger">*</span></label>
+                                    <label>Upload New Photograph (.jpg / .png) <span class="text text-danger">*</span></label>
                                 </div>
                                 <div class="col-md-3 col-sm-12 form-group" id="pdfuploadbuttonrow2" runat="server" visible="true">
                                     <button type="button" class="btn btn-primary btn-sm" id="btnShowPopup" data-toggle="modal" data-target="#myModal">
-                                        <i class="fa fa-plus-circle"></i>&nbsp;Upload Permit File
+                                        <i class="fa fa-plus-circle"></i>&nbsp;Upload Photograph
                                     </button>
                                 </div>
                             </div>
+
                             <!-- Small modal -->
                             <asp:Button ID="ShowPopup" runat="server" Text="Button" class="btn btn-primary" Visible="false" data-toggle="modal" data-target=".bs-example-modal-sm" />
                             <div id="MyPopup" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-hidden="true">
@@ -62,7 +63,7 @@
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h4 class="modal-title">Upload File</h4>
+                                            <h4 class="modal-title">Select / Click & Upload File</h4>
                                             <button type="button" class="close" data-dismiss="modal">&times;</button>
                                         </div>
                                         <div class="modal-body">
@@ -96,7 +97,7 @@
 
 
                             <div class="row" id="Photouploaded" runat="server" visible="false">
-                                <div class="col-md-12 col-sm-12" style="vertical-align: middle; text-align: center;">
+                                <div class="col-md-12 col-sm-12" style="vertical-align: middle; text-align: center;" id="UploadMessage_Div" runat="server" visible="false">
                                     <asp:Image ID="Img_Success" runat="server" ImageUrl="~/erp_images/success_gif.gif" Width="100px" Height="100px" />
                                     <asp:Label ID="Label5" runat="server" Text="Photograph Uploaded Successfully...!" Font-Bold="true" Font-Size="Large"></asp:Label>
                                 </div>
@@ -104,12 +105,13 @@
                                     <div class="col-md-12 col-sm-12">
                                         <asp:Panel ID="PanelViewPhoto" runat="server" Visible="false">
                                             <div class="col-sm-12 col-xs-12">
-                                                <asp:Image ID="ImgDisplay" runat="server" Height="200px" Width="320px" class="img-thumbnail" />
+                                                <asp:Image ID="ImgDisplay" runat="server" Height="250px" Width="320px" class="img-thumbnail" />
                                             </div>
                                         </asp:Panel>
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>

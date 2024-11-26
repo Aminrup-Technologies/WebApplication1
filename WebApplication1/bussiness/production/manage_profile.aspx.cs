@@ -20,9 +20,9 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
-                    Response.Redirect("login.aspx");
+                    Response.Redirect("~/login.aspx");
                 }
                 else
                 {
@@ -177,7 +177,7 @@ namespace WebApplication1.bussiness.production
 
                 btn_relogin.Enabled = true;
                 //Session.Abandon();
-                //Response.Redirect("login.aspx");
+                //Response.Redirect("~/login.aspx");
 
             }
             else
@@ -256,7 +256,7 @@ namespace WebApplication1.bussiness.production
             dbcl.UPDT_EmpMuster_LogoutInfo(Session["WORKMAN"].ToString(), Session["USERID"].ToString());
 
             Session.Abandon();
-            Response.Redirect("login.aspx");
+            Response.Redirect("~/login.aspx");
         }
     }
 }

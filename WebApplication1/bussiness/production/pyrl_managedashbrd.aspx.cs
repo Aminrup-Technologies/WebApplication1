@@ -32,9 +32,9 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
-                    Response.Redirect("login.aspx");
+                    Response.Redirect("~/login.aspx");
                 }
                 else
                 {
@@ -126,13 +126,15 @@ namespace WebApplication1.bussiness.production
                         AGL_F17.Visible = false; KPO_F17.Visible = false; NINL_F17.Visible = false; JSR_F17.Visible = false; ATS_F17.Visible = true;
                         StateSelector.Visible = true; RegionSelector.Visible = true; RegionComSelector.Visible = true;
                         //CheckforUser();
+                        f17_row.Visible = true; rpts_row.Visible = true;
                         control_panel.Visible = true;
                     }
                     else
                     {
                         AGL_F17.Visible = false; KPO_F17.Visible = false; NINL_F17.Visible = false; JSR_F17.Visible = false; ATS_F17.Visible = false;
                         StateSelector.Visible = false; DDL_WorkStates.Enabled = false;
-                        control_panel.Visible = false;
+                        control_panel.Visible = false; rpts_row.Visible = false;
+                        f17_row.Visible = false;
                     }
 
                     PageLoaderData();

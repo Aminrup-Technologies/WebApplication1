@@ -15,33 +15,57 @@ namespace WebApplication1.bussiness.production
     public partial class add_workorders : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
+        public static string state = string.Empty;
+        public static string region = string.Empty;
+        public static string comp = string.Empty;
+        public static string datalock = string.Empty;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
-                    Response.Redirect("login.aspx");
+                    Response.Redirect("~/login.aspx");
                 }
                 else
                 {
-                    string CmdString1 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Work_Region_Code = '"+ Session["REGION"].ToString() + "'  order by Id";
+
+                    if (Session["Changer"] != null)
+                    {
+                        string[] retrievedArray = (string[])Session["Changer"];
+                        region = retrievedArray[1].ToString();
+                        comp = retrievedArray[2].ToString();
+                        state = retrievedArray[0].ToString();
+                        datalock = retrievedArray[3].ToString();
+                        //Session["Changer"]= null;
+                    }
+                    else
+                    {
+                        region = Session["REGION"].ToString();
+                        comp = Session["COMPANY_CODE"].ToString();
+                        state = Session["STATE"].ToString();
+                        datalock = "0";
+                    }
+
+
+                    string CmdString1 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Work_Region_Code = '"+ region + "'  order by Id";
                     BindWorkRegion(CmdString1);
 
-                    DDL_WorkRegion.SelectedValue = Session["REGION"].ToString();
+                    //DDL_WorkRegion.SelectedValue = Session["REGION"].ToString();
 
-                    DDL_WorkRegion.Enabled = false;
+                    //DDL_WorkRegion.Enabled = false;
 
-                    string CmdString2 = "select Company_Name, Company_Code from tlb_workregion_company where Work_Region_Code='" + Session["REGION"].ToString() + "' order by Id";
+                    string CmdString2 = "select Company_Name, Company_Code from tlb_workregion_company where Work_Region_Code='" + region + "' order by Id";
                     BindCompany(CmdString2);
 
-                    DDL_Company.SelectedValue = Session["COMPANY_CODE"].ToString();
-                    DDL_Company.Enabled = false;
+                    //DDL_Company.SelectedValue = Session["COMPANY_CODE"].ToString();
+                    //DDL_Company.Enabled = false;
 
-                    string CmdString3 = "select Company_Department, DB_Code from tlb_workregion_compdept where Work_Region_Code='" + Session["REGION"].ToString() + "' and Company_Code='" + Session["COMPANY_CODE"].ToString() + "' order by Id";
+                    string CmdString3 = "select Company_Department, DB_Code from tlb_workregion_compdept where Work_Region_Code='" + region + "' and Company_Code='" + comp + "' order by Id";
                     BindDepartments(CmdString3);
 
-                    string CmdString4 = "select * from tlb_WO_Data where Work_Region_Code= '"+ Session["REGION"].ToString() + "' and Company_Code='"+ Session["COMPANY_CODE"].ToString() + "' and WO_Status='Active' order by Id";
+                    string CmdString4 = "select * from tlb_WO_Data where Work_Region_Code= '"+ region + "' and Company_Code='"+ comp + "' and WO_Status='Active' order by Id";
                     BindGrid(CmdString4);
                 }
             }

@@ -13,21 +13,41 @@ namespace WebApplication1.bussiness.production
     public partial class viewupdate_empmustertabledata : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
-
         DataTable dt = new DataTable();
-
         static string workhours = "";
+        public static string state = string.Empty;
+        public static string region = string.Empty;
+        public static string comp = string.Empty;
+        public static string datalock = string.Empty;
+
 
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
-                    Response.Redirect("login.aspx");
+                    Response.Redirect("~/login.aspx");
                 }
                 else
                 {
+                    if (Session["Changer"] != null)
+                    {
+                        string[] retrievedArray = (string[])Session["Changer"];
+                        region = retrievedArray[1].ToString();
+                        comp = retrievedArray[2].ToString();
+                        state = retrievedArray[0].ToString();
+                        datalock = retrievedArray[3].ToString();
+                        //Session["Changer"]= null;
+                    }
+                    else
+                    {
+                        region = Session["REGION"].ToString();
+                        comp = Session["COMPANY_CODE"].ToString();
+                        state = Session["STATE"].ToString();
+                        datalock = "0";
+                    }
+
                     DDLBinder();
                     string workmansl = Request.QueryString["ID"];
                     //string workmansl = "A23";
@@ -55,10 +75,10 @@ namespace WebApplication1.bussiness.production
             string CmdString4 = "select Company_Name, Company_Code from tlb_workregion_company order by Id";
             BindCompany(CmdString4);
 
-            string CmdString5 = "select Category_Type, Category_DB from tlb_payroll_category where WorkRegion_Code ='"+ Session["REGION"].ToString() + "' order by Id";
+            string CmdString5 = "select Category_Type, Category_DB from tlb_payroll_category where WorkRegion_Code ='"+ region + "' order by Id";
             BindSkillCategory(CmdString5);
 
-            string CmdString6 = "select Worksite_Name, DB_Code from tlb_atsworksites where WorkRegion_Code ='" + Session["REGION"].ToString() + "' order by Id";
+            string CmdString6 = "select Worksite_Name, DB_Code from tlb_atsworksites where WorkRegion_Code ='" + region + "' order by Id";
             BindWorksites(CmdString6);
 
             string CmdString6a = "select Eduction_Type, EducationDB from tlb_education_types order by Id";
@@ -75,7 +95,7 @@ namespace WebApplication1.bussiness.production
             string CmdString9 = "select Employee_Type, EmpType_Value from tlb_emp_roles order by Id";
             BindEmployeeType(CmdString9);
 
-            string CmdString10 = "select Designation_Type, Designation_DB from tlb_payroll_designation where WorkRegion_Code ='" + Session["REGION"].ToString() + "' order by Id";
+            string CmdString10 = "select Designation_Type, Designation_DB from tlb_payroll_designation where WorkRegion_Code ='" + region + "' order by Id";
             BindSkillDesignation(CmdString10);
 
             string CmdString11 = "select Emp_PermissionText, Emp_PermissionValue from tlb_emp_roles_permission order by Id";

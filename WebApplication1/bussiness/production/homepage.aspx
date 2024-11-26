@@ -40,7 +40,7 @@
 							<p>
 								<strong>Designation : </strong>
 								<asp:Label ID="lbl_desg" runat="server" Text=""></asp:Label>
-								[<asp:Label ID="lbl_skillcat" runat="server" Text=""></asp:Label>]
+								<asp:Label ID="lbl_skillcat" runat="server" Text="" Visible="false"></asp:Label>
 							</p>
 
 							<p>
@@ -56,9 +56,9 @@
 							</p>
 
 							<ul class="list-unstyled">
-								<li><i class="fa fa-calendar"></i>DOJ :
+								<li><i class="fa fa-calendar"></i> DOJ :
 									<asp:Label ID="lbl_doj" runat="server" Text="N/A"></asp:Label></li>
-								<li><i class="fa fa-clock-o"></i>Work Tenure :
+								<li><i class="fa fa-clock-o"></i> Work Tenure :
 									<asp:Label ID="lbl_workage" runat="server" Text=""></asp:Label></li>
 							</ul>
 						</div>

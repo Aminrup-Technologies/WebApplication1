@@ -11,6 +11,9 @@ namespace WebApplication1.bussiness.production.rpts
     public partial class supplymemo : System.Web.UI.Page
     {
         public static string jobid = string.Empty;
+        public static string dbid = string.Empty;
+        public static string supv = string.Empty;
+
         public static string wo_number = string.Empty;
         public static string viewid = string.Empty;
         public static string yr = string.Empty;
@@ -25,6 +28,8 @@ namespace WebApplication1.bussiness.production.rpts
             viewid = Request.QueryString["viewid"];
             yr = Request.QueryString["y"];
             mnt = Request.QueryString["m"];
+            dbid = Request.QueryString["dbid"];
+            supv = Request.QueryString["supv"];
 
             //string JOBID = "JOB0051152";
             Bind_JOBIDDetails(jobid);
@@ -314,7 +319,16 @@ namespace WebApplication1.bussiness.production.rpts
 
         protected void btn_back_Click(object sender, EventArgs e)
         {
-            Response.Redirect("../create_supplymemo.aspx?JOBID=" + jobid + "&viewid=1&y=" + yr + "&m=" + mnt + "");
+            //Response.Redirect("../create_supplymemo.aspx?JOBID=" + jobid + "&viewid=1&y=" + yr + "&m=" + mnt + "");
+            if (viewid == "1")
+            {
+                Response.Redirect($"../create_supplymemo.aspx?JOBID={jobid}&dbid={dbid}&supv={supv}&viewid=1&y={yr}&m={mnt}");
+            }
+            else if (viewid =="2")
+            {
+                Response.Redirect($"../create_supplymemo.aspx?JOBID={jobid}&dbid={dbid}&supv={supv}&viewid=2&y={yr}&m={mnt}");
+            }
+
         }
     }
 }

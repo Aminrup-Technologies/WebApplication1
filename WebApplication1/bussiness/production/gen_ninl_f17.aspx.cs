@@ -23,14 +23,14 @@ namespace WebApplication1.bussiness.production
         public static string date1 = "";
         public static string date2 = "";
         public static Int32 CalWorkingDays = 0;
-        public static Int32 TotalPresents = 0;
+        public static decimal TotalPresents = 0;
         public static decimal GorssBreaker = 0;
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+            if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
             {
-                Response.Redirect("login.aspx");
+                Response.Redirect("~/login.aspx");
             }
             if (!IsPostBack)
             {

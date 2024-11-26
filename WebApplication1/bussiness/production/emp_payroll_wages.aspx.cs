@@ -25,9 +25,9 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
-                    Response.Redirect("login.aspx");
+                    Response.Redirect("~/login.aspx");
                 }
                 else
                 {
@@ -53,7 +53,7 @@ namespace WebApplication1.bussiness.production
                         string CmdString1 = "select Country_Name, Country_Code from tlb_work_country";
                         BindCountry(CmdString1);
 
-                        string CmdString2 = "select * from tlb_payroll_wages and Status='Active' order by Id";
+                        string CmdString2 = "select * from tlb_payroll_wages where Status='Active' order by Id";
                         BindGrid(CmdString2);
                     }
                     else

@@ -1,0 +1,84 @@
+	/*
+  	Flaticon icon font: Flaticon
+  	Creation date: 16/08/2018 09:05
+  	*/
+
+@font-face {
+  font-family: "Flaticon";
+  src: url("../fonts/Flaticon.eot");
+  src: url("../fonts/Flaticond41d.eot?#iefix") format("embedded-opentype"),
+       url("../fonts/Flaticon.woff") format("woff"),
+       url("../fonts/Flaticon.ttf") format("truetype"),
+       url("../fonts/Flaticon.svg#Flaticon") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: "Flaticon";
+    src: url("../fonts/Flaticon.svg#Flaticon") format("svg");
+  }
+}
+
+[class^="flaticon-"]:before, [class*=" flaticon-"]:before,
+[class^="flaticon-"]:after, [class*=" flaticon-"]:after {
+  font-family: Flaticon;
+        font-size: 20px;
+font-style: normal;
+margin-left: 20px;
+}
+
+.flaticon-shop:before { content: "\f100"; }
+.flaticon-metal:before { content: "\f101"; }
+.flaticon-tick:before { content: "\f102"; }
+.flaticon-distribution:before { content: "\f103"; }
+.flaticon-innovation:before { content: "\f104"; }
+.flaticon-gear:before { content: "\f105"; }
+.flaticon-trophy:before { content: "\f106"; }
+.flaticon-engine:before { content: "\f107"; }
+.flaticon-interview:before { content: "\f108"; }
+.flaticon-energy-saving:before { content: "\f109"; }
+.flaticon-process:before { content: "\f10a"; }
+.flaticon-3d:before { content: "\f10b"; }
+.flaticon-moving-truck:before { content: "\f10c"; }
+.flaticon-worker:before { content: "\f10d"; }
+.flaticon-smartphone:before { content: "\f10e"; }
+.flaticon-phone:before { content: "\f10f"; }
+.flaticon-oil:before { content: "\f110"; }
+.flaticon-check:before { content: "\f111"; }
+.flaticon-buy:before { content: "\f112"; }
+.flaticon-percentage-symbol-inside-a-businessman-head:before { content: "\f113"; }
+.flaticon-research:before { content: "\f114"; }
+.flaticon-bald-head-with-pie-graphic-inside:before { content: "\f115"; }
+.flaticon-magnifying-glass:before { content: "\f116"; }
+.flaticon-search:before { content: "\f117"; }
+.flaticon-quote-sign:before { content: "\f118"; }
+.flaticon-check-1:before { content: "\f119"; }
+.flaticon-expand:before { content: "\f11a"; }
+.flaticon-bag:before { content: "\f11b"; }
+.flaticon-check-square:before { content: "\f11c"; }
+.flaticon-direction:before { content: "\f11d"; }
+.flaticon-back:before { content: "\f11e"; }
+.flaticon-right-arrow:before { content: "\f11f"; }
+.flaticon-slim-left:before { content: "\f120"; }
+.flaticon-slim-right:before { content: "\f121"; }
+.flaticon-shopping-bag:before { content: "\f122"; }
+.flaticon-back-1:before { content: "\f123"; }
+.flaticon-next:before { content: "\f124"; }
+.flaticon-helmet:before { content: "\f125"; }
+.flaticon-mine:before { content: "\f126"; }
+.flaticon-smiley:before { content: "\f127"; }
+.flaticon-smile:before { content: "\f128"; }
+.flaticon-face:before { content: "\f129"; }
+.flaticon-trophy-1:before { content: "\f12a"; }
+.flaticon-sports-and-competition:before { content: "\f12b"; }
+.flaticon-like:before { content: "\f12c"; }
+.flaticon-like-1:before { content: "\f12d"; }
+.flaticon-award:before { content: "\f12e"; }
+.flaticon-medal:before { content: "\f12f"; }
+.flaticon-award-1:before { content: "\f130"; }
+.flaticon-award-2:before { content: "\f131"; }
+.flaticon-trophy-2:before { content: "\f132"; }
+.flaticon-alarm-clock:before { content: "\f133"; }
+.flaticon-round-play-button:before { content: "\f134"; }

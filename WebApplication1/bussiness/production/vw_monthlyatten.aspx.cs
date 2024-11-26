@@ -41,9 +41,9 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
-                    Response.Redirect("login.aspx");
+                    Response.Redirect("~/login.aspx");
                 }
                 else
                 {
@@ -187,8 +187,8 @@ namespace WebApplication1.bussiness.production
             Int32 caldays = DateTime.DaysInMonth(int_year, int_month);
             lbl_caldays.Text = caldays.ToString();
 
-            Int32 ttl_days = 0;
-            Int32 ttldayapproved = 0;
+            decimal ttl_days = 0;
+            decimal ttldayapproved = 0;
             PayRoll.FindEmployeeTotalDaysByMonth(Month, Year, empwrk, ref ttldayapproved);
             lbl_totalpresent.Text = ttldayapproved.ToString();
 
@@ -297,7 +297,7 @@ namespace WebApplication1.bussiness.production
             Int32 CD = DateTime.DaysInMonth(CY, CM);
             lbl_caldays.Text = CD.ToString();
 
-            Int32 ttl_days = 0;
+            decimal ttl_days = 0;
             PayRoll.FindEmployeeTotalDaysByMonth(Month, Year, EWRK, ref ttl_days);
             lbl_totalpresent.Text = ttl_days.ToString();
             lbl_dayswrkd.Text = ttl_days.ToString();
@@ -531,7 +531,7 @@ namespace WebApplication1.bussiness.production
             Int32 caldays = DateTime.DaysInMonth(int_year, int_month);
             lbl_caldays.Text = caldays.ToString();
 
-            Int32 ttl_days = 0;
+            decimal ttl_days = 0;
             PayRoll.FindEmployeeTotalDaysByMonth(Month, Year, empwrk, ref ttl_days);
             lbl_totalpresent.Text = ttl_days.ToString();
             lbl_dayswrkd.Text = ttl_days.ToString();

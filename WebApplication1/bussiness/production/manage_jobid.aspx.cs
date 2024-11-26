@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data.SqlClient;
 using System.Data;
@@ -18,9 +14,9 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
-                    Response.Redirect("login.aspx");
+                    Response.Redirect("~/login.aspx", false);
                 }
                 else
                 {
@@ -39,7 +35,6 @@ namespace WebApplication1.bussiness.production
                 }
             }
         }
-
         private void Bind_BillingType(string CmdString)
         {
             dbcl.Sqlconnection();
@@ -53,8 +48,6 @@ namespace WebApplication1.bussiness.production
             DDL_BillingType.Items.Insert(0, "Please Select Option");
             dbcl.DisconnectDb();
         }
-
-
         private void BindGrid(string cmdString)
         {
             dbcl.Sqlconnection();
@@ -67,7 +60,6 @@ namespace WebApplication1.bussiness.production
             GridView1.DataBind();
             dbcl.Conn.Close();
         }
-
         protected void JOBID_Delete(string id, string dbcode)
         {
             try
@@ -90,10 +82,8 @@ namespace WebApplication1.bussiness.production
 
             string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_InchargeName='" + Session["USERNAME"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' order by CreatedDate desc";
             BindGrid(CmdString2);
-            Response.Redirect(Request.Url.AbsoluteUri);
+            Response.Redirect(Request.Url.AbsoluteUri, false);
         }
-
-
         private void Delete_from_JOBTable(string id, string dbcode)
         {
             try
@@ -115,7 +105,6 @@ namespace WebApplication1.bussiness.production
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
-
         private void Delete_from_PermitTable(string dbcode)
         {
             try
@@ -137,7 +126,6 @@ namespace WebApplication1.bussiness.production
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
-
         private void Delete_from_AttendanceTable(string dbcode)
         {
             try
@@ -159,7 +147,6 @@ namespace WebApplication1.bussiness.production
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
-
         protected void GridView1_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             for (int i = 0; i <= GridView1.Rows.Count - 1; i++)
@@ -211,7 +198,6 @@ namespace WebApplication1.bussiness.production
                 }
             }
         }
-
         protected void GridView1_RowCommand(object sender, GridViewCommandEventArgs e)
         {
             //string jobid = Convert.ToString(e.CommandArgument);
@@ -265,14 +251,17 @@ namespace WebApplication1.bussiness.production
             }
             else if (e.CommandName == "View_Details")
             {
-                Response.Redirect("view_jobdetails.aspx?JOBID=" + jobid + "");
+                //Response.Redirect("view_jobdetails.aspx?JOBID=" + jobid + "");
+
+                //The below code is added on 28-10-2024 and above is commented
+                Response.Redirect("view_jobdetails.aspx?JOBID=" + jobid + "&dbid=" + dbid + "&supv=" + supv, false);
+
             }
             else if(e.CommandName == "Delete")
             {
                 JOBID_Delete(dbid, jobid);
             }
         }
-
         private void JOBID_Status_Swaper(string jobid, string dbid)
         {
             dbcl.Sqlconnection();
@@ -304,8 +293,6 @@ namespace WebApplication1.bussiness.production
             string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' order by CreatedDate desc";
             BindGrid(CmdString2);
         }
-
-
         protected void btn_prevmonth_Click(object sender, EventArgs e)
         {
             Int32 year = Convert.ToInt32(lbl_year.Text.ToString());
@@ -334,7 +321,6 @@ namespace WebApplication1.bussiness.production
 
             GridBinder(Year, Month);
         }
-
         protected void btn_currentdata_Click(object sender, EventArgs e)
         {
 
@@ -343,7 +329,6 @@ namespace WebApplication1.bussiness.production
 
             GridBinder(Year, Month);
         }
-
         protected void btn_nextmonth_Click(object sender, EventArgs e)
         {
             Int32 year = Convert.ToInt32(lbl_year.Text.ToString());
@@ -372,7 +357,6 @@ namespace WebApplication1.bussiness.production
 
             GridBinder(Year, Month);
         }
-
         private void GridBinder(string Year, string Month)
         {
             string Monthname = "";
@@ -488,13 +472,11 @@ namespace WebApplication1.bussiness.production
                 }
             }
         }
-
         protected void btn_reset_Click(object sender, EventArgs e)
         {
             string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + DateTime.Now.Year.ToString() + "' and MONTH(CreatedDate)='" + DateTime.Now.Month.ToString() + "' order by CreatedDate desc";
             BindGrid(CmdString2);
         }
-
         protected void btn_submit_Click(object sender, EventArgs e)
         {
             string Year = lbl_year.Text.ToString();

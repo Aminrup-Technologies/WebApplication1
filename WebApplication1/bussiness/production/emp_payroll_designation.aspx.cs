@@ -12,16 +12,38 @@ namespace WebApplication1.bussiness.production
     public partial class emp_payroll_desgination : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
+        public static string state = string.Empty;
+        public static string region = string.Empty;
+        public static string comp = string.Empty;
+        public static string datalock = string.Empty;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
-                    Response.Redirect("login.aspx");
+                    Response.Redirect("~/login.aspx");
                 }
                 else
                 {
+                    if (Session["Changer"] != null)
+                    {
+                        string[] retrievedArray = (string[])Session["Changer"];
+                        region = retrievedArray[1].ToString();
+                        comp = retrievedArray[2].ToString();
+                        state = retrievedArray[0].ToString();
+                        datalock = retrievedArray[3].ToString();
+                        //Session["Changer"]= null;
+                    }
+                    else
+                    {
+                        region = Session["REGION"].ToString();
+                        comp = Session["COMPANY_CODE"].ToString();
+                        state = Session["STATE"].ToString();
+                        datalock = "0";
+                    }
+
                     if (Session["USTATE"].ToString() == "PI")
                     {
                         string CmdString1 = "select Country_Name, Country_Code from tlb_work_country";
@@ -38,30 +60,30 @@ namespace WebApplication1.bussiness.production
                         DDL_WorkCountry.SelectedValue = "IN";
                         DDL_WorkCountry.Enabled = false;
 
-                        string CmdString3 = "select State_Name, State_Code from tlb_work_state where Country_Code = 'IN' and State_Code='" + Session["USTATE"].ToString() + "' order by Id";
+                        string CmdString3 = "select State_Name, State_Code from tlb_work_state where Country_Code = 'IN' and State_Code='" + state + "' order by Id";
                         BindCountryState(CmdString3);
 
-                        DDL_WorkStates.SelectedValue = Session["USTATE"].ToString();
+                        DDL_WorkStates.SelectedValue = state;
                         DDL_WorkStates.Enabled = false;
 
 
-                        string CmdString4 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = 'IN' and State_Code ='" + Session["USTATE"].ToString() + "' and Work_Region_Code='" + Session["REGION"].ToString() + "' order by Id ";
+                        string CmdString4 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = 'IN' and State_Code ='" + state + "' and Work_Region_Code='" + region + "' order by Id ";
                         BindRegions(CmdString4);
 
-                        DDL_Region.SelectedValue = Session["REGION"].ToString();
+                        DDL_Region.SelectedValue = region;
                         DDL_Region.Enabled = false;
 
 
-                        string CmdString5 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = 'IN' and State_Code ='" + Session["USTATE"].ToString() + "' and Work_Region_Code = '" + Session["REGION"].ToString() + "' and Company_Code = '" + Session["COMPANY_CODE"].ToString() + "' order by Id ";
+                        string CmdString5 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = 'IN' and State_Code ='" + state + "' and Work_Region_Code = '" + region + "' and Company_Code = '" + comp + "' order by Id ";
                         BindCompany(CmdString5);
 
-                        DDL_Company.SelectedValue = Session["COMPANY_CODE"].ToString();
+                        DDL_Company.SelectedValue = comp;
                         DDL_Company.Enabled = false;
 
-                        string CmdString3a = "select Category_Type, Category_DB from tlb_payroll_category where Country_Code = 'IN' and State_Code ='" + Session["USTATE"].ToString() + "' and WorkRegion_Code = '" + Session["REGION"].ToString() + "' and Company_Code='" + Session["COMPANY_CODE"].ToString() + "' order by Id ";
+                        string CmdString3a = "select Category_Type, Category_DB from tlb_payroll_category where Country_Code = 'IN' and State_Code ='" + state + "' and WorkRegion_Code = '" + region + "' and Company_Code='" + comp + "' order by Id ";
                         BindSkillCategory(CmdString3a);
 
-                        string CmdString2 = "select * from tlb_payroll_designation where Country_Code='IN' and State_Code='" + Session["USTATE"].ToString() + "' and WorkRegion_Code='" + Session["REGION"].ToString() + "' and Company_Code='" + Session["COMPANY_CODE"].ToString() + "' order by Id";
+                        string CmdString2 = "select * from tlb_payroll_designation where Country_Code='IN' and State_Code='" + state + "' and WorkRegion_Code='" + region + "' and Company_Code='" + comp + "' order by Id";
                         BindGrid(CmdString2);
                     }
                 }
@@ -103,7 +125,7 @@ namespace WebApplication1.bussiness.production
                 string CmdString3 = "select State_Name, State_Code from tlb_work_state where Country_Code = '" + DDL_WorkCountry.SelectedValue.ToString() + "'";
                 BindCountryState(CmdString3);
 
-                string CmdString2 = "select * from tlb_payroll_designation where Country_Code = 'IN' and State_Code='" + Session["USTATE"].ToString() + "' and WorkRegion_Code ='" + Session["REGION"].ToString() + "' order by Id";
+                string CmdString2 = "select * from tlb_payroll_designation where Country_Code = 'IN' and State_Code='" + state + "' and WorkRegion_Code ='" + region + "' order by Id";
                 BindGrid(CmdString2);
             }
         }
@@ -210,7 +232,7 @@ namespace WebApplication1.bussiness.production
             }
             else
             {
-                string CmdString2 = "select * from tlb_payroll_designation where Country_Code = 'IN' and State_Code ='" + Session["USTATE"].ToString() + "' and WorkRegion_Code='" + Session["REGION"].ToString() + "' and Company_Code = '" + Session["COMPANY_CODE"].ToString() + "' order by Id";
+                string CmdString2 = "select * from tlb_payroll_designation where Country_Code = 'IN' and State_Code ='" + state + "' and WorkRegion_Code='" + region + "' and Company_Code = '" + comp + "' order by Id";
                 BindGrid(CmdString2);
             }
         }
@@ -290,7 +312,7 @@ namespace WebApplication1.bussiness.production
 
                     txt_designation_Name.Text = "";
 
-                    string CmdString2 = "select * from tlb_payroll_designation where WorkRegion_Code = '" + Session["REGION"].ToString() + "' AND Company_Code='" + Session["COMPANY_CODE"].ToString() + "' and Category_DB = '"+ DDl_Category_type.SelectedValue.ToString() + "' order by Id";
+                    string CmdString2 = "select * from tlb_payroll_designation where WorkRegion_Code = '" + region + "' AND Company_Code='" + comp + "' and Category_DB = '"+ DDl_Category_type.SelectedValue.ToString() + "' order by Id";
                     BindGrid(CmdString2);
 
                     string title = "Notifications :";
@@ -324,7 +346,7 @@ namespace WebApplication1.bussiness.production
             }
             else
             {
-                string CmdString2 = "select * from tlb_payroll_designation where Country_Code = 'IN' and State_Code ='" + Session["USTATE"].ToString() + "' and WorkRegion_Code='" + Session["REGION"].ToString() + "' and Company_Code = '" + Session["COMPANY_CODE"].ToString() + "' and Category_DB='"+DDl_Category_type.SelectedValue.ToString()+"' order by Id";
+                string CmdString2 = "select * from tlb_payroll_designation where Country_Code = 'IN' and State_Code ='" + Session["USTATE"].ToString() + "' and WorkRegion_Code='" + region + "' and Company_Code = '" + comp + "' and Category_DB='"+DDl_Category_type.SelectedValue.ToString()+"' order by Id";
                 BindGrid(CmdString2);
             }
         }

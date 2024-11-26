@@ -36,7 +36,7 @@ namespace WebApplication1.bussiness.production
 
         public static Int32 CWD = 0;
 
-        public static Int32 P = 0;
+        public static decimal P = .0m;
         public static decimal OT = .0m;
         public static decimal DSR = 0.0m;
         public static string FixedSalary_YesNo = "";
@@ -55,9 +55,9 @@ namespace WebApplication1.bussiness.production
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+            if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
             {
-                Response.Redirect("login.aspx");
+                Response.Redirect("~/login.aspx");
             }
             if (!IsPostBack)
             {

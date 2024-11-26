@@ -9,7 +9,8 @@ using System.IO;
 using Org.BouncyCastle.Math.EC.Multiplier;
 using System.Net.Mail;
 using System.Net;
-using System.Configuration;
+using System.Web.Hosting;
+using System.Threading;
 
 namespace WebApplication1.bussiness.production
 {
@@ -20,6 +21,10 @@ namespace WebApplication1.bussiness.production
         //public static string Logs = @"D:\RnD\OH4Y_Aug23\WebApplication1\WebApplication1\bussiness\production\WindowsServiceLog\";
         //public static string Logs = @"\production\WindowsServiceLog\";
         //public SqlConnection Conn;
+
+        static readonly string basePath1 = HostingEnvironment.MapPath("~/bussiness/production/");
+        static readonly string basePath2 = HostingEnvironment.MapPath("~/bussiness/production/");
+
         public SqlDataReader dr;
         public SqlCommand cmd;
         public SqlDataAdapter da;
@@ -96,8 +101,9 @@ namespace WebApplication1.bussiness.production
 
         public void WriteToFile(string text)
         {
-            string basePath1 = @"C:\atswork.in\wwwroot\bussiness\production\";
-            string basePath2 = @"D:\RnD\OH4Y_Aug23\WebApplication1\WebApplication1\bussiness\production\";
+            
+            //string basePath1 = @"C:\atswork.in\wwwroot\bussiness\production\";
+            //string basePath2 = @"D:\RnD\OH4Y_Aug23\WebApplication1\WebApplication1\bussiness\production\";
 
             string selectedPath = null;
 
@@ -756,6 +762,31 @@ namespace WebApplication1.bussiness.production
             Hours = Math.Round(Convert.ToDecimal(totalmin) / 60, 2);
         }
 
+        public bool FindEmployeeWorkedTimeNew(string emp_intime, string emp_outtime, ref int totalmin, ref decimal hours)
+        {
+            DateTime intm;
+            DateTime outm;
+
+            // Parsing input strings to DateTime objects
+            if (!DateTime.TryParse(emp_intime, out intm) || !DateTime.TryParse(emp_outtime, out outm))
+            {
+                // Parsing failed, return false
+                return false;
+            }
+
+            // Calculating duration
+            TimeSpan duration = outm - intm;
+
+            // Total minutes calculation
+            totalmin = (int)duration.TotalMinutes;
+
+            // Total hours calculation, rounded to two decimal places
+            hours = Math.Round((decimal)duration.TotalHours, 2);
+
+            return true;
+        }
+
+
 
         public void Findworktime1(string emp_intime, string emp_outtime, ref Int32 totalmin)
         {
@@ -769,9 +800,18 @@ namespace WebApplication1.bussiness.production
             Int32 hrstomin = hrs * 60;
             Int32 min = duration.Minutes;
             totalmin = daysmin + hrstomin + min;
-
-
         }
+
+        public void Findworktime_New(string emp_intime, string emp_outtime, ref int totalmin)
+        {
+            DateTime intm = DateTime.Parse(emp_intime);
+            DateTime outm = DateTime.Parse(emp_outtime);
+
+            TimeSpan duration = outm - intm;
+            totalmin = (int)duration.TotalMinutes;
+        }
+
+
         public void CalculateOvertime(Int32 EmpWorkHours, Int32 wrdtym, string lunch, ref decimal emp_calOThrs)
         {
             decimal emp_calOTMins = .0m;
@@ -863,6 +903,134 @@ namespace WebApplication1.bussiness.production
 
             emp_calOThrs = Math.Round(result, 2);
         }
+
+        //public void CalculateOvertimeRev(Int32 EmpWorkHours, Int32 wrdtym, string lunch, ref decimal emp_calOThrs)
+        //{
+        //    decimal emp_calOTMins = .0m;
+        //    decimal emp_calOTMins1 = .0m;
+        //    decimal emp_calOTMins2 = .0m;
+
+        //    decimal result = .0m;
+        //    if (EmpWorkHours == 1440)
+        //    {
+        //        emp_calOTMins = .0m;
+        //    }
+        //    else if (EmpWorkHours == 720)
+        //    {
+        //        if (wrdtym > 720)
+        //        {
+        //            if (lunch == "YES" || lunch == "Yes")
+        //            {
+        //                emp_calOTMins1 = wrdtym - EmpWorkHours - 30;
+        //                if (emp_calOTMins1 < 0)
+        //                {
+        //                    emp_calOTMins = .0m;
+        //                }
+        //                else
+        //                {
+        //                    emp_calOTMins = emp_calOTMins1;
+        //                }
+        //            }
+        //            else
+        //            {
+        //                emp_calOTMins1 = wrdtym - EmpWorkHours + 30;
+        //                if (emp_calOTMins1 < .0m)
+        //                {
+        //                    emp_calOTMins = .0m;
+        //                }
+        //                else
+        //                {
+        //                    emp_calOTMins = emp_calOTMins1;
+        //                }
+        //            }
+        //        }
+        //        else
+        //        {
+        //            if (lunch == "YES" || lunch == "Yes")
+        //            {
+        //                emp_calOTMins = .0m;
+        //            }
+        //            else
+        //            {
+        //                emp_calOTMins = 60;
+        //            }
+        //        }
+        //    }
+        //    else if (EmpWorkHours == 480)
+        //    {
+        //        if (wrdtym > 480)
+        //        {
+        //            if (lunch == "YES" || lunch == "Yes")
+        //            {
+        //                emp_calOTMins2 = wrdtym - EmpWorkHours - 30;
+        //                if (emp_calOTMins2 < .0m)
+        //                {
+        //                    emp_calOTMins = .0m;
+        //                }
+        //                else
+        //                {
+        //                    emp_calOTMins = emp_calOTMins2;
+        //                }
+        //            }
+        //            else
+        //            {
+        //                emp_calOTMins2 = wrdtym - EmpWorkHours;
+        //                if (emp_calOTMins2 < .0m)
+        //                {
+        //                    emp_calOTMins = .0m;
+        //                }
+        //                else
+        //                {
+        //                    emp_calOTMins = emp_calOTMins2;
+        //                }
+        //            }
+        //        }
+        //        else
+        //        {
+        //            emp_calOTMins = .0m;
+        //        }
+        //    }
+        //    //emp_calOThrs = emp_calOTMins;
+        //    result = emp_calOTMins / 60;
+
+        //    emp_calOThrs = Math.Round(result, 2);
+        //}
+
+        public void CalculateOvertimeRev(int EmpWorkHours, int wrdtym, string lunch, ref decimal emp_calOThrs)
+        {
+            decimal emp_calOTMins = 0.0m;
+
+            // Handle the case when the employee is supposed to work a full day (24 hours = 1440 minutes)
+            if (EmpWorkHours == 1440)
+            {
+                emp_calOTMins = 0.0m; // No overtime allowed
+            }
+            // Handle the case when the employee is supposed to work a half day (12 hours = 720 minutes)
+            else if (EmpWorkHours == 720)
+            {
+                if (wrdtym > EmpWorkHours)
+                {
+                    // Calculate overtime considering lunch
+                    emp_calOTMins = wrdtym - EmpWorkHours - (lunch.Equals("YES", StringComparison.OrdinalIgnoreCase) ? 30 : 0);
+                    emp_calOTMins = Math.Max(emp_calOTMins, 0); // Ensure overtime minutes are non-negative
+                }
+                // No overtime if actual worked time is less than or equal to required
+            }
+            // Handle the case when the employee is supposed to work a short day (8 hours = 480 minutes)
+            else if (EmpWorkHours == 480)
+            {
+                if (wrdtym > EmpWorkHours)
+                {
+                    // Calculate overtime considering lunch
+                    emp_calOTMins = wrdtym - EmpWorkHours - (lunch.Equals("YES", StringComparison.OrdinalIgnoreCase) ? 30 : 0);
+                    emp_calOTMins = Math.Max(emp_calOTMins, 0); // Ensure overtime minutes are non-negative
+                }
+            }
+
+            // Convert minutes to hours and round to two decimal places for final overtime calculation
+            emp_calOThrs = Math.Round(emp_calOTMins / 60, 2);
+        }
+
 
         public void calmonth(DropDownList cmbM1)
         {
@@ -1616,6 +1784,7 @@ namespace WebApplication1.bussiness.production
             Sqlconnection();
             ConnectDb();
             cmd = new SqlCommand(s1, Conn);
+            cmd.CommandTimeout = 60;
             cmd.CommandType = CommandType.Text;
             if (SPParameter != null)
             {

@@ -16,9 +16,9 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
-                    Response.Redirect("login.aspx");
+                    Response.Redirect("~/login.aspx");
                 }
                 else
                 {
@@ -130,10 +130,13 @@ namespace WebApplication1.bussiness.production
             //Fetch value of Name.
             string dbid = (row.FindControl("lbl_Id") as Label).Text;
             string jobid = (row.FindControl("lbl_JOBID") as Label).Text;
-
+            string supv = (row.FindControl("lbl_Creator_Workman") as Label).Text;
             if (e.CommandName == "View_Details")
             {
-                Response.Redirect("view_jobdetails.aspx?JOBID=" + jobid + "");
+                //Response.Redirect("view_jobdetails.aspx?JOBID=" + jobid + "");
+                //The below code is added on 28-10-2024 and above is commented
+
+                Response.Redirect("view_jobdetails.aspx?JOBID=" + jobid + "&dbid=" + dbid + "&supv=" + supv, false);
             }
         }
 

@@ -12,21 +12,54 @@ namespace WebApplication1.bussiness.production
     public partial class atsworksite_incharges : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
+        public static string state = string.Empty;
+        public static string region = string.Empty;
+        public static string comp = string.Empty;
+        public static string datalock = string.Empty;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
-                    Response.Redirect("login.aspx");
+                    Response.Redirect("~/login.aspx");
                 }
                 else
                 {
-                    string CmdString1 = "select Worksite_Name, DB_Code from tlb_atsworksites where WorkRegion_Code = '" + Session["REGION"].ToString() + "'";
-                    BindWorksites(CmdString1);
+                    if (Session["Changer"] != null)
+                    {
+                        string[] retrievedArray = (string[])Session["Changer"];
+                        region = retrievedArray[1].ToString();
+                        comp = retrievedArray[2].ToString();
+                        state = retrievedArray[0].ToString();
+                        datalock = retrievedArray[3].ToString();
+                        //Session["Changer"]= null;
+                    }
+                    else
+                    {
+                        region = Session["REGION"].ToString();
+                        comp = Session["COMPANY_CODE"].ToString();
+                        state = Session["STATE"].ToString();
+                        datalock = "0";
+                    }
 
-                    string CmdString2 = "select * from tlb_atsworksiteIncharges where Region_Code = '" + Session["REGION"].ToString() + "' order by Id";
-                    BindGrid(CmdString2);
+                    if (state == "PI")
+                    {
+                        string CmdString1 = "select Worksite_Name, DB_Code from tlb_atsworksites";
+                        BindWorksites(CmdString1);
+
+                        string CmdString2 = "select * from tlb_atsworksiteIncharges order by Id";
+                        BindGrid(CmdString2);
+                    }
+                    else
+                    {
+                        string CmdString1 = "select Worksite_Name, DB_Code from tlb_atsworksites where WorkRegion_Code = '" + region + "'";
+                        BindWorksites(CmdString1);
+
+                        string CmdString2 = "select * from tlb_atsworksiteIncharges where Region_Code = '" + region + "' order by Id";
+                        BindGrid(CmdString2);
+                    }
                 }
             }
         }
@@ -97,9 +130,9 @@ namespace WebApplication1.bussiness.production
                 SqlCommand cmd = new SqlCommand(InsertQuery, dbcl.Conn);
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@Country_Code", "IN");
-                cmd.Parameters.AddWithValue("@State_Code", "OD");
-                cmd.Parameters.AddWithValue("@Region_Code", Session["REGION"].ToString());
-                cmd.Parameters.AddWithValue("@Company_Code", Session["COMPANY_CODE"].ToString());
+                cmd.Parameters.AddWithValue("@State_Code", state);
+                cmd.Parameters.AddWithValue("@Region_Code", region);
+                cmd.Parameters.AddWithValue("@Company_Code", comp);
                 cmd.Parameters.AddWithValue("@DB_Code", DDL_worksites.SelectedValue.ToString());
                 cmd.Parameters.AddWithValue("@Worksite_Name", DDL_worksites.SelectedItem.Text.ToString());
                 cmd.Parameters.AddWithValue("@Employee_Workman", txt_empworkman.Text.ToString());
@@ -110,7 +143,7 @@ namespace WebApplication1.bussiness.production
                 dbcl.DisconnectDb();
                 dbcl.Conn.Close();
 
-                string CmdString2 = "select * from tlb_atsworksiteIncharges where Region_Code = '" + Session["REGION"].ToString() + "' order by Id";
+                string CmdString2 = "select * from tlb_atsworksiteIncharges where Region_Code = '" + region+ "' order by Id";
                 BindGrid(CmdString2);
 
                 string title = "Notifications :";
@@ -148,14 +181,14 @@ namespace WebApplication1.bussiness.production
         protected void GridView1_RowEditing(object sender, GridViewEditEventArgs e)
         {
             GridView1.EditIndex = e.NewEditIndex;
-            string CmdString2 = "select * from tlb_atsworksiteIncharges where Region_Code = '" + Session["REGION"].ToString() + "' order by Id";
+            string CmdString2 = "select * from tlb_atsworksiteIncharges where Region_Code = '" + region + "' order by Id";
             BindGrid(CmdString2);
         }
 
         protected void GridView1_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e)
         {
             GridView1.EditIndex = -1;
-            string CmdString2 = "select * from tlb_atsworksiteIncharges where Region_Code = '" + Session["REGION"].ToString() + "' order by Id";
+            string CmdString2 = "select * from tlb_atsworksiteIncharges where Region_Code = '" + region + "' order by Id";
             BindGrid(CmdString2);
 
             string title = "Notifications :";
@@ -210,7 +243,7 @@ namespace WebApplication1.bussiness.production
             }
 
             GridView1.EditIndex = -1;
-            string CmdString2 = "select * from tlb_atsworksiteIncharges where Region_Code = '" + Session["REGION"].ToString() + "' order by Id";
+            string CmdString2 = "select * from tlb_atsworksiteIncharges where Region_Code = '" + region+ "' order by Id";
             BindGrid(CmdString2);
         }
 
@@ -221,7 +254,7 @@ namespace WebApplication1.bussiness.production
             ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
 
 
-            string CmdString2 = "select * from tlb_atsworksiteIncharges where Region_Code = '" + Session["REGION"].ToString() + "' order by Id";
+            string CmdString2 = "select * from tlb_atsworksiteIncharges where Region_Code = '" + region + "' order by Id";
             BindGrid(CmdString2);
 
             //Label ID = (Label)GridView1.Rows[e.RowIndex].FindControl("lbl_Id");
@@ -258,7 +291,7 @@ namespace WebApplication1.bussiness.production
 
         protected void DDL_worksites_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string CmdString2 = "select * from tlb_atsworksiteIncharges where Region_Code = '" + Session["REGION"].ToString() + "' and DB_Code='"+DDL_worksites.SelectedValue.ToString()+"' order by Id";
+            string CmdString2 = "select * from tlb_atsworksiteIncharges where Region_Code = '" +region + "' and DB_Code='"+DDL_worksites.SelectedValue.ToString()+"' order by Id";
             BindGrid(CmdString2);
         }
     }

@@ -242,73 +242,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="bin\BouncyCastle.Crypto.dll" />
-    <Content Include="bin\ClosedXML.dll" />
-    <Content Include="bin\DocumentFormat.OpenXml.dll" />
-    <Content Include="bin\ExcelNumberFormat.dll" />
-    <Content Include="bin\Irony.dll" />
-    <Content Include="bin\itext.barcodes.dll" />
-    <Content Include="bin\itext.commons.dll" />
-    <Content Include="bin\itext.forms.dll" />
-    <Content Include="bin\itext.io.dll" />
-    <Content Include="bin\itext.kernel.dll" />
-    <Content Include="bin\itext.layout.dll" />
-    <Content Include="bin\itext.pdfa.dll" />
-    <Content Include="bin\itext.sign.dll" />
-    <Content Include="bin\itext.styledxmlparser.dll" />
-    <Content Include="bin\itext.svg.dll" />
-    <Content Include="bin\itextsharp.dll" />
-    <Content Include="bin\Microsoft.AspNet.SignalR.Core.dll" />
-    <Content Include="bin\Microsoft.AspNet.SignalR.SystemWeb.dll" />
-    <Content Include="bin\Microsoft.Bcl.AsyncInterfaces.dll" />
-    <Content Include="bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll" />
-    <Content Include="bin\Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
-    <Content Include="bin\Microsoft.Extensions.DependencyInjection.dll" />
-    <Content Include="bin\Microsoft.Extensions.Logging.Abstractions.dll" />
-    <Content Include="bin\Microsoft.Extensions.Logging.dll" />
-    <Content Include="bin\Microsoft.Extensions.Options.dll" />
-    <Content Include="bin\Microsoft.Extensions.Primitives.dll" />
-    <Content Include="bin\Microsoft.Owin.dll" />
-    <Content Include="bin\Microsoft.Owin.Host.SystemWeb.dll" />
-    <Content Include="bin\Microsoft.Owin.Security.dll" />
-    <Content Include="bin\Microsoft.SqlServer.Types.dll" />
-    <Content Include="bin\Newtonsoft.Json.dll" />
-    <Content Include="bin\Owin.dll" />
-    <Content Include="bin\Quartz.dll" />
-    <Content Include="bin\roslyn\csc.exe" />
-    <Content Include="bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll" />
-    <Content Include="bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll" />
-    <Content Include="bin\roslyn\Microsoft.CodeAnalysis.dll" />
-    <Content Include="bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll" />
-    <Content Include="bin\roslyn\System.Collections.Immutable.dll" />
-    <Content Include="bin\roslyn\System.Reflection.Metadata.dll" />
-    <Content Include="bin\roslyn\vbc.exe" />
-    <Content Include="bin\roslyn\VBCSCompiler.exe" />
-    <Content Include="bin\SixLabors.Fonts.dll" />
-    <Content Include="bin\System.Buffers.dll" />
-    <Content Include="bin\System.Diagnostics.DiagnosticSource.dll" />
-    <Content Include="bin\System.IO.Compression.dll" />
-    <Content Include="bin\System.IO.FileSystem.Primitives.dll" />
-    <Content Include="bin\System.IO.Packaging.dll" />
-    <Content Include="bin\System.IO.UnmanagedMemoryStream.dll" />
-    <Content Include="bin\System.Memory.dll" />
-    <Content Include="bin\System.Numerics.Vectors.dll" />
-    <Content Include="bin\System.Runtime.CompilerServices.Unsafe.dll" />
-    <Content Include="bin\System.Threading.Tasks.Extensions.dll" />
-    <Content Include="bin\System.ValueTuple.dll" />
-    <Content Include="bin\WebApplication1.dll" />
-    <Content Include="bin\WebApplication1.pdb" />
-    <Content Include="bin\XLParser.dll" />
     <Content Include="bussiness\.gitignore" />
     <Content Include="bussiness\production\add_expenses.aspx" />
     <Content Include="bussiness\production\add_expense_heads.aspx" />
     <Content Include="bussiness\production\add_expense_subheads.aspx" />
+    <Content Include="bussiness\production\add_manpower.aspx" />
     <Content Include="bussiness\production\add_nwhelpdsk.aspx" />
     <Content Include="bussiness\production\add_workorderdata.aspx" />
     <Content Include="bussiness\production\add_workorders.aspx" />
     <Content Include="bussiness\production\add_wo_skillcategory.aspx" />
     <Content Include="bussiness\production\aminrup\adda.aspx" />
     <Content Include="bussiness\production\aminrup\manage_roles.aspx" />
+    <Content Include="bussiness\production\anlys_employees.aspx" />
+    <Content Include="bussiness\production\anlys_jobsdeta.aspx" />
+    <Content Include="bussiness\production\anlys_musterdeta.aspx" />
     <Content Include="bussiness\production\attach_manpower.aspx" />
     <Content Include="bussiness\production\BlankTabs.aspx" />
     <Content Include="bussiness\production\blank_page.aspx" />
@@ -316,6 +263,8 @@
     <Content Include="bussiness\production\csm_tbtform.aspx" />
     <Content Include="bussiness\production\css\loader.css" />
     <Content Include="bussiness\production\css\Site.css" />
+    <Content Include="bussiness\production\deta_employeemaster.aspx" />
+    <Content Include="bussiness\production\deta_mustering.aspx" />
     <Content Include="bussiness\production\emp_payroll_wages.aspx" />
     <Content Include="bussiness\production\emp_profilepic.aspx" />
     <Content Include="bussiness\production\emp_pwdchange.aspx" />
@@ -345,9 +294,14 @@
     <Content Include="bussiness\production\images\user.png" />
     <Content Include="bussiness\production\images\visa.png" />
     <Content Include="bussiness\production\jobstatus_flow.ascx" />
+    <Content Include="bussiness\production\jobs_approval.aspx" />
     <Content Include="bussiness\production\jobs_approverdash.aspx" />
+    <Content Include="bussiness\production\job_create_summary.aspx" />
     <Content Include="bussiness\production\js\jquery-1.9.1.js" />
+    <Content Include="bussiness\production\magician.aspx" />
     <Content Include="bussiness\production\manage_profile.aspx" />
+    <Content Include="bussiness\production\manage_rolls.aspx" />
+    <Content Include="bussiness\production\manage_rollsaccess.aspx" />
     <Content Include="bussiness\production\pyrl_approvedeductions.aspx" />
     <Content Include="bussiness\production\pyrl_deductionlist.aspx" />
     <Content Include="bussiness\production\pyrl_deductions.aspx" />
@@ -433,7 +387,10 @@
     <Content Include="bussiness\production\work_region.aspx" />
     <Content Include="bussiness\production\work_states.aspx" />
     <Content Include="bussiness\production\vw_emp_paymentbankdetails.aspx" />
-    <Content Include="packages.config" />
+    <Content Include="login.aspx" />
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="bussiness\.bowerrc" />
     <Content Include="bussiness\bower.json" />
     <Content Include="bussiness\changelog.md" />
@@ -477,10 +434,6 @@
     <Content Include="bussiness\production\webmaster.Master" />
     <Content Include="bussiness\production\aminrup\aminrup.Master" />
     <Content Include="bussiness\production\templates\DeductionUploader.xlsx" />
-    <Content Include="bin\roslyn\Microsoft.CSharp.Core.targets" />
-    <Content Include="bin\roslyn\Microsoft.VisualBasic.Core.targets" />
-    <Content Include="bin\roslyn\VBCSCompiler.exe.config" />
-    <Content Include="bin\WebApplication1.dll.config" />
     <None Include="Properties\PublishProfiles\deploy.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -527,18 +480,9 @@
     <Content Include="bussiness\production\css\maps\jquery-jvectormap-2.0.3.css" />
     <Content Include="bussiness\production\js\datepicker\daterangepicker.js" />
     <Content Include="bussiness\production\js\moment\moment.min.js" />
-    <Content Include="bussiness\production\login.aspx" />
     <Content Include="bussiness\src\js\custom.js" />
     <Content Include="bussiness\src\js\examples.js" />
     <Content Include="bussiness\src\js\helpers\smartresize.js" />
-    <Content Include="index.html" />
-    <None Include="Scripts\jquery-1.6.4-vsdoc.js" />
-    <Content Include="Scripts\jquery-1.6.4.js" />
-    <Content Include="Scripts\jquery-1.6.4.min.js" />
-    <Content Include="Scripts\jquery-1.7.2.min.js" />
-    <Content Include="Scripts\jquery-3.6.4.min.js" />
-    <Content Include="Scripts\jquery.signalR-2.4.3.js" />
-    <Content Include="Scripts\jquery.signalR-2.4.3.min.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -564,6 +508,13 @@
     </Compile>
     <Compile Include="bussiness\production\add_expense_subheads.aspx.designer.cs">
       <DependentUpon>add_expense_subheads.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\add_manpower.aspx.cs">
+      <DependentUpon>add_manpower.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\add_manpower.aspx.designer.cs">
+      <DependentUpon>add_manpower.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\add_nwhelpdsk.aspx.cs">
       <DependentUpon>add_nwhelpdsk.aspx</DependentUpon>
@@ -614,6 +565,27 @@
     <Compile Include="bussiness\production\aminrup\manage_roles.aspx.designer.cs">
       <DependentUpon>manage_roles.aspx</DependentUpon>
     </Compile>
+    <Compile Include="bussiness\production\anlys_employees.aspx.cs">
+      <DependentUpon>anlys_employees.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\anlys_employees.aspx.designer.cs">
+      <DependentUpon>anlys_employees.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\anlys_jobsdeta.aspx.cs">
+      <DependentUpon>anlys_jobsdeta.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\anlys_jobsdeta.aspx.designer.cs">
+      <DependentUpon>anlys_jobsdeta.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\anlys_musterdeta.aspx.cs">
+      <DependentUpon>anlys_musterdeta.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\anlys_musterdeta.aspx.designer.cs">
+      <DependentUpon>anlys_musterdeta.aspx</DependentUpon>
+    </Compile>
     <Compile Include="bussiness\production\attach_manpower.aspx.cs">
       <DependentUpon>attach_manpower.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -648,6 +620,21 @@
     </Compile>
     <Compile Include="bussiness\production\csm_tbtform.aspx.designer.cs">
       <DependentUpon>csm_tbtform.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\DatabaseHelper.cs" />
+    <Compile Include="bussiness\production\deta_employeemaster.aspx.cs">
+      <DependentUpon>deta_employeemaster.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\deta_employeemaster.aspx.designer.cs">
+      <DependentUpon>deta_employeemaster.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\deta_mustering.aspx.cs">
+      <DependentUpon>deta_mustering.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\deta_mustering.aspx.designer.cs">
+      <DependentUpon>deta_mustering.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\emp_payroll_wages.aspx.cs">
       <DependentUpon>emp_payroll_wages.aspx</DependentUpon>
@@ -720,6 +707,13 @@
     <Compile Include="bussiness\production\jobstatus_flow.ascx.designer.cs">
       <DependentUpon>jobstatus_flow.ascx</DependentUpon>
     </Compile>
+    <Compile Include="bussiness\production\jobs_approval.aspx.cs">
+      <DependentUpon>jobs_approval.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\jobs_approval.aspx.designer.cs">
+      <DependentUpon>jobs_approval.aspx</DependentUpon>
+    </Compile>
     <Compile Include="bussiness\production\jobs_approverdash.aspx.cs">
       <DependentUpon>jobs_approverdash.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -727,13 +721,41 @@
     <Compile Include="bussiness\production\jobs_approverdash.aspx.designer.cs">
       <DependentUpon>jobs_approverdash.aspx</DependentUpon>
     </Compile>
+    <Compile Include="bussiness\production\job_create_summary.aspx.cs">
+      <DependentUpon>job_create_summary.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\job_create_summary.aspx.designer.cs">
+      <DependentUpon>job_create_summary.aspx</DependentUpon>
+    </Compile>
     <Compile Include="bussiness\production\LoginUserData.cs" />
+    <Compile Include="bussiness\production\magician.aspx.cs">
+      <DependentUpon>magician.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\magician.aspx.designer.cs">
+      <DependentUpon>magician.aspx</DependentUpon>
+    </Compile>
     <Compile Include="bussiness\production\manage_profile.aspx.cs">
       <DependentUpon>manage_profile.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="bussiness\production\manage_profile.aspx.designer.cs">
       <DependentUpon>manage_profile.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\manage_rolls.aspx.cs">
+      <DependentUpon>manage_rolls.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\manage_rolls.aspx.designer.cs">
+      <DependentUpon>manage_rolls.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\manage_rollsaccess.aspx.cs">
+      <DependentUpon>manage_rollsaccess.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\manage_rollsaccess.aspx.designer.cs">
+      <DependentUpon>manage_rollsaccess.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\NotificationHub.cs" />
     <Compile Include="bussiness\production\pyrl_approvedeductions.aspx.cs">
@@ -1153,13 +1175,6 @@
     <Compile Include="bussiness\production\job_permitupload.aspx.designer.cs">
       <DependentUpon>job_permitupload.aspx</DependentUpon>
     </Compile>
-    <Compile Include="bussiness\production\login.aspx.cs">
-      <DependentUpon>login.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="bussiness\production\login.aspx.designer.cs">
-      <DependentUpon>login.aspx</DependentUpon>
-    </Compile>
     <Compile Include="bussiness\production\emp_personal_details.aspx.cs">
       <DependentUpon>emp_personal_details.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -1335,6 +1350,13 @@
     <Compile Include="bussiness\production\vw_emp_paymentbankdetails.aspx.designer.cs">
       <DependentUpon>vw_emp_paymentbankdetails.aspx</DependentUpon>
     </Compile>
+    <Compile Include="login.aspx.cs">
+      <DependentUpon>login.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="login.aspx.designer.cs">
+      <DependentUpon>login.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -1377,6 +1399,7 @@
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft Chart Controls\Assemblies\System.Web.DataVisualization.dll" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

@@ -23,6 +23,10 @@ namespace WebApplication1.bussiness.production
         CountChecker CC = new CountChecker();
         DataTable dt = new DataTable();
 
+        public static string jobid = string.Empty;
+        public static string dbid = string.Empty;
+        public static string supv = string.Empty;
+
         static string message = "";
 
         // Default folder
@@ -33,17 +37,20 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
-                    Response.Redirect("login.aspx");
+                    Response.Redirect("~/login.aspx");
                 }
                 else
                 {
                     message = "";
                     message = message + "Today's JOB Details," + "\r\n\r\n";
                     ViewState["RefUrl"] = Request.UrlReferrer.ToString();
-                    string jobid = Request.QueryString["JOBID"];
-                    Bind_JOBIDDetails(jobid);
+                    jobid = Request.QueryString["JOBID"];
+                    dbid = Request.QueryString["dbid"];
+                    supv = Request.QueryString["supv"];
+
+                    Bind_JOBIDDetails(jobid, dbid, supv);
                     Checker();
                 }
             }
@@ -87,13 +94,15 @@ namespace WebApplication1.bussiness.production
             return newdate = day + "-" + month + "-" + oDate.Year;
         }
 
-        private void Bind_JOBIDDetails(string jobid)
+        private void Bind_JOBIDDetails(string jobid, string dbid, string supv)
         {
             try
             {
-                string query = "select * from tbl_jobs where JOBID=@JOBID";
+                string query = "select TOP 10 Id, CreatedDate, JOB_Shift, Creator_Workman, Creator_Name, WorkOrderNo, JOB_PermitNo, JOBID, JOB_Title, JOBID_Status, JOB_Site, JOB_SiteCode, JOB_InchargeWrk, JOB_InchargeName, JOB_Dept, JOB_Location, PermitDeleteDate, PermitDeletedByName, FinalUpldStatus, Incharge_Approval, EntryExit from tbl_jobs where JOBID=@JOBID and Id=@Id and Creator_Workman=@Creator_Workman";
                 SqlParameter[] pram = {
                                           new SqlParameter("@JOBID",jobid),
+                                          new SqlParameter("@Id", dbid),
+                                            new SqlParameter("@Creator_Workman", supv)
                                       };
                 dt = dbcl.SPreturn_dt(query, pram);
                 if (dt.Rows.Count > 0)
@@ -200,7 +209,7 @@ namespace WebApplication1.bussiness.production
                     }
                     else
                     {
-                        attachmanpowerrow.Visible = true;
+                        //attachmanpowerrow.Visible = true;
                         if (entryexitstatus == "Entry")
                         {
                             GridView1.Columns[5].Visible = true;
@@ -221,14 +230,14 @@ namespace WebApplication1.bussiness.production
                     //txt_approverrmrks.Text = dt.Rows[0]["JOB_Title"].ToString();
                     txt_approverrmrks.Text = "N/A";
 
-                    string CmdString2 = "select * from tbl_jobspermit where JOBID='" + jobid + "' order by Id desc";
+                    string CmdString2 = "select TOP 100 Id, JOBID, Name, TimeStamp from tbl_jobspermit where JOBID='" + jobid + "' and Submitter_Wrk='"+ supv + "' order by Id desc";
                     BindGrid(CmdString2);
 
-                    string CmdString3 = "select Id,JOBID,CreatedDate,EmployeeWrk,EmployeeName,EmpDesignation,WourkHours,Inpunch_Time,Outpunch_Time,LunchFactor,ProvidedOT,AttendanceStatus,AttendanceCode from tbl_attendance where JOBID='" + jobid + "' order by Id desc";
+                    string CmdString3 = "select TOP 100 Id, JOBID, JOB_Region, CreatedDate, EmployeeWrk, EmployeeName, EmpDesignation, WourkHours, Inpunch_Time, Outpunch_Time, LunchFactor, ProvidedOT, AttendanceStatus, AttendanceCode from tbl_attendance where JOBID='" + jobid + "' and Creator_Workman='" + supv + "' order by Id desc";
                     BindGrid2(CmdString3);
 
                     message = message + "\r\n";
-                    message = message + "_This message is sent from ATS Web Portal( http://atswork.in/ )_" + "\r\n\r\n";
+                    message = message + "_This message is sent from ATS Web Portal( http://atswork.co.in/ )_" + "\r\n\r\n";
 
                     HF_Msg.Value = "";
                     HF_Msg.Value = message;
@@ -239,7 +248,7 @@ namespace WebApplication1.bussiness.production
             {
                 ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup();", true);
                 lbl_msg.ForeColor = System.Drawing.Color.Red;
-                lbl_msg.Text = "Error: " + ex.Message.ToString();
+                lbl_msg.Text = "Error-251: " + ex.Message.ToString();
             }
         }
 
@@ -448,8 +457,8 @@ namespace WebApplication1.bussiness.production
                     ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
                 }
 
-                string ddljobid = jobid;
-                Bind_JOBIDDetails(ddljobid);
+                //string ddljobid = jobid;
+                Bind_JOBIDDetails(jobid, dbid, supv);
             }
             catch (Exception ex)
             {
@@ -552,7 +561,8 @@ namespace WebApplication1.bussiness.production
                 btn_cancel.Enabled = false;
 
                 UpdateBasicJOBData(jobid);
-                Bind_JOBIDDetails(jobid);
+                //Bind_JOBIDDetails(jobid);
+                Bind_JOBIDDetails(jobid, dbid, supv);
 
                 txt_permitno.ReadOnly = true;
                 txt_jobtitle.ReadOnly = true;
@@ -674,6 +684,9 @@ namespace WebApplication1.bussiness.production
             Label JOBID = (Label)GridView2.Rows[e.RowIndex].FindControl("lbl_JOBID");
             string jobid = JOBID.Text.ToString();
 
+            Label lbl_JOB_Region = (Label)GridView2.Rows[e.RowIndex].FindControl("lbl_JOB_Region");
+            string region = lbl_JOB_Region.Text.ToString();
+
             Label empwrk = (Label)GridView2.Rows[e.RowIndex].FindControl("lbl_EmployeeWrk");
             string workmansl = empwrk.Text.ToString();
 
@@ -711,7 +724,16 @@ namespace WebApplication1.bussiness.production
             decimal workedhours = .0m;
             dbcl.FindEmployeeWorkedTime(convtimein, convtimeout, ref workdmins, ref workedhours);
             decimal emp_calOThrs = .0m;
-            dbcl.CalculateOvertime(emp_wrkmnis, workdmins, lunchyesno, ref emp_calOThrs);
+
+            if (region == "NINL")
+            {
+                dbcl.CalculateOvertimeRev(emp_wrkmnis, workdmins, lunchyesno, ref emp_calOThrs);
+            }
+            else
+            {
+                dbcl.CalculateOvertime(emp_wrkmnis, workdmins, lunchyesno, ref emp_calOThrs);
+            }
+            //dbcl.CalculateOvertime(emp_wrkmnis, workdmins, lunchyesno, ref emp_calOThrs);
 
             UpdateDetails(id, jobid, workmansl, convtimein, convtimeout, lunchyesno, workdmins,
                 workedhours, emp_calOThrs, new_pot, ddl_newattensttaus, ddl_newattencode);

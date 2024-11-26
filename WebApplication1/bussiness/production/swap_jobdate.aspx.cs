@@ -27,9 +27,9 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
-                    Response.Redirect("login.aspx");
+                    Response.Redirect("~/login.aspx");
                 }
                 else
                 {
@@ -594,6 +594,9 @@ namespace WebApplication1.bussiness.production
             Label JOBID = (Label)GridView2.Rows[e.RowIndex].FindControl("lbl_JOBID");
             string jobid = JOBID.Text.ToString();
 
+            Label lbl_JOB_Region = (Label)GridView2.Rows[e.RowIndex].FindControl("lbl_JOB_Region");
+            string region = lbl_JOB_Region.Text.ToString();
+
             Label empwrk = (Label)GridView2.Rows[e.RowIndex].FindControl("lbl_EmployeeWrk");
             string workmansl = empwrk.Text.ToString();
 
@@ -631,7 +634,17 @@ namespace WebApplication1.bussiness.production
             decimal workedhours = .0m;
             dbcl.FindEmployeeWorkedTime(convtimein, convtimeout, ref workdmins, ref workedhours);
             decimal emp_calOThrs = .0m;
-            dbcl.CalculateOvertime(emp_wrkmnis, workdmins, lunchyesno, ref emp_calOThrs);
+
+            if (region == "NINL")
+            {
+                dbcl.CalculateOvertimeRev(emp_wrkmnis, workdmins, lunchyesno, ref emp_calOThrs);
+            }
+            else
+            {
+                dbcl.CalculateOvertime(emp_wrkmnis, workdmins, lunchyesno, ref emp_calOThrs);
+            }
+
+            //dbcl.CalculateOvertime(emp_wrkmnis, workdmins, lunchyesno, ref emp_calOThrs);
 
             UpdateDetails(id, jobid, workmansl, convtimein, convtimeout, lunchyesno, workdmins, workedhours, emp_calOThrs, new_pot, ddl_newattensttaus, ddl_newattencode);
 

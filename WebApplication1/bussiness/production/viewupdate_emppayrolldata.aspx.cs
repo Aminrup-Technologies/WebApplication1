@@ -26,9 +26,9 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
-                    Response.Redirect("login.aspx");
+                    Response.Redirect("~/login.aspx");
                 }
                 else
                 {
@@ -159,12 +159,12 @@ namespace WebApplication1.bussiness.production
                 }
                 else if (DDL_SkillCategory.SelectedIndex != 0 && DDL_Form17YesNo.SelectedIndex != 0 && DDL_FixedYesNo.SelectedIndex == 0)
                 {
-                    string CmdString3 = "select Id, WorkmanSL, FullName, SkillCategory, SkillDesignation,DOJ,SafetyPassNo, F16_YesNo,F17_YesNo, FixedSalary_YesNo, FixedAmount,WorkHours, OTFactor, OTMultiplier, OT_Divisibility, DA_VDA, HRA, Conv_Allowance, Medical_Allowance, ATT_Allowance, SPCL_Allowance,Misc_Earnings,Washing_Allowance from tbl_Employee_Mustertable where WorkRegion = '" + region + "' and WorkCompany='" + comp + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and SkillCategoryDB='" + DDL_SkillCategory.SelectedValue.ToString() + "' and F17_YesNo='" + DDL_Form17YesNo.SelectedItem.Text.ToString() + "' and F16_YesNo='Yes' and F17_YesNo='Yes' order by Id desc";
+                    string CmdString3 = "select Id, WorkmanSL, FullName, SkillCategory, SkillDesignation,DOJ,SafetyPassNo, F16_YesNo,F17_YesNo, FixedSalary_YesNo, FixedAmount,WorkHours, OTFactor, OTMultiplier, OT_Divisibility, DA_VDA, HRA, Conv_Allowance, Medical_Allowance, ATT_Allowance, SPCL_Allowance,Misc_Earnings,Washing_Allowance from tbl_Employee_Mustertable where WorkRegion = '" + region + "' and WorkCompany='" + comp + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and SkillCategoryDB='" + DDL_SkillCategory.SelectedValue.ToString() + "' and F17_YesNo='" + DDL_Form17YesNo.SelectedItem.Text.ToString() + "' order by Id desc";
                     BindGrid(CmdString3);
                 }
                 else if (DDL_SkillCategory.SelectedIndex != 0 && DDL_Form17YesNo.SelectedIndex != 0 && DDL_FixedYesNo.SelectedIndex != 0)
                 {
-                    string CmdString3 = "select Id, WorkmanSL, FullName, SkillCategory, SkillDesignation,DOJ,SafetyPassNo, F16_YesNo,F17_YesNo, FixedSalary_YesNo, FixedAmount,WorkHours, OTFactor, OTMultiplier, OT_Divisibility, DA_VDA, HRA, Conv_Allowance, Medical_Allowance, ATT_Allowance, SPCL_Allowance,Misc_Earnings,Washing_Allowance from tbl_Employee_Mustertable where WorkRegion = '" + region + "' and WorkCompany='" + comp + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and SkillCategoryDB='" + DDL_SkillCategory.SelectedValue.ToString() + "' and F17_YesNo='" + DDL_Form17YesNo.SelectedItem.Text.ToString() + "' and FixedSalary_YesNo = '" + DDL_FixedYesNo.SelectedItem.Text.ToString() + "' and F16_YesNo='Yes' and F17_YesNo='Yes' order by Id desc";
+                    string CmdString3 = "select Id, WorkmanSL, FullName, SkillCategory, SkillDesignation,DOJ,SafetyPassNo, F16_YesNo,F17_YesNo, FixedSalary_YesNo, FixedAmount,WorkHours, OTFactor, OTMultiplier, OT_Divisibility, DA_VDA, HRA, Conv_Allowance, Medical_Allowance, ATT_Allowance, SPCL_Allowance,Misc_Earnings,Washing_Allowance from tbl_Employee_Mustertable where WorkRegion = '" + region + "' and WorkCompany='" + comp + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and SkillCategoryDB='" + DDL_SkillCategory.SelectedValue.ToString() + "' and F17_YesNo='" + DDL_Form17YesNo.SelectedItem.Text.ToString() + "' and FixedSalary_YesNo = '" + DDL_FixedYesNo.SelectedItem.Text.ToString() + "' order by Id desc";
                     BindGrid(CmdString3);
                 }
 

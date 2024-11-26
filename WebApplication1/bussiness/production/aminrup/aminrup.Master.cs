@@ -14,9 +14,9 @@ namespace WebApplication1.bussiness.production.aminrup
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null)
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null)
                 {
-                    Response.Redirect("login.aspx");
+                    Response.Redirect("~/login.aspx");
                 }
                 else
                 {
@@ -54,7 +54,7 @@ namespace WebApplication1.bussiness.production.aminrup
             dbcl.UPDT_EmpMuster_LogoutInfo(Session["WORKMAN"].ToString(), Session["USERID"].ToString());
 
             Session.Abandon();
-            Response.Redirect("/login.aspx");
+            Response.Redirect("/login.aspx", false);
         }
     }
 }

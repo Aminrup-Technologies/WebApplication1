@@ -4,6 +4,7 @@ using System.Web.UI.WebControls;
 using System.Data.SqlClient;
 using System.Data;
 using System.IO;
+using System.Configuration;
 
 namespace WebApplication1.bussiness.production
 {
@@ -25,16 +26,16 @@ namespace WebApplication1.bussiness.production
         public static string date2 = "";
         public static Int32 CalWorkingDays = 0;
         public static Int32 CalWorkingDaysF = 0;
-        public static Int32 TotalPresents = 0;
-        public static decimal GorssBreaker = 20500;
+        public static decimal TotalPresents = .0m;
+        public static decimal GorssBreaker = 0;
 
         public static Int32 WashBreak = 1000; //Added for Calculating Washing Allowances
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+            if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
             {
-                Response.Redirect("login.aspx");
+                Response.Redirect("~/login.aspx");
             }
             if (!IsPostBack)
             {
@@ -43,6 +44,31 @@ namespace WebApplication1.bussiness.production
 
                 dbcl.BindMonthAndYearDropdowns(DDL_Month, DDL_Year);
 
+                if (Session["REGION"].ToString() == "KPO")
+                {
+                    GorssBreaker = decimal.Parse(ConfigurationManager.AppSettings["F17_GrossBreaker_KPO"]);
+                }
+                else if (Session["REGION"].ToString() == "AGL")
+                {
+                    GorssBreaker = decimal.Parse(ConfigurationManager.AppSettings["F17_GrossBreaker_AGL"]);
+                }
+                else if (Session["REGION"].ToString() == "NINL")
+                {
+                    GorssBreaker = decimal.Parse(ConfigurationManager.AppSettings["F17_GrossBreaker_NINL"]);
+                }
+                else if (Session["REGION"].ToString() == "JSR")
+                {
+                    //GorssBreaker = 20500; -- Commented on 21-Aug-2024 Based on mail from Anupam Sharma dated : 19-Aug-2024 for changing ESIC Gross Breaker Amount from 19500 to 20999
+                    GorssBreaker = decimal.Parse(ConfigurationManager.AppSettings["F17_GrossBreaker_JSR"]);
+                }
+                else if (Session["REGION"].ToString() == "RSP")
+                {
+                    GorssBreaker = decimal.Parse(ConfigurationManager.AppSettings["F17_GrossBreaker_RSP"]);
+                }
+                else
+                {
+                    GorssBreaker = decimal.Parse(ConfigurationManager.AppSettings["F17_GrossBreaker"]);
+                }
                 //dbcl.CalDateCombo1(DDL_Day, DDL_Month, DDL_Year);
                 //dbcl.CalDateCombo1(DDL_D2, DDL_M2, DDL_Y2);
             }
@@ -421,8 +447,18 @@ namespace WebApplication1.bussiness.production
                 lbl_DaVdaPay.Text = DaVdaPay.ToString();
 
                 //---------------- HRA Alowances Cal-------------------------------------//
-                PayRoll.EmployeeOthersPayCalculations2(TotalPresents, CalWorkingDaysF, HRAAmount, ref HRAPay);
-                lbl_HRAPay.Text = HRAPay.ToString();
+                if (workregion == "RSP")
+                {
+                    decimal hramult = 0.05m;
+                    HRAPay = Math.Ceiling(BasicSalary * hramult) ;
+
+                    lbl_HRAPay.Text = HRAPay.ToString();
+                }
+                else
+                {
+                    PayRoll.EmployeeOthersPayCalculations2(TotalPresents, CalWorkingDaysF, HRAAmount, ref HRAPay);
+                    lbl_HRAPay.Text = HRAPay.ToString();
+                }
 
                 //---------------- Conv Alowances Cal-------------------------------------//
                 PayRoll.EmployeeOthersPayCalculations3(TotalPresents, CalWorkingDaysF, ConvAmount, ref ConvPay);
@@ -448,9 +484,19 @@ namespace WebApplication1.bussiness.production
                 PayRoll.EmployeeOthersPayCalculations6(TotalPresents, CalWorkingDaysF, AttAmount, ref AttPay);
                 lbl_AttPay.Text = AttPay.ToString();
 
-                //---------------- SPCL Alowances Cal-------------------------------------//
-                PayRoll.EmployeeOthersPayCalculations7(TotalPresents, CalWorkingDaysF, SPCLAmount, ref SPCLPay);
-                lbl_SPCLPay.Text = SPCLPay.ToString();
+                if (workregion == "RSP")
+                {
+                    decimal awamult = 157.69m;
+                    SPCLPay = Math.Ceiling(TotalPresents * awamult);
+                    lbl_SPCLPay.Text = SPCLPay.ToString();
+                }
+                else
+                {
+                    //---------------- SPCL Alowances Cal-------------------------------------//
+                    PayRoll.EmployeeOthersPayCalculations7(TotalPresents, CalWorkingDaysF, SPCLAmount, ref SPCLPay);
+                    lbl_SPCLPay.Text = SPCLPay.ToString();
+                }
+                
 
                 //---------------- MISC Alowances Cal-------------------------------------//
                 PayRoll.EmployeeOthersPayCalculations8(TotalPresents, CalWorkingDaysF, MiscAmount, ref MiscPay);
@@ -549,7 +595,7 @@ namespace WebApplication1.bussiness.production
                         }
                         WashPayF = 0;
                         otherpay = 0;
-                        actualgross = BasicSalary + otpay + otherpay + WashPayF;
+                        actualgross = BasicSalary + otpay + otherpay + WashPayF + HRAPay + SPCLPay;
                     }
                     lbl_actualgross.Text = actualgross.ToString();
                 }
@@ -644,6 +690,16 @@ namespace WebApplication1.bussiness.production
                     netpay2_finalaftrded = netpay2;
                     netpay1final = netpay1 - ttldeductions;
                 }
+                else if(workregion == "RSP")
+                {
+                    netpay2_finalaftrded = netpay2 - HRAPay;
+                    netpay1final = netpay1 - ttldeductions ;
+                }
+                else
+                {
+                    netpay2_finalaftrded = netpay2;
+                    netpay1final = netpay1 - ttldeductions;
+                }
 
                 lbl_netpay1.Text = netpay1.ToString();
                 lbl_netpayfnl.Text = netpay1final.ToString();
@@ -717,7 +773,7 @@ namespace WebApplication1.bussiness.production
             dt.Columns.Add("ATT_Allowance", typeof(decimal));
             dt.Columns.Add("SPCL_Allowance", typeof(decimal));
             dt.Columns.Add("Misc_Earnings", typeof(decimal));
-            dt.Columns.Add("Present", typeof(Int32));
+            dt.Columns.Add("Present", typeof(decimal));
             dt.Columns.Add("OverTime", typeof(decimal));
             dt.Columns.Add("BasicSalary", typeof(decimal));
             dt.Columns.Add("FixedRateSalary", typeof(decimal));
@@ -819,7 +875,7 @@ namespace WebApplication1.bussiness.production
                 decimal Misc_Earnings = Convert.ToDecimal(lbl_Misc_Earnings.Text.ToString());
 
                 Label lbl_presents = (Label)GridView.Rows[i].FindControl("lbl_presents");
-                Int32 Present = Convert.ToInt32(lbl_presents.Text.ToString());
+                decimal Present = Convert.ToDecimal(lbl_presents.Text.ToString());
 
                 Label lbl_ttlot = (Label)GridView.Rows[i].FindControl("lbl_ttlot");
                 decimal OverTime = Convert.ToDecimal(lbl_ttlot.Text.ToString());

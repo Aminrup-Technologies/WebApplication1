@@ -78,9 +78,9 @@ namespace WebApplication1.bussiness.production
                 Bind_AttendnaceCode(CmdString4);
 
 
-                if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
-                    Response.Redirect("login.aspx");
+                    Response.Redirect("~/login.aspx");
                 }
                 else
                 {
@@ -109,6 +109,7 @@ namespace WebApplication1.bussiness.production
 
             }
         }
+
 
         private void Bind_WorkRegion(string CmdString)
         {
@@ -168,12 +169,12 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_reset_Click(object sender, EventArgs e)
         {
-            Response.Redirect("create_jobid.aspx");
+            Response.Redirect("create_jobid.aspx", false);
         }
 
         protected void btn_cancel_Click(object sender, EventArgs e)
         {
-            Response.Redirect("homepage.aspx");
+            Response.Redirect("homepage.aspx", false);
         }
 
         protected void DDL_Workorder_SelectedIndexChanged(object sender, EventArgs e)
@@ -593,12 +594,12 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_inpunch_Click(object sender, EventArgs e)
         {
-            Response.Redirect("job_inpunch.aspx");
+            Response.Redirect("job_inpunch.aspx", false);
         }
 
         protected void btn_upload_Click(object sender, EventArgs e)
         {
-            Response.Redirect("job_permitupload.aspx");
+            Response.Redirect("job_permitupload.aspx", false);
         }
 
 
@@ -631,20 +632,30 @@ namespace WebApplication1.bussiness.production
         {
             region = DDL_Region.SelectedValue.ToString();
 
-            if (Session["USERTYPE"].ToString() == "Office Staff")
+            try
             {
-                string CmdString2 = "select WO_Number, DB_Code from tlb_WO_Data where Work_Region_Code='" + region + "' and WO_Status='Active' and JOBID_Menu='Yes' order by WO_Type";
-                BindWorkorder(CmdString2);
+                if (Session["USERTYPE"].ToString() == "Office Staff")
+                {
+                    string CmdString2 = "select WO_Number, DB_Code from tlb_WO_Data where Work_Region_Code='" + region + "' and WO_Status='Active' and JOBID_Menu='Yes' order by WO_Type";
+                    BindWorkorder(CmdString2);
+                }
+                else if (Session["USERTYPE"].ToString() == "Site Staff")
+                {
+                    string CmdString2 = "select WO_Number, DB_Code from tlb_WO_Data where Work_Region_Code='" + region + "' and WO_Type='ARC' and WO_Status='Active' and JOBID_Menu='Yes' order by Id";
+                    BindWorkorder(CmdString2);
+                }
+                else
+                {
+                    string CmdString2 = "select WO_Number, DB_Code from tlb_WO_Data where Work_Region_Code='" + region + "' and WO_Status='Active' and JOBID_Menu='Yes' order by WO_Type";
+                    BindWorkorder(CmdString2);
+                }
             }
-            else if (Session["USERTYPE"].ToString() == "Site Staff")
+            catch (Exception ex)
             {
-                string CmdString2 = "select WO_Number, DB_Code from tlb_WO_Data where Work_Region_Code='" + region + "' and WO_Type='ARC' and WO_Status='Active' and JOBID_Menu='Yes' order by Id";
-                BindWorkorder(CmdString2);
-            }
-            else
-            {
-                string CmdString2 = "select WO_Number, DB_Code from tlb_WO_Data where Work_Region_Code='" + region + "' and WO_Status='Active' and JOBID_Menu='Yes' order by WO_Type";
-                BindWorkorder(CmdString2);
+                string title = "Notifications :";
+                string body = ex.Message;
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                //throw;
             }
         }
 

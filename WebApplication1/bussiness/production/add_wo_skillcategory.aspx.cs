@@ -17,25 +17,56 @@ namespace WebApplication1.bussiness.production
         public static string SkillCategoryValue = "";
         public static string DDL_SkillDesgValue = "";
 
+        public static string state = string.Empty;
+        public static string region = string.Empty;
+        public static string comp = string.Empty;
+        public static string datalock = string.Empty;
+
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
-                string CmdString1 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region order by Id";
-                BindWorkRegion(CmdString1);
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                {
+                    Response.Redirect("~/login.aspx");
+                }
+                else
+                {
 
-                DDL_WorkRegion.SelectedValue = Session["REGION"].ToString();
+                    if (Session["Changer"] != null)
+                    {
+                        string[] retrievedArray = (string[])Session["Changer"];
+                        region = retrievedArray[1].ToString();
+                        comp = retrievedArray[2].ToString();
+                        state = retrievedArray[0].ToString();
+                        datalock = retrievedArray[3].ToString();
+                        //Session["Changer"]= null;
+                    }
+                    else
+                    {
+                        region = Session["REGION"].ToString();
+                        comp = Session["COMPANY_CODE"].ToString();
+                        state = Session["STATE"].ToString();
+                        datalock = "0";
+                    }
 
-                string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Work_Region_Code='" + Session["REGION"].ToString() + "' order by Id";
-                BindCompany(CmdString3);
+                    string CmdString1 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region order by Id";
+                    BindWorkRegion(CmdString1);
 
-                DDL_Company.SelectedValue = Session["COMPANY_CODE"].ToString();
+                    DDL_WorkRegion.SelectedValue = region;
 
-                string CmdString4 = "select Company_Department, DB_Code from tlb_workregion_compdept where Work_Region_Code='" + Session["REGION"].ToString() + "' and Company_Code='" + Session["COMPANY_CODE"].ToString() + "' order by Id";
-                BindDepartments(CmdString4);
+                    string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Work_Region_Code='" + region + "' order by Id";
+                    BindCompany(CmdString3);
 
-                string CmdString2 = "select * from tlb_WO_SkillCategory where Work_Region_Code='" + DDL_WorkRegion.SelectedValue.ToString() + "' and Company_Code='" + DDL_Company.SelectedValue.ToString() + "' order by Id";
-                BindGrid(CmdString2);
+                    DDL_Company.SelectedValue = Session["COMPANY_CODE"].ToString();
+
+                    string CmdString4 = "select Company_Department, DB_Code from tlb_workregion_compdept where Work_Region_Code='" + region + "' and Company_Code='" + comp + "' order by Id";
+                    BindDepartments(CmdString4);
+
+                    string CmdString2 = "select * from tlb_WO_SkillCategory where Work_Region_Code='" +region + "' and Company_Code='" +region + "' order by Id";
+                    BindGrid(CmdString2);
+                }
             }
         }
 
@@ -113,7 +144,7 @@ namespace WebApplication1.bussiness.production
             string DDL_CompText = DDL_Company.SelectedItem.Text.ToString();
             string DDL_CompValue = DDL_Company.SelectedValue.ToString();
 
-            string CmdString2 = "select Company_Department, CompDept_Code from tlb_workregion_compdept where Work_Region_Code='" + DDL_Value + "' and Company_Code = '" + DDL_CompValue + "' order by Id";
+            string CmdString2 = "select Company_Department, DB_Code from tlb_workregion_compdept where Work_Region_Code='" + DDL_Value + "' and Company_Code = '" + DDL_CompValue + "' order by Id";
             BindDepartment(CmdString2);
         }
 
@@ -125,7 +156,7 @@ namespace WebApplication1.bussiness.production
             Cmd.CommandType = CommandType.Text;
             DDL_Departments.DataSource = Cmd.ExecuteReader();
             DDL_Departments.DataTextField = "Company_Department";
-            DDL_Departments.DataValueField = "CompDept_Code";
+            DDL_Departments.DataValueField = "DB_Code";
             DDL_Departments.DataBind();
             DDL_Departments.Items.Insert(0, "Please Select Option");
             dbcl.DisconnectDb();

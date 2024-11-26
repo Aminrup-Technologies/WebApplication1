@@ -18,6 +18,9 @@ namespace WebApplication1.bussiness.production
     public partial class create_supplymemo : System.Web.UI.Page
     {
         public static string jobid = string.Empty;
+        public static string dbid = string.Empty;
+        public static string supv = string.Empty;
+
         public static string wo_number = string.Empty;
         public static string viewid = string.Empty;
         public static string yr = string.Empty;
@@ -29,7 +32,9 @@ namespace WebApplication1.bussiness.production
         public static string qry_permitdetails = "select * from tbl_jobspermit where JOBID=@JOBID order by Id desc";
         public static string qry_polineitems = "select Id, WODB_Code, WOI_DBCode, ItemNO, LineNumber, ServiceNumber, Service_Description, Order_Quantity, Rate, PerUnit_Value, '' as Shift_Skill  from tlb_WO_LineItems_Data where WO_Number=@WO_Number order by Id";
         public static string qry_polineitems2= "select Id, JOBID as WODB_Code, SMJID as WOI_DBCode, ItemNO, LineNumber, ServiceNumber, Service_Description, Order_Quantity, Rate, PerUnit_Value,Shift_Skill from tbl_SupMem_LineItems_Data where JOBID=@JOBID order by Id";
-        public static string qry_jobmanpower = "select a.Id, a.JOBID, a.CreatedDate, a.JOB_Region, a.JOB_Company, a.EmployeeWrk, a.EmployeeName, a.EmpCategory,a.PO_SkillCategory, a.EmpDesignation as PO_EmpDesignation, a.Employee_Worksite, a.Employee_WorksiteCode, a.Inpunch_Time, a.Outpunch_Time, a.WorkedHours, a.WourkHours, a.LunchFactor, a.ProvidedOT, a.AttendanceStatus, a.AttendanceCode, a.GatePassNo,a.SafetyPassNo, Round(IIF(a.LunchFactor ='Yes',(WorkedHours-1)/8,WorkedHours/8),2) as ShiftCalc from tbl_attendance a, tbl_Employee_Mustertable b  where a.JOBID=@JOBID and a.EmployeeWrk=b.WorkmanSL order by a.Id desc";
+        public static string qry_jobmanpower = "select a.Id, a.JOBID, a.CreatedDate, a.JOB_Region, a.JOB_Company, a.EmployeeWrk, a.EmployeeName, a.EmpCategory,a.PO_SkillCategory, a.EmpDesignation as PO_EmpDesignation, a.Employee_Worksite, a.Employee_WorksiteCode, a.Inpunch_Time, a.Outpunch_Time, a.WorkedHours, a.WourkHours, a.LunchFactor, a.ProvidedOT, a.AttendanceStatus, a.AttendanceCode, a.GatePassNo,a.SafetyPassNo, Round(IIF(a.LunchFactor ='Yes',(WorkedHours-1)/8,WorkedHours/8),3) as ShiftCalc from tbl_attendance a, tbl_Employee_Mustertable b  where a.JOBID=@JOBID and a.EmployeeWrk=b.WorkmanSL order by a.Id desc";
+
+        public static string qry_jobmanpowerninl = "select a.Id, a.JOBID, a.CreatedDate, a.JOB_Region, a.JOB_Company, a.EmployeeWrk, a.EmployeeName, a.EmpCategory,a.PO_SkillCategory, a.EmpDesignation as PO_EmpDesignation, a.Employee_Worksite, a.Employee_WorksiteCode, a.Inpunch_Time, a.Outpunch_Time, a.WorkedHours, a.WourkHours, a.LunchFactor, a.ProvidedOT, a.AttendanceStatus, a.AttendanceCode, a.GatePassNo,a.SafetyPassNo, Round(IIF(a.LunchFactor ='Yes',(WorkedHours-0.5)/8,WorkedHours/8),3) as ShiftCalc from tbl_attendance a, tbl_Employee_Mustertable b  where a.JOBID=@JOBID and a.EmployeeWrk=b.WorkmanSL order by a.Id desc";
 
 
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
@@ -49,21 +54,23 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["USERTYPE"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
-                    Response.Redirect("login.aspx");
+                    Response.Redirect("~/login.aspx", false);
                 }
                 else
                 {
                     //ViewState["RefUrl"] = Request.UrlReferrer.ToString();
                     jobid = Request.QueryString["JOBID"];
                     viewid = Request.QueryString["viewid"];
+                    dbid = Request.QueryString["dbid"];
+                    supv = Request.QueryString["supv"];
 
                     yr = Request.QueryString["y"];
                     mnt = Request.QueryString["m"];
-                    Bind_JOBIDDetails(jobid);
+                    Bind_JOBIDDetails(jobid, dbid, supv);
 
-                    
+
                 }
             }
             else
@@ -116,14 +123,24 @@ namespace WebApplication1.bussiness.production
             return newdate = day + "-" + month + "-" + oDate.Year;
         }
 
-        private void Bind_JOBIDDetails(string jobid)
+        private void Bind_JOBIDDetails(string jobid, string dbid, string supv)
         {
             try
-            {      
+            {
+                //SqlParameter[] pram = {
+                //                          new SqlParameter("@JOBID",jobid),
+                //                      };
+                //dt = dbcl.SPreturn_dt(qry_jobdetails, pram);
+
+                string query = "SELECT TOP 100 Id, BillingCode, CreatedDate, JOB_Shift, Creator_Workman, Creator_Name, WorkOrderNo, JOB_PermitNo, JOBID, JOB_Region, JOB_Title,JOB_Status, JOB_Company, JOBID_Status, JOB_Site, JOB_SiteCode, JOB_InchargeWrk, JOB_InchargeName, JOB_Dept, JOB_Location, PermitDeleteDate, PermitDeletedByName, FinalUpldStatus, Incharge_Approval, EntryExit FROM tbl_jobs WHERE JOBID = @JOBID AND Id = @Id AND Creator_Workman = @Creator_Workman";
+
                 SqlParameter[] pram = {
                                           new SqlParameter("@JOBID",jobid),
+                                          new SqlParameter("@Id", dbid),
+                                            new SqlParameter("@Creator_Workman", supv)
                                       };
-                dt = dbcl.SPreturn_dt(qry_jobdetails, pram);
+                dt = dbcl.SPreturn_dt(query, pram);
+
                 if (dt.Rows.Count > 0)
                 {
                     if (dt.Rows[0]["BillingCode"].ToString() == "MS")
@@ -264,7 +281,16 @@ namespace WebApplication1.bussiness.production
 
 
                         PermitData_Grid(qry_permitdetails);   
-                        ManpowerAtten_Grid(qry_jobmanpower, NewGridrmemo);
+                        //ManpowerAtten_Grid(qry_jobmanpower, NewGridrmemo);
+
+                        if (lbl_jobrgn.Text.ToString() == "NINL")
+                        {
+                            ManpowerAtten_Grid(qry_jobmanpowerninl, NewGridrmemo);
+                        }
+                        else
+                        {
+                            ManpowerAtten_Grid(qry_jobmanpower, NewGridrmemo);
+                        }
                         //LineItemSelector_Grid(qry_polineitems, wo_number,"1");
 
                         btn_proceednxt.Enabled = false;
@@ -375,8 +401,17 @@ namespace WebApplication1.bussiness.production
             // Make sure FirstDatatable is not null before proceeding
             if (FirstDatatable == null)
             {
+                if (lbl_jobrgn.Text.ToString() == "NINL")
+                {
+                    ManpowerAtten_Grid(qry_jobmanpowerninl, NewGridrmemo);
+                }
+                else
+                {
+                    ManpowerAtten_Grid(qry_jobmanpower, NewGridrmemo);
+                }
+
                 // Call ManpowerAtten_Grid with a callback to NewGridrmemo
-                ManpowerAtten_Grid(qry_jobmanpower, NewGridrmemo);
+                //ManpowerAtten_Grid(qry_jobmanpower, NewGridrmemo);
                 return; // Wait for callback to populate FirstDatatable
             }
 
@@ -485,7 +520,16 @@ namespace WebApplication1.bussiness.production
                             // Check the number of rows affected to determine if the update was successful
                             if (rowsAffected > 0)
                             {
-                                ManpowerAtten_Grid(qry_jobmanpower, NewGridrmemo);
+                                if (lbl_jobrgn.Text.ToString() == "NINL")
+                                {
+                                    ManpowerAtten_Grid(qry_jobmanpowerninl, NewGridrmemo);
+                                }
+                                else
+                                {
+                                    ManpowerAtten_Grid(qry_jobmanpower, NewGridrmemo);
+                                }
+
+                                //ManpowerAtten_Grid(qry_jobmanpower, NewGridrmemo);
                                 //Console.WriteLine("Update successful. Rows affected: " + rowsAffected);
                             }
                             else
@@ -710,7 +754,7 @@ namespace WebApplication1.bussiness.production
                 }
 
                 string ddljobid = jobid;
-                Bind_JOBIDDetails(ddljobid);
+                Bind_JOBIDDetails(jobid, dbid, supv);
             }
             catch (Exception ex)
             {
@@ -1082,6 +1126,7 @@ namespace WebApplication1.bussiness.production
                 System.Web.UI.WebControls.DropDownList DDL_EmpCategory = ((System.Web.UI.WebControls.DropDownList)GridView2.Rows[i].FindControl("DDL_EmpCategory"));
 
                 System.Web.UI.WebControls.Label lbl_Inpunch_Time = ((System.Web.UI.WebControls.Label)GridView2.Rows[i].FindControl("lbl_Inpunch_Time"));
+                System.Web.UI.WebControls.Label lbl_JOB_Region = ((System.Web.UI.WebControls.Label)GridView2.Rows[i].FindControl("lbl_JOB_Region"));
                 System.Web.UI.WebControls.Label lbl_Outpunch_Time = ((System.Web.UI.WebControls.Label)GridView2.Rows[i].FindControl("lbl_Outpunch_Time"));
                 System.Web.UI.WebControls.Label lbl_ShiftCalc = ((System.Web.UI.WebControls.Label)GridView2.Rows[i].FindControl("lbl_ShiftCalc"));
                 System.Web.UI.WebControls.Label lbl_WorkedHours = ((System.Web.UI.WebControls.Label)GridView2.Rows[i].FindControl("lbl_WorkedHours"));
@@ -1104,11 +1149,21 @@ namespace WebApplication1.bussiness.production
                 decimal ShiftCalc = .0m;
                 decimal FnlShiftCalc = .0m;
                 decimal ShiftHours = 8;
+
+                string job_region = Convert.ToString(lbl_JOB_Region.Text.ToString());
                 if (workedhours > 0)
                 {
+                    
                     if (LunchFactor == "Yes")
                     {
-                        Revworkedhours = workedhours - 1;
+                        if (job_region == "NINL")
+                        {
+                            Revworkedhours = workedhours - 0.5m;
+                        }
+                        else
+                        {
+                            Revworkedhours = workedhours - 1;
+                        }
                     }
                     else
                     {
@@ -1324,12 +1379,12 @@ namespace WebApplication1.bussiness.production
             //object refUrl = ViewState["RefUrl"];
             //if (refUrl != null)
             //    Response.Redirect((string)refUrl);
-            Response.Redirect("vw_supplyjobs.aspx");
+            Response.Redirect("vw_supplyjobs.aspx", false);
         }
 
         protected void btn_attachmanpower_Click(object sender, EventArgs e)
         {
-            Response.Redirect("attach_manpower.aspx?JOBID=" + txt_jobid.Text.ToString() + "");
+            Response.Redirect("attach_manpower.aspx?JOBID=" + txt_jobid.Text.ToString() + "", false);
         }
 
         protected void btn_delete_Click(object sender, EventArgs e)
@@ -1423,17 +1478,17 @@ namespace WebApplication1.bussiness.production
         {
             if (viewid == "1")
             {
-                Response.Redirect("vw_inchsupmem.aspx?y=" + yr + "&m=" + mnt + "");
+                Response.Redirect("vw_inchsupmem.aspx?y=" + yr + "&m=" + mnt + "", false);
             }
             else if (viewid == "2")
             {
-                Response.Redirect("vw_supplyjobs.aspx");
+                Response.Redirect("vw_supplyjobs.aspx", false);
             }
         }
 
         protected void btn_home_Click(object sender, EventArgs e)
         {
-            Response.Redirect("homepage.aspx");
+            Response.Redirect("homepage.aspx", false);
         }
 
         protected void btn_crtspm_Click(object sender, EventArgs e)
@@ -1465,7 +1520,9 @@ namespace WebApplication1.bussiness.production
                 //Response.Redirect("rpts/supplymemo.aspx?JOBID=" + txt_jobid.Text.ToString() + "");
                 //Response.Redirect("rpts/supplymemo.aspx?JOBID=" + txt_jobid.Text.ToString());
 
-                Response.Redirect($"rpts/supplymemo.aspx?JOBID={txt_jobid.Text}&viewid={viewid}&y={yr}&m={mnt}");
+                //Response.Redirect($"rpts/supplymemo.aspx?JOBID={txt_jobid.Text}&viewid={viewid}&y={yr}&m={mnt}");
+                Response.Redirect($"rpts/supplymemo.aspx?JOBID={txt_jobid.Text}&dbid={dbid}&supv={supv}&viewid={viewid}&y={yr}&m={mnt}", false);
+
                 //Function 2 --------- PRINT the MEMO
             }
 

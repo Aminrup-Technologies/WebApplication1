@@ -27,7 +27,7 @@
                         <div class="x_content">
                             <div class="row" id="Div1" runat="server" visible="true">
                                 <div class="col-md-6 col-sm-12" style="vertical-align: middle; text-align: center;">
-                                    <asp:Button ID="btn_dateswap" runat="server" Text="Today" class="btn btn-success btn-sm" OnClick="btn_dateswap_Click" />
+                                    <asp:Button ID="btn_dateswap" runat="server" Text="Today" CssClass="btn btn-success btn-sm" OnClick="btn_dateswap_Click" />
                                 </div>
                                 <div class="col-md-6 col-sm-12" style="vertical-align: middle; text-align: center;">
                                     <asp:Image ID="Image1" runat="server" ImageUrl="~/erp_images/rightarrow.gif" Width="80px" Height="70px" />

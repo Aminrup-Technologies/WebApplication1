@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Data.SqlClient;
+using System.Data;
 
 namespace WebApplication1.bussiness.production
 {
@@ -10,9 +11,23 @@ namespace WebApplication1.bussiness.production
     {
         DB_Utility_OH4Y DbCL = new DB_Utility_OH4Y();
 
-        public void FindEmployeeTotalPresentByDates(string month, string year, string day1, string day2, string empwrk, ref Int32 totalpresents)
+        public void FindEmployeeTotalPresentByDates(string month, string year, string day1, string day2, string empwrk, ref decimal totalpresents)
         {
-            string cmdString = "SELECT COUNT(DISTINCT CreatedDate) as totalpresent FROM tbl_attendance where EmployeeWrk='" + empwrk + "' and MONTH(CreatedDate)='" + month + "' and YEAR(CreatedDate) = '" + year + "' and DAY(CreatedDate) between '" + day1 + "' and '" + day2 + "' and (AttendanceCode='P' or AttendanceCode='NH' or AttendanceCode='FL') and SiteIncharge_Approval='Approved' and AttendanceStatus='Present'";
+            //string cmdString = "SELECT COUNT(DISTINCT CreatedDate) as totalpresent FROM tbl_attendance where EmployeeWrk='" + empwrk + "' and MONTH(CreatedDate)='" + month + "' and YEAR(CreatedDate) = '" + year + "' and DAY(CreatedDate) between '" + day1 + "' and '" + day2 + "' and (AttendanceCode='P' or AttendanceCode='NH' or AttendanceCode='FL') and SiteIncharge_Approval='Approved' and AttendanceStatus='Present'";
+
+            string cmdString = "SELECT SUM(CASE " +
+                   "WHEN AttendanceCode = 'HP' THEN 2 " +
+                   "WHEN AttendanceCode = 'HD' THEN 0.5 " +
+                   "WHEN AttendanceCode IN ('P', 'NH', 'FL') THEN 1 " +
+                   "ELSE 0 END) AS totalpresent " +
+                   "FROM tbl_attendance " +
+                   "WHERE EmployeeWrk = '" + empwrk + "' " +
+                   "AND MONTH(CreatedDate) = '" + month + "' " +
+                   "AND YEAR(CreatedDate) = '" + year + "' " +
+                   "AND DAY(CreatedDate) BETWEEN '" + day1 + "' AND '" + day2 + "' " +
+                   "AND SiteIncharge_Approval = 'Approved' " +
+                   "AND AttendanceStatus = 'Present'";
+
             DbCL.Sqlconnection();
             DbCL.ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdString, DbCL.Conn);
@@ -20,14 +35,34 @@ namespace WebApplication1.bussiness.production
             Rdr = cmd.ExecuteReader();
             if (Rdr.Read())
             {
-                totalpresents = Convert.ToInt32(Rdr["totalpresent"].ToString());
+                totalpresents = Convert.ToDecimal(Rdr["totalpresent"].ToString());
             }
             DbCL.Conn.Close();
         }
 
-        public void FindEmployeeTotalPresentByDates2(string day1, string day2, string empwrk, ref Int32 totalpresents)
+        public void FindEmployeeTotalPresentByDates2(string day1, string day2, string empwrk, ref decimal totalpresents)
         {
-            string cmdString = "SELECT COUNT(DISTINCT CreatedDate) as totalpresent FROM tbl_attendance where EmployeeWrk='" + empwrk + "' and CreatedDate between '" + day1 + "' and '" + day2 + "' and (AttendanceCode='P' or AttendanceCode='NH' or AttendanceCode='FL') and SiteIncharge_Approval='Approved' and AttendanceStatus='Present'";
+            //string cmdString = "SELECT COUNT(DISTINCT CreatedDate) as totalpresent FROM tbl_attendance where EmployeeWrk='" + empwrk + "' and CreatedDate between '" + day1 + "' and '" + day2 + "' and (AttendanceCode='P' or AttendanceCode='NH' or AttendanceCode='FL') and SiteIncharge_Approval='Approved' and AttendanceStatus='Present'";
+
+            string cmdString = "SELECT COALESCE(SUM(AttendanceValue), 0) AS totalpresent " +
+                   "FROM (" +
+                       "SELECT CreatedDate, " +
+                              "CASE " +
+                                  "WHEN MAX(CASE WHEN AttendanceCode = 'HP' THEN 2 WHEN AttendanceCode = 'HD' THEN 0.5 WHEN AttendanceCode IN ('P', 'NH', 'FL', 'FP') THEN 1 ELSE 0 END) = 2 THEN 2 " +
+                                  "WHEN MAX(CASE WHEN AttendanceCode = 'HD' THEN 0.5 WHEN AttendanceCode IN ('P', 'NH', 'FL', 'FP') THEN 1 ELSE 0 END) = 0.5 THEN 0.5 " +
+                                  "ELSE 1 " +
+                              "END AS AttendanceValue " +
+                       "FROM tbl_attendance " +
+                       "WHERE EmployeeWrk = '" + empwrk + "' " +
+                       "AND CreatedDate BETWEEN '" + day1 + "' AND '" + day2 + "' " +
+                       "AND SiteIncharge_Approval = 'Approved' " +
+                       "AND AttendanceStatus = 'Present' " +
+                       "GROUP BY CreatedDate" +
+                   ") AS DistinctDates;";
+
+
+
+
             DbCL.Sqlconnection();
             DbCL.ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdString, DbCL.Conn);
@@ -35,15 +70,26 @@ namespace WebApplication1.bussiness.production
             Rdr = cmd.ExecuteReader();
             if (Rdr.Read())
             {
-                totalpresents = Convert.ToInt32(Rdr["totalpresent"].ToString());
+                totalpresents = Convert.ToDecimal(Rdr["totalpresent"].ToString());
             }
             DbCL.Conn.Close();
         }
 
 
-        public void FindEmployeeTotalOTByDates(string month, string year, string day1, string day2, string empwrk, ref Int32 TotalOT)
+        public void FindEmployeeTotalOTByDates(string month, string year, string day1, string day2, string empwrk, ref decimal TotalOT)
         {
-            string cmdString = "select COALESCE(SUM(ProvidedOT),0) as totalot from tbl_attendance where MONTH(CreatedDate) = '" + month + "' AND YEAR(CreatedDate) = '" + year + "' and DAY(CreatedDate) between '" + day1 + "' and '" + day2 + "' AND EmployeeWrk='" + empwrk + "' AND (AttendanceCode='P' or AttendanceCode='NH' or AttendanceCode='OD' or AttendanceCode='FL') and SiteIncharge_Approval='Approved' and AttendanceStatus='Present'";
+            //string cmdString = "select COALESCE(SUM(ProvidedOT),0) as totalot from tbl_attendance where MONTH(CreatedDate) = '" + month + "' AND YEAR(CreatedDate) = '" + year + "' and DAY(CreatedDate) between '" + day1 + "' and '" + day2 + "' AND EmployeeWrk='" + empwrk + "' AND (AttendanceCode='P' or AttendanceCode='NH' or AttendanceCode='OD' or AttendanceCode='FL') and SiteIncharge_Approval='Approved' and AttendanceStatus='Present'";
+
+            string cmdString = "SELECT COALESCE(SUM(ProvidedOT), 0) AS totalot " +
+                   "FROM tbl_attendance " +
+                   "WHERE MONTH(CreatedDate) = '" + month + "' " +
+                   "AND YEAR(CreatedDate) = '" + year + "' " +
+                   "AND DAY(CreatedDate) BETWEEN '" + day1 + "' AND '" + day2 + "' " +
+                   "AND EmployeeWrk = '" + empwrk + "' " +
+                   "AND AttendanceCode IN ('P', 'NH', 'OD', 'FL', 'HP', 'FP', 'HD') " +
+                   "AND SiteIncharge_Approval = 'Approved' " +
+                   "AND AttendanceStatus = 'Present'";
+
             DbCL.Sqlconnection();
             DbCL.ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdString, DbCL.Conn);
@@ -51,14 +97,24 @@ namespace WebApplication1.bussiness.production
             Rdr = cmd.ExecuteReader();
             if (Rdr.Read())
             {
-                TotalOT = Convert.ToInt32(Rdr["totalot"].ToString());
+                TotalOT = Convert.ToDecimal(Rdr["totalot"].ToString());
             }
             DbCL.Conn.Close();
         }
 
         public void FindEmployeeTotalOTByDates1(string day1, string day2, string empwrk, ref decimal TotalOT)
         {
-            string cmdString = "select COALESCE(SUM(ProvidedOT),0) as totalot from tbl_attendance where CreatedDate between '" + day1 + "' and '" + day2 + "' AND EmployeeWrk='" + empwrk + "' AND (AttendanceCode='P' or AttendanceCode='NH' or AttendanceCode='OD' or AttendanceCode='FL') and SiteIncharge_Approval='Approved' and AttendanceStatus='Present'";
+            //string cmdString = "select COALESCE(SUM(ProvidedOT),0) as totalot from tbl_attendance where CreatedDate between '" + day1 + "' and '" + day2 + "' AND EmployeeWrk='" + empwrk + "' AND (AttendanceCode='P' or AttendanceCode='NH' or AttendanceCode='OD' or AttendanceCode='FL') and SiteIncharge_Approval='Approved' and AttendanceStatus='Present'";
+
+            string cmdString = "SELECT COALESCE(SUM(ProvidedOT), 0) AS totalot " +
+                   "FROM tbl_attendance " +
+                   "WHERE CreatedDate BETWEEN '" + day1 + "' AND '" + day2 + "' " +
+                   "AND EmployeeWrk = '" + empwrk + "' " +
+                   "AND AttendanceCode IN ('P', 'NH', 'OD', 'FL', 'HP', 'FP', 'HD') " +
+                   "AND SiteIncharge_Approval = 'Approved' " +
+                   "AND AttendanceStatus = 'Present'";
+
+
             DbCL.Sqlconnection();
             DbCL.ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdString, DbCL.Conn);
@@ -117,7 +173,7 @@ namespace WebApplication1.bussiness.production
             DbCL.Conn.Close();
         }
 
-        public void BasicSalaryCalculation(Int32 TOtalPresents, decimal basicrate, ref decimal BasicSalary)
+        public void BasicSalaryCalculation(decimal TOtalPresents, decimal basicrate, ref decimal BasicSalary)
         {
             BasicSalary = Math.Round(TOtalPresents * basicrate, 2);
         }
@@ -131,43 +187,121 @@ namespace WebApplication1.bussiness.production
 
         //--------------------------Homepage Attendance Viewer --------------------------//
 
-        public void FindEmployeeTotalDaysByMonth(string month, string year, string empwrk, ref Int32 totalpresents)
+        public void FindEmployeeTotalDaysByMonth(string month, string year, string empwrk, ref decimal totalpresents)
         {
-            string cmdString = "SELECT COUNT(DISTINCT CreatedDate) as totalpresent FROM tbl_attendance where EmployeeWrk='" + empwrk + "' and MONTH(CreatedDate)='" + month + "' and YEAR(CreatedDate) = '" + year + "' and  (AttendanceCode='P' or AttendanceCode='NH' or AttendanceCode='FL' or AttendanceCode='OD') and SiteIncharge_Approval='Approved' and AttendanceStatus='Present'";
+            ////string cmdString = "SELECT COUNT(DISTINCT CreatedDate) as totalpresent FROM tbl_attendance where EmployeeWrk='" + empwrk + "' and MONTH(CreatedDate)='" + month + "' and YEAR(CreatedDate) = '" + year + "' and  (AttendanceCode='P' or AttendanceCode='NH' or AttendanceCode='FL' or AttendanceCode='OD') and SiteIncharge_Approval='Approved' and AttendanceStatus='Present'";
+
+            //string cmdString = "SELECT SUM(CASE " +
+            //       "WHEN AttendanceCode = 'HP' THEN 2 " +
+            //       "WHEN AttendanceCode = 'HD' THEN 0.5 " +
+            //       "WHEN AttendanceCode IN ('P', 'NH', 'FL', 'OD') THEN 1 " +
+            //       "ELSE 0 END) AS totalpresent " +
+            //       "FROM tbl_attendance " +
+            //       "WHERE EmployeeWrk = '" + empwrk + "' " +
+            //       "AND MONTH(CreatedDate) = '" + month + "' " +
+            //       "AND YEAR(CreatedDate) = '" + year + "' " +
+            //       "AND SiteIncharge_Approval = 'Approved' " +
+            //       "AND AttendanceStatus = 'Present'";
+
+
+            //DbCL.Sqlconnection();
+            //DbCL.ConnectDb();
+            //SqlCommand cmd = new SqlCommand(cmdString, DbCL.Conn);
+            //SqlDataReader Rdr;
+            //Rdr = cmd.ExecuteReader();
+            //if (Rdr.Read())
+            //{
+            //    totalpresents = Convert.ToDecimal(Rdr["totalpresent"].ToString());
+            //}
+            //DbCL.Conn.Close();
+
+            // Ensure the database connection is established
             DbCL.Sqlconnection();
             DbCL.ConnectDb();
-            SqlCommand cmd = new SqlCommand(cmdString, DbCL.Conn);
-            SqlDataReader Rdr;
-            Rdr = cmd.ExecuteReader();
-            if (Rdr.Read())
+
+            string storedProcedure = "sp_FindEmployeeTotalDaysByMonthWithApprovalStatus"; // Use the new SP or existing SP as needed
+
+            using (SqlCommand command = new SqlCommand(storedProcedure, DbCL.Conn))
             {
-                totalpresents = Convert.ToInt32(Rdr["totalpresent"].ToString());
+                command.CommandType = CommandType.StoredProcedure;
+
+                // Add parameters for the stored procedure
+                command.Parameters.AddWithValue("@EmployeeWrk", empwrk);
+                command.Parameters.AddWithValue("@Month", int.Parse(month));
+                command.Parameters.AddWithValue("@Year", int.Parse(year));
+
+                // Execute the stored procedure and retrieve the result
+                using (SqlDataReader Rdr = command.ExecuteReader())
+                {
+                    if (Rdr.Read())
+                    {
+                        totalpresents = Rdr["totalpresent"] != DBNull.Value ? Convert.ToDecimal(Rdr["totalpresent"]) : 0;
+                    }
+                }
+                DbCL.Conn.Close();
             }
-            DbCL.Conn.Close();
         }
 
-        public void HP_FindEmployeeTotalDaysByMonth(string month, string year, string empwrk, ref Int32 totalpresents)
+        public void HP_FindEmployeeTotalDaysByMonth(string month, string year, string empwrk, ref decimal totalpresents)
         {
-            //string cmdString = "SELECT COUNT(DISTINCT CreatedDate) as totalpresent FROM tbl_attendance where EmployeeWrk='" + empwrk + "' and MONTH(CreatedDate)='" + month + "' and YEAR(CreatedDate) = '" + year + "' and  (AttendanceCode='P' or AttendanceCode='NH' or AttendanceCode='FL' or AttendanceCode='OD') and SubmitterStatus='Exit'";
+            ////string cmdString = "SELECT COUNT(DISTINCT CreatedDate) as totalpresent FROM tbl_attendance where EmployeeWrk='" + empwrk + "' and MONTH(CreatedDate)='" + month + "' and YEAR(CreatedDate) = '" + year + "' and  (AttendanceCode='P' or AttendanceCode='NH' or AttendanceCode='FL' or AttendanceCode='OD') and SubmitterStatus='Exit'";
 
+            //DbCL.Sqlconnection();
+            //DbCL.ConnectDb();
+            ////string cmdString = "SELECT COUNT(DISTINCT CreatedDate) as totalpresent FROM tbl_attendance " +
+            ////           "WHERE EmployeeWrk=@EmployeeWrk " +
+            ////           "AND MONTH(CreatedDate)=@Month " +
+            ////           "AND YEAR(CreatedDate)=@Year " +
+            ////           "AND AttendanceCode IN ('P', 'NH', 'FL', 'OD') " +
+            ////           "AND SubmitterStatus='Exit'";
+
+            ////The below code is added on 05-Nov-2024 to provision 2 Present for working on National Holiday and 0.5 Present for Half Working Day
+            //string cmdString = "SELECT SUM(CASE " +
+            //       "WHEN AttendanceCode = 'HP' THEN 2 " +
+            //       "WHEN AttendanceCode = 'HD' THEN 0.5 " +
+            //       "WHEN AttendanceCode IN ('P', 'NH', 'FL', 'OD') THEN 1 " +
+            //       "ELSE 0 END) AS totalpresent " +
+            //       "FROM tbl_attendance " +
+            //       "WHERE EmployeeWrk = @EmployeeWrk " +
+            //       "AND MONTH(CreatedDate) = @Month " +
+            //       "AND YEAR(CreatedDate) = @Year " +
+            //       "AND SubmitterStatus = 'Exit'";
+
+
+            //using (SqlCommand command = new SqlCommand(cmdString, DbCL.Conn))
+            //{
+            //    // Assuming empwrk, month, and year are variables containing your values
+            //    command.Parameters.AddWithValue("@EmployeeWrk", empwrk);
+            //    command.Parameters.AddWithValue("@Month", month);
+            //    command.Parameters.AddWithValue("@Year", year);
+
+            //    // Execute the query and retrieve the result
+            //    //int totalPresent = (int)command.ExecuteScalar();
+            //    decimal totalPresent = (decimal)command.ExecuteScalar();
+            //    DbCL.Conn.Close();
+            //}
+
+            // Ensure the database connection is established
             DbCL.Sqlconnection();
             DbCL.ConnectDb();
-            string cmdString = "SELECT COUNT(DISTINCT CreatedDate) as totalpresent FROM tbl_attendance " +
-                       "WHERE EmployeeWrk=@EmployeeWrk " +
-                       "AND MONTH(CreatedDate)=@Month " +
-                       "AND YEAR(CreatedDate)=@Year " +
-                       "AND AttendanceCode IN ('P', 'NH', 'FL', 'OD') " +
-                       "AND SubmitterStatus='Exit'";
 
-            using (SqlCommand command = new SqlCommand(cmdString, DbCL.Conn))
+            string storedProcedure = "sp_FindEmployeeTotalDaysByMonth";
+
+            using (SqlCommand command = new SqlCommand(storedProcedure, DbCL.Conn))
             {
-                // Assuming empwrk, month, and year are variables containing your values
-                command.Parameters.AddWithValue("@EmployeeWrk", empwrk);
-                command.Parameters.AddWithValue("@Month", month);
-                command.Parameters.AddWithValue("@Year", year);
+                command.CommandType = CommandType.StoredProcedure;
 
-                // Execute the query and retrieve the result
-                int totalPresent = (int)command.ExecuteScalar();
+                // Add parameters for the stored procedure
+                command.Parameters.AddWithValue("@EmployeeWrk", empwrk);
+                command.Parameters.AddWithValue("@Month", int.Parse(month));
+                command.Parameters.AddWithValue("@Year", int.Parse(year));
+
+                // Execute the stored procedure and retrieve the result
+                object result = command.ExecuteScalar();
+
+                // Check if the result is null, and assign it to totalpresents
+                totalpresents = result != DBNull.Value ? Convert.ToDecimal(result) : 0;
+
                 DbCL.Conn.Close();
             }
         }
@@ -283,20 +417,20 @@ namespace WebApplication1.bussiness.production
             DbCL.Conn.Close();
         }
 
-        public void EmployeeOthersPayCalculations1(Int32 TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, ref decimal hrmamnt)
+        public void EmployeeOthersPayCalculations1(decimal TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, ref decimal hrmamnt)
         {
             decimal hrapay = HRAAmount;
             decimal hramult = Math.Round(hrapay * TOtalPresents, 2);
             hrmamnt = Math.Round(hramult / CalWorkingDays, 2);
         }
 
-        public void EmployeeOthersPayCalculations2_NINL(Int32 TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, decimal FixRateSalary, ref decimal hrmamnt)
+        public void EmployeeOthersPayCalculations2_NINL(decimal TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, decimal FixRateSalary, ref decimal hrmamnt)
         {
             decimal hrapay = FixRateSalary;
             hrmamnt = Math.Round(FixRateSalary * .05m, 2);
         }
 
-        public void EmployeeOthersPayCalculations2(Int32 TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, ref decimal hrmamnt)
+        public void EmployeeOthersPayCalculations2(decimal TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, ref decimal hrmamnt)
         {
             decimal hrapay = HRAAmount;
             //decimal hramult = Math.Round(hrapay * TOtalPresents, 2);
@@ -306,61 +440,61 @@ namespace WebApplication1.bussiness.production
             //This is updated on 01.05.2022 for calculating full HRA Amount and add it directly to NET Pay 2
         }
 
-        public void EmployeeOthersPayCalculations3(Int32 TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, ref decimal hrmamnt)
+        public void EmployeeOthersPayCalculations3(decimal TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, ref decimal hrmamnt)
         {
             decimal hrapay = HRAAmount;
             decimal hramult = Math.Round(hrapay * TOtalPresents, 2);
             hrmamnt = Math.Round(hramult / CalWorkingDays, 2);
         }
 
-        public void EmployeeOthersPayCalculations3_NINL(Int32 TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, decimal FixRateSalary, ref decimal hrmamnt)
+        public void EmployeeOthersPayCalculations3_NINL(decimal TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, decimal FixRateSalary, ref decimal hrmamnt)
         {
             decimal hrapay = FixRateSalary;
             hrmamnt = Math.Round(FixRateSalary * .05m, 2);
         }
 
-        public void EmployeeOthersPayCalculations4(Int32 TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, ref decimal hrmamnt)
+        public void EmployeeOthersPayCalculations4(decimal TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, ref decimal hrmamnt)
         {
             decimal hrapay = HRAAmount;
             decimal hramult = Math.Round(hrapay * TOtalPresents, 2);
             hrmamnt = Math.Round(hramult / CalWorkingDays, 2);
         }
 
-        public void EmployeeOthersPayCalculations5(Int32 TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, ref decimal hrmamnt)
+        public void EmployeeOthersPayCalculations5(decimal TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, ref decimal hrmamnt)
         {
             decimal hrapay = HRAAmount;
             decimal hramult = Math.Round(hrapay * TOtalPresents, 2);
             hrmamnt = Math.Round(hramult / CalWorkingDays, 2);
         }
 
-        public void EmployeeWashPayCalculations(Int32 TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, ref decimal hrmamnt)
+        public void EmployeeWashPayCalculations(decimal TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, ref decimal hrmamnt)
         {
             decimal hrapay = HRAAmount;
             decimal hramult = Math.Round(hrapay * TOtalPresents, 0);
             hrmamnt = Math.Round(hramult / CalWorkingDays, 0);
         }
 
-        public void EmployeeOthersPayCalculations5_NINL(Int32 TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, decimal BasicSalary, ref decimal hrmamnt)
+        public void EmployeeOthersPayCalculations5_NINL(decimal TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, decimal BasicSalary, ref decimal hrmamnt)
         {
             decimal hrapay = BasicSalary;
             hrmamnt = Math.Round(BasicSalary * .05m, 0);
         }
 
-        public void EmployeeOthersPayCalculations6(Int32 TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, ref decimal hrmamnt)
+        public void EmployeeOthersPayCalculations6(decimal TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, ref decimal hrmamnt)
         {
             decimal hrapay = HRAAmount;
             decimal hramult = Math.Round(hrapay * TOtalPresents, 2);
             hrmamnt = Math.Round(hramult / CalWorkingDays, 2);
         }
 
-        public void EmployeeOthersPayCalculations7(Int32 TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, ref decimal hrmamnt)
+        public void EmployeeOthersPayCalculations7(decimal TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, ref decimal hrmamnt)
         {
             decimal hrapay = HRAAmount;
             decimal hramult = Math.Round(hrapay * TOtalPresents, 2);
             hrmamnt = Math.Round(hramult / CalWorkingDays, 2);
         }
 
-        public void EmployeeOthersPayCalculations8(Int32 TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, ref decimal hrmamnt)
+        public void EmployeeOthersPayCalculations8(decimal TOtalPresents, Int32 CalWorkingDays, decimal HRAAmount, ref decimal hrmamnt)
         {
             decimal hrapay = HRAAmount;
             decimal hramult = Math.Round(hrapay * TOtalPresents, 2);

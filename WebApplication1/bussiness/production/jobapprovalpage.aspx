@@ -340,6 +340,13 @@
                                                     <ItemStyle CssClass="text text-center" />
                                                 </asp:TemplateField>
 
+                                                <asp:TemplateField HeaderText="Region" Visible="false">
+													<ItemTemplate>
+														<asp:Label ID="lbl_JOB_Region" runat="server" Text='<%# Bind("JOB_Region") %>'></asp:Label>
+													</ItemTemplate>
+													<ItemStyle CssClass="text text-center" />
+												</asp:TemplateField>
+
                                                 <asp:TemplateField HeaderText="JOB Date / Attendnace Date" Visible="true" HeaderStyle-Width="8%">
                                                     <ItemTemplate>
                                                         <asp:Label ID="lbl_CreatedDate" runat="server" Text='<%# Bind("CreatedDate","{0:dd-MM-yyyy}") %>'></asp:Label>
