@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="str_add_cstores.aspx.cs" Inherits="WebApplication1.bussiness.production.str_add_cstores" %>
+﻿<%@ Page Title="ATS/Store/Add_CentralStore" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="str_add_cstores.aspx.cs" Inherits="WebApplication1.bussiness.production.str_add_cstores" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
@@ -17,7 +17,7 @@
                 <div class="col-md-12 col-sm-12  ">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Add New Central Store Against Work Region</h2>
+                            <h2>Add New Central Store </h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                             </ul>
@@ -27,9 +27,10 @@
                             <div class="col-md-3">
                                 <div class="mb-3">
                                     <asp:Label ID="LBL_DDL_WorkCountry" runat="server" AssociatedControlID="DDL_WorkCountry" Text="Select Country :" ForeColor="Blue" Font-Bold="true" Font-Size="Small"></asp:Label>
+                                     [<asp:Label ID="LBL_DDL_WorkCountry_Value" runat="server" AssociatedControlID="DDL_WorkCountry" Text="[N/A]" ForeColor="LightBlue" Font-Bold="true" Font-Size="Smaller"></asp:Label>]
                                     <asp:RequiredFieldValidator ID="RFV_DDL_WorkCountry" runat="server" ErrorMessage="*" ForeColor="Red" ControlToValidate="DDL_WorkCountry" Display="Dynamic" InitialValue="0" ValidationGroup="Submit"></asp:RequiredFieldValidator>
                                     <div class="input-group-sm">
-                                        <asp:DropDownList ID="DDL_WorkCountry" runat="server" CssClass="form-control form-control-sm rounded" AutoPostBack="false" ></asp:DropDownList>
+                                        <asp:DropDownList ID="DDL_WorkCountry" runat="server" CssClass="form-control form-control-sm rounded" AutoPostBack="true" OnSelectedIndexChanged="DDL_WorkCountry_SelectedIndexChanged" ></asp:DropDownList>
 
                                     </div>
 
@@ -38,12 +39,11 @@
 
                             <div class="col-md-3">
                                 <div class="mb-3">
-                                    <asp:Label ID="LVL_DDL_State" runat="server" AssociatedControlID="DDL_State" Text="Select State :" ForeColor="Blue" Font-Bold="true" Font-Size="Small"></asp:Label>
-                                    <asp:RequiredFieldValidator ID="RFV_DDL_Supervisor" runat="server" ErrorMessage="*" ForeColor="Red" ControlToValidate="DDL_State" Display="Dynamic" InitialValue="0"></asp:RequiredFieldValidator>
+                                    <asp:Label ID="LBL_DDL_State" runat="server" AssociatedControlID="DDL_State" Text="Select State :" ForeColor="Blue" Font-Bold="true" Font-Size="Small"></asp:Label>
+                                    [<asp:Label ID="LBL_DDL_State_Value" runat="server" AssociatedControlID="DDL_State" Text="[N/A]" ForeColor="LightBlue" Font-Bold="true" Font-Size="Smaller"></asp:Label>]
+                                    <asp:RequiredFieldValidator ID="RFV_DDL_State" runat="server" ErrorMessage="*" ForeColor="Red" ControlToValidate="DDL_State" Display="Dynamic" InitialValue="0"></asp:RequiredFieldValidator>
                                     <div class="input-group-sm">
-                                        <asp:DropDownList ID="DDL_State" runat="server" CssClass="form-control form-control-sm rounded" AutoPostBack="true" >
-                                            <asp:ListItem Enabled="False" Selected="True" Value="0">--select--</asp:ListItem>
-                                        </asp:DropDownList>
+                                        <asp:DropDownList ID="DDL_State" runat="server" CssClass="form-control form-control-sm rounded" AutoPostBack="true" OnSelectedIndexChanged="DDL_State_SelectedIndexChanged" ></asp:DropDownList>
 
                                     </div>
 
@@ -52,44 +52,41 @@
 
                              <div class="col-md-3">
                                 <div class="mb-3">
-                                    <asp:Label ID="LBL_TB_StoreName" runat="server" AssociatedControlID="TB_StoreName" Text="Enter Store Name :" ForeColor="Blue" Font-Bold="true" Font-Size="Small"></asp:Label>
-                                    <asp:RequiredFieldValidator ID="RFV_TB_StoreName" runat="server" ErrorMessage="*" ForeColor="Red" ControlToValidate="TB_StoreName" Display="Dynamic" InitialValue="" ValidationGroup="Submit"></asp:RequiredFieldValidator>
+                                    <asp:Label ID="LBL_TB_CStoreName" runat="server" AssociatedControlID="TB_CStoreName" Text="Enter Central Store Name :" ForeColor="Blue" Font-Bold="true" Font-Size="Small"></asp:Label>
+                                    <asp:RequiredFieldValidator ID="RFV_TB_CStoreName" runat="server" ErrorMessage="*" ForeColor="Red" ControlToValidate="TB_CStoreName" Display="Dynamic" InitialValue="" ValidationGroup="Submit"></asp:RequiredFieldValidator>
                                     <div class="input-group-sm">
-                                        <asp:TextBox ID="TB_StoreName" runat="server" CssClass="form-control form-control-sm rounded"></asp:TextBox>
+                                        <asp:TextBox ID="TB_CStoreName" runat="server" CssClass="form-control form-control-sm rounded"></asp:TextBox>
                                     </div>
-
                                 </div>
-                            </div>
-
+                              </div>
                             <div class="col-md-3">
                                 <div class="mb-3">
-                                    <asp:Label ID="LBL_TB_StoreCode" runat="server" AssociatedControlID="TB_StoreCode" Text="Enter Store Code :" ForeColor="Blue" Font-Bold="true" Font-Size="Small"></asp:Label>
-                                    <asp:RequiredFieldValidator ID="RFV_TB_StoreCode" runat="server" ErrorMessage="*" ForeColor="Red" ControlToValidate="TB_StoreCode" Display="Dynamic" InitialValue="" ValidationGroup="Submit"></asp:RequiredFieldValidator>
+                                    <asp:Label ID="LBL_TB_CStoreCode" runat="server" AssociatedControlID="TB_CStoreCode" Text="Enter Central Store Code :" ForeColor="Blue" Font-Bold="true" Font-Size="Small"></asp:Label>
+                                    <asp:RequiredFieldValidator ID="RFV_TB_CStoreCode" runat="server" ErrorMessage="*" ForeColor="Red" ControlToValidate="TB_CStoreCode" Display="Dynamic" InitialValue="" ValidationGroup="Submit"></asp:RequiredFieldValidator>
                                     <div class="input-group-sm">
-                                        <asp:TextBox ID="TB_StoreCode" runat="server" CssClass="form-control form-control-sm rounded" ></asp:TextBox>
+                                        <asp:TextBox ID="TB_CStoreCode" runat="server" CssClass="form-control form-control-sm rounded" ></asp:TextBox>
                                     </div>
 
                                 </div>
                             </div>
-
-                            <div class="col-md-3">
+                               <div class="col-md-3">
                                 <div class="mb-3">
                                     <asp:Label ID="LBL_TB_Manager1_Wrk" runat="server" AssociatedControlID="TB_Manager1_Wrk" Text="Assign Manager 1 :" ForeColor="Blue" Font-Bold="true" Font-Size="Small"></asp:Label>
                                     <asp:RequiredFieldValidator ID="RFV_TB_Manager1_Wrk" runat="server" ErrorMessage="*" ForeColor="Red" ControlToValidate="TB_Manager1_Wrk" Display="Dynamic" InitialValue="" ValidationGroup="Submit"></asp:RequiredFieldValidator>
                                     <div class="input-group-sm">
-                                        <asp:TextBox ID="TB_Manager1_Wrk" runat="server" CssClass="form-control form-control-sm rounded"></asp:TextBox>
+                                        <asp:TextBox ID="TB_Manager1_Wrk" runat="server" CssClass="form-control form-control-sm rounded" OnTextChanged="TB_Manager1_Wrk_TextChanged" AutoPostBack="true" ></asp:TextBox>
                                     </div>
-
+                                    <asp:Label ID="Lbl_Manager1_Name" runat="server" Text="N/A" ForeColor="LightBlue" Font-Bold="true" Font-Size="Small"></asp:Label><br />
                                 </div>
                             </div>
 
-                             <div class="col-md-3">
+                            <div class="col-md-3">
                                 <div class="mb-3">
                                     <asp:Label ID="LBL_TB_Manager2_Wrk" runat="server" AssociatedControlID="TB_Manager2_Wrk" Text="Assign Manager 2 :" ForeColor="Blue" Font-Bold="true" Font-Size="Small"></asp:Label>
                                     <div class="input-group-sm">
-                                        <asp:TextBox ID="TB_Manager2_Wrk" runat="server" CssClass="form-control form-control-sm rounded"></asp:TextBox>
+                                        <asp:TextBox ID="TB_Manager2_Wrk" runat="server" CssClass="form-control form-control-sm rounded" OnTextChanged="TB_Manager2_Wrk_TextChanged" AutoPostBack="true" ></asp:TextBox>
                                     </div>
-
+                                    <asp:Label ID="Lbl_Manager2_Name" runat="server" Text="N/A" ForeColor="LightBlue" Font-Bold="true" Font-Size="Small"></asp:Label><br />
                                 </div>
                             </div>
                             <!-- Small modal -->
@@ -128,33 +125,14 @@
                             <div class="col-md-6 col-sm-12">
                                 <button type="button" class="btn btn-danger btn-sm collapse-link">Cancel</button>
                                 <button type="reset" class="btn btn-warning btn-sm">Reset</button>
-                                <asp:Button ID="btn_submit" runat="server" Text="Submit" CssClass="btn btn-success btn-sm" CausesValidation="true" ValidationGroup="Submit"/>
+                                <asp:Button ID="btn_submit" runat="server" Text="Submit" CssClass="btn btn-success btn-sm" CausesValidation="true" ValidationGroup="Submit"
+                                    OnClick="btnSubmit_Click"/>
                             </div>
                         </div>
                     </div>
                     <%--button end--%>
                 </div>
 
-                <div class="col-md-12 col-sm-12">
-                    <div class="x_panel">
-                        <div class="x_title">
-                            <h2>View and Manage : Work Order Data</h2>
-                            <ul class="nav navbar-right panel_toolbox">
-                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                            </ul>
-                            <div class="clearfix"></div>
-                        </div>
-                        <div class="x_content">
-                            <div class="row">
-                                <div class="col-md-12 col-sm-12">
-                                    <div class="card-box table-responsive">
-                                        <span>Hello, How are you?</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

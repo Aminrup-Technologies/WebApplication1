@@ -15,13 +15,19 @@
                     <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
+                    <a class="btn btn-app" href="str_add_warehouse.aspx">
+                        <div id="div2" class="badge bg-red" runat="server">
+                            <asp:Label ID="Label2" runat="server" Text="WIP" Visible="true"></asp:Label>
+                        </div>
+                        <i class="fa fa-cubes"></i>Add Warehouse
+                    </a>
                     <a class="btn btn-app" href="str_add_cstores.aspx">
                         <div id="div11" class="badge bg-red" runat="server">
                             <asp:Label ID="Label18" runat="server" Text="WIP" Visible="true"></asp:Label>
                         </div>
                         <i class="fa fa-cubes"></i>Add Central Store
                     </a>
-                    <a class="btn btn-app" href="#">
+                    <a class="btn btn-app" href="str_add_sitestore.aspx">
                         <div id="div12" class="badge bg-red" runat="server">
                             <asp:Label ID="Label19" runat="server" Text="WIP" Visible="true"></asp:Label>
                         </div>

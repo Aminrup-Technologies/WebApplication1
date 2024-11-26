@@ -10,7 +10,7 @@
 namespace WebApplication1.bussiness.production {
     
     
-    public partial class str_add_cstores {
+    public partial class str_add_sitestore {
         
         /// <summary>
         /// LBL_DDL_WorkCountry control.
@@ -85,58 +85,157 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.DropDownList DDL_State;
         
         /// <summary>
-        /// LBL_TB_CStoreName control.
+        /// LBL_DDL_Region control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label LBL_TB_CStoreName;
+        protected global::System.Web.UI.WebControls.Label LBL_DDL_Region;
         
         /// <summary>
-        /// RFV_TB_CStoreName control.
+        /// LBL_DDL_Region_Value control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator RFV_TB_CStoreName;
+        protected global::System.Web.UI.WebControls.Label LBL_DDL_Region_Value;
         
         /// <summary>
-        /// TB_CStoreName control.
+        /// RFV_DDL_Region control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox TB_CStoreName;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator RFV_DDL_Region;
         
         /// <summary>
-        /// LBL_TB_CStoreCode control.
+        /// DDL_Region control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label LBL_TB_CStoreCode;
+        protected global::System.Web.UI.WebControls.DropDownList DDL_Region;
         
         /// <summary>
-        /// RFV_TB_CStoreCode control.
+        /// LBL_DDL_Company control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator RFV_TB_CStoreCode;
+        protected global::System.Web.UI.WebControls.Label LBL_DDL_Company;
         
         /// <summary>
-        /// TB_CStoreCode control.
+        /// LBL_DDL_Company_Value control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox TB_CStoreCode;
+        protected global::System.Web.UI.WebControls.Label LBL_DDL_Company_Value;
+        
+        /// <summary>
+        /// RFV_DDL_Company control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator RFV_DDL_Company;
+        
+        /// <summary>
+        /// DDL_Company control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList DDL_Company;
+        
+        /// <summary>
+        /// LBL_DDL_WorkSite control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label LBL_DDL_WorkSite;
+        
+        /// <summary>
+        /// RFV_DDL_WorkSite control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator RFV_DDL_WorkSite;
+        
+        /// <summary>
+        /// DDL_WorkSite control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList DDL_WorkSite;
+        
+        /// <summary>
+        /// LBL_TB_SiteStoreName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label LBL_TB_SiteStoreName;
+        
+        /// <summary>
+        /// RFV_TB_SiteStoreName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator RFV_TB_SiteStoreName;
+        
+        /// <summary>
+        /// TB_SiteStoreName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox TB_SiteStoreName;
+        
+        /// <summary>
+        /// LBL_TB_SiteStoreCode control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label LBL_TB_SiteStoreCode;
+        
+        /// <summary>
+        /// RFV_TB_SiteStoreCode control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator RFV_TB_SiteStoreCode;
+        
+        /// <summary>
+        /// TB_SiteStoreCode control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox TB_SiteStoreCode;
         
         /// <summary>
         /// LBL_TB_Manager1_Wrk control.

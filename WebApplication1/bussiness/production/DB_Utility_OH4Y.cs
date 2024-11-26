@@ -9,6 +9,7 @@ using System.IO;
 using Org.BouncyCastle.Math.EC.Multiplier;
 using System.Net.Mail;
 using System.Net;
+using System.Configuration;
 
 namespace WebApplication1.bussiness.production
 {
@@ -963,7 +964,7 @@ namespace WebApplication1.bussiness.production
             //cmbM.SelectedValue = DateTime.Now.ToString("MM");
             cmbY.SelectedValue = DateTime.Now.Year.ToString();
 
-            
+
             //cmbY.Items.Add(new ListItem("Please select option", "0"));
         }
 
@@ -1028,7 +1029,7 @@ namespace WebApplication1.bussiness.production
             cmbY1.Text = (now.ToString("yyyy"));
         }
 
-        public Int32 SundayCount (Int32 month, Int32 year)
+        public Int32 SundayCount(Int32 month, Int32 year)
         {
             //int month = 12;
             //int year = 2023;
@@ -1051,7 +1052,7 @@ namespace WebApplication1.bussiness.production
 
         public void CalDateCombo90(DropDownList cmbM1, DropDownList cmbY1)
         {
-            
+
             int yyend;
             //Populate the month dropdown list (cmbM1) with the names of the twelve months.
             cmbM1.Items.Clear();
@@ -1767,6 +1768,168 @@ namespace WebApplication1.bussiness.production
             }
             Conn.Close();
             return jobid + "/" + mastercode;
+        }
+
+        //--------Added by Purnima--------
+
+        // Get the connection string from web.config
+        private static string GetConnectionString()
+        {
+            return ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
+        }
+
+        //To Establish a connection to the database
+        public static SqlConnection GetConnection()
+        {
+            SqlConnection connection = new SqlConnection(GetConnectionString());
+            try
+            {
+                connection.Open();
+            }
+            catch (Exception ex)
+            {
+                // Handle connection error, if any
+                // You might want to log the exception or take other actions
+                throw ex;
+            }
+            return connection;
+        }
+        public static void BindWithDefaultNoRecords(DropDownList ddl)
+        {
+            // Clear existing items and add the default "No Records Found" item
+            ddl.Items.Clear();
+            ddl.Items.Add(new ListItem("No Records Found", ""));
+        }
+        public static void BindDropDownList(string query, DropDownList ddl, string textField, string valueField, out bool recordsBound)
+        {
+            // Initialize the flag
+            recordsBound = false;
+
+            using (SqlConnection connection = GetConnection())
+            {
+                SqlCommand command = new SqlCommand(query, connection);
+                SqlDataReader reader = command.ExecuteReader();
+
+                // Check if there are any records to bind
+                if (reader.HasRows)
+                {
+                    ddl.DataSource = reader;
+                    ddl.DataTextField = textField;
+                    ddl.DataValueField = valueField;
+                    ddl.DataBind();
+
+                    // Set the flag to indicate that records were bound
+                    recordsBound = true;
+                }
+
+                reader.Close();
+                connection.Close();
+            }
+
+            // Add a default item to the DropDownList
+            ddl.Items.Insert(0, new ListItem("Select", "0"));
+        }
+
+        //BindDropDownList OVERLOADED
+        public static void BindDropDownList(string query, DropDownList ddl, string textField, string valueField, SqlParameter parameter, out bool recordsBound)
+        {
+            // Initialize the flag
+            recordsBound = false;
+
+            // Create a connection and command
+            using (SqlConnection connection = GetConnection())
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    // Add the parameter to the command
+                    command.Parameters.Add(parameter);
+
+                    try
+                    {
+                        SqlDataReader reader = command.ExecuteReader();
+
+                        // Check if there are any records to bind
+                        if (reader.HasRows)
+                        {
+                            ddl.DataSource = reader;
+                            ddl.DataTextField = textField;
+                            ddl.DataValueField = valueField;
+                            ddl.DataBind();
+
+                            // Set the flag to indicate that records were bound
+                            recordsBound = true;
+                        }
+                        else
+                        {
+                            // If no records found, bind a default record
+                            ddl.Items.Clear();
+                            ddl.Items.Add(new ListItem("No records found", ""));
+                        }
+                        reader.Close();
+                        connection.Close();
+                        // Add a default item to the DropDownList
+                        ddl.Items.Insert(0, new ListItem("Select", "0"));
+                    }
+                    catch (Exception ex)
+                    {
+                        connection.Close();
+                        // Handle the exception (e.g., log the error, display a message)
+                        // For simplicity, you can just rethrow the exception
+                        throw new Exception("An error occurred while executing the query: " + ex.Message, ex);
+                    }
+
+                }
+            }
+        }
+        public static void BindDropDownList(string query, DropDownList ddl, string textField, string valueField, SqlParameter[] parameters, out bool recordsBound)
+        {
+            // Initialize the flag
+            recordsBound = false;
+
+            // Create a connection and command
+            using (SqlConnection connection = GetConnection())
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    // Add parameters to the command
+                    command.Parameters.AddRange(parameters);
+
+                    try
+                    {
+                        SqlDataReader reader = command.ExecuteReader();
+
+                        // Check if there are any records to bind
+                        if (reader.HasRows)
+                        {
+                            ddl.DataSource = reader;
+                            ddl.DataTextField = textField;
+                            ddl.DataValueField = valueField;
+                            ddl.DataBind();
+
+                            // Set the flag to indicate that records were bound
+                            recordsBound = true;
+                        }
+
+                        else
+                        {
+                            // If no records found, bind a default record
+                            ddl.Items.Clear();
+                            ddl.Items.Add(new ListItem("No records found", ""));
+                            ddl.DataBind(); // Ensure the default record is displayed
+                        }
+
+                        reader.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle the exception (e.g., log the error, display a message)
+                        // For simplicity, you can just rethrow the exception
+                        throw new Exception("An error occurred while executing the query: " + ex.Message, ex);
+                    }
+                }
+            }
+            // Add a default item to the DropDownList
+            ddl.Items.Insert(0, new ListItem("Select", "0"));
         }
     }
 }
