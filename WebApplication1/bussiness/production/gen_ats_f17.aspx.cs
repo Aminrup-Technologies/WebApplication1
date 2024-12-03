@@ -356,7 +356,7 @@ namespace WebApplication1.bussiness.production
                 TotalPresents = 0;
                 //----------------- Function call to find out the Total Present aganist the Employee Workman Sl----------------//
                 string empwrk = lbl_WorkmanSL.Text.ToString();
-                PayRoll.FindEmployeeTotalPresentByDates2(date1, date2, empwrk, ref TotalPresents);
+                PayRoll.FindEmployeeTotalPresentByDates2_SP(date1, date2, empwrk, ref TotalPresents);
                 lbl_presents.Text = TotalPresents.ToString();
 
                 //----------------- Function call to find out the Total OverTime Unit aganist the Employee Workman Sl----------------//

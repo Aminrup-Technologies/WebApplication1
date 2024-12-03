@@ -60,9 +60,6 @@ namespace WebApplication1.bussiness.production
                        "GROUP BY CreatedDate" +
                    ") AS DistinctDates;";
 
-
-
-
             DbCL.Sqlconnection();
             DbCL.ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdString, DbCL.Conn);
@@ -74,6 +71,51 @@ namespace WebApplication1.bussiness.production
             }
             DbCL.Conn.Close();
         }
+
+
+        public void FindEmployeeTotalPresentByDates2_SP(string day1, string day2, string empwrk, ref decimal totalpresents)
+        {
+            try
+            {
+                // Establish database connection
+                DbCL.Sqlconnection();
+                DbCL.ConnectDb();
+
+                // Prepare the SQL command to call the stored procedure
+                SqlCommand cmd = new SqlCommand("FindEmployeeTotalPresentByDates_F17", DbCL.Conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                // Add parameters
+                cmd.Parameters.AddWithValue("@Day1", day1);
+                cmd.Parameters.AddWithValue("@Day2", day2);
+                cmd.Parameters.AddWithValue("@EmpWrk", empwrk);
+
+                // Add the output parameter
+                SqlParameter outputParam = new SqlParameter("@TotalPresents", SqlDbType.Decimal)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                cmd.Parameters.Add(outputParam);
+
+                // Execute the command
+                cmd.ExecuteNonQuery();
+
+                // Retrieve the output parameter value
+                totalpresents = Convert.ToDecimal(outputParam.Value);
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions (logging, rethrowing, etc.)
+                throw new Exception("An error occurred while retrieving the total presents.", ex);
+            }
+            finally
+            {
+                // Close the connection
+                if (DbCL.Conn.State == ConnectionState.Open)
+                    DbCL.Conn.Close();
+            }
+        }
+
 
 
         public void FindEmployeeTotalOTByDates(string month, string year, string day1, string day2, string empwrk, ref decimal TotalOT)
