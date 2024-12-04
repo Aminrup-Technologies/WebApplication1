@@ -93,6 +93,8 @@ namespace WebApplication1.bussiness.production
                 // Add the output parameter
                 SqlParameter outputParam = new SqlParameter("@TotalPresents", SqlDbType.Decimal)
                 {
+                    Precision = 5, // Precision matches the SQL data type
+                    Scale = 2,     // Scale matches the SQL data type
                     Direction = ParameterDirection.Output
                 };
                 cmd.Parameters.Add(outputParam);
@@ -101,7 +103,8 @@ namespace WebApplication1.bussiness.production
                 cmd.ExecuteNonQuery();
 
                 // Retrieve the output parameter value
-                totalpresents = Convert.ToDecimal(outputParam.Value);
+                //totalpresents = Convert.ToDecimal(outputParam.Value);
+                totalpresents = Math.Round(Convert.ToDecimal(outputParam.Value), 2);
             }
             catch (Exception ex)
             {

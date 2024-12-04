@@ -353,7 +353,7 @@ namespace WebApplication1.bussiness.production
                 Label lbl_netpay1 = (Label)GridView.Rows[i].FindControl("lbl_netpay1");
                 Label lbl_netpay2 = (Label)GridView.Rows[i].FindControl("lbl_netpay2");
 
-                TotalPresents = 0;
+                TotalPresents = .0m;
                 //----------------- Function call to find out the Total Present aganist the Employee Workman Sl----------------//
                 string empwrk = lbl_WorkmanSL.Text.ToString();
                 PayRoll.FindEmployeeTotalPresentByDates2_SP(date1, date2, empwrk, ref TotalPresents);
@@ -398,7 +398,7 @@ namespace WebApplication1.bussiness.production
 
                 //------------ Wage of Fixed rate ---------------   ( FixedAmount / CalenderDays ) x  PresentDays
                 decimal FixRateSalary = 0.0m;
-                FixRateSalary = Math.Ceiling(Math.Round(fdr * TotalPresents, 2));
+                FixRateSalary = Math.Round(fdr * TotalPresents, 2);
                 lbl_fixratesal.Text = FixRateSalary.ToString();
 
 
@@ -487,7 +487,7 @@ namespace WebApplication1.bussiness.production
                 if (workregion == "RSP")
                 {
                     decimal awamult = 157.69m;
-                    SPCLPay = Math.Ceiling(TotalPresents * awamult);
+                    SPCLPay = Math.Round(TotalPresents * awamult,2);
                     lbl_SPCLPay.Text = SPCLPay.ToString();
                 }
                 else
