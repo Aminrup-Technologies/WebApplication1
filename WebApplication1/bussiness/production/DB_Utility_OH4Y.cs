@@ -1784,7 +1784,7 @@ namespace WebApplication1.bussiness.production
             Sqlconnection();
             ConnectDb();
             cmd = new SqlCommand(s1, Conn);
-            cmd.CommandTimeout = 60;
+            cmd.CommandTimeout = 180;
             cmd.CommandType = CommandType.Text;
             if (SPParameter != null)
             {

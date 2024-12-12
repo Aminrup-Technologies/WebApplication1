@@ -281,10 +281,11 @@ namespace WebApplication1.bussiness.production
         {
             try
             {
+                string formattedDate = DateTime.Parse(jobdate).ToString("yyyy-MM-dd");
                 string query = "select TBT_Count, SOP_Count from tbl_jobs where CreatedDate=@CreatedDate and Creator_Workman=@Creator_Workman and Creator_Region=@Creator_Region and Creator_Company=@Creator_Company and JOBID=@JOBID ";
                 SqlParameter[] pram = {
                                           new SqlParameter("@JOBID",jobid),
-                                          new SqlParameter("@CreatedDate",jobdate),
+                                          new SqlParameter("@CreatedDate",formattedDate),
                                           new SqlParameter("@Creator_Workman",crtrwrk),
                                           new SqlParameter("@Creator_Region",crtrrgn),
                                           new SqlParameter("@Creator_Company",crtrcomp),
