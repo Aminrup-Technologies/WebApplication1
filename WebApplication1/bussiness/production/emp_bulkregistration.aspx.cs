@@ -123,7 +123,7 @@ namespace WebApplication1.bussiness.production
 
 
 
-        protected void ImportExcel(object sender, EventArgs e)
+        protected void ImportExcel_old(object sender, EventArgs e)
         {
             string filePath1 = FileUpload1.PostedFile.FileName;
             string filename1 = Path.GetFileName(filePath1);
@@ -232,6 +232,146 @@ namespace WebApplication1.bussiness.production
                 lblMessage.Text = "No file Selected...!! ";
             }
         }
+
+        protected void ImportExcel(object sender, EventArgs e)
+        {
+            string filePath1 = FileUpload1.PostedFile.FileName;
+            string filename1 = Path.GetFileName(filePath1);
+            string ext = Path.GetExtension(filename1);
+            string type = String.Empty;
+
+            // List of required columns
+            List<string> requiredColumns = new List<string>
+            {
+                "SLNO", "WORKMAN", "STATUS", "FNAME", "MNAME", "LNAME", "FULLNAME",
+                "FATHERNAME", "DOB", "BLOOD", "MOBILE", "QUALIFICATION", "DOJ",
+                "WORKSITE", "CATEGORY", "DESIGNATION", "ROLETYPE", "PERMISSION",
+                "workhours", "otfactor", "SAFETYNO", "SAFETYVAL", "GPNO", "GPVAL",
+                "PVVAL", "UANNO", "ESIC", "BANKNAME", "ACCOUNTNO", "IFSC", "BRANCH"
+            };
+
+            if (FileUpload1.HasFile)
+            {
+                try
+                {
+                    switch (ext)
+                    {
+                        case ".xls":
+                        case ".xlsx":
+                            type = "application/vnd.ms-excel";
+                            break;
+                    }
+
+                    if (type != String.Empty)
+                    {
+                        // Save the uploaded Excel file
+                        string filePath = Server.MapPath("~/erp_images/EmpFiles/") + Path.GetFileName(FileUpload1.PostedFile.FileName);
+                        FileUpload1.SaveAs(filePath);
+
+                        // Open the Excel file in Read Mode using OpenXml
+                        using (SpreadsheetDocument doc = SpreadsheetDocument.Open(filePath, false))
+                        {
+                            // Read the first sheet from the Excel file
+                            Sheet sheet = doc.WorkbookPart.Workbook.Sheets.GetFirstChild<Sheet>();
+
+                            // Get the Worksheet instance
+                            Worksheet worksheet = (doc.WorkbookPart.GetPartById(sheet.Id.Value) as WorksheetPart).Worksheet;
+
+                            // Fetch all rows present in the Worksheet
+                            IEnumerable<Row> rows = worksheet.GetFirstChild<SheetData>().Descendants<Row>();
+
+                            // Create a new DataTable
+                            DataTable dt = new DataTable();
+
+                            // Validate columns from the first row
+                            Row headerRow = rows.FirstOrDefault();
+                            if (headerRow != null)
+                            {
+                                List<string> uploadedColumns = new List<string>();
+                                foreach (Cell cell in headerRow.Descendants<Cell>())
+                                {
+                                    uploadedColumns.Add(GetValue(doc, cell));
+                                }
+
+                                // Check for missing columns
+                                var missingColumns = requiredColumns.Except(uploadedColumns).ToList();
+                                if (missingColumns.Any())
+                                {
+                                    lblMessage.Text = "The uploaded file is missing the following columns: " + string.Join(", ", missingColumns);
+                                    lblMessage.ForeColor = System.Drawing.Color.Red;
+
+                                    // Reopen the modal
+                                    ScriptManager.RegisterStartupScript(this, this.GetType(), "OpenModal", "openModal();", true);
+
+                                    return;
+                                }
+                            }
+
+                            // Process rows and add data to the DataTable
+                            foreach (Row row in rows)
+                            {
+                                // Use the first row to add columns to DataTable
+                                if (row.RowIndex.Value == 1)
+                                {
+                                    foreach (Cell cell in row.Descendants<Cell>())
+                                    {
+                                        dt.Columns.Add(GetValue(doc, cell));
+                                    }
+                                }
+                                else
+                                {
+                                    // Add rows to DataTable
+                                    dt.Rows.Add();
+                                    int i = 0;
+                                    foreach (Cell cell in row.Descendants<Cell>())
+                                    {
+                                        string var = GetValue(doc, cell);
+                                        dt.Rows[dt.Rows.Count - 1][i] = var ?? "";
+                                        i++;
+                                    }
+                                }
+                            }
+
+                            // Bind DataTable to GridView
+                            ViewState["AgendaDetails"] = dt;
+                            GridView1.DataSource = dt;
+                            GridView1.DataBind();
+
+                            lblMessage.ForeColor = System.Drawing.Color.Green;
+                            lblMessage.Text = "Excel Sheet Data uploaded successfully, Click SUBMIT to Save";
+
+                            // Reopen the modal
+                            ScriptManager.RegisterStartupScript(this, this.GetType(), "OpenModal", "openModal();", true);
+                        }
+                    }
+                    else
+                    {
+                        lblMessage.ForeColor = System.Drawing.Color.Red;
+                        lblMessage.Text = "Select Only Excel File having extension .xlsx or .xls ";
+
+                        // Reopen the modal
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "OpenModal", "openModal();", true);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    lblMessage.ForeColor = System.Drawing.Color.Red;
+                    lblMessage.Text = "Error: " + ex.Message.ToString();
+
+                    // Reopen the modal
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "OpenModal", "openModal();", true);
+                }
+            }
+            else
+            {
+                lblMessage.ForeColor = System.Drawing.Color.Red;
+                lblMessage.Text = "No file Selected...!! ";
+
+                // Reopen the modal
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "OpenModal", "openModal();", true);
+            }
+        }
+
 
         public string RemoveSpecialCharacters(string text)
         {
@@ -437,7 +577,29 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_dwn_dedexcel_Click(object sender, EventArgs e)
         {
+            // Specify the file path
+            string filePath = Server.MapPath("~/erp_images/EmpFiles/Employee_BulkImport_Template.xlsx"); // Adjust the path as necessary
+                                                                                                         // Get the current date in ddMMyy format
+            string currentDate = DateTime.Now.ToString("ddMMyy");
+            string fileName = $"EmpBulkImp_Template_{currentDate}.xlsx";
+            //string fileName = "Employee_BulkImport_Template.xlsx"; // Name for the downloaded file
 
+            // Check if the file exists
+            if (System.IO.File.Exists(filePath))
+            {
+                // Clear any existing response
+                Response.Clear();
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; // MIME type for Excel files
+                Response.AddHeader("Content-Disposition", $"attachment; filename={fileName}");
+                Response.TransmitFile(filePath); // Write the file to the response
+                Response.Flush();
+                Response.End(); // End the response
+            }
+            else
+            {
+                // Handle the case where the file does not exist
+                lblMessage.Text = "The requested file does not exist."; // Add a label to show the error
+            }
         }
     }
 }

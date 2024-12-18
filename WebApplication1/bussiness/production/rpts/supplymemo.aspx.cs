@@ -33,10 +33,10 @@ namespace WebApplication1.bussiness.production.rpts
 
             //string JOBID = "JOB0051152";
             Bind_JOBIDDetails(jobid);
-            Bind_SMJIDDetails(jobid);
-            Bind_Manpower(jobid);
-            Bind_ShiftData(jobid);
-            Bind_LineItemData(jobid);
+            //Bind_SMJIDDetails(jobid);
+            //Bind_Manpower(jobid);
+            //Bind_ShiftData(jobid);
+            //Bind_LineItemData(jobid);
         }
 
 
@@ -78,7 +78,10 @@ namespace WebApplication1.bussiness.production.rpts
                     lbl_siteincharge.Text = dt.Rows[0]["JOB_InchargeName"].ToString();
                     lbl_inchargewrk.Text = dt.Rows[0]["JOB_InchargeWrk"].ToString();
 
-
+                    Bind_SMJIDDetails(smjid);
+                    Bind_Manpower(smjid);
+                    Bind_ShiftData(smjid);
+                    Bind_LineItemData(smjid);
                 }
             }
             catch (Exception ex)
@@ -101,9 +104,9 @@ namespace WebApplication1.bussiness.production.rpts
                 if (dbcl.Conn.State == ConnectionState.Closed)
                 { dbcl.ConnectDb(); }
 
-                string query = "select * from tbl_supplymemojobsdetails where Ref_JOBID=@Ref_JOBID";
+                string query = "select * from tbl_supplymemojobsdetails where SMJID=@SMJID";
                 SqlParameter[] pram = {
-                                          new SqlParameter("@Ref_JOBID",jobid),
+                                          new SqlParameter("@SMJID",jobid),
                                       };
                 dt = dbcl.SPreturn_dt(query, pram);
                 if (dt.Rows.Count > 0)
@@ -168,7 +171,7 @@ namespace WebApplication1.bussiness.production.rpts
             string ddljobid = lbl_jobid.Text.ToString();
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
-            string CmdString = "select concat(b.EmployeeName,' [',b.EmployeeWrk,']') as employeename, a.PO_SkillCategory, a.PO_EmpDesignation,b.Inpunch_Time, b.Outpunch_Time, b.safetypassno, a.ShiftCalc from tbl_supplymemojobmanpower a, tbl_attendance b where a.Ref_JOBID = b.JOBID and a.RefDBId = b.id and a.Ref_JOBID ='" + jobid + "' order by a.Id";
+            string CmdString = "select concat(b.EmployeeName,' [',b.EmployeeWrk,']') as employeename, a.PO_SkillCategory, a.PO_EmpDesignation,b.Inpunch_Time, b.Outpunch_Time, b.safetypassno, a.ShiftCalc from tbl_supplymemojobmanpower a, tbl_attendance b where a.Ref_JOBID = b.JOBID and a.RefDBId = b.id and a.SMJID ='" + jobid + "' order by a.Id";
             SqlCommand cmd = new SqlCommand(CmdString, dbcl.Conn);
             SqlDataReader dr = cmd.ExecuteReader();
             if (dr.HasRows)
@@ -190,7 +193,7 @@ namespace WebApplication1.bussiness.production.rpts
             string ddljobid = lbl_jobid.Text.ToString();
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
-            string CmdString = "select Total_HSShiftCount, Total_SShiftCount, Total_SSShiftCount, Total_USShiftCount, Total_ShiftCount FROM tbl_supplymemojobsdetails where Ref_JOBID ='" + jobid + "' order by Id";
+            string CmdString = "select Total_HSShiftCount, Total_SShiftCount, Total_SSShiftCount, Total_USShiftCount, Total_ShiftCount FROM tbl_supplymemojobsdetails where SMJID ='" + jobid + "' order by Id";
             SqlCommand cmd = new SqlCommand(CmdString, dbcl.Conn);
             SqlDataReader dr = cmd.ExecuteReader();
             if (dr.HasRows)
@@ -213,7 +216,7 @@ namespace WebApplication1.bussiness.production.rpts
             string ddljobid = lbl_jobid.Text.ToString();
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
-            string CmdString = "select ServiceNumber, Service_Description, Order_Quantity, PerUnit_Value, Shift_Skill FROM tbl_SupMem_LineItems_Data where JOBID ='" + jobid + "' order by Id";
+            string CmdString = "select ServiceNumber, Service_Description, Order_Quantity, PerUnit_Value, Shift_Skill FROM tbl_SupMem_LineItems_Data where SMJID ='" + jobid + "' order by Id";
             SqlCommand cmd = new SqlCommand(CmdString, dbcl.Conn);
             SqlDataReader dr = cmd.ExecuteReader();
             if (dr.HasRows)

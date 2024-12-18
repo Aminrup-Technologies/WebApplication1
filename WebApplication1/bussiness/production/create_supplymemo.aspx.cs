@@ -18,6 +18,7 @@ namespace WebApplication1.bussiness.production
     public partial class create_supplymemo : System.Web.UI.Page
     {
         public static string jobid = string.Empty;
+        public static string smjid = string.Empty;
         public static string dbid = string.Empty;
         public static string supv = string.Empty;
 
@@ -132,7 +133,7 @@ namespace WebApplication1.bussiness.production
                 //                      };
                 //dt = dbcl.SPreturn_dt(qry_jobdetails, pram);
 
-                string query = "SELECT TOP 100 Id, BillingCode, CreatedDate, JOB_Shift, Creator_Workman, Creator_Name, WorkOrderNo, JOB_PermitNo, JOBID, JOB_Region, JOB_Title,JOB_Status, JOB_Company, JOBID_Status, JOB_Site, JOB_SiteCode, JOB_InchargeWrk, JOB_InchargeName, JOB_Dept, JOB_Location, PermitDeleteDate, PermitDeletedByName, FinalUpldStatus, Incharge_Approval, EntryExit FROM tbl_jobs WHERE JOBID = @JOBID AND Id = @Id AND Creator_Workman = @Creator_Workman";
+                string query = "SELECT Id, BillingCode, CreatedDate, JOB_Shift, Creator_Workman, Creator_Name, WorkOrderNo, JOB_PermitNo, JOBID, JOB_Region, JOB_Title,JOB_Status, JOB_Company, JOBID_Status, JOB_Site, JOB_SiteCode, JOB_InchargeWrk, JOB_InchargeName, JOB_Dept, JOB_Location, PermitDeleteDate, PermitDeletedByName, FinalUpldStatus, Incharge_Approval, EntryExit, Level1_BillingCode FROM tbl_jobs WHERE JOBID = @JOBID AND Id = @Id AND Creator_Workman = @Creator_Workman";
 
                 SqlParameter[] pram = {
                                           new SqlParameter("@JOBID",jobid),
@@ -163,7 +164,7 @@ namespace WebApplication1.bussiness.production
                         txt_workorderno.Text = wo_number;
                         txt_jobid.Text = dt.Rows[0]["JOBID"].ToString();
                         string jobidstatus = dt.Rows[0]["JOBID_Status"].ToString();
-
+                        smjid = dt.Rows[0]["Level1_BillingCode"].ToString();
                         if (jobidstatus == "Active")
                         {
                             txt_jobid.ForeColor = Color.Green;
@@ -248,6 +249,8 @@ namespace WebApplication1.bussiness.production
 
                             this.GridView2.Columns[20].Visible = false;
 
+                            btn_home.Enabled = true;
+                            btnShowPopup.Visible = true;
                             btn_crtspm.Text = "Print Memo";
                             btn_crtspm.Enabled = true;
                             btn_crtspm.CssClass = "btn btn-success btn-sm";
@@ -263,6 +266,8 @@ namespace WebApplication1.bussiness.production
                             
 
                             LineItemSelector_Grid(qry_polineitems, wo_number, "1");
+                            btnShowPopup.Visible = false;
+                            btn_home.Enabled = false;
                             btn_crtspm.Enabled = false;
                             btn_crtspm.Text = "Save";
                             btn_crtspm.CssClass = "btn btn-primary btn-sm";
@@ -1638,6 +1643,45 @@ namespace WebApplication1.bussiness.production
             return msg;
         }
 
+        protected void UpdateSupplyMemoStatusDelete(string CmdString)
+        {
+            dbcl.Sqlconnection(); // Assuming this initializes the connection
+            dbcl.ConnectDb();     // Assuming this opens the connection
+
+            using (SqlCommand cmd = new SqlCommand(CmdString, dbcl.Conn))
+            {
+                cmd.CommandType = CommandType.Text;
+
+                // Add parameters
+                cmd.Parameters.AddWithValue("@Ref_JOBID", txt_jobid.Text.ToString());
+                //cmd.Parameters.AddWithValue("@SMJID", txt_jobid.Text.ToString());
+                cmd.Parameters.AddWithValue("@DeleteMode", 1);
+                cmd.Parameters.AddWithValue("@DeletedByName", Session["USERNAME"].ToString());
+                cmd.Parameters.AddWithValue("@DeletedByWorkmen", Session["WORKMAN"].ToString());
+                cmd.Parameters.AddWithValue("@DeletionTimestamp", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt"));
+                cmd.Parameters.AddWithValue("@DeletionRemarks", txt_deletermrks.Text.ToString());
+                // Execute the query
+                cmd.ExecuteNonQuery();
+            }
+            dbcl.Conn.Close();
+        }
+
+        protected void UpdateJOBTableStatusDelete(string RefJOBID, string CmdString)
+        {
+            dbcl.Sqlconnection(); // Assuming this initializes the connection
+            dbcl.ConnectDb();     // Assuming this opens the connection
+
+            using (SqlCommand cmd = new SqlCommand(CmdString, dbcl.Conn))
+            {
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@JOBID", RefJOBID);
+                cmd.Parameters.AddWithValue("@Level1_BillingCode", DBNull.Value); // Set as NULL
+                cmd.Parameters.AddWithValue("@JOB_Status", "Approved by Approver");
+                cmd.ExecuteNonQuery();
+            }
+            dbcl.Conn.Close();
+        }
+
         private string GenerateId(ref SqlTransaction sqlTrans)
         {
             DataTable dtMax = new DataTable();
@@ -1957,5 +2001,78 @@ namespace WebApplication1.bussiness.production
                 //When initial or pre-defined value is selected
             }
         }
+
+        //protected void btn_confirmdelete_Click(object sender, EventArgs e)
+        //{
+        //    string CmdString = "UPDATE tbl_jobs set Level1_BillingCode=@Level1_BillingCode, JOB_Status=@JOB_Status where JOBID=@JOBID";
+        //    UpdateJOBTableStatusDelete(txt_jobid.Text.ToString(), CmdString);
+
+        //    string CmdString2 = "update tbl_supplymemojobsdetails set DeleteMode=@DeleteMode, DeletedByName=@DeletedByName, DeletedByWorkmen=@DeletedByWorkmen, DeletionTimestamp=@DeletionTimestamp, DeletionRemarks=@DeletionRemarks where Ref_JOBID=@Ref_JOBID";
+        //    UpdateSupplyMemoStatusDelete(CmdString2);
+
+        //    Bind_JOBIDDetails(jobid, dbid, supv);
+        //}
+
+        protected void btn_confirmdelete_Click(object sender, EventArgs e)
+        {
+            string cmdJobUpdate = "UPDATE tbl_jobs SET Level1_BillingCode=@Level1_BillingCode, JOB_Status=@JOB_Status WHERE JOBID=@JOBID";
+            string cmdSupplyMemoUpdate = "UPDATE tbl_supplymemojobsdetails SET DeleteMode=@DeleteMode, DeletedByName=@DeletedByName, DeletedByWorkmen=@DeletedByWorkmen, DeletionTimestamp=@DeletionTimestamp, DeletionRemarks=@DeletionRemarks WHERE Ref_JOBID=@Ref_JOBID and SMJID=@SMJID";
+
+            dbcl.Sqlconnection(); // Assuming this initializes the connection
+            dbcl.ConnectDb();
+            try
+            {
+                using (SqlConnection conn = dbcl.Conn) // Assuming dbcl provides the connection string
+                {
+                    using (SqlTransaction transaction = conn.BeginTransaction())
+                    {
+                        try
+                        {
+                            // Update tbl_jobs
+                            using (SqlCommand cmd = new SqlCommand(cmdJobUpdate, conn, transaction))
+                            {
+                                cmd.CommandType = CommandType.Text;
+                                cmd.Parameters.AddWithValue("@JOBID", txt_jobid.Text.ToString());
+                                cmd.Parameters.AddWithValue("@Level1_BillingCode", DBNull.Value); // Set as NULL
+                                cmd.Parameters.AddWithValue("@JOB_Status", "Approved by Approver");
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // Update tbl_supplymemojobsdetails
+                            using (SqlCommand cmd = new SqlCommand(cmdSupplyMemoUpdate, conn, transaction))
+                            {
+                                cmd.CommandType = CommandType.Text;
+                                cmd.Parameters.AddWithValue("@Ref_JOBID", txt_jobid.Text.ToString());
+                                cmd.Parameters.AddWithValue("@SMJID", smjid);
+                                cmd.Parameters.AddWithValue("@DeleteMode", 1);
+                                cmd.Parameters.AddWithValue("@DeletedByName", Session["USERNAME"]?.ToString() ?? "Unknown");
+                                cmd.Parameters.AddWithValue("@DeletedByWorkmen", Session["WORKMAN"]?.ToString() ?? "Unknown");
+                                cmd.Parameters.AddWithValue("@DeletionTimestamp", DateTime.Now);
+                                cmd.Parameters.AddWithValue("@DeletionRemarks", txt_deletermrks.Text.ToString());
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // Commit transaction
+                            transaction.Commit();
+                        }
+                        catch
+                        {
+                            transaction.Rollback();
+                            throw;
+                        }
+                    }
+                }
+
+                // Bind the GridView
+                Bind_JOBIDDetails(jobid, dbid, supv);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (e.g., to a file, database, or event log)
+                // Display an error message to the user
+                lblMessage.Text = "An error occurred while processing the request. Please try again later.";
+            }
+        }
+
     }
 }

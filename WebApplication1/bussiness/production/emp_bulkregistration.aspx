@@ -72,7 +72,7 @@
 									</button>
 								</div>
                                 <div class="col-md-3 col-sm-12 form-group">
-									<asp:Button ID="btn_dwn_dedexcel" runat="server" Text="Template Downlaod" CssClass="btn btn-sm btn-warning" OnClick="btn_dwn_dedexcel_Click" />
+									<asp:Button ID="btn_dwn_dedexcel" runat="server" Text="Template Downlaod" CausesValidation="false" CssClass="btn btn-sm btn-warning" OnClick="btn_dwn_dedexcel_Click" />
                                 </div>
 
 								<div class="modal fade" id="myModal">
@@ -165,6 +165,9 @@
 	<script type="text/javascript">
 		function ShowPopup() {
 			$("#btnShowPopup").click();
+		}
+		function openModal() {
+		    $('#myModal').modal('show');
 		}
 	</script>
 </asp:Content>

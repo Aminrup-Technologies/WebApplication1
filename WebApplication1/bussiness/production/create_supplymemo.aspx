@@ -828,7 +828,10 @@
                         <div class="ln_solid"></div>
                         <div class="row center col-md-12">
                             <div class="col-7">
-                                <asp:Button ID="btn_home" runat="server" Text="Home" CssClass="btn btn-danger btn-sm" Enabled="true" Visible="true" OnClick="btn_home_Click" />
+                                <button type="button" class="btn btn-danger btn-sm" id="btnShowPopup" runat="server" data-toggle="modal" data-target="#myModal">
+                                    DELETE
+                                </button>
+                                <asp:Button ID="btn_home" runat="server" Text="Home" CssClass="btn btn-danger btn-sm" Enabled="false" Visible="false" OnClick="btn_home_Click" />
                                 <asp:Button ID="btn_backpage" runat="server" Text="Go Back" ToolTip="Click to jump tp previous page" CssClass="btn btn-warning btn-sm" Enabled="true" Visible="true" OnClick="btn_backpage_Click" />
                                 <asp:Button ID="btn_crtspm" runat="server" Text="Create Memo" ToolTip="Click to Create Supply Memo" CausesValidation="true" ValidationGroup="CreateMemo" CssClass="btn btn-primary btn-sm" Enabled="true" OnClick="btn_crtspm_Click" />
                             </div>
@@ -842,6 +845,37 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="myModal" data-backdrop="static">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Enter Comments for Deletion</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="col-md-6 col-sm-12 form-group">
+										<label>Delete Remarks<span class="text text-danger"></span></label>
+									</div>
+									<div class="col-md-6 col-sm-12 form-group">
+										<asp:TextBox ID="txt_deletermrks" runat="server" TextMode="MultiLine" Rows="3" Columns="1" class="form-control form-control-sm rounded" ReadOnly="false"></asp:TextBox>
+										<asp:RequiredFieldValidator ID="RFV_txt_deletermrks" runat="server" ValidationGroup="DELETE" Display="Dynamic" ForeColor="Red" ControlToValidate="txt_deletermrks" ErrorMessage="**"></asp:RequiredFieldValidator>
+									</div>
+                                </div>
+                                <asp:Label ID="lblMessage" runat="server"></asp:Label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <asp:Button ID="btn_confirmdelete" runat="server" ValidationGroup="DELETE" Enabled="true" CausesValidation="true" Text="Proceed" CssClass="btn btn-info btn-sm" OnClick="btn_confirmdelete_Click"/>
+                        <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script type="text/javascript">
@@ -849,6 +883,10 @@
             $("#MyPopup .modal-title").html(title);
             $("#MyPopup .modal-body").html(body);
             $("#MyPopup").modal("show");
+        }
+
+        function ShowPopup1() {
+            $("#myModal").modal("show");
         }
 
         function validateCheckBoxes() {
