@@ -71,6 +71,10 @@
     <Reference Include="DocumentFormat.OpenXml, Version=2.19.0.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
       <HintPath>..\packages\DocumentFormat.OpenXml.2.19.0\lib\net46\DocumentFormat.OpenXml.dll</HintPath>
     </Reference>
+    <Reference Include="EPPlus, Version=4.5.3.2, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.4.5.3.2\lib\net40\EPPlus.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="ExcelNumberFormat, Version=1.1.0.0, Culture=neutral, PublicKeyToken=23c6f5d73be07eca, processorArchitecture=MSIL">
       <HintPath>..\packages\ExcelNumberFormat.1.1.0\lib\net20\ExcelNumberFormat.dll</HintPath>
     </Reference>
@@ -259,6 +263,7 @@
     <Content Include="bussiness\production\attach_manpower.aspx" />
     <Content Include="bussiness\production\BlankTabs.aspx" />
     <Content Include="bussiness\production\blank_page.aspx" />
+    <Content Include="bussiness\production\bulk_employeeupdate.aspx" />
     <Content Include="bussiness\production\create_supplymemo.aspx" />
     <Content Include="bussiness\production\csm_tbtform.aspx" />
     <Content Include="bussiness\production\css\loader.css" />
@@ -602,6 +607,13 @@
     </Compile>
     <Compile Include="bussiness\production\blank_page.aspx.designer.cs">
       <DependentUpon>blank_page.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\bulk_employeeupdate.aspx.cs">
+      <DependentUpon>bulk_employeeupdate.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\bulk_employeeupdate.aspx.designer.cs">
+      <DependentUpon>bulk_employeeupdate.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\create_supplymemo.aspx.cs">
       <DependentUpon>create_supplymemo.aspx</DependentUpon>
@@ -1374,7 +1386,9 @@
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft Chart Controls\Assemblies\System.Web.DataVisualization.dll" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="bussiness\production\Logs\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
