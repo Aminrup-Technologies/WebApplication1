@@ -542,64 +542,73 @@ namespace WebApplication1.bussiness.production
 
                 foreach (DataRow row in excelData.Rows)
                 {
-                    // Build dynamic SQL query
-                    string setClause = string.Join(", ", columnMapping.Select(map => $"{map.Key} = @{map.Key}"));
-                    string condition = "WorkmanSL = @WorkmanSL";
-
-                    string query = $"UPDATE tbl_Employee_Mustertable SET {setClause} WHERE {condition}";
-                    List<string> logDetails = new List<string> { $"SQL Query: {query}" };
-
-                    using (SqlCommand cmd = new SqlCommand(query, dbcl.Conn))
+                    try
                     {
-                        // Add parameters for each column mapping
-                        foreach (var map in columnMapping)
-                        {
-                            string databaseColumn = map.Key; // Database column
-                            string excelColumn = map.Value; // Corresponding Excel column
+                        // Build dynamic SQL query
+                        string setClause = string.Join(", ", columnMapping.Select(map => $"{map.Key} = @{map.Key}"));
+                        string condition = "WorkmanSL = @WorkmanSL";
 
-                            if (excelData.Columns.Contains(excelColumn))
+                        string query = $"UPDATE tbl_Employee_Mustertable SET {setClause} WHERE {condition}";
+                        List<string> logDetails = new List<string> { $"SQL Query: {query}" };
+
+                        using (SqlCommand cmd = new SqlCommand(query, dbcl.Conn))
+                        {
+                            // Add parameters for each column mapping
+                            foreach (var map in columnMapping)
                             {
-                                object value = row[excelColumn];
-                                cmd.Parameters.AddWithValue($"@{databaseColumn}", value);
-                                logDetails.Add($"{databaseColumn} = {value}");
+                                string databaseColumn = map.Key; // Database column
+                                string excelColumn = map.Value; // Corresponding Excel column
+
+                                if (excelData.Columns.Contains(excelColumn))
+                                {
+                                    object value = row[excelColumn];
+                                    cmd.Parameters.AddWithValue($"@{databaseColumn}", value);
+                                    logDetails.Add($"{databaseColumn} = {value}");
+                                }
+                                else
+                                {
+                                    LogError($"Excel column '{excelColumn}' not found."); // Log error if column missing
+                                    return;
+                                }
+                            }
+
+                            // Add the condition parameter (e.g., WorkmanSL)
+                            if (excelData.Columns.Contains("WorkmanSL"))
+                            {
+                                object workmanSL = row["WorkmanSL"];
+                                cmd.Parameters.AddWithValue("@WorkmanSL", workmanSL);
+                                logDetails.Add($"WorkmanSL = {workmanSL}");
                             }
                             else
                             {
-                                LogError($"Excel column '{excelColumn}' not found."); // Log error if column missing
-                                return;
+
+                                LogError("WorkmanSL column not found in the uploaded Excel file.");
+                                row["Status"] = "Error: WorkmanSL column not found";
+                                continue;
+                                //return;
                             }
+
+                            // Execute query and check rows affected
+                            int rowsAffected = cmd.ExecuteNonQuery();
+                            if (rowsAffected > 0)
+                            {
+                                row["Status"] = "Success: Row updated successfully";
+                            }
+                            else
+                            {
+                                row["Status"] = "Error: No rows updated, WorkmanSL not found.";
+                            }
+
+                            // Log the query and parameters
+                            LogQuery(string.Join(Environment.NewLine, logDetails));
                         }
 
-                        // Add the condition parameter (e.g., WorkmanSL)
-                        if (excelData.Columns.Contains("WorkmanSL"))
-                        {
-                            object workmanSL = row["WorkmanSL"];
-                            cmd.Parameters.AddWithValue("@WorkmanSL", workmanSL);
-                            logDetails.Add($"WorkmanSL = {workmanSL}");
-                        }
-                        else
-                        {
-                            
-                            LogError("WorkmanSL column not found in the uploaded Excel file.");
-                            row["Status"] = "Error: WorkmanSL column not found";
-                            continue;
-                            //return;
-                        }
-
-                        // Log the query and parameters
-                        LogQuery(string.Join(Environment.NewLine, logDetails));
-
-                        try
-                        {
-                            cmd.ExecuteNonQuery();
-                            row["Status"] = "Success: Row updated successfully";
-                        }
-                        catch (Exception ex)
-                        {
-                            row["Status"] = $"Error: {ex.Message}";
-                            LogError($"Error executing query: {ex.Message}");
-                            return;
-                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        row["Status"] = $"Error: {ex.Message}";
+                        LogError($"Error executing query: {ex.Message}");
+                        return;
                     }
                 }
 
