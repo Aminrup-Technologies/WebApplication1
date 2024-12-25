@@ -53,7 +53,7 @@
                                     </div>
                                     <div class="col-md-6 col-sm-12">
                                         <asp:FileUpload ID="FileUploadExcel" runat="server" CssClass="form-control" /><br />
-                                        <asp:Button ID="btnUploadExcel" runat="server" Text="Upload" OnClick="btnUploadExcel_Click" CssClass="btn btn-sm btn-primary" />
+                                        <asp:Button ID="btnUploadExcel" runat="server" Visible="false" Text="Upload" OnClick="btnUploadExcel_Click" CssClass="btn btn-sm btn-primary" />
                                         <asp:Label ID="lblUploadMessage" runat="server" CssClass="text-danger"></asp:Label>
                                         <asp:Button ID="btnMapColumnsAndUpload" runat="server" CssClass="btn btn-sm btn-warning" Text="Next: Map Columns" OnClick="btnMapColumnsAndUpload_Click" />
                                     </div>

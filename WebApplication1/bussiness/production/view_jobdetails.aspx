@@ -482,6 +482,21 @@
 									</div>
 								</div>
 
+                                <%--form buttons div ---- start--%>
+								<div class="col-md-6 center-margin" runat="server" id="ResendApp_Div" visible="false">
+									<div class="ln_solid"></div>
+									<div class="item form-group row">
+										<div class="col-md-6 col-sm-12">
+											<asp:Button ID="btn_resendapp" runat="server" Text="Re-Send for Approval" CssClass="btn btn-success btn-sm" Enabled="true" OnClick="btn_resendapp_Click"/>
+										</div>
+
+										<div class="col-md-6 col-sm-12">
+											<asp:Label ID="lbl_resenddiv_msg" runat="server" Text="">Click to Resend for Approval</asp:Label>
+										</div>
+									</div>
+								</div>
+								<%--form buttons div ---- end--%>
+
 								<%--form buttons div ---- start--%>
 								<div class="col-md-6 center-margin" runat="server" id="attachmanpowerrow" visible="false">
 									<div class="ln_solid"></div>

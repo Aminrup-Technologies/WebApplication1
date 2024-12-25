@@ -207,7 +207,7 @@ namespace WebApplication1.bussiness.production
                         GridView1.Columns[5].Visible = true;
                         GridView2.Columns[13].Visible = false;
                     }
-                    else
+                    else if (approvalstatus == "Pending")
                     {
                         //attachmanpowerrow.Visible = true;
                         if (entryexitstatus == "Entry")
@@ -224,6 +224,18 @@ namespace WebApplication1.bussiness.production
                         //lbl_approvalstatus.Text = "Pending";
                         //lbl_approvalstatus.ForeColor = Color.Red;
                         txt_inchargename.ForeColor = Color.Red;
+                    }
+                    else if (approvalstatus == "Rejected")
+                    {
+                        ResendApp_Div.Visible = true;
+                        btn_resendapp.Enabled = true;
+                        lbl_resenddiv_msg.Text = "Click to re-send for Approval..!";
+                        lbl_resenddiv_msg.Visible = true;
+                        lbl_resenddiv_msg.ForeColor = Color.Blue;
+
+                        string title = "Notifications :";
+                        string body = "Info : JOBID Rejected by Approver";
+                        ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
                     }
 
 
@@ -249,6 +261,62 @@ namespace WebApplication1.bussiness.production
                 ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup();", true);
                 lbl_msg.ForeColor = System.Drawing.Color.Red;
                 lbl_msg.Text = "Error-251: " + ex.Message.ToString();
+            }
+        }
+
+        private void UpdateJOBTable1(string jobidstatus, string jobstatus, string mastercode, string entryexitstatus)
+        {
+            string jobID = txt_jobid.Text.ToString();
+            string ddljobid = "";
+            string jobdate = "";
+            string[] parts = jobID.Split(new string[] { " : " }, StringSplitOptions.None);
+
+            if (parts.Length == 2)
+            {
+                ddljobid = parts[0]; // This will contain "JOB0095467"
+                                     //jobdate = parts[1]; // This will contain "2024-02-02"
+
+                string[] dateParts = parts[1].Split('-');
+                if (dateParts.Length == 3)
+                {
+                    // Convert date to "YYYY-MM-DD" format
+                    jobdate = $"{dateParts[2]}-{dateParts[1]}-{dateParts[0]}";
+                }
+            }
+
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = dbcl.Conn;
+                string CmdString = "UPDATE tbl_jobs set JOBID_Status=@JOBID_Status, JOB_Status=@JOB_Status, MasterStatusCode=@MasterStatusCode , EntryExit=@EntryExit, Incharge_Approval='Pending' where JOBID=@JOBID";
+                cmd.CommandText = CmdString;
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@JOBID", jobID.ToString());
+                cmd.Parameters.AddWithValue("@JOBID_Status", jobidstatus);
+                cmd.Parameters.AddWithValue("@JOB_Status", jobstatus);
+                cmd.Parameters.AddWithValue("@MasterStatusCode", mastercode);  // JOBID created, Permit Uploaded, Can Proceed to Entry Page
+                cmd.Parameters.AddWithValue("@EntryExit", entryexitstatus);
+                cmd.ExecuteNonQuery();
+                cmd.Dispose();
+
+                btn_resendapp.Enabled = false;
+                btn_resendapp.Text = "Success";
+                lbl_resenddiv_msg.Text = "JOBID sent for Approval";
+                lbl_resenddiv_msg.ForeColor = Color.Green;
+
+                string title = "Notifications :";
+                string body = "JOBID Sent for Approval";
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+
+
+            }
+            catch (Exception ex)
+            {
+                string title = "310 : Notifications :";
+                string body = "Error : " + ex.Message;
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
         }
 
@@ -887,6 +955,12 @@ namespace WebApplication1.bussiness.production
             Response.BinaryWrite(bytes);
             //Close the stream (otherwise ASP.Net might continue to write stuff on our behalf)
             Response.End();
+        }
+
+        protected void btn_resendapp_Click(object sender, EventArgs e)
+        {
+            UpdateJOBTable1("Blocked", "Out-Punch Done", "4", "Exit");
+            //Bind_JOBIDDetails(jobid, dbid, supv);
         }
     }
 }
