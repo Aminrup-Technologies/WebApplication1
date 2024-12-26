@@ -144,7 +144,7 @@
                                 <div class="well profile_view col-sm-12 col-lg-12">
                                     <div class="col-sm-12">
                                         <h4 class="brief"><i>Gatepass : </i>
-                                            <asp:Label ID="lbl_gpno" runat="server" Text="TSL/ATS/00000" Font-Bold="true"></asp:Label></h4>
+                                            <asp:Label ID="lbl_gpno" runat="server" Text="TSL/ERP/00000" Font-Bold="true"></asp:Label></h4>
                                         <div class="right col-md-5 col-sm-6 text-center">
                                             <asp:Label ID="lbl_gpexpdays" runat="server" ForeColor="Green" Text="00" Font-Size="80px"></asp:Label>
                                             Days Left
@@ -155,7 +155,7 @@
                                             </span>
                                             <hr />
                                             <h2>Saftey No :
-								<asp:Label ID="lbl_rfidno" runat="server" Text="TSL/ATS/00000" ForeColor="Green" Font-Bold="true"></asp:Label></h2>
+								<asp:Label ID="lbl_rfidno" runat="server" Text="TSL/ERP/00000" ForeColor="Green" Font-Bold="true"></asp:Label></h2>
 
                                             <span><strong>Safety Expiry : </strong>
                                                 <asp:Label ID="lbl_rfidvalidity" runat="server" Text="DD/MM/YYYY" ForeColor="Green" Font-Bold="true"></asp:Label>,

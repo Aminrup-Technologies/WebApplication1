@@ -383,6 +383,34 @@
     <Content Include="bussiness\production\work_region.aspx" />
     <Content Include="bussiness\production\work_states.aspx" />
     <Content Include="bussiness\production\vw_emp_paymentbankdetails.aspx" />
+    <Content Include="erp_images\ats_logo.jpg" />
+    <Content Include="erp_images\ats_translogo.png" />
+    <Content Include="erp_images\ats_webheader.png" />
+    <Content Include="erp_images\bank.jpg" />
+    <Content Include="erp_images\crossgif.gif" />
+    <Content Include="erp_images\cross_icon.png" />
+    <Content Include="erp_images\delete_icon.png" />
+    <Content Include="erp_images\DoneRight.gif" />
+    <Content Include="erp_images\edit.png" />
+    <Content Include="erp_images\fi-sr-cross-circle.svg" />
+    <Content Include="erp_images\fi-sr-disk.svg" />
+    <Content Include="erp_images\fi-sr-pencil.svg" />
+    <Content Include="erp_images\fi-sr-trash.svg" />
+    <Content Include="erp_images\Hourglass.gif" />
+    <Content Include="erp_images\OH4Y_Logo.png" />
+    <Content Include="erp_images\pending.png" />
+    <Content Include="erp_images\piggy.png" />
+    <Content Include="erp_images\printer.png" />
+    <Content Include="erp_images\ProfilePhoto\No_Image.jpg" />
+    <Content Include="erp_images\right.png" />
+    <Content Include="erp_images\rightarrow.gif" />
+    <Content Include="erp_images\SingleTick.gif" />
+    <Content Include="erp_images\success_gif.gif" />
+    <Content Include="erp_images\tick-icon.png" />
+    <Content Include="erp_images\tpl.png" />
+    <Content Include="erp_images\TSLBSL.jpg" />
+    <Content Include="erp_images\tsllogo.png" />
+    <Content Include="erp_images\view.svg" />
     <Content Include="login.aspx" />
     <Content Include="packages.config">
       <SubType>Designer</SubType>
@@ -430,6 +458,7 @@
     <Content Include="bussiness\production\webmaster.Master" />
     <Content Include="bussiness\production\aminrup\aminrup.Master" />
     <Content Include="bussiness\production\templates\DeductionUploader.xlsx" />
+    <Content Include="erp_images\EmpFiles\Employee_BulkImport_Template.xlsx" />
     <None Include="Properties\PublishProfiles\deploy.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -1374,7 +1403,13 @@
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft Chart Controls\Assemblies\System.Web.DataVisualization.dll" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="erp_images\EmpUpdate\" />
+    <Folder Include="erp_images\ManualDedUpld\" />
+    <Folder Include="erp_images\Permits\" />
+    <Folder Include="erp_images\SOPPhoto\" />
+    <Folder Include="erp_images\TBTPhoto\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

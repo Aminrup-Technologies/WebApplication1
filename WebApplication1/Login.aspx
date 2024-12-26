@@ -6,12 +6,12 @@
 <head runat="server">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <!-- Meta, title, CSS, favicons, etc. -->
-    <link rel="shortcut icon" href="../../erp_images/ats_logo.jpg" />
+    <link rel="shortcut icon" href="../../erp_images/OH4Y_Logo.png" />
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Login</title>
+    <title>Cloud ERP | Login</title>
     <!-- Bootstrap -->
     <link href="bussiness/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     <!-- Font Awesome -->
@@ -20,25 +20,12 @@
     <link href="bussiness/vendors/nprogress/nprogress.css" rel="stylesheet" />
     <!-- Animate.css -->
     <link href="bussiness/vendors/animate.css/animate.min.css" rel="stylesheet" />
-
     <!-- Custom Theme Style -->
     <link href="bussiness/build/css/custom.min.css" rel="stylesheet" />
-
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=UA-197761506-1"></script>
-
     <script type="text/javascript">
         function preventBack() { window.history.forward(); }
         setTimeout("preventBack()", 0);
         window.onunload = function () { null };
-    </script>
-
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-
-        gtag('config', 'UA-197761506-1');
     </script>
 </head>
 <body class="login">
@@ -48,8 +35,8 @@
             <div class="login_wrapper">
                 <div class="login_form">
                     <section class="login_content">
-                        <asp:Image ID="Image1" runat="server" ImageUrl="~/erp_images/ats_translogo.png" Height="100" Width="100" />
-                        <h1><asp:Label ID="lbl_companyname" runat="server" Text="Automation & Technical Services"></asp:Label></h1>
+                        <asp:Image ID="Image1" runat="server" ImageUrl="~/erp_images/OH4Y_Logo.png" Height="100" Width="100" />
+                        <h1><asp:Label ID="lbl_companyname" runat="server" Text="Aminrup Technologies"></asp:Label></h1>
                         <div class="form-horizontal">
                             <div class="form-group row">
                                 <label class="control-label col-md-4 col-sm-6 ">User ID</label>
@@ -79,7 +66,7 @@
                                 <br />
                                 <div>
                                     <p>© 2021-2024 All Rights Reserved. <span style="font-weight: bold; color: darkred;">
-                                        <asp:Label ID="lbl_compfooter" runat="server" Text="ATS,JSR"></asp:Label></span> Powered by <a href="#" target="_blank">Aminrup Technologies</a></p>
+                                        <asp:Label ID="lbl_compfooter" runat="server" Text="Company Name"></asp:Label></span> Powered by <a href="#" target="_blank"><span style="font-weight:bold; color:darkblue">Aminrup Technologies</span></a></p>
                                 </div>
                             </div>
                         </div>

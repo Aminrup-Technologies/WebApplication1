@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Daily Supply Memo</title>
-    <link rel="shortcut icon" href="../../../erp_images/ats_translogo.png" />
+    <link rel="shortcut icon" href="../../../erp_images/OH4Y_Logo.png" />
     <link href="A4.css" rel="stylesheet" />
     <style type="text/css">
         * {
@@ -215,16 +215,16 @@
             <table class="ZeroBorderTable1">
                 <thead class="ZeroBorder">
                     <tr>
-                        <td class="DocHeaderLeft"><span>DOC : #ATS/ACC/SM-01</span></td>
+                        <td class="DocHeaderLeft"><span>DOC : #ERP/ACC/SM-01</span></td>
                         <td class="DocHeaderCenter"><span>Vendor code : A538</span></td>
                         <td class="DocHeaderRight"><span>SMJ-ID : </span>
-                            <asp:Label ID="lbl_smjid1" runat="server" Text="ATS-BIL/27123/1" Font-Bold="true"></asp:Label>&nbsp;</td>
+                            <asp:Label ID="lbl_smjid1" runat="server" Text="ERP-BIL/27123/1" Font-Bold="true"></asp:Label>&nbsp;</td>
                     </tr>
 
                     <tr>
                         <td class="DocHeaderLeft" style="text-align: center;">
                             <span>
-                                <img alt="AUTOMATION & TECHNICAL SERVICES" src="../../../erp_images/ats_translogo.png" width="100" height="80" /></span>
+                                <img alt="AUTOMATION & TECHNICAL SERVICES" src="../../../erp_images/OH4Y_Logo.png" width="100" height="80" /></span>
                         </td>
                         <td class="DocHeaderCenter">
                             <table class="ZeroBorderReportHeading">
@@ -337,7 +337,7 @@
                                         <td class="DocIDDataHdrCol2">
                                             <asp:Label ID="lbl_jobsupvname" runat="server" Font-Bold="true" Text="Supv Name"></asp:Label>&nbsp;(<asp:Label ID="lbl_jobsupvwrk" runat="server" Font-Bold="true" Text="Supv Wrk"></asp:Label>)
                                         </td>
-                                        <td class="DocIDDataHdrCol3"><span>ATS Area Incharge</span></td>
+                                        <td class="DocIDDataHdrCol3"><span>ERP Area Incharge</span></td>
                                         <td class="DocIDDataHdrCol4">
                                             <asp:Label ID="lbl_siteincharge" runat="server" Font-Bold="true" Text="Site Incharge"></asp:Label>&nbsp;(<asp:Label ID="lbl_inchargewrk" runat="server" Font-Bold="true" Text="incharge_wrk"></asp:Label>)
                                         </td>
@@ -573,7 +573,7 @@
                                     </tr>
 
                                     <tr>
-                                        <td class="SubHeading1" colspan="2"><span>For ATS Signature</span></td>
+                                        <td class="SubHeading1" colspan="2"><span>For ERP Signature</span></td>
                                         <td class="SubHeading2" colspan="2"><span>Signature of Department</span></td>
                                     </tr>
                                     <tr>

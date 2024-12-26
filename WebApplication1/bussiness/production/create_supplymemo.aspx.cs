@@ -1669,7 +1669,7 @@ namespace WebApplication1.bussiness.production
             }
             else
             {
-                SMIDNo = "ATS-BIL/" + today + "/1";
+                SMIDNo = "ERP-BIL/" + today + "/1";
             }
             return SMIDNo;
         }

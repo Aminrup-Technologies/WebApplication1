@@ -95,7 +95,7 @@ namespace WebApplication1.bussiness.production
         //    }
         //    else
         //    {
-        //        SendEmail("it_helpdesk@atswork.in", "ATS - Utility Module || Log Writer", "Error: Log directory not found in both paths.");
+        //        SendEmail("it_helpdesk@atswork.in", "ERP - Utility Module || Log Writer", "Error: Log directory not found in both paths.");
         //    }
         //}
 
@@ -438,7 +438,7 @@ namespace WebApplication1.bussiness.production
         }
 
 
-        //--- the function is modified for ATS use
+        //--- the function is modified for ERP use
         public Boolean CheckEmployeeActiveStatus(string workman)
         {
             Boolean result = false;

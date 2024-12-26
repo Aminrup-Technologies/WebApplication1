@@ -14,7 +14,7 @@
                 <div class="col-md-12 col-sm-12 ">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>(DOC#ATS/CSM/TBT-01)<small>Sessions</small></h2>
+                            <h2>(DOC#ERP/CSM/TBT-01)<small>Sessions</small></h2>
                             <div class="clearfix"></div>
                         </div>
 

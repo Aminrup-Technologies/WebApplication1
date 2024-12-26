@@ -300,7 +300,7 @@ namespace WebApplication1.bussiness.production
                     ViewState["MailDataTable"] = maildataTable;
 
 
-                    //string EmailBody = "Dear ATS Team, Please note that one of your ATS Portal has created a JOBID :'" + lbl_jobid.Text.ToString() + "', Where he/she is trying to add manpower with Designation : '"+ EmpDesg + "' and Skill Category : '"+ EmpSkill + "' but finding issues as the manpower Skill Category is NOT mapped with P.O. or Workorder Skill Category, Which is required while generating Daily Supply Memo. Kindly map the follwoing for further smooth processing.--- Thank You";
+                    //string EmailBody = "Dear ATS Team, Please note that one of your ERP Portal has created a JOBID :'" + lbl_jobid.Text.ToString() + "', Where he/she is trying to add manpower with Designation : '"+ EmpDesg + "' and Skill Category : '"+ EmpSkill + "' but finding issues as the manpower Skill Category is NOT mapped with P.O. or Workorder Skill Category, Which is required while generating Daily Supply Memo. Kindly map the follwoing for further smooth processing.--- Thank You";
                     ////Send a mail to HR regarding missing mapping record between PO / WO Skill and Employee SKill
                     //dbcl.SendEmailCC("anupam.sharma@atswork.in", "kaushik@atswork.in", Subject, EmailBody);
 
@@ -845,7 +845,7 @@ namespace WebApplication1.bussiness.production
         static string DataTableToHtml(DataTable dataTable)
         {
             // Now you have the data in the DataTable, you can use it to create a tabular format for your email.
-            string htmlTable = "<html><body><div><p>Dear ATS Team, Please note that one of your ATS Portal User[Employee] has created a JOBID, Where he/she is trying to add manpower with Designation and Skill Category mentioned below but finding issues as the manpower Skill Category is NOT mapped with P.O. or Workorder Skill Category, Which is required while generating Daily Supply Memo. Kindly map the follwoing for further smooth processing.</p></div><br/><br/><table width='100%' style='border-collapse:collapse;'>";
+            string htmlTable = "<html><body><div><p>Dear ERP Team, Please note that one of your ERP Portal User[Employee] has created a JOBID, Where he/she is trying to add manpower with Designation and Skill Category mentioned below but finding issues as the manpower Skill Category is NOT mapped with P.O. or Workorder Skill Category, Which is required while generating Daily Supply Memo. Kindly map the follwoing for further smooth processing.</p></div><br/><br/><table width='100%' style='border-collapse:collapse;'>";
             htmlTable += "<tr>";
             foreach (DataColumn column in dataTable.Columns)
             {

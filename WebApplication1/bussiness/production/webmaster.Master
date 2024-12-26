@@ -8,7 +8,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="../../erp_images/ats_translogo.png" type="image/ico" />
+    <link rel="icon" href="../../erp_images/OH4Y_Logo.png" type="image/ico" />
 
     <title>Cloud ERP</title>
 
@@ -153,7 +153,7 @@
                         <div class="left_col scroll-view">
                             <div class="navbar nav_title" style="border: 0;">
                                 <a href="#" class="site_title">
-                                    <asp:Image ID="Image1" runat="server" ImageUrl="~/erp_images/ats_logo.jpg" Height="50" Width="50" /><span>&nbsp;&nbsp;ATS</span>
+                                    <asp:Image ID="Image1" runat="server" ImageUrl="~/erp_images/OH4Y_Logo.png" Height="50" Width="50" /><span>&nbsp;&nbsp;ERP</span>
                                 </a>
                             </div>
 
@@ -367,7 +367,7 @@
                 <asp:Label ID="lblTime1" runat="server" Text="N/A" Font-Bold="true" ForeColor="IndianRed" Visible="true"></asp:Label>
                     || Time :
 					<asp:Label ID="lblTime" runat="server" Text="N/A" Font-Bold="true" ForeColor="Black" Visible="true"></asp:Label>
-                    || © 2021-2024 <span style="font-weight: bold; color: darkred;">ATS,JSR</span>
+                    || © 2021-2024 <span style="font-weight: bold; color: darkred;">ERP,JSR</span>
                     || Powered by <a href="#" target="_blank"><span style="font-weight: bold; color: blue;">Aminrup Technologies, JSR</span></a>
                 </div>
                 <div class="clearfix"></div>

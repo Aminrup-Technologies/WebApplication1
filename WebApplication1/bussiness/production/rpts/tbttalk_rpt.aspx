@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title>TBT Report</title>
-    <link rel="shortcut icon" href="../../../erp_images/ats_translogo.png" />
+    <link rel="shortcut icon" href="../../../erp_images/OH4Y_Logo.png" />
     <style type="text/css">
         body {
             font-family: 'Century Gothic';
@@ -270,7 +270,7 @@
             <table class="Print ZeroBorder">
                 <thead class="Print ZeroBorder">
                     <tr>
-                        <td class="DocHeaderLeft"><span>DOC #ATS/CSM/TBT-01</span></td>
+                        <td class="DocHeaderLeft"><span>DOC #ERP/CSM/TBT-01</span></td>
                         <td class="DocHeaderCenter"><span>Rev #03</span></td>
                         <td class="DocHeaderRight">EFFT DATE : 19/12/2018</td>
                     </tr>
@@ -295,7 +295,7 @@
                         </td>
                         <td class="DocHeaderCenter" style="width: 25%;">
                             <span>
-                                <img alt="AUTOMATION 7 TECHNICAL SERVICES" src="../../../erp_images/ats_translogo.png" width="100" height="80" /></span>
+                                <img alt="AUTOMATION 7 TECHNICAL SERVICES" src="../../../erp_images/OH4Y_Logo.png" width="100" height="80" /></span>
                         </td>
                     </tr>
 
@@ -387,7 +387,7 @@
                                         <td class="DocIDDataHdrCol2">
                                             <asp:Label ID="lbl_linemngr" runat="server" Font-Bold="true" Text="Line Manager" ForeColor="DarkBlue"></asp:Label>
                                         </td>
-                                        <td class="DocIDDataHdrCol3"><span>Site In-Charge (ATS)</span></td>
+                                        <td class="DocIDDataHdrCol3"><span>Site In-Charge (ERP)</span></td>
                                         <td class="DocIDDataHdrCol4">
                                             <asp:Label ID="lbl_siteincharge" runat="server" Font-Bold="true" Text="Site Incharge"></asp:Label>&nbsp;(&nbsp;<asp:Label ID="lbl_inchargewrk" runat="server" Font-Bold="true" Text="incharge_wrk"></asp:Label>)
                                         </td>

@@ -50,7 +50,7 @@ namespace WebApplication1.bussiness.production
                     string PN_WelcomeBack_script = @"<script type='text/javascript'>
                             new PNotify({
                                 title: 'Regular Success',
-                                text: 'Welcome back to ATS Web Portal',
+                                text: 'Welcome back to ERP Web Portal',
                                 type: 'success',
                                 styling: 'bootstrap3'
                             });
@@ -1008,7 +1008,7 @@ namespace WebApplication1.bussiness.production
                 MailMessage message = new MailMessage();
                 message.From = new MailAddress(smtpUsername);
                 message.To.Add(email);
-                message.Subject = "ATS || OTP for Email Validation";
+                message.Subject = "ERP || OTP for Email Validation";
                 message.Body = "Your OTP is: " + otp;
 
                 client.Send(message);
@@ -1089,7 +1089,7 @@ namespace WebApplication1.bussiness.production
                     MailMessage message = new MailMessage();
                     message.From = new MailAddress(smtpUsername);
                     message.To.Add(recipientEmail);
-                    message.Subject = "ATS || OTP for Email Verification";
+                    message.Subject = "ERP || OTP for Email Verification";
 
                     // Replace {{OTP_CODE}} with the actual OTP value before sending the email
                     string emailBody = GetEmailBodyTemplate().Replace("{{OTP_CODE}}", otp);

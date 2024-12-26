@@ -1,0 +1,9 @@
+26-12-2024 08:29:51 AM : Login attempt with User ID: ATS002112
+26-12-2024 08:29:52 AM : User ANUPAM SHARMA[J8] Logined Successfully
+26-12-2024 08:36:20 AM : User :ANUPAM Singout Successfully
+26-12-2024 08:36:23 AM : Login attempt with User ID: ATS002112
+26-12-2024 08:36:23 AM : User ANUPAM SHARMA[J8] Logined Successfully
+26-12-2024 08:36:39 AM : User :ANUPAM Singout Successfully
+26-12-2024 08:36:42 AM : Login attempt with User ID: ATS00975
+26-12-2024 08:36:42 AM : User KAUSHIK KUMAR MAJHI[J1] Logined Successfully
+26-12-2024 08:37:01 AM : User :KAUSHIK Singout Successfully
