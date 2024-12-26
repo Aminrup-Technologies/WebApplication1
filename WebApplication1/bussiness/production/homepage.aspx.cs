@@ -263,11 +263,11 @@ namespace WebApplication1.bussiness.production
                     txt_nwemailadd.Text = "";
 
                     int contactUpdateStatus = GetContactUpdateStatus(Workman);
-                    if (contactUpdateStatus == 0)
+                    if (contactUpdateStatus == 0 || contactUpdateStatus == -1)
                     {
                         btn_cancel_contactdata.Enabled = false;
                         btn_sv_contactdata.Enabled = true;
-                        //ClientScript.RegisterStartupScript(this.GetType(), "alert9", "ShowContactModal();", true);
+                        ClientScript.RegisterStartupScript(this.GetType(), "alert9", "ShowContactModal();", true);
                     }
                 }
                 else
