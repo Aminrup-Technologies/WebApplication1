@@ -55,7 +55,7 @@ namespace WebApplication1.bussiness.production
                 string id = txt_loginid.Text;
                 string pass = txt_password.Text;
 
-                string query = "select TOP 1 WorkStatus,LoginID,WorkRegion,WorkState,WorkCompany,WorkmanSL,FirstName,FullName,User_RoleType,UserRoleDB,RolePermissionDB,WorkSite,Worksite_Code,SkillCategory,SkillDesignation,PrfPicFile from tbl_Employee_Mustertable where LoginID=@LoginID and LoginPassword=@LoginPassword";
+                string query = "select TOP 1 WorkStatus,LoginID,WorkRegion,WorkState,WorkCompany,WorkmanSL,FirstName,FullName,User_RoleType,UserRoleDB,RolePermissionDB,WorkSite,Worksite_Code,SkillCategory,SkillDesignation,PrfPicFile,Email from tbl_Employee_Mustertable where LoginID=@LoginID and LoginPassword=@LoginPassword";
                 SqlParameter[] pram = {
                                           new SqlParameter("@LoginID",id),
                                           new SqlParameter("@LoginPassword",pass),
@@ -81,7 +81,7 @@ namespace WebApplication1.bussiness.production
                         string User_WRKSTCode = dt.Rows[0]["Worksite_Code"].ToString();
                         string User_Skill = dt.Rows[0]["SkillCategory"].ToString();
                         string User_Desg = dt.Rows[0]["SkillDesignation"].ToString();
-
+                        string User_Email = dt.Rows[0]["Email"].ToString();
                         User_Photo = dt.Rows[0]["PrfPicFile"].ToString();
                         //string User_PhotoPath = dt.Rows[0]["PrfPicPath"].ToString();
 

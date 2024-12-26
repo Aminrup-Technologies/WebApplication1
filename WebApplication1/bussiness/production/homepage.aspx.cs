@@ -282,7 +282,7 @@ namespace WebApplication1.bussiness.production
             int lastMonth = DateTime.Now.AddMonths(-1).Month;
             int Year = DateTime.Now.Year;
 
-            string query = "select * from tbl_trialpayroll where WorkmanSL=@WorkmanSL and SalaryYear=@SalaryYear and SalaryMonth=@SalaryMonth";
+            string query = "select PFPay, ESICPay from tbl_trialpayroll where WorkmanSL=@WorkmanSL and SalaryYear=@SalaryYear and SalaryMonth=@SalaryMonth";
             SqlParameter[] pram = {
                                           new SqlParameter("@WorkmanSL",Session["WORKMAN"].ToString()),
                                           new SqlParameter("@SalaryYear",Year),
@@ -615,7 +615,7 @@ namespace WebApplication1.bussiness.production
         //------------ Added on 05-07-2022----------------//
         public void LoadLoginDetails()
         {
-            string query = "select * from tbl_Employee_Mustertable where WorkmanSL=@WorkmanSL and LoginID=@LoginID";
+            string query = "select WorkStatus,LoginID,WorkmanSL,LoginPassword from tbl_Employee_Mustertable where WorkmanSL=@WorkmanSL and LoginID=@LoginID";
             SqlParameter[] pram = {
                                           new SqlParameter("@WorkmanSL",Session["WORKMAN"].ToString()),
                                           new SqlParameter("@LoginID",Session["USERID"].ToString()),
