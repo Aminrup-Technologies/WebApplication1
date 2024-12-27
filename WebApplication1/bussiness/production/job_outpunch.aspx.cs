@@ -449,8 +449,8 @@ namespace WebApplication1.bussiness.production
 
             string jobID = DDL_JOBID.SelectedItem.Text.ToString();
             string region = lbl_jobrgn.Text.ToString();
-            string ddljobid = "";
-            string jobdate = "";
+            string ddljobid = string.Empty;
+            string jobdate = string.Empty;
             string[] parts = jobID.Split(new string[] { " : " }, StringSplitOptions.None);
 
             if (parts.Length == 2)
