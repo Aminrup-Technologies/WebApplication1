@@ -27,7 +27,7 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null)
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null)
                 {
                     Response.Redirect("~/login.aspx", false);
                 }
@@ -69,10 +69,85 @@ namespace WebApplication1.bussiness.production
         {
             LoadLoginDetails();
             EmployeeDataLoader();
+            EmployeeDocStatusLoader();
             AttendanceDataBinder();
             EmployeeDeductionsBinder();
         }
 
+
+        private void EmployeeDocStatusLoader()
+        {
+            string connectionString = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    connection.Open();
+
+                    string checkQuery = "SELECT COUNT(*) FROM tbl_EmployeeDocsDetails WHERE WorkmanSL = @WorkmanSL";
+                    SqlCommand checkCmd = new SqlCommand(checkQuery, connection);
+                    checkCmd.Parameters.AddWithValue("@WorkmanSL", Session["WORKMAN"].ToString());
+                    int count = Convert.ToInt32(checkCmd.ExecuteScalar());
+
+                    if (count == 0)
+                    {
+                        // Insert a default record
+                        string insertQuery = @"INSERT INTO tbl_EmployeeDocsDetails (WorkmanSL, AadhaarYesNo, BankYesNo, TenYesNo, TwelveYesNo, GraduationYesNo, NoticeAccepted) VALUES (@WorkmanSL, 0, 0, 0, 0, 0, 0)";
+                        SqlCommand insertCmd = new SqlCommand(insertQuery, connection);
+                        insertCmd.Parameters.AddWithValue("@WorkmanSL", Session["WORKMAN"].ToString());
+                        insertCmd.ExecuteNonQuery();
+                    }
+                    else
+                    {
+                        // Fetch the record
+                        string selectQuery = "SELECT * FROM tbl_EmployeeDocsDetails WHERE WorkmanSL = @WorkmanSL";
+                        SqlCommand selectCmd = new SqlCommand(selectQuery, connection);
+                        selectCmd.Parameters.AddWithValue("@WorkmanSL", Session["WORKMAN"].ToString());
+
+                        using (SqlDataReader reader = selectCmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                // Fetch the document statuses
+                                bool aadhaarStatus = reader["AadhaarYesNo"] != DBNull.Value && Convert.ToInt32(reader["AadhaarYesNo"]) == 1;
+                                bool bankStatus = reader["BankYesNo"] != DBNull.Value && Convert.ToInt32(reader["BankYesNo"]) == 1;
+                                bool panStatus = reader["PanYesNo"] != DBNull.Value && Convert.ToInt32(reader["PanYesNo"]) == 1;
+                                bool tenStatus = reader["TenYesNo"] != DBNull.Value && Convert.ToInt32(reader["TenYesNo"]) == 1;
+                                bool twelveStatus = reader["TwelveYesNo"] != DBNull.Value && Convert.ToInt32(reader["TwelveYesNo"]) == 1;
+                                bool graduationStatus = reader["GraduationYesNo"] != DBNull.Value && Convert.ToInt32(reader["GraduationYesNo"]) == 1;
+                                bool noticeAccepted = Convert.ToInt32(reader["NoticeAccepted"] ?? 0) == 1;
+                                DateTime? skipDate = reader["SkipDate"] != DBNull.Value ? Convert.ToDateTime(reader["SkipDate"]) : (DateTime?)null;
+
+                                if (!noticeAccepted)
+                                {
+                                    if (skipDate.HasValue && skipDate.Value > DateTime.Now)
+                                    {
+                                        // Skip showing the modal as the SkipDate is in the future
+                                        Console.WriteLine("SkipDate is valid. Modal skipped.");
+                                    }
+                                    else
+                                    {
+                                        // Trigger modal display for document upload notice
+                                        ClientScript.RegisterStartupScript(this.GetType(), "ShowDocModal", "ShowDocModal();", true);
+                                    }
+                                }
+                                else
+                                {
+                                    // Optional: Actions when notice has already been accepted
+                                    Console.WriteLine("Notice already accepted.");
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    string title = "Notifications :";
+                    string body = ex.Message.ToString();
+                    ClientScript.RegisterStartupScript(this.GetType(), "Popup4", "ShowPopup('" + title + "', '" + body + "');", true);
+                }
+            }
+        }
 
 
         private void EmployeeDataLoader()
@@ -419,7 +494,7 @@ namespace WebApplication1.bussiness.production
 
                 btn_bankedit.Text = "Save Changes";
 
-                ClientScript.RegisterStartupScript(this.GetType(), "alert10", "ShowPopup1();", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "alert11", "ShowPopup1();", true);
             }
             else if (btn_bankedit.Text.ToString() == "Save Changes")
             {
@@ -1150,6 +1225,92 @@ namespace WebApplication1.bussiness.production
         protected void btn_validateoldpassword_Click(object sender, EventArgs e)
         {
             ValidateOldPassword();
+        }
+
+        protected void btn_acceptdoc_Click(object sender, EventArgs e)
+        {
+            string connectionString = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
+
+            // SQL query to update the record
+            string updateQuery = @"
+                    UPDATE tbl_EmployeeDocsDetails
+                    SET NoticeAccepted = @NoticeAccepted,
+                        NoticeTimesatmp = @NoticeTimestamp,
+                        UpdatedByWrk = @UpdatedByWrk,
+                        UpdatedByName = @UpdatedByName
+                    WHERE WorkmanSL = @WorkmanSL";
+
+            // Use using blocks for resource management
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(updateQuery, conn))
+                {
+                    // Add parameters
+                    cmd.Parameters.AddWithValue("@NoticeAccepted", 1);
+                    cmd.Parameters.AddWithValue("@NoticeTimestamp", DateTime.Now);
+                    cmd.Parameters.AddWithValue("@WorkmanSL", Session["WORKMAN"].ToString());
+                    cmd.Parameters.AddWithValue("@UpdatedByWrk", Session["WORKMAN"].ToString());
+                    cmd.Parameters.AddWithValue("@UpdatedByName", Session["USERNAME"].ToString());
+
+                    // Open the connection and execute the command
+                    conn.Open();
+                    int rowsAffected = cmd.ExecuteNonQuery();
+
+                    // Optional: Handle result
+                    if (rowsAffected > 0)
+                    {
+                        PageDataLoader();
+                    }
+                    else
+                    {
+                        ClientScript.RegisterStartupScript(this.GetType(), "alert12", "ShowDocModal();", true);
+                    }
+                }
+            }
+        }
+
+        protected void btn_declinedoc_Click(object sender, EventArgs e)
+        {
+            string connectionString = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
+
+            // SQL query to update the record
+            string updateQuery = @"
+                    UPDATE tbl_EmployeeDocsDetails
+                    SET NoticeAccepted = @NoticeAccepted,
+                        NoticeTimesatmp = @NoticeTimestamp,
+                        UpdatedByWrk = @UpdatedByWrk,
+                        UpdatedByName = @UpdatedByName,
+                        SkipDate = @SkipDate
+                    WHERE WorkmanSL = @WorkmanSL";
+
+            // Use using blocks for resource management
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(updateQuery, conn))
+                {
+                    // Add parameters
+                    cmd.Parameters.AddWithValue("@NoticeAccepted", 0);
+                    cmd.Parameters.AddWithValue("@NoticeTimestamp", DateTime.Now);
+                    cmd.Parameters.AddWithValue("@WorkmanSL", Session["WORKMAN"].ToString());
+                    cmd.Parameters.AddWithValue("@UpdatedByWrk", Session["WORKMAN"].ToString());
+                    cmd.Parameters.AddWithValue("@UpdatedByName", Session["USERNAME"].ToString());
+                    cmd.Parameters.AddWithValue("@SkipDate", DateTime.Now.AddDays(3));
+
+                    // Open the connection and execute the command
+                    conn.Open();
+                    int rowsAffected = cmd.ExecuteNonQuery();
+
+                    // Optional: Handle result
+                    if (rowsAffected > 0)
+                    {
+                        PageDataLoader();
+                    }
+                    else
+                    {
+                        ClientScript.RegisterStartupScript(this.GetType(), "alert13", "ShowDocModal();", true);
+                    }
+                }
+            }
         }
     }
 }
