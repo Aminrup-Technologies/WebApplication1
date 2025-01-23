@@ -307,6 +307,7 @@
     <Content Include="bussiness\production\manage_profile.aspx" />
     <Content Include="bussiness\production\manage_rolls.aspx" />
     <Content Include="bussiness\production\manage_rollsaccess.aspx" />
+    <Content Include="bussiness\production\overview.aspx" />
     <Content Include="bussiness\production\pyrl_approvedeductions.aspx" />
     <Content Include="bussiness\production\pyrl_deductionlist.aspx" />
     <Content Include="bussiness\production\pyrl_deductions.aspx" />
@@ -766,6 +767,13 @@
       <DependentUpon>manage_rollsaccess.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\NotificationHub.cs" />
+    <Compile Include="bussiness\production\overview.aspx.cs">
+      <DependentUpon>overview.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\overview.aspx.designer.cs">
+      <DependentUpon>overview.aspx</DependentUpon>
+    </Compile>
     <Compile Include="bussiness\production\pyrl_approvedeductions.aspx.cs">
       <DependentUpon>pyrl_approvedeductions.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
