@@ -259,7 +259,8 @@
                             <div class="clearfix"></div>
                         </div>
                         <div class="x_content">
-                            <asp:GridView BorderWidth="0" ID="GridView2" runat="server" Width="100%" class="table table-striped table-hover table-bordered table-responsive table-sm dt-responsive nowrap small" AutoGenerateColumns="false" ShowHeaderWhenEmpty="true" EmptyDataText="No Data Found" OnRowCancelingEdit="GridView2_RowCancelingEdit" OnRowDeleting="GridView2_RowDeleting" OnRowEditing="GridView2_RowEditing" OnRowDataBound="GridView2_RowDataBound" OnRowUpdating="GridView2_RowUpdating" OnRowCommand="GridView2_RowCommand">
+                            <asp:GridView BorderWidth="0" ID="GridView2" runat="server" Width="100%" class="table table-striped table-hover table-bordered table-responsive table-sm dt-responsive nowrap small" AutoGenerateColumns="false" ShowHeaderWhenEmpty="true" EmptyDataText="No Data Found"
+                                OnRowCancelingEdit="GridView2_RowCancelingEdit" OnRowDeleting="GridView2_RowDeleting" OnRowEditing="GridView2_RowEditing" OnRowDataBound="GridView2_RowDataBound" OnRowUpdating="GridView2_RowUpdating" OnRowCommand="GridView2_RowCommand">
                                 <Columns>
                                     <asp:TemplateField HeaderText="Sl" Visible="True" HeaderStyle-Width="1%">
                                         <ItemTemplate>

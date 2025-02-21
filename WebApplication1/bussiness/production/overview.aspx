@@ -33,7 +33,7 @@
                                         seamless
                                         frameborder="1"
                                         scrolling="no"
-                                        src="http://150.242.202.11:5000/superset/explore/p/pzr2dkrML05/?standalone=1&height=400"></iframe>
+                                        src="https://www.mystifying-yalow.150-242-202-11.plesk.page/superset/explore/p/3m12Pr0ZNPg/?standalone=1&height=400"></iframe>
                                 </div>
                                 <div class="col-md-3 col-sm-12 col-lg-6 form-group">
                                     <iframe
@@ -42,7 +42,7 @@
                                         seamless
                                         frameborder="1"
                                         scrolling="no"
-                                        src="http://150.242.202.11:5000/superset/explore/p/vlmKp8LKrgw/?standalone=1&height=400"></iframe>
+                                        src="https://www.mystifying-yalow.150-242-202-11.plesk.page/superset/explore/p/QWgKJ9A2m4p/?standalone=1&height=400"></iframe>
                                 </div>
 
                                 <div class="col-md-3 col-sm-12 col-lg-12 form-group">
@@ -52,7 +52,7 @@
                                         seamless
                                         frameborder="0"
                                         scrolling="no"
-                                        src="http://150.242.202.11:5000/superset/explore/p/DlaZNkwMm13/?standalone=1&height=400"></iframe>
+                                        src="https://www.mystifying-yalow.150-242-202-11.plesk.page/superset/explore/p/4QVKoJp2eNj/?standalone=1&height=400"></iframe>
                                 </div>
 
                             </div>
