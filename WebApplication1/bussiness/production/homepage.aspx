@@ -409,8 +409,8 @@
                                         <label style="font-weight: bold; color: darkblue;">Enter New Safety No :<span class="text text-danger"></span></label>
                                     </div>
                                     <div class="col-md-6 col-sm-12 form-group" id="nwsftyrow2" runat="server" visible="false">
-                                        <asp:TextBox ID="txt_nwsftyno" runat="server" CssClass="form-control form-control-sm rounded" BorderColor="Blue" BorderWidth="2px"></asp:TextBox>
-                                        <asp:RequiredFieldValidator ID="RequiredFieldValidator1" ValidationGroup="GPDATA" ControlToValidate="txt_nwsftyno" runat="server" ErrorMessage="Required" ForeColor="Red" Display="Dynamic" SetFocusOnError="true" InitialValue=""></asp:RequiredFieldValidator>
+                                        <asp:TextBox ID="txt_nwsftyno" runat="server" CssClass="form-control form-control-sm rounded" BorderColor="Blue" BorderWidth="2px" ReadOnly="true"></asp:TextBox>
+                                        <asp:RequiredFieldValidator ID="RequiredFieldValidator1" ValidationGroup="GPDATA" ControlToValidate="txt_nwsftyno" runat="server" ErrorMessage="Required" ForeColor="Red" Display="Dynamic" SetFocusOnError="true" InitialValue="" Enabled="false"></asp:RequiredFieldValidator>
                                     </div>
 
                                     <div class="col-md-6 col-sm-12 form-group">

@@ -1909,7 +1909,7 @@ namespace WebApplication1.bussiness.production
         {
             Sqlconnection();
             ConnectDb();
-            string cmdString = @"SELECT COUNT(*) FROM [ats_erp].[dbo].[tbl_jobs] WHERE Creator_Workman = @Creator_Workman AND [CreatedDate] >= DATEADD(DAY, -3, GETDATE()) AND JOBID_Status='Active' and EntryExit='Entry'";
+            string cmdString = @"SELECT COUNT(*) FROM [tbl_jobs] WHERE Creator_Workman = @Creator_Workman AND [CreatedDate] >= DATEADD(DAY, -3, GETDATE()) AND JOBID_Status='Active' and EntryExit='Entry'";
 
             SqlCommand cmd = new SqlCommand(cmdString, Conn);
             cmd.CommandType = CommandType.Text;

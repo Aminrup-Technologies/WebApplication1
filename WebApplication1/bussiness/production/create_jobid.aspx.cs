@@ -71,7 +71,8 @@ namespace WebApplication1.bussiness.production
 
                 Workorder_Binder();
 
-                string CmdString = "select BilingType, BillingCode from tlb_JOB_BillingType order by Id";
+                //string CmdString = "select BilingType, BillingCode from tlb_JOB_BillingType order by Id";
+                string CmdString = "SELECT DISTINCT b.BilingType, b.BillingCode FROM tlb_WorkRegion_BillingMapping m JOIN tlb_JOB_BillingType b ON m.BillingTypeId = b.Id WHERE m.Work_Region_Code = '" + Session["REGION"].ToString() + "' AND m.IsActive = 1;";
                 Bind_BillingType(CmdString);
 
                 string CmdString4 = "Select Status_Name,Status_Code from tlb_attendancecodes where CreateJOBID='Yes' and Status='Present' order by slno";
@@ -625,12 +626,17 @@ namespace WebApplication1.bussiness.production
         protected void DDL_Region_SelectedIndexChanged(object sender, EventArgs e)
         {
             Workorder_Binder();
+
+            
         }
 
 
         private void Workorder_Binder()
         {
             region = DDL_Region.SelectedValue.ToString();
+
+            string CmdString = "SELECT DISTINCT b.BilingType, b.BillingCode FROM tlb_WorkRegion_BillingMapping m JOIN tlb_JOB_BillingType b ON m.BillingTypeId = b.Id WHERE m.Work_Region_Code = '" + region + "' AND m.IsActive = 1;";
+            Bind_BillingType(CmdString);
 
             try
             {

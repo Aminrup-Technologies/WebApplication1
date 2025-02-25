@@ -434,7 +434,7 @@ namespace WebApplication1.gentelella_master.production
             dbcl.ConnectDb();
 
             string query = "SELECT [Id], [Emp_PermissionValue], [ParentKey], [ChildKey], [IsVisible] " +
-                           "FROM [ats_erp].[dbo].[tlb_EmployeePermissions] " +
+                           "FROM [tlb_EmployeePermissions] " +
                            "WHERE [Emp_PermissionValue] = @EmpTypeValue";
 
             SqlDataAdapter sqlDa = new SqlDataAdapter(query, dbcl.Conn);

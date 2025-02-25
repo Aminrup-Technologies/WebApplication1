@@ -43,7 +43,8 @@ namespace WebApplication1.bussiness.production
                         datalock = "0";
                     }
 
-                    string CmdString = "select BilingType, BillingCode from tlb_JOB_BillingType order by Id";
+                    //string CmdString = "select BilingType, BillingCode from tlb_JOB_BillingType order by Id";
+                    string CmdString = "SELECT DISTINCT b.BilingType, b.BillingCode FROM tlb_WorkRegion_BillingMapping m JOIN tlb_JOB_BillingType b ON m.BillingTypeId = b.Id WHERE m.Work_Region_Code = '" + Session["REGION"].ToString() + "' AND m.IsActive = 1;";
                     Bind_BillingType(CmdString);
 
                     DateTime now = DateTime.Now;
