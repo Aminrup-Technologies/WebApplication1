@@ -93,7 +93,8 @@ namespace WebApplication1.bussiness.production
             }
 
             GridBinder(Year, Month);
-            PaymentDadaBinder(Year, Month);
+            ProcessPayroll(Year, Month, Session["REGION"].ToString());
+            //PaymentDadaBinder(Year, Month);
         }
 
         protected void btn_currentdata_Click(object sender, EventArgs e)
@@ -141,7 +142,8 @@ namespace WebApplication1.bussiness.production
             }
 
             GridBinder(Year, Month);
-            PaymentDadaBinder(Year, Month);
+            //PaymentDadaBinder(Year, Month);
+            ProcessPayroll(Year, Month, Session["REGION"].ToString());
         }
 
         private void GridBinder(string Year, string Month)
@@ -748,9 +750,69 @@ namespace WebApplication1.bussiness.production
             lbl_netpay2.Text = netpay2.ToString();
         }
 
-        private void PaymentDadaBinder(string Year, string Month)
+        public void ProcessPayroll(string payrollYear, string payrollMonth, string payrollRegion)
         {
             Clear();
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
+
+            using (SqlConnection conn = dbcl.Conn)
+            {
+                string query = @"SELECT F17_TrialStatus, FinalStatus, DeductionLocked, FinalF17_Status, PayslipVisibility FROM tbl_MonthlyPayrollStatus WHERE PayrollYear = @PayrollYear AND PayrollMonth = @PayrollMonth AND PayrollRegion = @PayrollRegion";
+
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@PayrollYear", payrollYear);
+                    cmd.Parameters.AddWithValue("@PayrollMonth", payrollMonth);
+                    cmd.Parameters.AddWithValue("@PayrollRegion", payrollRegion);
+
+                    //conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string f17TrialStatus = reader["F17_TrialStatus"].ToString();
+                            string finalStatus = reader["FinalStatus"].ToString();
+                            string deductionLocked = reader["DeductionLocked"].ToString();
+                            string finalF17Status = reader["FinalF17_Status"].ToString();
+                            string payslipVisibility = reader["PayslipVisibility"].ToString();
+
+                            // Decision making logic
+                            if (finalStatus == "Settled" && deductionLocked == "Yes" && finalF17Status == "Settled" && payslipVisibility == "Yes")
+                            {
+                                salary_pdfrow.Visible = true;
+                                PaymentDadaBinder(payrollYear, payrollMonth);
+                                //Console.WriteLine("Payroll is fully settled for region: " + payrollRegion);
+                            }
+                            else if (f17TrialStatus == "No")
+                            {
+                                salary_pdfrow.Visible = false;
+                                Console.WriteLine("Trial payroll needs to be executed for region: " + payrollRegion);
+                            }
+                            else if (finalStatus == "Inprogress")
+                            {
+                                salary_pdfrow.Visible = false;
+                                Console.WriteLine("Final payroll processing is still in progress for region: " + payrollRegion);
+                            }
+                            else if (payslipVisibility == "No")
+                            {
+                                salary_pdfrow.Visible = false;
+                                Console.WriteLine("Payslips are not yet visible for region: " + payrollRegion);
+                            }
+                            else
+                            {
+                                salary_pdfrow.Visible = false;
+                                Console.WriteLine("Payroll processing status is unclear for region: " + payrollRegion);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void PaymentDadaBinder(string Year, string Month)
+        {
+            
 
             if (DateTime.Now.Year.ToString() == Year && DateTime.Now.Month.ToString("MM") == Month)
             {
@@ -761,7 +823,7 @@ namespace WebApplication1.bussiness.production
             {
                 finalized.Visible = true;
                 realtime.Visible = false;
-                salary_pdfrow.Visible = true;
+                
             }
             string cmdString = "select * from tbl_trialpayroll where SalaryMonth = '" + Month + "' AND SalaryYear = '" + Year + "' and WorkmanSL='" + Session["WORKMAN"].ToString() + "'";
             dbcl.Sqlconnection();
@@ -786,12 +848,10 @@ namespace WebApplication1.bussiness.production
                 if (netpay > 1 && basicpay > 1)
                 {
                     finalized.Visible = true;
-                    salary_pdfrow.Visible = true;
                 }
                 else
                 {
                     finalized.Visible = false;
-                    salary_pdfrow.Visible = false;
                     realtime.Visible = false;
                 }
 
