@@ -229,6 +229,60 @@ namespace WebApplication1.bussiness.production.rpts {
         protected global::System.Web.UI.WebControls.GridView ShiftGrid;
         
         /// <summary>
+        /// lbl_createdbyname control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_createdbyname;
+        
+        /// <summary>
+        /// lbl_createdbyid control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_createdbyid;
+        
+        /// <summary>
+        /// lbl_createdon control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_createdon;
+        
+        /// <summary>
+        /// lbl_printedon control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_printedon;
+        
+        /// <summary>
+        /// lbl_printedbyname control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_printedbyname;
+        
+        /// <summary>
+        /// lbl_printedbyid control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_printedbyid;
+        
+        /// <summary>
         /// btn_back control.
         /// </summary>
         /// <remarks>

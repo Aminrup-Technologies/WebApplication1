@@ -116,10 +116,14 @@ namespace WebApplication1.bussiness.production.rpts
                     DayOfWeek dow = dt1.DayOfWeek; //enum
                     string str = dow.ToString(); //string
                     string abc2 = DateBinder(jobdate) + " [" + str + "]";
-                    lbl_smjdate.Text = abc2.ToString();
+                    lbl_smjdate.Text = lbl_createdon.Text= abc2.ToString();
 
-                    lbl_smjcreatorname.Text = dt.Rows[0]["CreatorName"].ToString();
-                    lbl_smjcreatorwrk.Text = dt.Rows[0]["CreatorWorkmen"].ToString();
+                    lbl_smjcreatorname.Text  = lbl_createdbyname.Text = dt.Rows[0]["CreatorName"].ToString();
+                    lbl_smjcreatorwrk.Text = lbl_createdbyid.Text = dt.Rows[0]["CreatorWorkmen"].ToString();
+
+                    lbl_printedon.Text = DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss");
+                    lbl_printedbyname.Text = Session["USERNAME"].ToString();
+                    lbl_printedbyid.Text = Session["WORKMAN"].ToString();
 
                     MemoType = Convert.ToInt32(dt.Rows[0]["MemoType"].ToString());
 

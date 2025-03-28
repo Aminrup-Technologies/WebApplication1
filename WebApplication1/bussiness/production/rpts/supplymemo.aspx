@@ -577,8 +577,8 @@
                                         <td class="SubHeading2" colspan="2"><span>Signature of Department</span></td>
                                     </tr>
                                     <tr>
-                                        <td class="TBTSigCol1" colspan="2" style="line-height: 80px;">&nbsp;</td>
-                                        <td class="TBTSigCol2" colspan="2" style="line-height: 80px;">&nbsp;</td>
+                                        <td class="TBTSigCol1" colspan="2" style="line-height: 70px;">&nbsp;</td>
+                                        <td class="TBTSigCol2" colspan="2" style="line-height: 70px;">&nbsp;</td>
                                     </tr>
                                     <tr>
                                         <td class="TBTSigCol1" colspan="2"><span>Date : ___/____/_______</span></td>
@@ -586,6 +586,14 @@
                                     </tr>
                                 </tbody>
                                 <tfoot>
+                                    <tr>
+                                        <td colspan="4">&nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4" style="font-size:x-small; text-align:center;">
+                                            System Generated : This Memo is created by&nbsp;<asp:Label ID="lbl_createdbyname" runat="server" Visible="true" Text="EmployeeName"></asp:Label>&nbsp;[<asp:Label ID="lbl_createdbyid" runat="server" Visible="true" Text="Employee ID"></asp:Label>]&nbsp;on&nbsp;<asp:Label ID="lbl_createdon" runat="server" Visible="true" Text="Creation Date & Time"></asp:Label>&nbsp;&&nbsp;printed on&nbsp;<asp:Label ID="lbl_printedon" runat="server" Visible="true" Text="Creation Date & Time"></asp:Label>&nbsp;by&nbsp;<asp:Label ID="lbl_printedbyname" runat="server" Visible="true" Text="Creation Date & Time"></asp:Label>&nbsp;[<asp:Label ID="lbl_printedbyid" runat="server" Visible="true" Text="Creation Date & Time"></asp:Label>].&nbsp;
+                                        </td>
+                                    </tr>
                                     <tr>
                                         <td colspan="4">&nbsp;</td>
                                     </tr>
