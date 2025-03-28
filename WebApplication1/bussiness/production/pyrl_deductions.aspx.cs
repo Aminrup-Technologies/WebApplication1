@@ -737,21 +737,37 @@ namespace WebApplication1.bussiness.production
             lbl_totalpresent.Text = ttl_days.ToString();
             lbl_dayswrkd.Text = ttl_days.ToString();
 
+            Dictionary<string, int> attendanceData = new Dictionary<string, int>();
+            PayRoll.GetEmployeeAttendanceCounts(Month, Year, empwrk, out attendanceData);
+
+            //lblAbsent.Text = attendanceData["Ab"].ToString();
+            lbl_flcount.Text = attendanceData["FL"].ToString();
+            //lbl_flpcount.Text = attendanceData["FP"].ToString();
+            //lbl_halfdaycount.Text = attendanceData["HD"].ToString();
+            //lbl_nhpcount.Text = attendanceData["HP"].ToString();
+            lbl_nhcount.Text = attendanceData["NH"].ToString();
+            lbl_oddayscount.Text = attendanceData["OD"].ToString();
+            lbl_presentdayscount.Text = attendanceData["P"].ToString();
+            //lbl_pendingcount.Text = attendanceData["Pending"].ToString();
+
             Int32 ttl_p = 0;
-            PayRoll.FindEmployeeTotalPresentByMonth(Month, Year, empwrk, ref ttl_p);
-            lbl_presentdayscount.Text = ttl_p.ToString();
+            attendanceData.TryGetValue("P", out ttl_p);
 
-            Int32 ttl_od = 0;
-            PayRoll.FindEmployeeTotalODByMonth(Month, Year, empwrk, ref ttl_od);
-            lbl_oddayscount.Text = ttl_od.ToString();
+            //Int32 ttl_p = 0;
+            //PayRoll.FindEmployeeTotalPresentByMonth(Month, Year, empwrk, ref ttl_p);
+            //lbl_presentdayscount.Text = ttl_p.ToString();
 
-            Int32 ttl_nh = 0;
-            PayRoll.FindEmployeeTotalNHByMonth(Month, Year, empwrk, ref ttl_nh);
-            lbl_nhcount.Text = ttl_nh.ToString();
+            //Int32 ttl_od = 0;
+            //PayRoll.FindEmployeeTotalODByMonth(Month, Year, empwrk, ref ttl_od);
+            //lbl_oddayscount.Text = ttl_od.ToString();
 
-            Int32 ttl_fl = 0;
-            PayRoll.FindEmployeeTotalFLByMonth(Month, Year, empwrk, ref ttl_fl);
-            lbl_flcount.Text = ttl_fl.ToString();
+            //Int32 ttl_nh = 0;
+            //PayRoll.FindEmployeeTotalNHByMonth(Month, Year, empwrk, ref ttl_nh);
+            //lbl_nhcount.Text = ttl_nh.ToString();
+
+            //Int32 ttl_fl = 0;
+            //PayRoll.FindEmployeeTotalFLByMonth(Month, Year, empwrk, ref ttl_fl);
+            //lbl_flcount.Text = ttl_fl.ToString();
 
             decimal ttl_ot = .0m;
             PayRoll.FindEmployeeTotalOTByMonth(Month, Year, empwrk, ref ttl_ot);

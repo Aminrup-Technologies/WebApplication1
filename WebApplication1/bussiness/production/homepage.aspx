@@ -119,8 +119,18 @@
                         <div class="left col-md-6 col-sm-6">
                             <h2>Days Worked :
 								<asp:Label ID="lbl_dayswrkd" runat="server" Text="0" Font-Bold="true"></asp:Label></h2>
+
                             <span><strong style="color: green;">P : </strong>
                                 <asp:Label ID="lbl_presentdayscount" runat="server" Text="0" Font-Bold="true"></asp:Label>
+                            </span>&nbsp;|&nbsp;
+                            <span><strong style="color: green;">HD : </strong>
+                                <asp:Label ID="lbl_halfdaycount" runat="server" Text="0" Font-Bold="true"></asp:Label>
+                            </span>&nbsp;|&nbsp;
+                            <span><strong style="color: green;">NHP : </strong>
+                                <asp:Label ID="lbl_nhpcount" runat="server" Text="0" Font-Bold="true"></asp:Label>
+                            </span>&nbsp;|&nbsp;
+                            <span><strong style="color: green;">FLP : </strong>
+                                <asp:Label ID="lbl_flpcount" runat="server" Text="0" Font-Bold="true"></asp:Label>
                             </span>&nbsp;|&nbsp;
 							<span><strong style="color: darkorange;">OD : </strong>
                                 <asp:Label ID="lbl_oddayscount" runat="server" Text="0" Font-Bold="true"></asp:Label>
@@ -130,6 +140,9 @@
                             </span>&nbsp;|&nbsp;
 							<span><strong style="color: blue;">FL : </strong>
                                 <asp:Label ID="lbl_flcount" runat="server" Text="0" Font-Bold="true"></asp:Label>
+                            </span>&nbsp;|&nbsp;
+                            <span><strong style="color: black;">Pending : </strong>
+                                <asp:Label ID="lbl_pendingcount" runat="server" Text="0" Font-Bold="true"></asp:Label>
                             </span>
                             <hr />
                             <h2>Total OT :

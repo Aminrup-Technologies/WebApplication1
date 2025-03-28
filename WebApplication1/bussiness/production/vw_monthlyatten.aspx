@@ -64,7 +64,7 @@
             </div>
 
             <div class="row">
-                <div class="col-md-6 col-sm-6 profile_details">
+                <%--<div class="col-md-6 col-sm-6 profile_details">
                     <div class="well profile_view col-sm-12 col-lg-12">
                         <div class="col-sm-12">
                             <h4 class="brief"><i>Attendance :
@@ -90,6 +90,56 @@
                             </span>&nbsp;|&nbsp;
 							<span><strong style="color: blue;">FL : </strong>
                                 <asp:Label ID="lbl_flcount" runat="server" Text="0" Font-Bold="true"></asp:Label>
+                            </span>
+                                <hr />
+                                <h2>Total OT :
+								<asp:Label ID="lbl_totalot" runat="server" Text="32" ForeColor="Brown" Font-Bold="true"></asp:Label>
+                                    Hours</h2>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>--%>
+
+                <div class="col-md-6 col-sm-6 profile_details">
+                    <div class="well profile_view col-sm-12 col-lg-12">
+                        <div class="col-sm-12">
+                            <h4 class="brief"><i>Attendance :
+							<asp:Label ID="lbl_calmonth" runat="server" Text="0"></asp:Label>,
+							<asp:Label ID="lbl_calyear" runat="server" Text="0"></asp:Label></i></h4>
+
+                            <div class="right col-md-6 col-sm-6 text-center">
+                                <asp:Label ID="lbl_totalpresent" runat="server" Text="0" ForeColor="Green" Font-Size="90px"></asp:Label>
+                                /
+							<asp:Label ID="lbl_caldays" runat="server" Font-Size="Medium" Font-Bold="true" ForeColor="Black" Text="0"></asp:Label>
+                            </div>
+                            <div class="left col-md-6 col-sm-6">
+                                <h2>Days Worked :
+								<asp:Label ID="lbl_dayswrkd" runat="server" Text="0" Font-Bold="true"></asp:Label></h2>
+
+                                <span><strong style="color: green;">P : </strong>
+                                    <asp:Label ID="lbl_presentdayscount" runat="server" Text="0" Font-Bold="true"></asp:Label>
+                                </span>&nbsp;|&nbsp;
+                            <span><strong style="color: green;">HD : </strong>
+                                <asp:Label ID="lbl_halfdaycount" runat="server" Text="0" Font-Bold="true"></asp:Label>
+                            </span>&nbsp;|&nbsp;
+                            <span><strong style="color: green;">NHP : </strong>
+                                <asp:Label ID="lbl_nhpcount" runat="server" Text="0" Font-Bold="true"></asp:Label>
+                            </span>&nbsp;|&nbsp;
+                            <span><strong style="color: green;">FLP : </strong>
+                                <asp:Label ID="lbl_flpcount" runat="server" Text="0" Font-Bold="true"></asp:Label>
+                            </span>&nbsp;|&nbsp;
+							<span><strong style="color: darkorange;">OD : </strong>
+                                <asp:Label ID="lbl_oddayscount" runat="server" Text="0" Font-Bold="true"></asp:Label>
+                            </span>&nbsp;|&nbsp;
+							<span><strong style="color: darkblue;">NH : </strong>
+                                <asp:Label ID="lbl_nhcount" runat="server" Text="0" Font-Bold="true"></asp:Label>
+                            </span>&nbsp;|&nbsp;
+							<span><strong style="color: blue;">FL : </strong>
+                                <asp:Label ID="lbl_flcount" runat="server" Text="0" Font-Bold="true"></asp:Label>
+                            </span>&nbsp;|&nbsp;
+                            <span><strong style="color: black;">Pending : </strong>
+                                <asp:Label ID="lbl_pendingcount" runat="server" Text="0" Font-Bold="true"></asp:Label>
                             </span>
                                 <hr />
                                 <h2>Total OT :
@@ -250,11 +300,11 @@
             <br />
         </div>
     </div>
-    <script type="text/javascript">
-        function ShowPopup(title, body) {
-            $("#MyPopup .modal-title").html(title);
-            $("#MyPopup .modal-body").html(body);
-            $("#MyPopup").modal("show");
-        }
-    </script>
+        <script type="text/javascript">
+            function ShowPopup(title, body) {
+                $("#MyPopup .modal-title").html(title);
+                $("#MyPopup .modal-body").html(body);
+                $("#MyPopup").modal("show");
+            }
+        </script>
 </asp:Content>
