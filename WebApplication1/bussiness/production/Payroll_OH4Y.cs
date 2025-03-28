@@ -351,6 +351,69 @@ namespace WebApplication1.bussiness.production
             }
         }
 
+
+        public void GetEmployeeAttendanceCounts(string month, string year, string empwrk, out Dictionary<string, int> attendanceCounts)
+        {
+            string cmdString = @"
+                SELECT AttendanceCode, COUNT(DISTINCT CreatedDate) as TotalCount 
+                FROM tbl_attendance 
+                WHERE EmployeeWrk = @empwrk 
+                AND MONTH(CreatedDate) = @month 
+                AND YEAR(CreatedDate) = @year 
+                AND SiteIncharge_Approval = 'Approved' 
+                AND AttendanceStatus = 'Present'
+                GROUP BY AttendanceCode;
+
+                SELECT COUNT(DISTINCT CreatedDate) as TotalPending 
+                FROM tbl_attendance 
+                WHERE EmployeeWrk = @empwrk 
+                AND MONTH(CreatedDate) = @month 
+                AND YEAR(CreatedDate) = @year 
+                AND SiteIncharge_Approval = 'Pending';
+            ";
+
+            // Initialize dictionary with all expected attendance codes and default to 0
+            attendanceCounts = new Dictionary<string, int>
+                {
+                    { "Ab", 0 }, { "FL", 0 }, { "FP", 0 }, { "HD", 0 },
+                    { "HP", 0 }, { "NH", 0 }, { "OD", 0 }, { "P", 0 },
+                    { "Pending", 0 } // For SiteIncharge_Approval = 'Pending'
+                };
+
+            DbCL.Sqlconnection();
+            DbCL.ConnectDb();
+
+            using (SqlCommand cmd = new SqlCommand(cmdString, DbCL.Conn))
+            {
+                cmd.Parameters.AddWithValue("@empwrk", empwrk);
+                cmd.Parameters.AddWithValue("@month", month);
+                cmd.Parameters.AddWithValue("@year", year);
+
+                using (SqlDataReader Rdr = cmd.ExecuteReader())
+                {
+                    // Read attendance counts
+                    while (Rdr.Read())
+                    {
+                        string code = Rdr["AttendanceCode"].ToString();
+                        int count = Convert.ToInt32(Rdr["TotalCount"]);
+
+                        if (attendanceCounts.ContainsKey(code))
+                            attendanceCounts[code] = count;
+                    }
+
+                    // Move to the next result set (Pending approval count)
+                    if (Rdr.NextResult() && Rdr.Read())
+                    {
+                        attendanceCounts["Pending"] = Convert.ToInt32(Rdr["TotalPending"]);
+                    }
+                }
+            }
+
+            DbCL.Conn.Close();
+        }
+
+
+
         public void FindEmployeeTotalPresentByMonth(string month, string year, string empwrk, ref Int32 totalpresents)
         {
             string cmdString = "SELECT COUNT(DISTINCT CreatedDate) as totalpresent FROM tbl_attendance where EmployeeWrk='" + empwrk + "' and MONTH(CreatedDate)='" + month + "' and YEAR(CreatedDate) = '" + year + "' and  AttendanceCode='P' and SiteIncharge_Approval='Approved' and AttendanceStatus='Present'";

@@ -193,6 +193,33 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Label lbl_presentdayscount;
         
         /// <summary>
+        /// lbl_halfdaycount control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_halfdaycount;
+        
+        /// <summary>
+        /// lbl_nhpcount control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_nhpcount;
+        
+        /// <summary>
+        /// lbl_flpcount control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_flpcount;
+        
+        /// <summary>
         /// lbl_oddayscount control.
         /// </summary>
         /// <remarks>
@@ -218,6 +245,15 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_flcount;
+        
+        /// <summary>
+        /// lbl_pendingcount control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_pendingcount;
         
         /// <summary>
         /// lbl_totalot control.
