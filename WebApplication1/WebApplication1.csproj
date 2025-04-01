@@ -298,6 +298,7 @@
     <Content Include="bussiness\production\images\Triangle.gif" />
     <Content Include="bussiness\production\images\user.png" />
     <Content Include="bussiness\production\images\visa.png" />
+    <Content Include="bussiness\production\jobapp_controller.aspx" />
     <Content Include="bussiness\production\jobstatus_flow.ascx" />
     <Content Include="bussiness\production\jobs_approval.aspx" />
     <Content Include="bussiness\production\jobs_approverdash.aspx" />
@@ -709,6 +710,13 @@
       <DependentUpon>gen_ninl_f17.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\HelpdeskCalls.cs" />
+    <Compile Include="bussiness\production\jobapp_controller.aspx.cs">
+      <DependentUpon>jobapp_controller.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\jobapp_controller.aspx.designer.cs">
+      <DependentUpon>jobapp_controller.aspx</DependentUpon>
+    </Compile>
     <Compile Include="bussiness\production\jobstatus_flow.ascx.cs">
       <DependentUpon>jobstatus_flow.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

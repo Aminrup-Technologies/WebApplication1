@@ -116,7 +116,7 @@ namespace WebApplication1.bussiness.production
             lblTotalData.Text = str;
         }
 
-        private void BindRBIData(string Year, string Month, string Region, string Date1, string Date2)
+        private void BindRBIData_old(string Year, string Month, string Region, string Date1, string Date2)
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
@@ -144,6 +144,78 @@ namespace WebApplication1.bussiness.production
                 }
             }
         }
+
+        private void BindRBIData(string Year, string Month, string Region, string Date1, string Date2)
+        {
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
+
+            // Updated query with parameterized values
+            string cmdString = @"
+            SELECT 
+                ROW_NUMBER() OVER (ORDER BY b.Id) AS SrNo, 
+                a.WorkmanSL, 
+                a.FullName, 
+                b.UANNo, 
+                CEILING(a.BasicSalary) AS Basic1, 
+                CEILING(a.BasicSalary) AS Basic2, 
+                CEILING(a.BasicSalary) AS Basic3, 
+                CASE 
+                    WHEN CEILING(a.BasicSalary) > 15000 THEN 15000 
+                    ELSE CEILING(a.BasicSalary) 
+                END AS Basic4, 
+                a.PFPay, 
+                CEILING(ROUND((a.BasicSalary * 0.0367), 0, 3)) AS Value1, 
+                CEILING(ROUND((a.BasicSalary * 0.0833), 0)) AS Value2, 
+                a.SalaryEndDay, 
+                a.Present, 
+                (a.SalaryEndDay - a.Present) AS NCPday, 
+                0 AS refund 
+            FROM 
+                tbl_trialpayroll a, 
+                tbl_Employee_Mustertable b 
+            WHERE 
+                a.WorkRegion = @Region 
+                AND a.SalaryMonth = @Month 
+                AND a.SalaryYear = @Year 
+                AND a.SalaryStartDay = @Date1 
+                AND a.SalaryEndDay = @Date2 
+                AND a.WorkmanSL = b.WorkmanSL 
+            ORDER BY 
+            a.Id";
+
+            SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
+            cmd.CommandType = CommandType.Text;
+
+            // Adding parameters to the command
+            cmd.Parameters.AddWithValue("@Region", Region);
+            cmd.Parameters.AddWithValue("@Month", Month);
+            cmd.Parameters.AddWithValue("@Year", Year);
+            cmd.Parameters.AddWithValue("@Date1", Date1);
+            cmd.Parameters.AddWithValue("@Date2", Date2);
+
+            using (SqlDataReader re = cmd.ExecuteReader())
+            {
+                while (re.Read())
+                {
+                    str = str + "<tr><td width='2%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["SrNo"].ToString() + "</td>";
+                    str = str + "<td width='3%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["WorkmanSL"].ToString() + "</td>";
+                    str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["FullName"].ToString() + "</td>";
+                    str = str + "<td width='8%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["UANNo"].ToString() + "</td>";
+                    str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Basic1"].ToString() + "</td>";
+                    str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Basic2"].ToString() + "</td>";
+                    str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Basic3"].ToString() + "</td>";
+                    str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Basic4"].ToString() + "</td>";
+                    str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["PFPay"].ToString() + "</td>";
+                    str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Value1"].ToString() + "</td>";
+                    str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Value2"].ToString() + "</td>";
+                    str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["SalaryEndDay"].ToString() + "</td>";
+                    str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["NCPday"].ToString() + "</td>";
+                    str = str + "<td width='4%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["refund"].ToString() + "</td></tr>";
+                }
+            }
+        }
+
 
         protected void btn_excelexport_Click(object sender, EventArgs e)
         {

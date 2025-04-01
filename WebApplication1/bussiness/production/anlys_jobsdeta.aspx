@@ -35,6 +35,12 @@
                             </div>
                             <i class="fa fa-users"></i>Swap JOB Date
                         </a>
+                        <a class="btn btn-app" href="jobapp_controller.aspx" id="blocked_jobid" runat="server" visible="true">
+                            <div id="Div4" class="badge bg-green" runat="server">
+                                <asp:Label ID="Label3" runat="server" Text="Ok" Visible="true"></asp:Label>
+                            </div>
+                            <i class="fa fa-users"></i>Blocked JOBID
+                        </a>
                     </div>
                 </div>
             </div>

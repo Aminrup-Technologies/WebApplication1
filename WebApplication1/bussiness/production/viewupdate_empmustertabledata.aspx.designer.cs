@@ -508,22 +508,22 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Button ShowPopup;
         
         /// <summary>
-        /// txt_nwbankname control.
+        /// DDL_BankName control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txt_nwbankname;
+        protected global::System.Web.UI.WebControls.DropDownList DDL_BankName;
         
         /// <summary>
-        /// RFV1 control.
+        /// RFV_BankName control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator RFV1;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator RFV_BankName;
         
         /// <summary>
         /// txt_nwaccno control.

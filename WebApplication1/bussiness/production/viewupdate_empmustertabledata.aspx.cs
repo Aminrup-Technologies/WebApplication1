@@ -31,6 +31,9 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
+                    string bankqry = "select BankName, BankCode from tlb_IndianBanks";
+                    BindBanks(bankqry);
+
                     if (Session["Changer"] != null)
                     {
                         string[] retrievedArray = (string[])Session["Changer"];
@@ -59,6 +62,20 @@ namespace WebApplication1.bussiness.production
 
                 }
             }
+        }
+
+        private void BindBanks(string CmdString)
+        {
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
+            SqlCommand Cmd = new SqlCommand(CmdString, dbcl.Conn);
+            Cmd.CommandType = CommandType.Text;
+            DDL_BankName.DataSource = Cmd.ExecuteReader();
+            DDL_BankName.DataTextField = "BankName";
+            DDL_BankName.DataValueField = "BankCode";
+            DDL_BankName.DataBind();
+            DDL_BankName.Items.Insert(0, "Please Select Option");
+            dbcl.DisconnectDb();
         }
 
         protected void DDLBinder()
@@ -630,7 +647,8 @@ namespace WebApplication1.bussiness.production
         {
             if (btn_bankedit.Text.ToString() == "Make Changes")
             {
-                txt_nwbankname.ReadOnly = false;
+                //txt_nwbankname.ReadOnly = false;
+                DDL_BankName.Enabled = false;
                 txt_nwaccno.ReadOnly = false;
                 txt_nwcnfaccno.ReadOnly = false;
                 txt_nwifsc.ReadOnly = false;
@@ -646,7 +664,8 @@ namespace WebApplication1.bussiness.production
                 if (UpdateBankDetails() == true)
                 {
                     EmpBankDataBinder();
-                    txt_nwbankname.ReadOnly = false;
+                    DDL_BankName.Enabled = false;
+                    //txt_nwbankname.ReadOnly = false;
                     txt_nwaccno.ReadOnly = false;
                     txt_nwcnfaccno.ReadOnly = false;
                     txt_nwifsc.ReadOnly = false;
@@ -661,7 +680,8 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-                    txt_nwbankname.ReadOnly = true;
+                    //txt_nwbankname.ReadOnly = true;
+                    DDL_BankName.Enabled = true;
                     txt_nwaccno.ReadOnly = true;
                     txt_nwcnfaccno.ReadOnly = true;
                     txt_nwifsc.ReadOnly = true;
@@ -684,7 +704,8 @@ namespace WebApplication1.bussiness.production
                 cmd.CommandText = CmdString;
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@WorkmanSL", txt_workman.Text.ToString());
-                cmd.Parameters.AddWithValue("@Payment_Bank", txt_nwbankname.Text.ToString());
+                //cmd.Parameters.AddWithValue("@Payment_Bank", txt_nwbankname.Text.ToString());
+                cmd.Parameters.AddWithValue("@Payment_Bank", DDL_BankName.SelectedItem.Text.ToString());
                 cmd.Parameters.AddWithValue("@Payment_Account", txt_nwaccno.Text.ToString());
                 cmd.Parameters.AddWithValue("@Payment_IFSC", txt_nwifsc.Text.ToString());
                 cmd.Parameters.AddWithValue("@BankBranch", txt_nwbranchname.Text.ToString());
@@ -717,7 +738,7 @@ namespace WebApplication1.bussiness.production
                 {
                     string bankname = dt.Rows[0]["Payment_Bank"].ToString();
                     txt_banknanme.Text = bankname;
-                    txt_nwbankname.Text = bankname;
+                    DDL_BankName.SelectedItem.Text = bankname;
 
                     string bankacc = dt.Rows[0]["Payment_Account"].ToString();
                     txt_accountno.Text = bankacc;

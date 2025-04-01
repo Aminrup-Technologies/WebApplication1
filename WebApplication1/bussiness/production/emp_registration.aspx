@@ -360,10 +360,14 @@
                                 <div class="col-md-3 col-sm-12 form-group">
                                     <label>Bank Name<span class="text text-danger">*</span></label>
                                 </div>
-                                <div class="col-md-3 col-sm-12  form-group">
+                                <%--<div class="col-md-3 col-sm-12  form-group">
                                     <asp:TextBox ID="txt_banknanme" class="form-control form-control-sm rounded" placeholder="Enter Bank Name" runat="server"></asp:TextBox>
                                     <asp:RequiredFieldValidator ID="RequiredFieldValidator7" runat="server" Display="Dynamic" ErrorMessage="This field is required" ForeColor="Red" ControlToValidate="txt_banknanme" SetFocusOnError="true"></asp:RequiredFieldValidator>
                                     <small class="form-text text-muted ml-4">Example : State bank of India</small>
+                                </div>--%>
+                                <div class="col-md-3 col-sm-12  form-group">
+                                    <asp:DropDownList ID="DDL_BankName" runat="server" CssClass="form-control form-control-sm rounded"></asp:DropDownList>
+                                    <asp:RequiredFieldValidator ID="RFV_BankName" runat="server" ErrorMessage="Selection is required" Display="Dynamic" ForeColor="Red" InitialValue="Please Select Option" ControlToValidate="DDL_BankName"></asp:RequiredFieldValidator>
                                 </div>
 
                                 <div class="col-md-3 col-sm-12 form-group">

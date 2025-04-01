@@ -273,20 +273,78 @@
     </script>
 
     <script>
-    function validateInput(sender, args) {
-        var inputValue = $("#<%= txt_ot.ClientID %>").val();
-        if (inputValue.trim() !== '') {
-            var numericValue = parseInt(inputValue);
-            if (isNaN(numericValue) || numericValue > 16) {
-                args.IsValid = false;
+        function validateInput(sender, args) {
+            var inputValue = $("#<%= txt_ot.ClientID %>").val();
+            if (inputValue.trim() !== '') {
+                var numericValue = parseInt(inputValue);
+                if (isNaN(numericValue) || numericValue > 16) {
+                    args.IsValid = false;
+                } else {
+                    args.IsValid = true;
+                }
             } else {
-                args.IsValid = true;
+                args.IsValid = false;
             }
-        } else {
-            args.IsValid = false;
         }
-    }
-</script>
+
+
+    </script>
+
+    <script>
+        function showNotification(message) {
+            new PNotify({
+                text: message,
+                type: "error", // Static type set to "error"
+                delay: 3000, // 3 seconds
+                styling: "bootstrap3" // You can use "bootstrap3" or "fontawesome3" etc.
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const outPunchDate = document.getElementById('<%= txt_date.ClientID %>');
+        const outPunchTime = document.getElementById('<%= txt_time.ClientID %>');
+
+        function validateOutPunch() {
+            let now = new Date();
+            let currentDate = now.toISOString().split("T")[0]; // Format: YYYY-MM-DD
+            let currentHours = now.getHours();
+            let currentMinutes = now.getMinutes();
+
+            let selectedDate = outPunchDate.value; // Get selected date
+            let selectedTime = outPunchTime.value; // Get selected time
+
+            if (!selectedDate || !selectedTime) return;
+
+            if (selectedTime.includes(":")) {
+                let timeParts = selectedTime.split(":");
+                let selectedHours = parseInt(timeParts[0], 10);
+                let selectedMinutes = parseInt(timeParts[1], 10);
+
+                // Restrict future dates beyond today
+                if (selectedDate > currentDate) {
+                    showNotification("❌ You cannot punch out for a future date.");
+                    outPunchDate.value = ""; // Reset input
+                    return;
+                }
+
+                // If today's date is selected, validate the time
+                if (selectedDate === currentDate) {
+                    if (selectedHours > currentHours || (selectedHours === currentHours && selectedMinutes > currentMinutes)) {
+                        showNotification("⏳ You cannot punch out beyond the current time.");
+                        outPunchTime.value = ""; // Reset input
+                    }
+                }
+            } else {
+                showNotification("⚠ Invalid time format. Please select a valid time.");
+                outPunchTime.value = "";
+            }
+        }
+
+        // Attach event listeners
+        outPunchDate.addEventListener("change", validateOutPunch);
+        outPunchTime.addEventListener("change", validateOutPunch);
+    });
+    </script>
 
 
 </asp:Content>

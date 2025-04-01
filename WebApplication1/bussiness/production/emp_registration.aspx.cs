@@ -24,6 +24,10 @@ namespace WebApplication1.bussiness.production
                 {
                     string CmdString1 = "select Country_Name, Country_Code from tlb_work_country";
                     BindCountry(CmdString1);
+
+                    string bankqry = "select BankName, BankCode from tlb_IndianBanks";
+                    BindBanks(bankqry);
+
                 }
             }
         }
@@ -39,6 +43,20 @@ namespace WebApplication1.bussiness.production
             DDL_WorkCountry.DataValueField = "Country_Code";
             DDL_WorkCountry.DataBind();
             DDL_WorkCountry.Items.Insert(0, "Please Select Option");
+            dbcl.DisconnectDb();
+        }
+
+        private void BindBanks(string CmdString)
+        {
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
+            SqlCommand Cmd = new SqlCommand(CmdString, dbcl.Conn);
+            Cmd.CommandType = CommandType.Text;
+            DDL_BankName.DataSource = Cmd.ExecuteReader();
+            DDL_BankName.DataTextField = "BankName";
+            DDL_BankName.DataValueField = "BankCode";
+            DDL_BankName.DataBind();
+            DDL_BankName.Items.Insert(0, "Please Select Option");
             dbcl.DisconnectDb();
         }
 
@@ -380,7 +398,8 @@ namespace WebApplication1.bussiness.production
                 cmd.Parameters.AddWithValue("@PVExpiry", Convert.ToDateTime(txt_pvvalidity.Text.ToString()));
                 cmd.Parameters.AddWithValue("@UANNo", txt_uanno.Text.ToString());
                 cmd.Parameters.AddWithValue("@ESICNo", txt_esicno.Text.ToString());
-                cmd.Parameters.AddWithValue("@Payment_Bank", txt_banknanme.Text.ToString());
+                //cmd.Parameters.AddWithValue("@Payment_Bank", txt_banknanme.Text.ToString());
+                cmd.Parameters.AddWithValue("@Payment_Bank", DDL_BankName.SelectedItem.Text.ToString());
                 cmd.Parameters.AddWithValue("@Payment_Account", txt_accountno.Text.ToString());
                 cmd.Parameters.AddWithValue("@Payment_IFSC", txt_ifsccode.Text.ToString());
                 cmd.Parameters.AddWithValue("@BankBranch", txt_bankbranch.Text.ToUpper().ToString());
