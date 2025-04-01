@@ -648,7 +648,7 @@ namespace WebApplication1.bussiness.production
             if (btn_bankedit.Text.ToString() == "Make Changes")
             {
                 //txt_nwbankname.ReadOnly = false;
-                DDL_BankName.Enabled = false;
+                DDL_BankName.Enabled = true;
                 txt_nwaccno.ReadOnly = false;
                 txt_nwcnfaccno.ReadOnly = false;
                 txt_nwifsc.ReadOnly = false;
@@ -736,9 +736,19 @@ namespace WebApplication1.bussiness.production
                 dt = dbcl.SPreturn_dt(query, pram);
                 if (dt.Rows.Count > 0)
                 {
-                    string bankname = dt.Rows[0]["Payment_Bank"].ToString();
+                    //string bankname = dt.Rows[0]["Payment_Bank"].ToString();
+                    //txt_banknanme.Text = bankname;
+                    //DDL_BankName.SelectedItem.Text = bankname;
+
+                    string bankname = Convert.ToString(dt.Rows[0]["Payment_Bank"]);
                     txt_banknanme.Text = bankname;
-                    DDL_BankName.SelectedItem.Text = bankname;
+
+                    ListItem item = DDL_BankName.Items.FindByText(bankname);
+                    if (item != null)
+                    {
+                        DDL_BankName.ClearSelection();
+                        item.Selected = true;
+                    }
 
                     string bankacc = dt.Rows[0]["Payment_Account"].ToString();
                     txt_accountno.Text = bankacc;
