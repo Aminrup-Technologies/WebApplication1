@@ -355,7 +355,7 @@ namespace WebApplication1.bussiness.production
             dbcl.Conn.Close();
         }
 
-        protected void DownloadFile(object sender, EventArgs e)
+        protected void DownloadFile_OLD(object sender, EventArgs e)
         {
             try
             {
@@ -414,6 +414,66 @@ namespace WebApplication1.bussiness.production
                 //throw;
             }
         }
+
+
+        protected void DownloadFile(object sender, EventArgs e)
+        {
+            try
+            {
+                int id = int.Parse((sender as LinkButton).CommandArgument);
+                string fileName;
+                string constr = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
+                using (SqlConnection con = new SqlConnection(constr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        cmd.CommandText = "SELECT * FROM tbl_jobspermit WHERE Id=@Id";
+                        cmd.Parameters.AddWithValue("@Id", id);
+                        cmd.Connection = con;
+                        con.Open();
+                        using (SqlDataReader sdr = cmd.ExecuteReader())
+                        {
+                            if (sdr.Read())
+                            {
+                                fileName = sdr["Name"].ToString();
+                            }
+                            else
+                            {
+                                throw new Exception("File record not found in database.");
+                            }
+                        }
+                        con.Close();
+                    }
+                }
+
+                // Correct server path
+                string serverFolder = Server.MapPath(@"\erp_images\Permits\");
+                string fullFilePath = Path.Combine(serverFolder, fileName);
+
+                // Now correct existence check
+                if (File.Exists(fullFilePath))
+                {
+                    Response.Clear();
+                    Response.ContentType = "application/octet-stream"; // Corrected MIME type
+                    Response.AppendHeader("content-disposition", "attachment; filename=" + fileName);
+                    Response.TransmitFile(fullFilePath);
+                    Response.End();
+                }
+                else
+                {
+                    string title = "Notifications :";
+                    string body = "NO Physical File Found...!!";
+                    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                }
+            }
+            catch (Exception ex)
+            {
+                ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup();", true);
+                lbl_msg.ForeColor = System.Drawing.Color.Red;
+                lbl_msg.Text = "Error: " + ex.Message.ToString();
+            }
+        }
+
 
         protected void GridView2_RowDeleting(object sender, GridViewDeleteEventArgs e)
         {

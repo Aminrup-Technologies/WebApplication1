@@ -207,7 +207,10 @@ namespace WebApplication1.bussiness.production
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             dt_firsthalf.Clear();
-            string cmdString2 = "select a.WorkmanSL, a.FullName, b.SafetyPassNo, b.Fathername, FORMAT (b.DOB, 'dd-MM-yyyy') as dob, a.SkillCategory, a.SkillDesignation, FORMAT (b.DOJ, 'dd-MM-yyyy') as doj, b.ESICNo, b.UANNo, a.Present, a.OverTime, a.BasicSalary,a.OTSalary,a.OthersPay,a.HRAPay,a.ConvPay,a.WashPay, a.ActualGross,a.ESICGross, a.PFPay,a.ESICPay,a.NetPay1,a.NetPay2, a.Advance,a.Fines,a.Others,a.TotalDeduction,a.NetPayFinal, a.Date from tbl_trialpayroll a, tbl_Employee_Mustertable b where a.SalaryYear='" + Year + "' and a.SalaryMonth='" + Month + "' and a.Region='" + Region + "' and b.WorkmanSL=a.WorkmanSL order by a.Id";
+            //string cmdString2 = "select a.WorkmanSL, a.FullName, b.SafetyPassNo, b.Fathername, FORMAT (b.DOB, 'dd-MM-yyyy') as dob, a.SkillCategory, a.SkillDesignation, FORMAT (b.DOJ, 'dd-MM-yyyy') as doj, b.ESICNo, b.UANNo, a.Present, a.OverTime, a.BasicSalary,a.OTSalary,a.OthersPay,a.HRAPay,a.ConvPay,a.WashPay, a.ActualGross,a.ESICGross, a.PFPay,a.ESICPay,a.NetPay1,a.NetPay2, a.Advance,a.Fines,a.Others,a.TotalDeduction,a.NetPayFinal, a.Date from tbl_trialpayroll a, tbl_Employee_Mustertable b where a.SalaryYear='" + Year + "' and a.SalaryMonth='" + Month + "' and a.Region='" + Region + "' and b.WorkmanSL=a.WorkmanSL order by a.Id";
+
+            string cmdString2 = "select a.WorkmanSL, a.FullName, b.WorkSite, b.SafetyPassNo, b.Fathername, FORMAT (b.DOB, 'dd-MM-yyyy') as dob, a.SkillCategory, a.SkillDesignation, FORMAT (b.DOJ, 'dd-MM-yyyy') as doj, b.ESICNo, b.UANNo, a.Present, a.P_FL, a.P_FP, a.P_HD, A.P_HP, a.P_NH, a.P_OD, a.P_P, a.OverTime, a.PayRate, a.BasicSalary,a.OTSalary,a.OthersPay,a.HRAPay,a.ConvPay,a.WashPay, a.ActualGross,a.ESICGross, a.PFPay,a.ESICPay,a.NetPay1,a.NetPay2, a.Advance,a.Fines,a.Others,'0' as LWF, a.TotalDeduction,a.NetPayFinal, a.Date from tbl_trialpayroll a, tbl_Employee_Mustertable b where a.SalaryYear='" + Year + "' and a.SalaryMonth='" + Month + "' and a.Region='" + Region + "' and b.WorkmanSL=a.WorkmanSL order by a.Id";
+
             SqlCommand cmd2 = new SqlCommand(cmdString2, dbcl.Conn);
             SqlDataAdapter da2 = new SqlDataAdapter(cmd2);
             da2.Fill(dt_firsthalf);
@@ -242,21 +245,22 @@ namespace WebApplication1.bussiness.production
         {
             Int32 Multi = CalMonthDays;
 
-            str = str + "<table width='100%' style='border-collapse:collapse; color:black;'><tr><td colspan='75' width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 16px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>FORM 29</td></tr>";
-            str = str + "<tr><td colspan='75' width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Combined Muster Roll-cum-Register of Wages</td></tr>";
-            str = str + "<tr><td colspan='30' width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Name and Address of the Contractor : TECHNICAL & AUTOMATION SERVICES, Near Samudayik Vikas Bhawan, Jemco Basti, Telco, Jamshedpur - 831004</td>" +
-                "<td colspan='15' width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>[See rule 72 and rule 77(2)]</td>" +
-                "<td colspan='30' width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Name and Address of Establishment is/under which contract is carried on : " + DDL_Company.SelectedItem.Text.ToString() + "</td></tr>";
-            str = str + "<tr><td colspan='30' width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Name and Location of Work : " + DDL_Region.SelectedItem.Text.ToString() + "</td>" +
-                "<td colspan='15' width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'></td>" +
-                "<td colspan='30' width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Name and Address of Principal Employeer : " + DDL_Company.SelectedItem.Text.ToString() + ", " + state + "." + "</td></tr>";
-            str = str + "<tr><td colspan='30' width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Wages period from " + StartDate + " to " + EndDate + "</td>" +
-                "<td colspan='15' width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'></td>" +
-                "<td colspan='30' width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'></td></tr>";
-            str = str + "<tr><td colspan='75' width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>--</td></tr>";
+            str = str + "<table width='100%' style='border-collapse:collapse; color:black;'><tr><td colspan='83' width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 16px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>FORM 29</td></tr>";
+            str = str + "<tr><td colspan='83' width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Combined Muster Roll-cum-Register of Wages</td></tr>";
+            str = str + "<tr><td colspan='32' width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Name and Address of the Contractor : TECHNICAL & AUTOMATION SERVICES, Near Samudayik Vikas Bhawan, Jemco Basti, Telco, Jamshedpur - 831004</td>" +
+                "<td colspan='18' width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>[See rule 72 and rule 77(2)]</td>" +
+                "<td colspan='33' width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Name and Address of Establishment is/under which contract is carried on : " + DDL_Company.SelectedItem.Text.ToString() + "</td></tr>";
+            str = str + "<tr><td colspan='32' width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Name and Location of Work : " + DDL_Region.SelectedItem.Text.ToString() + "</td>" +
+                "<td colspan='18' width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'></td>" +
+                "<td colspan='33' width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Name and Address of Principal Employeer : " + DDL_Company.SelectedItem.Text.ToString() + ", " + state + "." + "</td></tr>";
+            str = str + "<tr><td colspan='32' width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Wages period from " + StartDate + " to " + EndDate + "</td>" +
+                "<td colspan='18' width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'></td>" +
+                "<td colspan='33' width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'></td></tr>";
+            str = str + "<tr><td colspan='83' width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>--</td></tr>";
             str = str + "<tr><td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>1</td>";
             str = str + "<td width='5%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>2</td>";
             str = str + "<td width='5%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>3</td>";
+            str = str + "<td width='5%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>3A</td>";
             str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>4</td>";
             str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>5</td>";
             str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>6</td>";
@@ -267,7 +271,17 @@ namespace WebApplication1.bussiness.production
             str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>11</td>";
             str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>12</td>";
             str = str + "<td colspan=" + CalMonthDays + " width=" + Multi + "  style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Attendance Sheet (Unit of Workdone)</td>";
+
+            str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>12A</td>";
+            str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>12B</td>";
+            str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>12C</td>";
+            str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>12D</td>";
+            str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>12E</td>";
+            str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>12F</td>";
+            str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>12E</td>";
+
             str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>13</td>";
+            str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>13A</td>";
             str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>14</td>";
             str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>15</td>";
             str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>16</td>";
@@ -328,6 +342,7 @@ namespace WebApplication1.bussiness.production
             str = str + "<table width='100%' style='border-collapse:collapse; color:black;'><tr><td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>SL. No.</td>";
             str = str + "<td width='5%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Name of Workman</td>";
             str = str + "<td width='5%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>SafetyPass No.</td>";
+            str = str + "<td width='5%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Worksite</td>";
             str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Father Name</td>";
             str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>SEX (M/F)</td>";
             str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>DOB</td>";
@@ -343,10 +358,18 @@ namespace WebApplication1.bussiness.production
             {
                 str = str + "<td width='1%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>" + i + "</td>";
             }
+            str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>No of FL</td>";
+            str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>No of FLP</td>";
+            str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>No of HD</td>";
+            str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>No of NHP</td>";
+            str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>No of NH</td>";
+            str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>No of OD</td>";
+            str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>No of P</td>";
 
             str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>No of Payable days /Total Work done</td>";
             str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>OT</td>";
             str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Name of N&FH for Which Wages have been Paid</td>";
+            str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Wage Rate</td>";
             str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Basic Wages</td>";
             str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>D.A/ VDA</td>";
             str = str + "<td width='2%' style='background-color:#22b9e3; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>HRA</td>";
@@ -433,6 +456,7 @@ namespace WebApplication1.bussiness.production
 
                 str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>" + row["FullName"].ToString() + "</td>";
                 str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>" + row["SafetyPassNo"].ToString() + "</td>";
+                str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>" + row["WorkSite"].ToString() + "</td>";
                 str = str + "<td width='2%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>" + row["Fathername"].ToString() + "</td>";
                 str = str + "<td width='2%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Male</td>";
                 str = str + "<td width='2%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>" + row["dob"].ToString() + "</td>";
@@ -460,6 +484,14 @@ namespace WebApplication1.bussiness.production
                     day = day + 1;
                 }
 
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + row["P_FL"].ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + row["P_FP"].ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + row["P_HD"].ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + row["P_HP"].ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + row["P_NH"].ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + row["P_OD"].ToString() + "</td>";
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + row["P_P"].ToString() + "</td>";
+
                 str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + row["Present"].ToString() + "</td>";
                 //str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + decimal.Parse(daycount.ToString()) + "</td>";
                 TTL_Present = TTL_Present + decimal.Parse(row["Present"].ToString());
@@ -470,7 +502,7 @@ namespace WebApplication1.bussiness.production
                 TTL_OverTime = TTL_OverTime + decimal.Parse(row["OverTime"].ToString());
 
                 str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>-</td>";
-
+                decimal wagerate = Convert.ToDecimal(row["PayRate"].ToString());
                 decimal basicsal = Convert.ToDecimal(row["BasicSalary"].ToString());
                 
                 decimal basicotpay = Convert.ToDecimal(row["OTSalary"].ToString());
@@ -488,7 +520,7 @@ namespace WebApplication1.bussiness.production
 
                 decimal gross1 = basicsal + basicotpay + otherspay;
                 decimal gross2 = netpay + esi + pf + ded;
-
+                str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + wagerate + "</td>";
                 str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + basicsal + "</td>";
                 TTL_BasicSalary = TTL_BasicSalary + decimal.Parse(row["BasicSalary"].ToString());
                 str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>-</td>";
@@ -554,6 +586,7 @@ namespace WebApplication1.bussiness.production
             str = str + "<table width='100%' style='border-collapse:collapse; color:black;'><tr><td width='2%' style='background-color:#2c78db; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>1</td>";
             str = str + "<td width='5%' style='background-color:#2c78db; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>2</td>";
             str = str + "<td width='5%' style='background-color:#2c78db; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>3</td>";
+            str = str + "<td width='5%' style='background-color:#2c78db; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>3A</td>";
             str = str + "<td width='2%' style='background-color:#2c78db; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>4</td>";
             str = str + "<td width='2%' style='background-color:#2c78db; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>5</td>";
             str = str + "<td width='2%' style='background-color:#2c78db; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>6</td>";
@@ -564,9 +597,19 @@ namespace WebApplication1.bussiness.production
             str = str + "<td width='2%' style='background-color:#2c78db; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>11</td>";
             str = str + "<td width='2%' style='background-color:#2c78db; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>12</td>";
             str = str + "<td colspan=" + CalMonthDays + " width=" + Multi + "  style='background-color:#2c78db; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>Attendance Sheet (Unit of Workdone)</td>";
+
+            str = str + "<td width='2%' style='background-color:#2c78db; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>12</td>";
+            str = str + "<td width='2%' style='background-color:#2c78db; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>12</td>";
+            str = str + "<td width='2%' style='background-color:#2c78db; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>12</td>";
+            str = str + "<td width='2%' style='background-color:#2c78db; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>12</td>";
+            str = str + "<td width='2%' style='background-color:#2c78db; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>12</td>";
+            str = str + "<td width='2%' style='background-color:#2c78db; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>12</td>";
+            str = str + "<td width='2%' style='background-color:#2c78db; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>12</td>";
+
             str = str + "<td width='2%' style='background-color:#2c78db; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>"+TTL_Present+"</td>";
             str = str + "<td width='2%' style='background-color:#2c78db; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>"+TTL_OverTime+"</td>";
             str = str + "<td width='2%' style='background-color:#2c78db; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>15</td>";
+            str = str + "<td width='2%' style='background-color:#2c78db; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>15A</td>";
             str = str + "<td width='2%' style='background-color:#2c78db; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>"+TTL_BasicSalary+"</td>";
             str = str + "<td width='2%' style='background-color:#2c78db; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>17</td>";
             str = str + "<td width='2%' style='background-color:#2c78db; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>"+TTL_HRAPay+"</td>";

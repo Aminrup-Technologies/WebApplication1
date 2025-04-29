@@ -347,17 +347,11 @@
                         <div class="clearfix"></div>
                     </div>
                     <div class="x_content">
-                        <a class="btn btn-app" href="#">
-                            <div id="div11" class="badge bg-red" runat="server">
-                                <asp:Label ID="Label18" runat="server" Text="WIP" Visible="true"></asp:Label>
+                        <a class="btn btn-app" href="payroll_controller.aspx">
+                            <div id="div11" class="badge bg-green" runat="server">
+                                <asp:Label ID="Label18" runat="server" Text="New" Visible="true"></asp:Label>
                             </div>
-                            <i class="fa fa-users"></i>Payroll Status
-                        </a>
-                        <a class="btn btn-app" href="#">
-                            <div id="div12" class="badge bg-red" runat="server">
-                                <asp:Label ID="Label19" runat="server" Text="WIP" Visible="true"></asp:Label>
-                            </div>
-                            <i class="fa fa-users"></i>Controller
+                            <i class="fa fa-users"></i>Payroll Controller
                         </a>
                     </div>
                 </div>

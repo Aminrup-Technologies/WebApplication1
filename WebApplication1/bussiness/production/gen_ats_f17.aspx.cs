@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Data;
 using System.IO;
 using System.Configuration;
+using System.Collections.Generic;
 
 namespace WebApplication1.bussiness.production
 {
@@ -317,7 +318,16 @@ namespace WebApplication1.bussiness.production
                 Label lbl_OTMultiplier = (Label)GridView.Rows[i].FindControl("lbl_OTMultiplier");
                 Label lbl_OT_Divisibility = (Label)GridView.Rows[i].FindControl("lbl_OT_Divisibility");
 
-                Label lbl_presents = (Label)GridView.Rows[i].FindControl("lbl_presents");
+                Label lbl_presents = (Label)GridView.Rows[i].FindControl("lbl_presents"); //Total Payable Days
+                //Label lblAbsent = (Label)GridView.Rows[i].FindControl("lblAbsent");
+                Label lbl_flcount = (Label)GridView.Rows[i].FindControl("lbl_flcount");
+                Label lbl_flpcount = (Label)GridView.Rows[i].FindControl("lbl_flpcount");
+                Label lbl_halfdaycount = (Label)GridView.Rows[i].FindControl("lbl_halfdaycount");
+                Label lbl_nhpcount = (Label)GridView.Rows[i].FindControl("lbl_nhpcount");
+                Label lbl_nhcount = (Label)GridView.Rows[i].FindControl("lbl_nhcount");
+                Label lbl_oddayscount = (Label)GridView.Rows[i].FindControl("lbl_oddayscount");
+                Label lbl_presentdayscount = (Label)GridView.Rows[i].FindControl("lbl_presentdayscount");  // Total P Counts
+                //Label lbl_pendingcount = (Label)GridView.Rows[i].FindControl("lbl_pendingcount");
                 Label lbl_ttlot = (Label)GridView.Rows[i].FindControl("lbl_ttlot");
 
                 Label lbl_FixedSalary_YesNo = (Label)GridView.Rows[i].FindControl("lbl_FixedSalary_YesNo");
@@ -358,6 +368,20 @@ namespace WebApplication1.bussiness.production
                 string empwrk = lbl_WorkmanSL.Text.ToString();
                 PayRoll.FindEmployeeTotalPresentByDates2_SP(date1, date2, empwrk, ref TotalPresents);
                 lbl_presents.Text = TotalPresents.ToString();
+
+                Dictionary<string, int> attendanceData = new Dictionary<string, int>();
+                PayRoll.GetEmployeeAttendanceCounts(month.ToString(), year.ToString(), empwrk, out attendanceData);
+
+                //lblAbsent.Text = attendanceData["Ab"].ToString();
+                lbl_flcount.Text = attendanceData["FL"].ToString();
+                lbl_flpcount.Text = attendanceData["FP"].ToString();
+                lbl_halfdaycount.Text = attendanceData["HD"].ToString();
+                //lbl_halfdaycount.Text = (Convert.ToDecimal(attendanceData["HD"]) * 0.5m).ToString();
+                lbl_nhpcount.Text = attendanceData["HP"].ToString();
+                lbl_nhcount.Text = attendanceData["NH"].ToString();
+                lbl_oddayscount.Text = attendanceData["OD"].ToString();
+                lbl_presentdayscount.Text = attendanceData["P"].ToString();
+                //lbl_pendingcount.Text = attendanceData["Pending"].ToString();
 
                 //----------------- Function call to find out the Total OverTime Unit aganist the Employee Workman Sl----------------//
                 decimal TotalOT = .0m;
@@ -774,6 +798,17 @@ namespace WebApplication1.bussiness.production
             dt.Columns.Add("SPCL_Allowance", typeof(decimal));
             dt.Columns.Add("Misc_Earnings", typeof(decimal));
             dt.Columns.Add("Present", typeof(decimal));
+
+            //dt.Columns.Add("Absent", typeof(decimal));
+            dt.Columns.Add("FL", typeof(decimal));
+            dt.Columns.Add("FP", typeof(decimal));
+            dt.Columns.Add("HalfDay", typeof(decimal));
+            dt.Columns.Add("HP", typeof(decimal));
+            dt.Columns.Add("NH", typeof(decimal));
+            dt.Columns.Add("OD", typeof(decimal));
+            dt.Columns.Add("P", typeof(decimal));
+            //dt.Columns.Add("Pending", typeof(decimal));
+
             dt.Columns.Add("OverTime", typeof(decimal));
             dt.Columns.Add("BasicSalary", typeof(decimal));
             dt.Columns.Add("FixedRateSalary", typeof(decimal));
@@ -875,7 +910,34 @@ namespace WebApplication1.bussiness.production
                 decimal Misc_Earnings = Convert.ToDecimal(lbl_Misc_Earnings.Text.ToString());
 
                 Label lbl_presents = (Label)GridView.Rows[i].FindControl("lbl_presents");
-                decimal Present = Convert.ToDecimal(lbl_presents.Text.ToString());
+                decimal ttlPresent = Convert.ToDecimal(lbl_presents.Text.ToString());
+
+                //Label lbl_absent = (Label)GridView.Rows[i].FindControl("lbl_absent");
+                //decimal Absent = Convert.ToDecimal(lbl_absent.Text);
+
+                Label lbl_flcount = (Label)GridView.Rows[i].FindControl("lbl_flcount");
+                decimal FL = Convert.ToDecimal(lbl_flcount.Text);
+
+                Label lbl_flpcount = (Label)GridView.Rows[i].FindControl("lbl_flpcount");
+                decimal FP = Convert.ToDecimal(lbl_flpcount.Text);
+
+                Label lbl_halfdaycount = (Label)GridView.Rows[i].FindControl("lbl_halfdaycount");
+                decimal HalfDay = Convert.ToDecimal(lbl_halfdaycount.Text);
+
+                Label lbl_nhpcount = (Label)GridView.Rows[i].FindControl("lbl_nhpcount");
+                decimal HP = Convert.ToDecimal(lbl_nhpcount.Text);
+
+                Label lbl_nhcount = (Label)GridView.Rows[i].FindControl("lbl_nhcount");
+                decimal NH = Convert.ToDecimal(lbl_nhcount.Text);
+
+                Label lbl_oddayscount = (Label)GridView.Rows[i].FindControl("lbl_oddayscount");
+                decimal OD = Convert.ToDecimal(lbl_oddayscount.Text);
+
+                Label lbl_presentdayscount = (Label)GridView.Rows[i].FindControl("lbl_presentdayscount");
+                decimal Present = Convert.ToDecimal(lbl_presentdayscount.Text);
+
+                //Label lbl_pendingcount = (Label)GridView.Rows[i].FindControl("lbl_pendingcount");
+                //decimal Pending = Convert.ToDecimal(lbl_pendingcount.Text);
 
                 Label lbl_ttlot = (Label)GridView.Rows[i].FindControl("lbl_ttlot");
                 decimal OverTime = Convert.ToDecimal(lbl_ttlot.Text.ToString());
@@ -987,7 +1049,19 @@ namespace WebApplication1.bussiness.production
                     cmd.Parameters.AddWithValue("SPCL_Allowance", SPCL_Allowance);
                     cmd.Parameters.AddWithValue("Misc_Earnings", Misc_Earnings);
                     cmd.Parameters.AddWithValue("Washing_Allowance", Washing_Allowance);
-                    cmd.Parameters.AddWithValue("Present", Present);
+                    cmd.Parameters.AddWithValue("Present", ttlPresent);
+                    
+                    //cmd.Parameters.AddWithValue("Absent", SqlDbType.Decimal).Value = Absent;
+                    //cmd.Parameters.AddWithValue("Pending", SqlDbType.Decimal).Value = Pending;
+
+                    cmd.Parameters.AddWithValue("P_FL", SqlDbType.Decimal).Value = FL;
+                    cmd.Parameters.AddWithValue("P_FP", SqlDbType.Decimal).Value = FP;
+                    cmd.Parameters.AddWithValue("P_HD", SqlDbType.Decimal).Value = HalfDay;
+                    cmd.Parameters.AddWithValue("P_HP", SqlDbType.Decimal).Value = HP;
+                    cmd.Parameters.AddWithValue("P_NH", SqlDbType.Decimal).Value = NH;
+                    cmd.Parameters.AddWithValue("P_OD", SqlDbType.Decimal).Value = OD;
+                    cmd.Parameters.AddWithValue("P_P", SqlDbType.Decimal).Value = Present;
+
                     cmd.Parameters.AddWithValue("OverTime", OverTime);
                     cmd.Parameters.AddWithValue("BasicSalary", BasicSalary);
                     cmd.Parameters.AddWithValue("FixedRateSalary", FixedRateSalary);

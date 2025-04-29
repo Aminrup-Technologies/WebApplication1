@@ -82,8 +82,8 @@
                                     </div>
                                     <div class="col-md-6 col-sm-12">
                                         <button type="button" class="btn btn-danger btn-sm collapse-link">Cancel</button>
-                                        <asp:Button ID="btn_reset" runat="server" Text="Reset" CssClass="btn btn-warning btn-sm" PostBackUrl="~/bussiness/production/jobapp_controller.aspx"/>
-                                        <asp:Button ID="btn_submit" runat="server" Text="Submit" CssClass="btn btn-success btn-sm" OnClick="btn_submit_Click"/>
+                                        <asp:Button ID="btn_reset" runat="server" Text="Reset" CssClass="btn btn-warning btn-sm" PostBackUrl="~/bussiness/production/jobapp_controller.aspx" />
+                                        <asp:Button ID="btn_submit" runat="server" Text="Submit" CssClass="btn btn-success btn-sm" OnClick="btn_submit_Click" />
                                     </div>
                                 </div>
                             </div>
@@ -94,10 +94,53 @@
             </div>
 
             <div class="row">
-                <div class="card-box col-md-12 col-sm-12 small" style="width: 100%; height: 450px; overflow: scroll;">
-                    <asp:GridView ID="gvPendingApprovals" runat="server" AutoGenerateColumns="True" class="table table-striped table-hover table-bordered table-responsive table-sm dt-responsive" AllowPaging="True" PageSize="10" OnPageIndexChanging="gvPendingApprovals_PageIndexChanging"></asp:GridView>
+                <div class="card-box col-md-12 col-sm-12 small" style="width: 100%; height:auto; overflow: scroll;">
+                    <asp:GridView ID="gvPendingApprovalsold" runat="server" AutoGenerateColumns="True" Visible="false" class="table table-striped table-hover table-bordered table-responsive table-sm dt-responsive" AllowPaging="True" PageSize="10"></asp:GridView>
                 </div>
             </div>
+
+            <div class="row">
+                <div class="card-box col-md-12 col-sm-12 small" style="width: 100%; height: 450px; overflow: scroll;">
+                    <asp:GridView ID="gvPendingApprovals" runat="server" AutoGenerateColumns="False" Visible="false" class="table table-striped table-hover table-bordered table-responsive table-sm dt-responsive" AllowPaging="True" PageSize="50" DataKeyNames="Id" OnRowCommand="gvPendingApprovals_RowCommand">
+                        <Columns>
+                            <asp:BoundField DataField="Id" HeaderText="Id" SortExpression="Id" />
+                            <asp:BoundField DataField="JOBID" HeaderText="Job ID" SortExpression="JOBID" />
+                            <asp:BoundField DataField="JOB_Region" HeaderText="Region" SortExpression="JOB_Region" />
+                            <asp:BoundField DataField="JOB_InchargeName" HeaderText="Incharge Name" SortExpression="JOB_InchargeName" />
+                            <asp:BoundField DataField="Incharge_Approval" HeaderText="Approval Status" SortExpression="Incharge_Approval" />
+
+                            <asp:TemplateField>
+                                <HeaderTemplate>
+                                    <asp:CheckBox ID="chkHeader" runat="server" onclick="toggleSelectAll(this, 'gvPendingApprovals');" />
+                                </HeaderTemplate>
+                                <ItemTemplate>
+                                    <asp:CheckBox ID="chkSelect" runat="server" CssClass="rowCheckbox" />
+                                </ItemTemplate>
+                            </asp:TemplateField>
+
+                            <asp:TemplateField>
+                                <ItemTemplate>
+                                    <asp:Button ID="btnUnblock" runat="server" Text="Unblock" CssClass="btn btn-success btn-sm" CommandName="Unblock" CommandArgument='<%# Eval("Id") %>' OnClientClick="return confirm('Are you sure you want to unblock this job?');" />
+                                </ItemTemplate>
+                            </asp:TemplateField>
+                        </Columns>
+                    </asp:GridView>
+                    <asp:Button ID="btnBulkUnblock" runat="server" Text="Bulk Unblock" CssClass="btn btn-danger btn-sm" OnClick="btnBulkUnblock_Click" />
+                </div>
+            </div>
+
         </div>
     </div>
+    <script type="text/javascript">
+        function toggleSelectAll(headerCheckbox) {
+            var gridView = document.getElementById('<%= gvPendingApprovals.ClientID %>');
+            var checkboxes = gridView.getElementsByTagName("input");
+
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i].type == "checkbox" && checkboxes[i] != headerCheckbox) {
+                    checkboxes[i].checked = headerCheckbox.checked;
+                }
+            }
+        }
+    </script>
 </asp:Content>

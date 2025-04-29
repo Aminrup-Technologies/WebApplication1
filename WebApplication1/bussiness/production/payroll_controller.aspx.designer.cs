@@ -10,79 +10,115 @@
 namespace WebApplication1.bussiness.production {
     
     
-    public partial class jobapp_controller {
+    public partial class payroll_controller {
         
         /// <summary>
-        /// lbl_month control.
+        /// DDL_Region control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbl_month;
+        protected global::System.Web.UI.WebControls.DropDownList DDL_Region;
         
         /// <summary>
-        /// lbl_monthcode control.
+        /// DDL_Company control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbl_monthcode;
+        protected global::System.Web.UI.WebControls.DropDownList DDL_Company;
         
         /// <summary>
-        /// lbl_year control.
+        /// DDL_Year control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbl_year;
+        protected global::System.Web.UI.WebControls.DropDownList DDL_Year;
         
         /// <summary>
-        /// ShowPopup control.
+        /// DDL_Month control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button ShowPopup;
+        protected global::System.Web.UI.WebControls.DropDownList DDL_Month;
         
         /// <summary>
-        /// btn_prevmonth control.
+        /// startday1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btn_prevmonth;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl startday1;
         
         /// <summary>
-        /// btn_currentdata control.
+        /// startday2 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btn_currentdata;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl startday2;
         
         /// <summary>
-        /// btn_nextmonth control.
+        /// DDL_Day control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btn_nextmonth;
+        protected global::System.Web.UI.WebControls.DropDownList DDL_Day;
         
         /// <summary>
-        /// ddlViewLevel control.
+        /// endday1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlViewLevel;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl endday1;
+        
+        /// <summary>
+        /// endday2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl endday2;
+        
+        /// <summary>
+        /// DDL_Y2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList DDL_Y2;
+        
+        /// <summary>
+        /// DDL_M2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList DDL_M2;
+        
+        /// <summary>
+        /// DDL_D2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList DDL_D2;
         
         /// <summary>
         /// lbl_msg control.
@@ -94,15 +130,6 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Label lbl_msg;
         
         /// <summary>
-        /// btn_reset control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btn_reset;
-        
-        /// <summary>
         /// btn_submit control.
         /// </summary>
         /// <remarks>
@@ -112,30 +139,21 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Button btn_submit;
         
         /// <summary>
-        /// gvPendingApprovalsold control.
+        /// ShowPopup control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvPendingApprovalsold;
+        protected global::System.Web.UI.WebControls.Button ShowPopup;
         
         /// <summary>
-        /// gvPendingApprovals control.
+        /// gvPayrollStatus control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvPendingApprovals;
-        
-        /// <summary>
-        /// btnBulkUnblock control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnBulkUnblock;
+        protected global::System.Web.UI.WebControls.GridView gvPayrollStatus;
     }
 }

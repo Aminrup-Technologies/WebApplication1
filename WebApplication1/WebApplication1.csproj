@@ -309,6 +309,7 @@
     <Content Include="bussiness\production\manage_rolls.aspx" />
     <Content Include="bussiness\production\manage_rollsaccess.aspx" />
     <Content Include="bussiness\production\overview.aspx" />
+    <Content Include="bussiness\production\payroll_controller.aspx" />
     <Content Include="bussiness\production\pyrl_approvedeductions.aspx" />
     <Content Include="bussiness\production\pyrl_deductionlist.aspx" />
     <Content Include="bussiness\production\pyrl_deductions.aspx" />
@@ -437,6 +438,7 @@
     <Content Include="bussiness\production\webmaster.Master" />
     <Content Include="bussiness\production\aminrup\aminrup.Master" />
     <Content Include="bussiness\production\templates\DeductionUploader.xlsx" />
+    <None Include="Properties\PublishProfiles\atsuat.aminruptechnologies.co.in - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\deploy.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -781,6 +783,13 @@
     </Compile>
     <Compile Include="bussiness\production\overview.aspx.designer.cs">
       <DependentUpon>overview.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\payroll_controller.aspx.cs">
+      <DependentUpon>payroll_controller.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\payroll_controller.aspx.designer.cs">
+      <DependentUpon>payroll_controller.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\pyrl_approvedeductions.aspx.cs">
       <DependentUpon>pyrl_approvedeductions.aspx</DependentUpon>

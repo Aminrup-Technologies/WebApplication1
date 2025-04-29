@@ -163,8 +163,9 @@ namespace WebApplication1.bussiness.production
                 {
                     DateTime createdDate = Convert.ToDateTime(dt.Rows[0]["CreatedDate"]);
                     txt_jobdate.Text = createdDate.ToString("dd-MM-yyyy");
+                    bool isBlocked = Convert.ToBoolean(dt.Rows[0]["IsBlocked"]);
                     bool isElapsed = Is72HoursElapsed(createdDate);
-                    
+
                     //lbl_jobcreatorname.Text = dt.Rows[0]["Creator_Name"].ToString();
                     //lbl_creatorwrk.Text = dt.Rows[0]["Creator_Workman"].ToString();
                     //lbl_creatorregion.Text = dt.Rows[0]["Creator_Region"].ToString();
@@ -238,7 +239,7 @@ namespace WebApplication1.bussiness.production
                     }
                     else
                     {
-                        if (isElapsed)
+                        if (isElapsed || isBlocked)
                         {
                             btn_approve.Enabled = false;
                             btn_reject.Enabled = false;

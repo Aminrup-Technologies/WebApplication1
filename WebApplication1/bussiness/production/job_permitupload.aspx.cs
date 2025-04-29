@@ -358,10 +358,12 @@ namespace WebApplication1.bussiness.production
                 {
                     if (DDL_UploadType.SelectedIndex == 1)
                     {
-                        switch (ext) // this switch code validate the files which allow to upload only PDF file
+                        switch (ext.ToLower()) // this switch code validate the files which allow to upload only PDF file
                         {
                             case ".pdf":
                                 FileType = "application/pdf";
+                                Server_FilePath = Server.MapPath(@"\erp_images\Permits\") + lbl_jobid.Text.ToString() + "-" + Path.GetFileNameWithoutExtension(FileUpload1.PostedFile.FileName) + ext;
+                                FileUpload1.SaveAs(Server_FilePath);
                                 break;
                         }
                     }
@@ -382,7 +384,7 @@ namespace WebApplication1.bussiness.production
                         //        break;
                         //}
 
-                        switch (ext)
+                        switch (ext.ToLower())
                         {
                             case ".jpg":
                             case ".jpeg":

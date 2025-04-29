@@ -315,9 +315,65 @@
                                 <ItemStyle CssClass="grid" />
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="P" HeaderStyle-Width="2%">
+                            <asp:TemplateField HeaderText="Payable Days" HeaderStyle-Width="2%">
                                 <ItemTemplate>
                                     <asp:Label ID="lbl_presents" runat="server" Font-Bold="true" ForeColor="#009933"></asp:Label>
+                                </ItemTemplate>
+                                <HeaderStyle CssClass="grid" />
+                                <ItemStyle CssClass="grid" />
+                            </asp:TemplateField>
+
+                            <asp:TemplateField HeaderText="P" HeaderStyle-Width="2%" Visible="true">
+                                <ItemTemplate>
+                                    <asp:Label ID="lbl_presentdayscount" runat="server" Font-Bold="true" ForeColor="#009933"></asp:Label>
+                                </ItemTemplate>
+                                <HeaderStyle CssClass="grid" />
+                                <ItemStyle CssClass="grid" />
+                            </asp:TemplateField>
+
+                            <asp:TemplateField HeaderText="HD" HeaderStyle-Width="2%" Visible="true">
+                                <ItemTemplate>
+                                    <asp:Label ID="lbl_halfdaycount" runat="server" Font-Bold="true" ForeColor="#009933"></asp:Label>
+                                </ItemTemplate>
+                                <HeaderStyle CssClass="grid" />
+                                <ItemStyle CssClass="grid" />
+                            </asp:TemplateField>
+
+                            <asp:TemplateField HeaderText="FL" HeaderStyle-Width="2%" Visible="true">
+                                <ItemTemplate>
+                                    <asp:Label ID="lbl_flcount" runat="server" Font-Bold="true" ForeColor="#009933"></asp:Label>
+                                </ItemTemplate>
+                                <HeaderStyle CssClass="grid" />
+                                <ItemStyle CssClass="grid" />
+                            </asp:TemplateField>
+
+                            <asp:TemplateField HeaderText="FLP" HeaderStyle-Width="2%" Visible="true">
+                                <ItemTemplate>
+                                    <asp:Label ID="lbl_flpcount" runat="server" Font-Bold="true" ForeColor="#009933"></asp:Label>
+                                </ItemTemplate>
+                                <HeaderStyle CssClass="grid" />
+                                <ItemStyle CssClass="grid" />
+                            </asp:TemplateField>
+
+                            <asp:TemplateField HeaderText="NH" HeaderStyle-Width="2%" Visible="true">
+                                <ItemTemplate>
+                                    <asp:Label ID="lbl_nhcount" runat="server" Font-Bold="true" ForeColor="#009933"></asp:Label>
+                                </ItemTemplate>
+                                <HeaderStyle CssClass="grid" />
+                                <ItemStyle CssClass="grid" />
+                            </asp:TemplateField>
+
+                            <asp:TemplateField HeaderText="NHP" HeaderStyle-Width="2%" Visible="true">
+                                <ItemTemplate>
+                                    <asp:Label ID="lbl_nhpcount" runat="server" Font-Bold="true" ForeColor="#009933"></asp:Label>
+                                </ItemTemplate>
+                                <HeaderStyle CssClass="grid" />
+                                <ItemStyle CssClass="grid" />
+                            </asp:TemplateField>
+
+                            <asp:TemplateField HeaderText="OD" HeaderStyle-Width="2%" Visible="true">
+                                <ItemTemplate>
+                                    <asp:Label ID="lbl_oddayscount" runat="server" Font-Bold="true" ForeColor="#009933"></asp:Label>
                                 </ItemTemplate>
                                 <HeaderStyle CssClass="grid" />
                                 <ItemStyle CssClass="grid" />
