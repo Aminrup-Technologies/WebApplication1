@@ -4,6 +4,8 @@ using System.Data.SqlClient;
 using System.Configuration;
 using System.Web.UI.WebControls;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace WebApplication1.bussiness.production
 {
@@ -23,53 +25,53 @@ namespace WebApplication1.bussiness.production
                     BindTicketDetails(ticketId);
 
                     // Check if the ticket is already assigned or closed
-                    string ticketStatus = GetTicketStatus(ticketId);
+                    //string ticketStatus = GetTicketStatus(ticketId);
 
-                    if (ticketStatus == "Assigned")
-                    {
-                        // Disable the "Assign Ticket" button and show a message
-                        btnAssignTicket.Enabled = false;
-                        lblTicketStatusMessage.Text = "✅ This ticket has already been assigned.";
-                        lblTicketStatusMessage.Style.Add("display", "block");
-                        lblTicketStatusMessage.Style.Add("background-color", "#fff3cd");
-                        lblTicketStatusMessage.Style.Add("color", "#856404");
-                        lblTicketStatusMessage.Style.Add("padding", "15px");
-                        lblTicketStatusMessage.Style.Add("border", "1px solid #ffeeba");
-                        lblTicketStatusMessage.Style.Add("border-radius", "8px");
-                        lblTicketStatusMessage.Style.Add("font-size", "15px");
-                        lblTicketStatusMessage.Style.Add("margin-bottom", "20px");
-                        lblTicketStatusMessage.Style.Add("font-weight", "500");
+                    //if (ticketStatus == "Assigned")
+                    //{
+                    //    // Disable the "Assign Ticket" button and show a message
+                    //    btnAssignTicket.Enabled = false;
+                    //    lblTicketStatusMessage.Text = "✅ This ticket has already been assigned.";
+                    //    lblTicketStatusMessage.Style.Add("display", "block");
+                    //    lblTicketStatusMessage.Style.Add("background-color", "#fff3cd");
+                    //    lblTicketStatusMessage.Style.Add("color", "#856404");
+                    //    lblTicketStatusMessage.Style.Add("padding", "15px");
+                    //    lblTicketStatusMessage.Style.Add("border", "1px solid #ffeeba");
+                    //    lblTicketStatusMessage.Style.Add("border-radius", "8px");
+                    //    lblTicketStatusMessage.Style.Add("font-size", "15px");
+                    //    lblTicketStatusMessage.Style.Add("margin-bottom", "20px");
+                    //    lblTicketStatusMessage.Style.Add("font-weight", "500");
 
-                        btnAssignTicket.Style.Add("background-color", "#ccc");
-                        btnAssignTicket.Style.Add("cursor", "not-allowed");
-                    }
-                    else if (ticketStatus == "Closed")
-                    {
-                        // Disable the "Assign Ticket" and "Close Ticket" buttons and show closed status message
-                        btnAssignTicket.Enabled = false;
-                        btnCloseTicket.Enabled = false;
+                    //    btnAssignTicket.Style.Add("background-color", "#ccc");
+                    //    btnAssignTicket.Style.Add("cursor", "not-allowed");
+                    //}
+                    //else if (ticketStatus == "Closed")
+                    //{
+                    //    // Disable the "Assign Ticket" and "Close Ticket" buttons and show closed status message
+                    //    btnAssignTicket.Enabled = false;
+                    //    btnCloseTicket.Enabled = false;
 
-                        lblTicketStatusMessage.Text = "🚫 This ticket is closed and cannot be assigned or closed.";
-                        lblTicketStatusMessage.Style.Add("display", "block");
-                        lblTicketStatusMessage.Style.Add("background-color", "#f8d7da");
-                        lblTicketStatusMessage.Style.Add("color", "#721c24");
-                        lblTicketStatusMessage.Style.Add("padding", "15px");
-                        lblTicketStatusMessage.Style.Add("border", "1px solid #f5c6cb");
-                        lblTicketStatusMessage.Style.Add("border-radius", "8px");
-                        lblTicketStatusMessage.Style.Add("font-size", "15px");
-                        lblTicketStatusMessage.Style.Add("margin-bottom", "20px");
-                        lblTicketStatusMessage.Style.Add("font-weight", "500");
+                    //    lblTicketStatusMessage.Text = "🚫 This ticket is closed and cannot be assigned or closed.";
+                    //    lblTicketStatusMessage.Style.Add("display", "block");
+                    //    lblTicketStatusMessage.Style.Add("background-color", "#f8d7da");
+                    //    lblTicketStatusMessage.Style.Add("color", "#721c24");
+                    //    lblTicketStatusMessage.Style.Add("padding", "15px");
+                    //    lblTicketStatusMessage.Style.Add("border", "1px solid #f5c6cb");
+                    //    lblTicketStatusMessage.Style.Add("border-radius", "8px");
+                    //    lblTicketStatusMessage.Style.Add("font-size", "15px");
+                    //    lblTicketStatusMessage.Style.Add("margin-bottom", "20px");
+                    //    lblTicketStatusMessage.Style.Add("font-weight", "500");
 
-                        btnAssignTicket.Style.Add("background-color", "#ccc");
-                        btnAssignTicket.Style.Add("cursor", "not-allowed");
+                    //    btnAssignTicket.Style.Add("background-color", "#ccc");
+                    //    btnAssignTicket.Style.Add("cursor", "not-allowed");
 
-                        btnCloseTicket.Style.Add("background-color", "#ccc");
-                        btnCloseTicket.Style.Add("cursor", "not-allowed");
-                    }
-                    else
-                    {
-                        lblTicketStatusMessage.Text = "";
-                    }
+                    //    btnCloseTicket.Style.Add("background-color", "#ccc");
+                    //    btnCloseTicket.Style.Add("cursor", "not-allowed");
+                    //}
+                    //else
+                    //{
+                    //    lblTicketStatusMessage.Text = "";
+                    //}
                 }
                 else
                 {
@@ -121,12 +123,59 @@ namespace WebApplication1.bussiness.production
                             string imagePath = reader["ImagePath"]?.ToString();
                             if (!string.IsNullOrEmpty(imagePath))
                             {
-                                imgPreview1.ImageUrl = "~/images/" + imagePath; // Path to the uploaded image
+                                imgPreview1.ImageUrl = "~/erp_images/"+imagePath; // Path to the uploaded image
                                 imgPreview1.Visible = true;
                             }
                             else
                             {
                                 imgPreview1.Visible = false;
+                            }
+
+                            string ticketStatus = reader["status"].ToString();
+                            if (ticketStatus == "Assigned")
+                            {
+                                // Disable the "Assign Ticket" button and show a message
+                                btnAssignTicket.Enabled = false;
+                                lblTicketStatusMessage.Text = "✅ This ticket has already been assigned.";
+                                lblTicketStatusMessage.Style.Add("display", "block");
+                                lblTicketStatusMessage.Style.Add("background-color", "#fff3cd");
+                                lblTicketStatusMessage.Style.Add("color", "#856404");
+                                lblTicketStatusMessage.Style.Add("padding", "15px");
+                                lblTicketStatusMessage.Style.Add("border", "1px solid #ffeeba");
+                                lblTicketStatusMessage.Style.Add("border-radius", "8px");
+                                lblTicketStatusMessage.Style.Add("font-size", "15px");
+                                lblTicketStatusMessage.Style.Add("margin-bottom", "20px");
+                                lblTicketStatusMessage.Style.Add("font-weight", "500");
+
+                                btnAssignTicket.Style.Add("background-color", "#ccc");
+                                btnAssignTicket.Style.Add("cursor", "not-allowed");
+                            }
+                            else if (ticketStatus == "Closed")
+                            {
+                                // Disable the "Assign Ticket" and "Close Ticket" buttons and show closed status message
+                                btnAssignTicket.Enabled = false;
+                                btnCloseTicket.Enabled = false;
+
+                                lblTicketStatusMessage.Text = "🚫 This ticket is closed and cannot be assigned or closed.";
+                                lblTicketStatusMessage.Style.Add("display", "block");
+                                lblTicketStatusMessage.Style.Add("background-color", "#f8d7da");
+                                lblTicketStatusMessage.Style.Add("color", "#721c24");
+                                lblTicketStatusMessage.Style.Add("padding", "15px");
+                                lblTicketStatusMessage.Style.Add("border", "1px solid #f5c6cb");
+                                lblTicketStatusMessage.Style.Add("border-radius", "8px");
+                                lblTicketStatusMessage.Style.Add("font-size", "15px");
+                                lblTicketStatusMessage.Style.Add("margin-bottom", "20px");
+                                lblTicketStatusMessage.Style.Add("font-weight", "500");
+
+                                btnAssignTicket.Style.Add("background-color", "#ccc");
+                                btnAssignTicket.Style.Add("cursor", "not-allowed");
+
+                                btnCloseTicket.Style.Add("background-color", "#ccc");
+                                btnCloseTicket.Style.Add("cursor", "not-allowed");
+                            }
+                            else
+                            {
+                                lblTicketStatusMessage.Text = "";
                             }
                         }
                         else
@@ -259,33 +308,57 @@ namespace WebApplication1.bussiness.production
                 return;
             }
 
-            // Handle image upload (optional)
+            // Handle file upload (optional)
             if (fuClosingPhoto.HasFile)
             {
                 try
                 {
-                    string ext = Path.GetExtension(fuClosingPhoto.FileName);
-                    if (ext != ".jpg" && ext != ".jpeg" && ext != ".png")
+                    string ext = Path.GetExtension(fuClosingPhoto.FileName).ToLowerInvariant();
+                    string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".pdf", ".doc", ".docx", ".xls", ".xlsx" };
+
+                    if (!allowedExtensions.Contains(ext))
                     {
-                        ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Only JPG, JPEG, or PNG files are allowed.');", true);
+                        ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Only JPG, PNG, PDF, DOC(X), or XLS(X) files are allowed.');", true);
                         return;
                     }
 
-                    string uploadsFolder = Server.MapPath("~/Images");
-                    if (!Directory.Exists(uploadsFolder))
+                    // Optional: Size check (e.g. max 10 MB)
+                    if (fuClosingPhoto.PostedFile.ContentLength > 10 * 1024 * 1024)
                     {
-                        Directory.CreateDirectory(uploadsFolder);
+                        ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('File size must not exceed 10 MB.');", true);
+                        return;
                     }
 
-                    string fileName = "ticket_" + ticketId + "_closed_" + DateTime.Now.Ticks.ToString() + ext;
-                    string fullPath = Path.Combine(uploadsFolder, fileName);
-                    fuClosingPhoto.SaveAs(fullPath);
+                    // Validate image content only for image files
+                    if (new[] { ".jpg", ".jpeg", ".png" }.Contains(ext))
+                    {
+                        try
+                        {
+                            using (var img = System.Drawing.Image.FromStream(fuClosingPhoto.PostedFile.InputStream)) { }
+                        }
+                        catch
+                        {
+                            ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Uploaded image is not valid.');", true);
+                            return;
+                        }
+                    }
 
-                    photoFileName = "HelpdeskUploads/" + fileName; // Store relative path
+                    // Sanitize ticketId to avoid illegal characters in filename/path
+                    string safeTicketId = Regex.Replace(ticketId, @"[^a-zA-Z0-9_\-]", "_");
+
+                    string uploadsFolder = Server.MapPath("~/erp_images/HelpdeskUploads/");
+                    if (!Directory.Exists(uploadsFolder))
+                        Directory.CreateDirectory(uploadsFolder);
+
+                    string fileName = $"ticket_{safeTicketId}_closed_{DateTime.Now.Ticks}{ext}";
+                    string fullPath = Path.Combine(uploadsFolder, fileName);
+
+                    fuClosingPhoto.SaveAs(fullPath);
+                    photoFileName = "HelpdeskUploads/" + fileName; // Relative path for DB
                 }
                 catch (Exception ex)
                 {
-                    ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Image upload failed: " + ex.Message + "');", true);
+                    ClientScript.RegisterStartupScript(this.GetType(), "alert", $"alert('File upload failed: {ex.Message}');", true);
                     return;
                 }
             }
@@ -294,20 +367,20 @@ namespace WebApplication1.bussiness.production
             using (SqlConnection con = new SqlConnection(constr))
             {
                 string query = @"
-            UPDATE [StoreModule].[dbo].[tbl_helpdesktickets] 
-            SET [status] = 'Closed', 
-                [Date_Closed] = GETDATE(), 
-                [AssignedTo] = @AssignedTo, 
-                [description] = @Remarks, 
-                [ImagePath] = ISNULL(@ImagePath, [ImagePath]) 
-            WHERE [ticket_id] = @TicketId";
+        UPDATE [tbl_helpdesktickets] 
+        SET [status] = 'Closed', 
+            [Date_Closed] = GETDATE(), 
+            [AssignedTo] = @AssignedTo, 
+            [description] = @Remarks, 
+            [ImagePath] = ISNULL(@ImagePath, [ImagePath]) 
+        WHERE [ticket_id] = @TicketId";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
                     cmd.Parameters.AddWithValue("@TicketId", ticketId);
                     cmd.Parameters.AddWithValue("@AssignedTo", userName);
                     cmd.Parameters.AddWithValue("@Remarks", remarks);
-                    cmd.Parameters.AddWithValue("@ImagePath", (object)photoFileName ?? DBNull.Value); // Save image path to DB
+                    cmd.Parameters.AddWithValue("@ImagePath", (object)photoFileName ?? DBNull.Value);
 
                     con.Open();
                     int rowsAffected = cmd.ExecuteNonQuery();
@@ -317,7 +390,7 @@ namespace WebApplication1.bussiness.production
                         ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Ticket successfully closed.');", true);
                         btnCloseTicket.Enabled = false;
                         lblTicketStatusMessage.Text = "This ticket is now closed.";
-                        BindTicketDetails(ticketId); 
+                        BindTicketDetails(ticketId);
                     }
                     else
                     {
@@ -326,6 +399,8 @@ namespace WebApplication1.bussiness.production
                 }
             }
         }
+
+
 
 
         // Method to get the ticket status
