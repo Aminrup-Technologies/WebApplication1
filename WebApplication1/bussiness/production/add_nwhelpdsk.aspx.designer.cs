@@ -7,11 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WebApplication1.bussiness.production {
-    
-    
-    public partial class add_nwhelpdsk {
-        
+namespace WebApplication1.bussiness.production
+{
+
+
+    public partial class add_nwhelpdsk
+    {
+
         /// <summary>
         /// DDL_RootCategory control.
         /// </summary>
@@ -20,7 +22,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList DDL_RootCategory;
-        
+
         /// <summary>
         /// RFV_1 control.
         /// </summary>
@@ -29,7 +31,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator RFV_1;
-        
+
         /// <summary>
         /// DDL_ChildCategory control.
         /// </summary>
@@ -38,7 +40,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList DDL_ChildCategory;
-        
+
         /// <summary>
         /// RFV_2 control.
         /// </summary>
@@ -47,7 +49,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator RFV_2;
-        
+
         /// <summary>
         /// DDL_Subject control.
         /// </summary>
@@ -56,7 +58,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList DDL_Subject;
-        
+
         /// <summary>
         /// DDL_HelpLevel control.
         /// </summary>
@@ -65,7 +67,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList DDL_HelpLevel;
-        
+
         /// <summary>
         /// RFV_3 control.
         /// </summary>
@@ -74,7 +76,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator RFV_3;
-        
+
         /// <summary>
         /// txt_descp control.
         /// </summary>
@@ -83,7 +85,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txt_descp;
-        
+
         /// <summary>
         /// RFV_4 control.
         /// </summary>
@@ -92,7 +94,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator RFV_4;
-        
+
         /// <summary>
         /// lbl_msg control.
         /// </summary>
@@ -101,7 +103,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_msg;
-        
+
         /// <summary>
         /// btn_cancel control.
         /// </summary>
@@ -110,7 +112,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btn_cancel;
-        
+
         /// <summary>
         /// btn_reset control.
         /// </summary>
@@ -119,7 +121,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btn_reset;
-        
+
         /// <summary>
         /// btn_submit control.
         /// </summary>
@@ -128,7 +130,7 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btn_submit;
-        
+
         /// <summary>
         /// ShowPopup control.
         /// </summary>
@@ -137,5 +139,14 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button ShowPopup;
+
+        /// <summary>
+        /// gvGrievances control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView gvGrievances;
     }
 }

@@ -1086,7 +1086,7 @@ namespace WebApplication1.bussiness.production
             string smtpServer = "smtp.gmail.com";
             int smtpPort = 587;
             string smtpUsername = "it_helpdesk@atswork.in";
-            string smtpPassword = "W4rqD>Vq5>g25jS$";
+            string smtpPassword = "ltxf rkgx blrz xdld";
 
             using (SmtpClient client = new SmtpClient(smtpServer, smtpPort))
             {
@@ -1165,7 +1165,7 @@ namespace WebApplication1.bussiness.production
             string smtpServer = "smtp.gmail.com";
             int smtpPort = 587;
             string smtpUsername = "it_helpdesk@atswork.in";
-            string smtpPassword = "W4rqD>Vq5>g25jS$";
+            string smtpPassword = "ltxf rkgx blrz xdld";
 
             try
             {

@@ -8,6 +8,8 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Net.Mail;
 using System.Net;
+using System.Configuration;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
 
 namespace WebApplication1.bussiness.production
 {
@@ -20,25 +22,69 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                if (Session["USERID"] == null ||
+                    Session["RolePermissionDB"] == null ||
+                    Session["UserRoleDB"] == null ||
+                    Session["USERNAME"] == null ||
+                    Session["WORKMAN"] == null ||
+                    Session["REGION"] == null)
                 {
                     Response.Redirect("~/login.aspx");
                 }
                 else
                 {
-                    string CmdString1 = "select root1_name, Id from tlb_hlpdsk_root1 order by Id";
+                    string CmdString1 = "SELECT root1_name, Id FROM tlb_hlpdsk_root1 ORDER BY Id";
                     BindRootCategories(CmdString1);
 
-                    string CmdString2 = "select LevelCategory, Id from tlb_supportlvl order by Id";
+                    string CmdString2 = "SELECT LevelCategory, Id FROM tlb_supportlvl ORDER BY Id";
                     BindSupportLevel(CmdString2);
 
+                    // Bind GridView with grievance ticket data
+                    BindGrievanceTickets();
                 }
             }
-            else
-            {
+        }
+        //        ✅ Now it will only show grievances created by the currently logged-in user.
+        private void BindGrievanceTickets()
+        {
+            string currentUser = Session["USERNAME"].ToString(); // Assuming Session["USERNAME"] holds the logged-in user's name
 
+            string query = @"SELECT ticket_id, CreatedOn, CreatedByName, CreatorRegion, 
+                            root1_value, root2_value, root3_value, 
+                            priority_level, status 
+                     FROM tbl_helpdesktickets 
+                     WHERE CreatedByName = @CreatedByName
+                     ORDER BY CreatedOn DESC";
+
+            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@CreatedByName", currentUser);
+
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        DataTable dt = new DataTable();
+                        da.Fill(dt);
+                        gvGrievances.DataSource = dt;
+                        gvGrievances.DataBind();
+                    }
+                }
             }
         }
+
+
+        protected void gvGrievances_RowCommand(object sender, GridViewCommandEventArgs e)
+        {
+            if (e.CommandName == "ViewTicket")
+            {
+                string ticketId = e.CommandArgument.ToString();
+                Response.Redirect("helpdesk_ticketdetails.aspx?ticket_id=" + ticketId);
+            }
+        }
+
+
+
 
         private void BindRootCategories(string cmdString)
         {

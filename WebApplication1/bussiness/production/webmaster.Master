@@ -254,7 +254,7 @@
                                         <li id="Helpdesk" runat="server" visible="false"><a><i class="fa fa-edit"></i>Grievances<span class="fa fa-chevron-down"></span></a>
                                             <ul class="nav child_menu">
                                                 <li id="hlpdsk_new" runat="server" visible="false"><a href="add_nwhelpdsk.aspx">New Request</a></li>
-                                                <li id="hlpdsk_view" runat="server" visible="false"><a href="#">Track Request</a></li>
+                                                <li id="hlpdsk_view" runat="server" visible="false"><a href="GrievanceReq_View.aspx">Track Request</a></li>
                                             </ul>
                                         </li>
 

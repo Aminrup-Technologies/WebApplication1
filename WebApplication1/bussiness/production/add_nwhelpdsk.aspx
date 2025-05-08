@@ -1,17 +1,56 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="add_nwhelpdsk.aspx.cs" Inherits="WebApplication1.bussiness.production.add_nwhelpdsk" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+    <style>
+        <style > .custom-grid {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .custom-grid th, .custom-grid td {
+            padding: 12px 10px;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        .grid-header {
+            background-color: #000;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .btn-view {
+            background-color: #007bff;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .btn-view:hover {
+            background-color: #0056b3;
+        }
+
+        .grid-row:hover {
+            background-color: #f9f9f9;
+        }
+
+        @media screen and (max-width: 768px) {
+            .custom-grid td, .custom-grid th {
+                font-size: 13px;
+                padding: 10px 6px;
+            }
+        }
+    </style>
+
+
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="right_col" role="main">
         <div class="container">
-            <%--<div class="page-title">
-                <div class="title_left">
-                    <h5>Raise New Support Request</h5>
-                </div>
-            </div>
 
-            <div class="clearfix"></div>--%>
 
             <div class="row">
                 <div class="col-md-12 col-sm-12  ">
@@ -77,7 +116,7 @@
                                     <div class="col-md-6 col-sm-12">
                                         <asp:Button ID="btn_cancel" runat="server" class="btn btn-danger btn-sm collapse-link" CausesValidation="false" Text="Cancel" PostBackUrl="~/bussiness/production/homepage.aspx" />
                                         <asp:Button ID="btn_reset" runat="server" class="btn btn-warning btn-sm" Text="Reset" CausesValidation="false" OnClientClick="reloadPage(); return false;" />
-                                        <asp:Button ID="btn_submit" runat="server" Text="Submit" CssClass="btn btn-success btn-sm" OnClick="btn_submit_Click" ValidationGroup="Submit" CausesValidation="true"/>
+                                        <asp:Button ID="btn_submit" runat="server" Text="Submit" CssClass="btn btn-success btn-sm" OnClick="btn_submit_Click" ValidationGroup="Submit" CausesValidation="true" />
                                     </div>
                                 </div>
                             </div>
@@ -108,6 +147,7 @@
                         </div>
 
                     </div>
+
                 </div>
 
                 <div class="col-md-12 col-sm-12">
@@ -123,16 +163,37 @@
                             <div class="row">
                                 <div class="col-md-12 col-sm-12">
                                     <div class="card-box table-responsive">
-                                        <span>Work in progress.....!!!</span>
+                                        <asp:GridView ID="gvGrievances" runat="server" AutoGenerateColumns="False" CssClass="table table-bordered table-hover table-responsive-md custom-grid"
+                                            HeaderStyle-CssClass="grid-header" RowStyle-CssClass="grid-row" DataKeyNames="ticket_id" OnRowCommand="gvGrievances_RowCommand">
+                                            <Columns>
+                                                <asp:BoundField DataField="ticket_id" HeaderText="Ticket ID" />
+                                                <asp:BoundField DataField="CreatedOn" HeaderText="Created On" DataFormatString="{0:dd-MMM-yyyy hh:mm tt}" />
+                                                <asp:BoundField DataField="CreatedByName" HeaderText="Created By" />
+                                                <asp:BoundField DataField="CreatorRegion" HeaderText="Region" />
+                                                <asp:BoundField DataField="root1_value" HeaderText="Root 1" />
+                                                <asp:BoundField DataField="root2_value" HeaderText="Root 2" />
+                                                <asp:BoundField DataField="root3_value" HeaderText="Root 3" />
+                                                <asp:BoundField DataField="priority_level" HeaderText="Priority" />
+                                                <asp:BoundField DataField="status" HeaderText="Status" />
+                                                <asp:TemplateField HeaderText="Action">
+                                                    <ItemTemplate>
+                                                        <asp:Button ID="btnView" runat="server" Text="View" CssClass="btn btn-view" CommandName="ViewTicket" CommandArgument='<%# Eval("ticket_id") %>' />
+                                                    </ItemTemplate>
+                                                </asp:TemplateField>
+                                            </Columns>
+                                        </asp:GridView>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
+
+
     <script type="text/javascript">
         function ShowPopup(title, body) {
             $("#MyPopup .modal-title").html(title);
@@ -140,4 +201,6 @@
             $("#MyPopup").modal("show");
         }
     </script>
+
+
 </asp:Content>

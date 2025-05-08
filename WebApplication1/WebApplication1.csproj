@@ -279,6 +279,8 @@
     <Content Include="bussiness\production\gen_jsr_F17.aspx" />
     <Content Include="bussiness\production\gen_kpo_F17.aspx" />
     <Content Include="bussiness\production\gen_ninl_f17.aspx" />
+    <Content Include="bussiness\production\GrievanceReq_View.aspx" />
+    <Content Include="bussiness\production\helpdesk_ticketdetails.aspx" />
     <Content Include="bussiness\production\images\american-express.png" />
     <Content Include="bussiness\production\images\cropper.jpg" />
     <Content Include="bussiness\production\images\favicon.ico" />
@@ -711,7 +713,21 @@
     <Compile Include="bussiness\production\gen_ninl_f17.aspx.designer.cs">
       <DependentUpon>gen_ninl_f17.aspx</DependentUpon>
     </Compile>
+    <Compile Include="bussiness\production\GrievanceReq_View.aspx.cs">
+      <DependentUpon>GrievanceReq_View.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\GrievanceReq_View.aspx.designer.cs">
+      <DependentUpon>GrievanceReq_View.aspx</DependentUpon>
+    </Compile>
     <Compile Include="bussiness\production\HelpdeskCalls.cs" />
+    <Compile Include="bussiness\production\helpdesk_ticketdetails.aspx.cs">
+      <DependentUpon>helpdesk_ticketdetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\helpdesk_ticketdetails.aspx.designer.cs">
+      <DependentUpon>helpdesk_ticketdetails.aspx</DependentUpon>
+    </Compile>
     <Compile Include="bussiness\production\jobapp_controller.aspx.cs">
       <DependentUpon>jobapp_controller.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

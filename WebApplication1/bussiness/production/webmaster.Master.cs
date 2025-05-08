@@ -448,7 +448,148 @@ namespace WebApplication1.gentelella_master.production
             return dtbl;
         }
 
-        private void ApplyPermissions(DataTable permissions)
+        //private void ApplyPermissions(DataTable permissions)
+        //{
+        //    foreach (DataRow row in permissions.Rows)
+        //    {
+        //        string parentKey = row["ParentKey"].ToString();
+        //        bool isVisible = Convert.ToBoolean(row["IsVisible"]);
+
+        //        switch (parentKey)
+        //        {
+        //            case "HomePage":
+        //                HomePage.Visible = isVisible;
+        //                break;
+        //            case "DataMastering":
+        //                DataMastering.Visible = isVisible;
+        //                break;
+        //            case "JOBManpower":
+        //                JOBManpower.Visible = isVisible;
+        //                break;
+        //            case "Memo_Billing":
+        //                Memo_Billing.Visible = isVisible;
+        //                break;
+        //            case "CSM":
+        //                CSM.Visible = isVisible;
+        //                break;
+        //            case "loans_adeductions":
+        //                loans_adeductions.Visible = isVisible;
+        //                break;
+        //            case "leaves_attendance":
+        //                leaves_attendance.Visible = isVisible;
+        //                break;
+        //            case "Payroll":
+        //                Payroll.Visible = isVisible;
+        //                break;
+        //            case "Expenses":
+        //                Expenses.Visible = isVisible;
+        //                break;
+        //            case "Helpdesk":
+        //                //Helpdesk.Visible = isVisible;
+        //                //break;
+        //                try
+        //                {
+        //                    Helpdesk.Visible = isVisible;
+        //                }
+        //                catch (Exception ex)
+        //                {
+        //                    throw new Exception("Error setting visibility for Memo_Billing", ex);
+        //                }
+        //                break;
+        //            case "Analytics":
+        //                Analytics.Visible = isVisible;
+        //                break;
+        //        }
+
+        //        // Control visibility of child items
+        //        //if (!string.IsNullOrEmpty(row["ChildKey"].ToString()))
+        //        //{
+        //        //    Control parentControl = FindControlRecursive(this, parentKey) as HtmlGenericControl;
+        //        //    if (parentControl != null)
+        //        //    {
+        //        //        Control childControl = parentControl.FindControl(row["ChildKey"].ToString()) as HtmlGenericControl;
+        //        //        if (childControl != null)
+        //        //        {
+        //        //            childControl.Visible = isVisible;
+        //        //        }
+        //        //    }
+        //        //}
+
+        //        // Control visibility of child items
+        //        if (!string.IsNullOrEmpty(row["ChildKey"].ToString()))
+        //        {
+        //            string childKey = row["ChildKey"].ToString();
+
+        //            // Finding the parent control first
+        //            Control parentControl = FindControlRecursive(this, parentKey);
+
+        //            if (parentControl != null)
+        //            {
+        //                // Finding the specific child control inside the parent
+        //                Control childControl = parentControl.FindControl(childKey);
+        //                if (childControl != null)
+        //                {
+        //                    try
+        //                    {
+        //                        // Hiding or showing the <li> element (not the <a> inside it)
+        //                        childControl.Visible = isVisible;
+        //                    }
+        //                    catch (Exception ex)
+        //                    {
+        //                        throw new Exception($"Failed to set visibility on control '{childKey}' under parent '{parentKey}'.", ex);
+        //                    }
+        //                }
+        //            }
+        //        }
+
+
+
+        //    }
+        //}
+
+        //private Control FindControlRecursive(Control root, string id)
+        //{
+        //    if (root == null || string.IsNullOrEmpty(id))
+        //        return null;
+
+        //    // Match ID
+        //    if (string.Equals(root.ID, id, StringComparison.OrdinalIgnoreCase))
+        //        return root;
+
+        //    // Recurse through children
+        //    foreach (Control child in root.Controls)
+        //    {
+        //        Control found = FindControlRecursive(child, id);
+        //        if (found != null)
+        //            return found;
+        //    }
+
+        //    return null;
+        //}
+
+        //private Control FindControlRecursive(Control root, string id)
+        //{
+        //    if (root.ID == id)
+        //    {
+        //        return root;
+        //    }
+
+        //    foreach (Control child in root.Controls)
+        //    {
+        //        Control foundControl = FindControlRecursive(child, id);
+        //        if (foundControl != null)
+        //        {
+        //            return foundControl;
+        //        }
+        //    }
+
+        //    return null;
+        //}
+
+
+
+        //-----------------Added on 08-05-2025------------------------//
+        private void ApplyPermissions_OLD(DataTable permissions)
         {
             foreach (DataRow row in permissions.Rows)
             {
@@ -486,6 +627,8 @@ namespace WebApplication1.gentelella_master.production
                         break;
                     case "Helpdesk":
                         Helpdesk.Visible = isVisible;
+                        // Handle visibility of child elements under Helpdesk
+                        //SetChildVisibility("Helpdesk", isVisible);
                         break;
                     case "Analytics":
                         Analytics.Visible = isVisible;
@@ -495,33 +638,170 @@ namespace WebApplication1.gentelella_master.production
                 // Control visibility of child items
                 if (!string.IsNullOrEmpty(row["ChildKey"].ToString()))
                 {
-                    Control parentControl = FindControlRecursive(this, parentKey) as HtmlGenericControl;
+                    string childKey = row["ChildKey"].ToString();
+
+                    // Finding the parent control first
+                    Control parentControl = FindControlRecursive(this, parentKey);
+
                     if (parentControl != null)
                     {
-                        Control childControl = parentControl.FindControl(row["ChildKey"].ToString()) as HtmlGenericControl;
+                        // Finding the specific child control inside the parent
+                        Control childControl = parentControl.FindControl(childKey);
                         if (childControl != null)
                         {
-                            childControl.Visible = isVisible;
+                            try
+                            {
+                                // Hiding or showing the <li> element (not the <a> inside it)
+                                childControl.Visible = isVisible;
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception($"Failed to set visibility on control '{childKey}' under parent '{parentKey}'.", ex);
+                            }
                         }
                     }
                 }
             }
         }
 
+        private void ApplyPermissions(DataTable permissions)
+        {
+            // To store visibility status of parents
+            Dictionary<string, bool> parentVisibility = new Dictionary<string, bool>();
+
+            // Iterate over all rows in the permissions DataTable
+            foreach (DataRow row in permissions.Rows)
+            {
+                string parentKey = row["ParentKey"].ToString();
+                bool isParentVisible = false; // Default is parent is not visible
+                bool isChildVisible = Convert.ToBoolean(row["IsVisible"]);
+                string childKey = row["ChildKey"].ToString();
+
+                // Step 1: Check if the child is visible
+                if (isChildVisible)
+                {
+                    // If the child is visible, make the parent visible
+                    if (!parentVisibility.ContainsKey(parentKey))
+                    {
+                        // If parent visibility is not set yet, set it to true because at least one child is visible
+                        parentVisibility[parentKey] = true;
+                    }
+                }
+
+                // Step 2: Handle Parent Visibility (if not already set by child)
+                if (parentVisibility.ContainsKey(parentKey))
+                {
+                    // Set parent visibility based on the parent's stored visibility value
+                    switch (parentKey)
+                    {
+                        case "HomePage":
+                            HomePage.Visible = parentVisibility[parentKey];
+                            break;
+                        case "DataMastering":
+                            DataMastering.Visible = parentVisibility[parentKey];
+                            break;
+                        case "JOBManpower":
+                            JOBManpower.Visible = parentVisibility[parentKey];
+                            break;
+                        case "Memo_Billing":
+                            Memo_Billing.Visible = parentVisibility[parentKey];
+                            break;
+                        case "CSM":
+                            CSM.Visible = parentVisibility[parentKey];
+                            break;
+                        case "loans_adeductions":
+                            loans_adeductions.Visible = parentVisibility[parentKey];
+                            break;
+                        case "leaves_attendance":
+                            leaves_attendance.Visible = parentVisibility[parentKey];
+                            break;
+                        case "Payroll":
+                            Payroll.Visible = parentVisibility[parentKey];
+                            break;
+                        case "Expenses":
+                            Expenses.Visible = parentVisibility[parentKey];
+                            break;
+                        case "Helpdesk":
+                            Helpdesk.Visible = parentVisibility[parentKey];
+                            break;
+                        case "Analytics":
+                            Analytics.Visible = parentVisibility[parentKey];
+                            break;
+                    }
+                }
+
+                // Step 3: Handle Child Visibility
+                if (!string.IsNullOrEmpty(childKey))
+                {
+                    // Find the parent control and set the child visibility
+                    Control parentControl = FindControlRecursive(this, parentKey);
+                    if (parentControl != null)
+                    {
+                        Control childControl = parentControl.FindControl(childKey);
+                        if (childControl != null)
+                        {
+                            try
+                            {
+                                // Set visibility of child control
+                                childControl.Visible = isChildVisible;
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception($"Failed to set visibility on child control '{childKey}' under parent '{parentKey}'.", ex);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+        private void SetChildVisibility(string parentKey, bool isVisible)
+        {
+            // You can add a switch case or logic to handle child items specifically for Helpdesk
+            switch (parentKey)
+            {
+                case "Helpdesk":
+                    // Set visibility for each child element of Helpdesk
+                    SetControlVisibility("hlpdsk_new", isVisible);
+                    SetControlVisibility("hlpdsk_view", isVisible);
+                    break;
+                    // You can handle other cases similarly for other menus if needed
+            }
+        }
+
+        private void SetControlVisibility(string controlId, bool isVisible)
+        {
+            Control control = FindControlRecursive(this, controlId);
+            if (control != null)
+            {
+                try
+                {
+                    control.Visible = isVisible;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Failed to set visibility for control '{controlId}'.", ex);
+                }
+            }
+        }
+
         private Control FindControlRecursive(Control root, string id)
         {
-            if (root.ID == id)
-            {
-                return root;
-            }
+            if (root == null || string.IsNullOrEmpty(id))
+                return null;
 
+            // Match ID
+            if (string.Equals(root.ID, id, StringComparison.OrdinalIgnoreCase))
+                return root;
+
+            // Recurse through children
             foreach (Control child in root.Controls)
             {
-                Control foundControl = FindControlRecursive(child, id);
-                if (foundControl != null)
-                {
-                    return foundControl;
-                }
+                Control found = FindControlRecursive(child, id);
+                if (found != null)
+                    return found;
             }
 
             return null;
