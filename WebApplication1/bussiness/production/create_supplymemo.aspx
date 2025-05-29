@@ -76,7 +76,18 @@
                                     <label>Work Permit No </label>
                                 </div>
                                 <div class="col-md-2 col-sm-12  form-group">
-                                    <asp:TextBox ID="txt_permitno" class="form-control form-control-sm rounded" runat="server" ReadOnly="true" Font-Bold="true" ForeColor="Brown"></asp:TextBox>
+                                    <%--<asp:TextBox ID="txt_permitno" class="form-control form-control-sm rounded" runat="server" ReadOnly="true" Font-Bold="true" ForeColor="Brown"></asp:TextBox>--%>
+                                    <asp:TextBox ID="txt_permitno" runat="server" ReadOnly="true" Font-Bold="true"
+                                        ForeColor="Brown" MaxLength="100" class="form-control form-control-sm rounded">
+                                    </asp:TextBox>
+
+                                    <asp:RegularExpressionValidator ID="RegularExpressionValidator1" runat="server"
+                                        ControlToValidate="txt_permitno" ForeColor="Red" SetFocusOnError="true"
+                                        Display="Dynamic" ErrorMessage="Only numeric values separated by commas"
+                                        ValidationExpression="^\s*\d+(,\s*\d+)*\s*$">
+                                    </asp:RegularExpressionValidator>
+
+                                    <small class="form-text text-muted ml-4">Example: 5896523, 234234, 456456. Max 100 characters.</small>
                                 </div>
 
                                 <%--<div class="col-md-2 col-sm-12  form-group">
@@ -859,19 +870,19 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <div class="col-md-6 col-sm-12 form-group">
-										<label>Delete Remarks<span class="text text-danger"></span></label>
-									</div>
-									<div class="col-md-6 col-sm-12 form-group">
-										<asp:TextBox ID="txt_deletermrks" runat="server" TextMode="MultiLine" Rows="3" Columns="1" class="form-control form-control-sm rounded" ReadOnly="false"></asp:TextBox>
-										<asp:RequiredFieldValidator ID="RFV_txt_deletermrks" runat="server" ValidationGroup="DELETE" Display="Dynamic" ForeColor="Red" ControlToValidate="txt_deletermrks" ErrorMessage="**"></asp:RequiredFieldValidator>
-									</div>
+                                        <label>Delete Remarks<span class="text text-danger"></span></label>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12 form-group">
+                                        <asp:TextBox ID="txt_deletermrks" runat="server" TextMode="MultiLine" Rows="3" Columns="1" class="form-control form-control-sm rounded" ReadOnly="false"></asp:TextBox>
+                                        <asp:RequiredFieldValidator ID="RFV_txt_deletermrks" runat="server" ValidationGroup="DELETE" Display="Dynamic" ForeColor="Red" ControlToValidate="txt_deletermrks" ErrorMessage="**"></asp:RequiredFieldValidator>
+                                    </div>
                                 </div>
                                 <asp:Label ID="lblMessage" runat="server"></asp:Label>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <asp:Button ID="btn_confirmdelete" runat="server" ValidationGroup="DELETE" Enabled="true" CausesValidation="true" Text="Proceed" CssClass="btn btn-info btn-sm" OnClick="btn_confirmdelete_Click"/>
+                        <asp:Button ID="btn_confirmdelete" runat="server" ValidationGroup="DELETE" Enabled="true" CausesValidation="true" Text="Proceed" CssClass="btn btn-info btn-sm" OnClick="btn_confirmdelete_Click" />
                         <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Close</button>
                     </div>
                 </div>

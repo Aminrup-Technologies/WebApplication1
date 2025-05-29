@@ -467,6 +467,47 @@ namespace WebApplication1.bussiness.production
 
         private string Find_DBCode()
         {
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
+
+            string newCode;
+            bool isUnique = false;
+            Random rnd = new Random();
+
+            do
+            {
+                string datePart = DateTime.Now.ToString("yyMMdd");
+                string randomPart = rnd.Next(0, 1000).ToString("D3"); // 000–999
+                newCode = $"JOB{datePart}{randomPart}";
+
+                string query = "SELECT COUNT(*) FROM tbl_jobs WHERE JOBID = @jobid";
+                using (SqlCommand cmd = new SqlCommand(query, dbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@jobid", newCode);
+                    int count = (int)cmd.ExecuteScalar();
+                    isUnique = (count == 0);
+                }
+
+            } while (!isUnique);
+
+            dbcl.DisconnectDb();
+            return newCode;
+        }
+
+
+        //private string Find_DBCode()
+        //{
+        //    string newCode = string.Empty;
+        //    string datePart = DateTime.Now.ToString("yyMMdd");
+        //    Random rnd = new Random();
+        //    string randomPart = rnd.Next(0, 1000).ToString("D3");
+        //    newCode = $"JOB{datePart}{randomPart}";
+        //    return newCode;
+        //}
+
+
+        private string Find_DBCode_OLD()
+        {
             string aa = null;
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
@@ -491,106 +532,108 @@ namespace WebApplication1.bussiness.production
             return kk;
         }
 
+        private static readonly object jobInsertLock = new object();
+
         private Int32 Insert_JOBData()
         {
-            //Code to Generate Unique Employee ID Goes here
-            string JOBID = Find_DBCode();
-
-
-            //Code to Insert values into the DB goes here
-            int flag = 0;
-            try
+            lock (jobInsertLock)
             {
-                dbcl.Sqlconnection();
-                dbcl.ConnectDb();
-                SqlCommand cmd = new SqlCommand("SP_InsertInto_JOBSTable", dbcl.Conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@CreatedDate", lbl_jobdate.Text.ToString());
-                cmd.Parameters.AddWithValue("@Creator_Name", Session["USERNAME"].ToString());
-                cmd.Parameters.AddWithValue("@Creator_Workman", Session["WORKMAN"].ToString());
-                cmd.Parameters.AddWithValue("@Creator_Region", Session["REGION"].ToString());
-                cmd.Parameters.AddWithValue("@Creator_Company", Session["COMPANY_CODE"].ToString());
-                cmd.Parameters.AddWithValue("@Creator_Site", Session["U_SITE"].ToString());
-                cmd.Parameters.AddWithValue("@Creator_SiteCode", Session["U_SITECODE"].ToString());
-                cmd.Parameters.AddWithValue("@WorkOrderNo", DDL_Workorder.SelectedItem.ToString());
-                cmd.Parameters.AddWithValue("@Workorder_Type", lbl_wotype.Text.ToString());
-                cmd.Parameters.AddWithValue("@JOBID", JOBID);
-                cmd.Parameters.AddWithValue("@JOBID_Status", "Active");
-                cmd.Parameters.AddWithValue("@JOB_Region", DDL_Region.SelectedValue.ToString());
-                cmd.Parameters.AddWithValue("@JOB_Company", txt_company.Text.ToString());
-                cmd.Parameters.AddWithValue("@JOB_Site", DDL_Worksite.SelectedItem.Text.ToString());
-                cmd.Parameters.AddWithValue("@JOB_SiteCode", DDL_Worksite.SelectedValue.ToString());
-                cmd.Parameters.AddWithValue("@JOB_InchargeWrk", DDL_Approver.SelectedValue.ToString());
-                cmd.Parameters.AddWithValue("@JOB_InchargeName", DDL_Approver.SelectedItem.Text.ToString());
-                cmd.Parameters.AddWithValue("@JOB_Dept", txt_dept.Text.ToString());
-                cmd.Parameters.AddWithValue("@JOB_Location", DDL_Location.SelectedItem.Text.ToString());
-                cmd.Parameters.AddWithValue("@JOB_Shift", txt_jobshift.Text.ToUpper().ToString());
-                cmd.Parameters.AddWithValue("@JOB_Title", txt_jobtitle.Text.ToString());
-                cmd.Parameters.AddWithValue("@JOB_PermitNo", txt_permitno.Text.ToString());
+                string JOBID = Find_DBCode();
 
-
-                if (DB_WOType == "ARC")
+                int flag = 0;
+                try
                 {
-                    if (DDL_Region.SelectedValue.ToString() == "AGL" || DDL_Region.SelectedValue.ToString() == "KPO" || DDL_Region.SelectedValue.ToString() == "NINL" || DDL_Region.SelectedValue.ToString() == "JSR")
+                    dbcl.Sqlconnection();
+                    dbcl.ConnectDb();
+                    SqlCommand cmd = new SqlCommand("SP_InsertInto_JOBSTable", dbcl.Conn);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@CreatedDate", lbl_jobdate.Text.ToString());
+                    cmd.Parameters.AddWithValue("@Creator_Name", Session["USERNAME"].ToString());
+                    cmd.Parameters.AddWithValue("@Creator_Workman", Session["WORKMAN"].ToString());
+                    cmd.Parameters.AddWithValue("@Creator_Region", Session["REGION"].ToString());
+                    cmd.Parameters.AddWithValue("@Creator_Company", Session["COMPANY_CODE"].ToString());
+                    cmd.Parameters.AddWithValue("@Creator_Site", Session["U_SITE"].ToString());
+                    cmd.Parameters.AddWithValue("@Creator_SiteCode", Session["U_SITECODE"].ToString());
+                    cmd.Parameters.AddWithValue("@WorkOrderNo", DDL_Workorder.SelectedItem.ToString());
+                    cmd.Parameters.AddWithValue("@Workorder_Type", lbl_wotype.Text.ToString());
+                    cmd.Parameters.AddWithValue("@JOBID", JOBID);
+                    cmd.Parameters.AddWithValue("@JOBID_Status", "Active");
+                    cmd.Parameters.AddWithValue("@JOB_Region", DDL_Region.SelectedValue.ToString());
+                    cmd.Parameters.AddWithValue("@JOB_Company", txt_company.Text.ToString());
+                    cmd.Parameters.AddWithValue("@JOB_Site", DDL_Worksite.SelectedItem.Text.ToString());
+                    cmd.Parameters.AddWithValue("@JOB_SiteCode", DDL_Worksite.SelectedValue.ToString());
+                    cmd.Parameters.AddWithValue("@JOB_InchargeWrk", DDL_Approver.SelectedValue.ToString());
+                    cmd.Parameters.AddWithValue("@JOB_InchargeName", DDL_Approver.SelectedItem.Text.ToString());
+                    cmd.Parameters.AddWithValue("@JOB_Dept", txt_dept.Text.ToString());
+                    cmd.Parameters.AddWithValue("@JOB_Location", DDL_Location.SelectedItem.Text.ToString());
+                    cmd.Parameters.AddWithValue("@JOB_Shift", txt_jobshift.Text.ToUpper().ToString());
+                    cmd.Parameters.AddWithValue("@JOB_Title", txt_jobtitle.Text.ToString());
+                    cmd.Parameters.AddWithValue("@JOB_PermitNo", txt_permitno.Text.ToString());
+
+
+                    if (DB_WOType == "ARC")
                     {
-                        cmd.Parameters.AddWithValue("@JOB_Status", "Created");
-                        cmd.Parameters.AddWithValue("@FinalUpldStatus", "No");
-                        cmd.Parameters.AddWithValue("@PermitUpload", "No");
-                        cmd.Parameters.AddWithValue("@FileCount", "0");
-                        cmd.Parameters.AddWithValue("@MasterStatusCode", "1");  // JOBID Created, Can Proceed to Permit Upload Page
-                        cmd.Parameters.AddWithValue("@CSM_Documents", "Yes");
+                        if (DDL_Region.SelectedValue.ToString() == "AGL" || DDL_Region.SelectedValue.ToString() == "KPO" || DDL_Region.SelectedValue.ToString() == "NINL" || DDL_Region.SelectedValue.ToString() == "JSR")
+                        {
+                            cmd.Parameters.AddWithValue("@JOB_Status", "Created");
+                            cmd.Parameters.AddWithValue("@FinalUpldStatus", "No");
+                            cmd.Parameters.AddWithValue("@PermitUpload", "No");
+                            cmd.Parameters.AddWithValue("@FileCount", "0");
+                            cmd.Parameters.AddWithValue("@MasterStatusCode", "1");  // JOBID Created, Can Proceed to Permit Upload Page
+                            cmd.Parameters.AddWithValue("@CSM_Documents", "Yes");
+                        }
+                        else
+                        {
+                            cmd.Parameters.AddWithValue("@JOB_Status", "Created");
+                            cmd.Parameters.AddWithValue("@FinalUpldStatus", "No");
+                            cmd.Parameters.AddWithValue("@PermitUpload", "No");
+                            cmd.Parameters.AddWithValue("@FileCount", "0");
+                            cmd.Parameters.AddWithValue("@MasterStatusCode", "1");  // JOBID Created, Can Proceed to Permit Upload Page
+                            cmd.Parameters.AddWithValue("@CSM_Documents", "No");    // Disabled for NINL and JSR
+                        }
                     }
                     else
                     {
-                        cmd.Parameters.AddWithValue("@JOB_Status", "Created");
-                        cmd.Parameters.AddWithValue("@FinalUpldStatus", "No");
-                        cmd.Parameters.AddWithValue("@PermitUpload", "No");
+                        cmd.Parameters.AddWithValue("@JOB_Status", "Permit Uploaded");
+                        cmd.Parameters.AddWithValue("@FinalUpldStatus", "Yes");
+                        cmd.Parameters.AddWithValue("@PermitUpload", "N/A");
                         cmd.Parameters.AddWithValue("@FileCount", "0");
-                        cmd.Parameters.AddWithValue("@MasterStatusCode", "1");  // JOBID Created, Can Proceed to Permit Upload Page
-                        cmd.Parameters.AddWithValue("@CSM_Documents", "No");    // Disabled for NINL and JSR
+                        cmd.Parameters.AddWithValue("@MasterStatusCode", "3");  // JOBID created, NO Upload Required, Can Proceed to Entry Page
+                        cmd.Parameters.AddWithValue("@CSM_Documents", "No");
                     }
+                    cmd.Parameters.AddWithValue("@Incharge_Approval", "Pending");
+                    cmd.Parameters.AddWithValue("@EntryExit", "Created");
+                    cmd.Parameters.AddWithValue("@BillingType", DDL_BillingType.SelectedItem.Text.ToString());
+                    cmd.Parameters.AddWithValue("@BillingCode", DDL_BillingType.SelectedValue);
+                    cmd.Parameters.AddWithValue("@AttendanceCode", DDL_AttenCode.SelectedValue);
+                    flag = cmd.ExecuteNonQuery();
+
+                    dbcl.DisconnectDb();
+                }
+                catch (Exception ex)
+                {
+                    lbl_msg.Visible = true;
+                    lbl_msg.Text = ex.Message;
+                    lbl_msg.ForeColor = System.Drawing.Color.IndianRed;
+                    dbcl.DisconnectDb();
+                }
+
+                if (flag != 0)
+                {
+                    lbl_msg.Visible = true;
+                    lbl_msg.Text = "Record Inserted Successfully..!";
+                    lbl_msg.ForeColor = System.Drawing.Color.DarkGreen;
+                    dbcl.DisconnectDb();
                 }
                 else
                 {
-                    cmd.Parameters.AddWithValue("@JOB_Status", "Permit Uploaded");
-                    cmd.Parameters.AddWithValue("@FinalUpldStatus", "Yes");
-                    cmd.Parameters.AddWithValue("@PermitUpload", "N/A");
-                    cmd.Parameters.AddWithValue("@FileCount", "0");
-                    cmd.Parameters.AddWithValue("@MasterStatusCode", "3");  // JOBID created, NO Upload Required, Can Proceed to Entry Page
-                    cmd.Parameters.AddWithValue("@CSM_Documents", "No");
+                    //lbl_msg.Visible = true;
+                    //lbl_msg.Text = "Records Connot be Inserted into the Database";
+                    //lbl_msg.ForeColor = System.Drawing.Color.IndianRed;
+                    //dbcl.DisconnectDb();
                 }
-                cmd.Parameters.AddWithValue("@Incharge_Approval", "Pending");
-                cmd.Parameters.AddWithValue("@EntryExit", "Created");
-                cmd.Parameters.AddWithValue("@BillingType", DDL_BillingType.SelectedItem.Text.ToString());
-                cmd.Parameters.AddWithValue("@BillingCode", DDL_BillingType.SelectedValue);
-                cmd.Parameters.AddWithValue("@AttendanceCode", DDL_AttenCode.SelectedValue);
-                flag = cmd.ExecuteNonQuery();
-
-                dbcl.DisconnectDb();
+                return flag;
             }
-            catch (Exception ex)
-            {
-                lbl_msg.Visible = true;
-                lbl_msg.Text = ex.Message;
-                lbl_msg.ForeColor = System.Drawing.Color.IndianRed;
-                dbcl.DisconnectDb();
-            }
-
-            if (flag != 0)
-            {
-                lbl_msg.Visible = true;
-                lbl_msg.Text = "Record Inserted Successfully..!";
-                lbl_msg.ForeColor = System.Drawing.Color.DarkGreen;
-                dbcl.DisconnectDb();
-            }
-            else
-            {
-                //lbl_msg.Visible = true;
-                //lbl_msg.Text = "Records Connot be Inserted into the Database";
-                //lbl_msg.ForeColor = System.Drawing.Color.IndianRed;
-                //dbcl.DisconnectDb();
-            }
-            return flag;
         }
 
         protected void btn_inpunch_Click(object sender, EventArgs e)

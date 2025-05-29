@@ -130,11 +130,28 @@
                                 <div class="col-md-3 col-sm-12 form-group">
                                     <label>Work Permit No<span class="text text-danger">*</span></label>
                                 </div>
-                                <div class="col-md-3 col-sm-12 form-group">
+                                <%--<div class="col-md-3 col-sm-12 form-group">
                                     <asp:TextBox ID="txt_permitno" runat="server" class="form-control form-control-sm rounded"></asp:TextBox>
                                     <asp:RequiredFieldValidator ID="RequiredFieldValidator3" ValidationGroup="Submit" runat="server" CssClass="text text-warning" Display="Dynamic" ErrorMessage="This field is required" ForeColor="Red" ControlToValidate="txt_permitno" SetFocusOnError="true" ToolTip="Kindly select value"></asp:RequiredFieldValidator>
                                     <asp:RegularExpressionValidator runat="server" ControlToValidate="txt_permitno" ForeColor="Red" SetFocusOnError="true" Display="Dynamic" ErrorMessage="Only Numeric" ID="RegularExpressionValidator1" ValidationExpression="^[0-9 /,]+$"></asp:RegularExpressionValidator>
                                     <small class="form-text text-muted ml-4">Example : 5896523, If more than one then separate with comma(,)</small>
+                                </div>--%>
+
+                                <div class="col-md-3 col-sm-12 form-group">
+                                    <asp:TextBox ID="txt_permitno" runat="server" MaxLength="100" class="form-control form-control-sm rounded"></asp:TextBox>
+
+                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator3" ValidationGroup="Submit" runat="server"
+                                        CssClass="text text-warning" Display="Dynamic" ErrorMessage="This field is required"
+                                        ForeColor="Red" ControlToValidate="txt_permitno" SetFocusOnError="true" ToolTip="Kindly select value">
+                                    </asp:RequiredFieldValidator>
+
+                                    <asp:RegularExpressionValidator ID="RegularExpressionValidator1" runat="server"
+                                        ControlToValidate="txt_permitno" ForeColor="Red" SetFocusOnError="true"
+                                        Display="Dynamic" ErrorMessage="Only numeric values separated by commas"
+                                        ValidationExpression="^\d+(, \d+)*$">
+                                    </asp:RegularExpressionValidator>
+
+                                    <small class="form-text text-muted ml-4">Example : 5896523, 234234, 456456. Max 100 characters.</small>
                                 </div>
 
                                 <div class="col-md-3 col-sm-12 form-group">
