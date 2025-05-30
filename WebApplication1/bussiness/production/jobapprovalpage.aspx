@@ -126,7 +126,7 @@
                                     <asp:RegularExpressionValidator ID="RegularExpressionValidator1" runat="server"
                                         ControlToValidate="txt_permitno" ForeColor="Red" SetFocusOnError="true"
                                         Display="Dynamic" ErrorMessage="Only numeric values separated by commas"
-                                        ValidationExpression="^\s*\d+(,\s*\d+)*\s*$">
+                                        ValidationExpression="^(?i)(na|n/a|\d+(, \d+)*)$">
                                     </asp:RegularExpressionValidator>
 
                                     <small class="form-text text-muted ml-4">Example: 5896523, 234234, 456456. Max 100 characters.</small>
@@ -174,7 +174,7 @@
                                 <div class="ln_solid"></div>
                                 <div class="item form-group row">
                                     <div class="col-md-6 col-sm-12">
-                                        <asp:Button ID="btn_update" runat="server" Text="Update" CssClass="btn btn-success btn-sm" Enabled="false" OnClick="btn_update_Click" />
+                                        <asp:Button ID="btn_update" runat="server" Text="Update" CssClass="btn btn-success btn-sm" CausesValidation="false" Enabled="false" OnClick="btn_update_Click" />
                                         <asp:Button ID="btn_cancelupdate" runat="server" Text="Cancel" CssClass="btn btn-danger btn-sm" Enabled="false" Visible="false" OnClick="btn_cancelupdate_Click" />
                                         <asp:Button ID="btn_back" runat="server" Text="Back" CssClass="btn btn-warning btn-sm" Enabled="true" Visible="true" OnClick="btn_back_Click" />
                                     </div>
