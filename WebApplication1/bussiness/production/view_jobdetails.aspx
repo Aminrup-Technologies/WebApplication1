@@ -109,8 +109,8 @@
 
                                     <asp:RegularExpressionValidator ID="RegularExpressionValidator1" runat="server"
                                         ControlToValidate="txt_permitno" ForeColor="Red" SetFocusOnError="true"
-                                        Display="Dynamic" ErrorMessage="Only numeric values separated by commas"
-                                        ValidationExpression="^(?i)(na|n/a|\d+(, \d+)*)$">
+                                        Display="Dynamic" ErrorMessage="Only numeric values separated by commas or N/A"
+                                        ValidationExpression="^((?i:na|n/a)|\d+(\s*,\s*\d+)*)$">
                                     </asp:RegularExpressionValidator>
 
                                     <small class="form-text text-muted ml-4">Example: 5896523, 234234, 456456. Max 100 characters.</small>

@@ -119,14 +119,12 @@
                                 </div>
                                 <div class="col-md-2 col-sm-12  form-group">
                                     <%--<asp:TextBox ID="txt_permitno" class="form-control form-control-sm rounded" runat="server" ReadOnly="true"></asp:TextBox>--%>
-                                    <asp:TextBox ID="txt_permitno" runat="server" ReadOnly="true" Font-Bold="true"
-                                        ForeColor="Brown" MaxLength="100" class="form-control form-control-sm rounded">
+                                    <asp:TextBox ID="txt_permitno" runat="server" ReadOnly="true" Font-Bold="true" ForeColor="Brown" MaxLength="100" class="form-control form-control-sm rounded">
                                     </asp:TextBox>
-
                                     <asp:RegularExpressionValidator ID="RegularExpressionValidator1" runat="server"
                                         ControlToValidate="txt_permitno" ForeColor="Red" SetFocusOnError="true"
-                                        Display="Dynamic" ErrorMessage="Only numeric values separated by commas"
-                                        ValidationExpression="^(?i)(na|n/a|\d+(, \d+)*)$">
+                                        Display="Dynamic" ErrorMessage="Only numeric values separated by commas or N/A"
+                                        ValidationExpression="^((?i:na|n/a)|\d+(\s*,\s*\d+)*)$">
                                     </asp:RegularExpressionValidator>
 
                                     <small class="form-text text-muted ml-4">Example: 5896523, 234234, 456456. Max 100 characters.</small>
