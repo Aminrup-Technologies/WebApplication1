@@ -101,7 +101,8 @@
 
             <div class="row">
                 <div class="card-box col-md-12 col-sm-12 small" style="width: 100%; height: 450px; overflow: scroll;">
-                    <asp:GridView ID="gvPendingApprovals" runat="server" AutoGenerateColumns="False" Visible="false" class="table table-striped table-hover table-bordered table-responsive table-sm dt-responsive" AllowPaging="True" PageSize="50" DataKeyNames="Id" OnRowCommand="gvPendingApprovals_RowCommand">
+                    <asp:GridView ID="gvPendingApprovals" runat="server" AutoGenerateColumns="False" Visible="false" class="table table-striped table-hover table-bordered table-responsive table-sm dt-responsive"
+                        AllowPaging="True" PageSize="100" DataKeyNames="Id" OnRowCommand="gvPendingApprovals_RowCommand" OnPageIndexChanging="gvPendingApprovals_PageIndexChanging">
                         <Columns>
                             <asp:BoundField DataField="Id" HeaderText="Id" SortExpression="Id" />
                             <asp:BoundField DataField="JOBID" HeaderText="Job ID" SortExpression="JOBID" />
