@@ -6,6 +6,8 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data;
+using System.Text;
+
 namespace WebApplication1.bussiness.production.rpts
 {
     public partial class supplymemo : System.Web.UI.Page
@@ -67,7 +69,58 @@ namespace WebApplication1.bussiness.production.rpts
 
                     lbl_pono.Text = dt.Rows[0]["WorkOrderNo"].ToString();
                     lbl_jobid.Text = dt.Rows[0]["JOBID"].ToString();
-                    lbl_permitno.Text = dt.Rows[0]["JOB_PermitNo"].ToString();
+
+                    //lbl_permitno.Text = dt.Rows[0]["JOB_PermitNo"].ToString();
+
+                    //string permitData = dt.Rows[0]["JOB_PermitNo"].ToString();
+                    //string[] permits = permitData.Split(new char[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+                    //lbl_permitno.Text = string.Join("<br />", permits);
+
+                    //string permitData = dt.Rows[0]["JOB_PermitNo"].ToString();
+                    //string[] permits = permitData.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    //int itemsPerLine = 3;
+                    //int maxLength = permits.Max(p => p.Trim().Length);
+
+                    //StringBuilder formatted = new StringBuilder();
+
+                    //for (int i = 0; i < permits.Length; i++)
+                    //{
+                    //    string permit = permits[i].Trim().PadRight(maxLength + 4); // Add spacing
+                    //    formatted.Append(permit);
+
+                    //    if ((i + 1) % itemsPerLine == 0)
+                    //        formatted.AppendLine();
+                    //}
+
+                    //// Assign to label
+                    //lbl_permitno.Text = formatted.ToString();
+
+                    string permitData = dt.Rows[0]["JOB_PermitNo"].ToString();
+                    string[] permits = permitData.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    int itemsPerLine = 3;
+                    int maxLength = permits.Max(p => p.Trim().Length);
+
+                    StringBuilder formatted = new StringBuilder();
+
+                    for (int i = 0; i < permits.Length; i++)
+                    {
+                        string permit = permits[i].Trim().PadRight(maxLength); // Align all items
+                        formatted.Append(permit);
+
+                        // Add comma + space after every item except the last
+                        if (i != permits.Length - 1)
+                            formatted.Append(", ");
+
+                        // Wrap to new line after every N items
+                        if ((i + 1) % itemsPerLine == 0)
+                            formatted.AppendLine();
+                    }
+                    lbl_permitno.Text = formatted.ToString();
+
+
+
                     lbl_jobtitle.Text = dt.Rows[0]["JOB_Title"].ToString();
 
                     lbl_jobrgn.Text = dt.Rows[0]["JOB_Region"].ToString();

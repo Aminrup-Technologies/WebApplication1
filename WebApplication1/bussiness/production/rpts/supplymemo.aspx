@@ -302,10 +302,24 @@
                                         <td class="DocIDDataHdrCol2">
                                             <asp:Label ID="lbl_smjcreatorname" runat="server" Font-Bold="true" Text="Supv Name"></asp:Label>&nbsp;(<asp:Label ID="lbl_smjcreatorwrk" runat="server" Font-Bold="true" Text="Supv Wrk"></asp:Label>)
                                         </td>
-                                        <td class="DocIDDataHdrCol3"><span>PO No.</span> :
-                                            <asp:Label ID="lbl_pono" runat="server" ForeColor="Blue" Font-Bold="true" Text="PONO"></asp:Label>
+                                        <td class="DocIDDataHdrCol3">
+                                            <span>PO No.</span>
                                         </td>
-                                        <td class="DocIDDataHdrCol4"><span>Permit No</span> :
+                                        <td class="DocIDDataHdrCol4">
+                                            <asp:Label ID="lbl_pono" runat="server" ForeColor="Blue" Font-Bold="true" Text="PONO"></asp:Label>
+                                        
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="DocIDDataHdrCol1"><span>Permit No</span> :</td>
+                                        <%--<td class="DocIDDataHdrCol2">
+                                            <asp:Label ID="Label1" runat="server" Font-Bold="true" Text="Supv Name"></asp:Label>&nbsp;(<asp:Label ID="Label2" runat="server" Font-Bold="true" Text="Supv Wrk"></asp:Label>)
+                                        </td>
+                                        <td class="DocIDDataHdrCol3"><span>PO No.</span> :
+                                            <asp:Label ID="Label3" runat="server" ForeColor="Blue" Font-Bold="true" Text="PONO"></asp:Label>
+                                        </td>--%>
+                                        <td class="DocIDDataHdrCol4" colspan="3">
                                         <asp:Label ID="lbl_permitno" runat="server" ForeColor="Blue" Font-Bold="true" Text="PermitNo"></asp:Label>
                                         </td>
                                     </tr>
