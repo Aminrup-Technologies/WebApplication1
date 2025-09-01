@@ -593,6 +593,8 @@
     <Compile Include="bussiness\production\anlys_musterdeta.aspx.designer.cs">
       <DependentUpon>anlys_musterdeta.aspx</DependentUpon>
     </Compile>
+    <Compile Include="bussiness\production\ApprovalDAL.cs" />
+    <Compile Include="bussiness\production\AssetDAL.cs" />
     <Compile Include="bussiness\production\attach_manpower.aspx.cs">
       <DependentUpon>attach_manpower.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -600,6 +602,7 @@
     <Compile Include="bussiness\production\attach_manpower.aspx.designer.cs">
       <DependentUpon>attach_manpower.aspx</DependentUpon>
     </Compile>
+    <Compile Include="bussiness\production\BaseDAL.cs" />
     <Compile Include="bussiness\production\BlankTabs.aspx.cs">
       <DependentUpon>BlankTabs.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -621,6 +624,7 @@
     <Compile Include="bussiness\production\bulk_employeeupdate.aspx.designer.cs">
       <DependentUpon>bulk_employeeupdate.aspx</DependentUpon>
     </Compile>
+    <Compile Include="bussiness\production\ConsumableDAL.cs" />
     <Compile Include="bussiness\production\create_supplymemo.aspx.cs">
       <DependentUpon>create_supplymemo.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -728,6 +732,7 @@
     <Compile Include="bussiness\production\helpdesk_ticketdetails.aspx.designer.cs">
       <DependentUpon>helpdesk_ticketdetails.aspx</DependentUpon>
     </Compile>
+    <Compile Include="bussiness\production\IssueDAL.cs" />
     <Compile Include="bussiness\production\jobapp_controller.aspx.cs">
       <DependentUpon>jobapp_controller.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -807,6 +812,7 @@
     <Compile Include="bussiness\production\payroll_controller.aspx.designer.cs">
       <DependentUpon>payroll_controller.aspx</DependentUpon>
     </Compile>
+    <Compile Include="bussiness\production\PurchaseDAL.cs" />
     <Compile Include="bussiness\production\pyrl_approvedeductions.aspx.cs">
       <DependentUpon>pyrl_approvedeductions.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -870,6 +876,7 @@
     <Compile Include="bussiness\production\rpts\testing.aspx.designer.cs">
       <DependentUpon>testing.aspx</DependentUpon>
     </Compile>
+    <Compile Include="bussiness\production\SecurityDAL.cs" />
     <Compile Include="bussiness\production\Startup.cs" />
     <Compile Include="bussiness\production\str\strdshbrd.aspx.cs">
       <DependentUpon>strdshbrd.aspx</DependentUpon>
@@ -878,6 +885,7 @@
     <Compile Include="bussiness\production\str\strdshbrd.aspx.designer.cs">
       <DependentUpon>strdshbrd.aspx</DependentUpon>
     </Compile>
+    <Compile Include="bussiness\production\TransferDAL.cs" />
     <Compile Include="bussiness\production\vw_emp_attencal.aspx.cs">
       <DependentUpon>vw_emp_attencal.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
