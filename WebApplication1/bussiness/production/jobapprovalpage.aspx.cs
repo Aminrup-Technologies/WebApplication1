@@ -135,7 +135,7 @@ namespace WebApplication1.bussiness.production
             TimeSpan elapsedTime = DateTime.Now - startDate;
 
             // Check if the elapsed time is greater than or equal to the threshold hours
-            return elapsedTime.TotalHours >= thresholdHours;
+            return elapsedTime.TotalHours <= thresholdHours;
         }
 
         public string GetElapsedTime(DateTime startDate)
@@ -239,15 +239,51 @@ namespace WebApplication1.bussiness.production
                     }
                     else
                     {
-                        if (isElapsed || isBlocked)
+                        //if (isElapsed || isBlocked)
+                        //{
+                        //    btn_approve.Enabled = false;
+                        //    btn_reject.Enabled = false;
+                        //    btn_update.Enabled = false;
+                        //    btn_update.Visible = false;
+                        //    string title = "Notifications :";
+                        //    string body = "72 hours have elapsed since the job creation. Elapsed Time: " + GetElapsedTime(createdDate);
+                        //    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                        //}
+                        //else
+                        //{
+                        //    btn_approve.Enabled = true;
+                        //    btn_reject.Enabled = true;
+                        //    btn_update.Enabled = true;
+                        //    btn_update.Visible = true;
+                        //}
+
+                        //lbl_approvalstatus.Text = "Pending";
+                        //lbl_approvalstatus.ForeColor = Color.Red;
+
+                        ////btn_update.Enabled = true;
+                        ////btn_update.Visible = true;
+                        ////btn_approve.Enabled = true;
+                        ////btn_reject.Enabled = true;
+
+                        bool finalBlock = (isElapsed && isBlocked) || isBlocked;
+
+                        if (finalBlock)
                         {
                             btn_approve.Enabled = false;
                             btn_reject.Enabled = false;
                             btn_update.Enabled = false;
                             btn_update.Visible = false;
+
                             string title = "Notifications :";
-                            string body = "72 hours have elapsed since the job creation. Elapsed Time: " + GetElapsedTime(createdDate);
-                            ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                            string body = isElapsed
+                                ? "72 hours have elapsed since the job creation. Elapsed Time: " + GetElapsedTime(createdDate)
+                                : "This job has been blocked by an administrator.";
+
+                            ClientScript.RegisterStartupScript(this.GetType(), "Popup",
+                                "ShowPopup('" + title + "', '" + body + "');", true);
+
+                            lbl_approvalstatus.Text = isElapsed ? "Blocked (Time Expired)" : "Blocked (Admin)";
+                            lbl_approvalstatus.ForeColor = Color.Red;
                         }
                         else
                         {
@@ -255,15 +291,10 @@ namespace WebApplication1.bussiness.production
                             btn_reject.Enabled = true;
                             btn_update.Enabled = true;
                             btn_update.Visible = true;
+
+                            lbl_approvalstatus.Text = "Pending";
+                            lbl_approvalstatus.ForeColor = Color.Red;
                         }
-
-                        lbl_approvalstatus.Text = "Pending";
-                        lbl_approvalstatus.ForeColor = Color.Red;
-
-                        //btn_update.Enabled = true;
-                        //btn_update.Visible = true;
-                        //btn_approve.Enabled = true;
-                        //btn_reject.Enabled = true;
                     }
 
                     string billingtype = dt.Rows[0]["BillingCode"].ToString();
