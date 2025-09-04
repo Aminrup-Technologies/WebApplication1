@@ -147,7 +147,7 @@ namespace WebApplication1.bussiness.production
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
-            string cmdString = "select ROW_NUMBER() OVER (ORDER BY b.Id) AS SrNo, b.ESICNo, a.WorkmanSL, a.FullName, a.Present, a.ESICGross, IIF(a.ESICGross > 20999.00, '1', IIF(a.Present = 0., '1', '0')) as value2, 0 as lastdate from tbl_trialpayroll a, tbl_Employee_Mustertable b where a.WorkRegion ='" + Region + "' and a.SalaryMonth='" + Month + "' and a.SalaryYear='" + Year + "' and a.SalaryStartDay='" + Date1 + "' and a.SalaryEndDay='" + Date2 + "' and a.WorkmanSL=b.WorkmanSL order by a.Id";
+            string cmdString = "select ROW_NUMBER() OVER (ORDER BY b.Id) AS SrNo, b.ESICNo, a.WorkmanSL, a.FullName, a.Present, a.ESICGross, IIF(a.ESICGross > 20999.00, '1', IIF(a.Present = 0., '1', '0')) as value2, 0 as lastdate from tbl_trialpayroll a, tbl_Employee_Mustertable b where a.WorkRegion ='" + Region + "' and a.SalaryMonth='" + Month + "' and a.SalaryYear='" + Year + "' and a.SalaryStartDay='" + Date1 + "' and a.SalaryEndDay='" + Date2 + "' and a.WorkmanSL=b.WorkmanSL and a.ViewMode=1 and a.DeleteMode=0 order by a.Id";
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
             cmd.CommandType = CommandType.Text;
             using (SqlDataReader re = cmd.ExecuteReader())
@@ -186,6 +186,7 @@ namespace WebApplication1.bussiness.production
               AND a.SalaryYear    = @Year
               AND a.SalaryStartDay = @Date1
               AND a.SalaryEndDay   = @Date2
+                and a.ViewMode=1 and a.DeleteMode=0
             ORDER BY a.Id;";
 
             using (SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn))
@@ -299,6 +300,7 @@ namespace WebApplication1.bussiness.production
                   AND a.SalaryYear    = @Year
                   AND a.SalaryStartDay = @Date1
                   AND a.SalaryEndDay   = @Date2
+                    and a.ViewMode=1 and a.DeleteMode=0
                 ORDER BY a.Id;";
 
             using (var cmd = new SqlCommand(sql, dbcl.Conn))
@@ -506,7 +508,7 @@ namespace WebApplication1.bussiness.production
               FROM tbl_trialpayroll a
               INNER JOIN tbl_Employee_Mustertable b ON a.WorkmanSL=b.WorkmanSL
               WHERE a.WorkRegion=@Region AND a.SalaryMonth=@Month AND a.SalaryYear=@Year
-                AND a.SalaryStartDay=@Date1 AND a.SalaryEndDay=@Date2
+                AND a.SalaryStartDay=@Date1 AND a.SalaryEndDay=@Date2 and a.ViewMode=1 and a.DeleteMode=0
               ORDER BY a.Id;";
 
             using (var cmd = new SqlCommand(sql, dbcl.Conn))

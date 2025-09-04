@@ -215,7 +215,7 @@ namespace WebApplication1.bussiness.production
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
-            string cmdString = "select ROW_NUMBER() OVER (ORDER BY b.Id) AS SrNo, b.WorkmanSL as WorkmanSL,38233797214 as CreditAccount, b.FullName,  ISNULL((a.Payment_Account), 'N/A') as Payment_Account ,ISNULL((a.Payment_Bank), 'N/A') as Payment_Bank, ISNULL((a.Payment_IFSC), 'N/A') as Payment_IFSC, ISNULL((a.BankBranch), 'N/A') as BankBranch, b.NetPayFinal from tbl_Employee_Mustertable a, tbl_trialpayroll b where b.WorkmanSL = a.WorkmanSL and b.SalaryYear='" + Year + "' and b.SalaryMonth='" + Month + "' and b.WorkRegion='" + Region + "' order by b.Id";
+            string cmdString = "select ROW_NUMBER() OVER (ORDER BY b.Id) AS SrNo, b.WorkmanSL as WorkmanSL,38233797214 as CreditAccount, b.FullName,  ISNULL((a.Payment_Account), 'N/A') as Payment_Account ,ISNULL((a.Payment_Bank), 'N/A') as Payment_Bank, ISNULL((a.Payment_IFSC), 'N/A') as Payment_IFSC, ISNULL((a.BankBranch), 'N/A') as BankBranch, b.NetPayFinal from tbl_Employee_Mustertable a, tbl_trialpayroll b where b.WorkmanSL = a.WorkmanSL and b.SalaryYear='" + Year + "' and b.SalaryMonth='" + Month + "' and b.WorkRegion='" + Region + "' and b.ViewMode=1 and b.DeleteMode=0 order by b.Id";
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
             DataTable dt = GetDataTable(cmd); // added for binding the DataTable with the executed results, which is used for excel export
             cmd.CommandType = CommandType.Text;
@@ -241,7 +241,7 @@ namespace WebApplication1.bussiness.production
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
-            string cmdString = "select ROW_NUMBER() OVER (ORDER BY b.Id) AS SrNo, b.WorkmanSL as WorkmanSL,38233797214 as CreditAccount, b.FullName,  ISNULL((a.Payment_Account), 'N/A') as Payment_Account ,ISNULL((a.Payment_Bank), 'N/A') as Payment_Bank, ISNULL((a.Payment_IFSC), 'N/A') as Payment_IFSC, ISNULL((a.BankBranch), 'N/A') as BankBranch, b.NetPay2 as NetPay from tbl_Employee_Mustertable a, tbl_trialpayroll b where b.WorkmanSL = a.WorkmanSL and b.SalaryYear='" + Year + "' and b.SalaryMonth='" + Month + "' and b.WorkRegion='" + Region + "' order by b.Id";
+            string cmdString = "select ROW_NUMBER() OVER (ORDER BY b.Id) AS SrNo, b.WorkmanSL as WorkmanSL,38233797214 as CreditAccount, b.FullName,  ISNULL((a.Payment_Account), 'N/A') as Payment_Account ,ISNULL((a.Payment_Bank), 'N/A') as Payment_Bank, ISNULL((a.Payment_IFSC), 'N/A') as Payment_IFSC, ISNULL((a.BankBranch), 'N/A') as BankBranch, b.NetPay2 as NetPay from tbl_Employee_Mustertable a, tbl_trialpayroll b where b.WorkmanSL = a.WorkmanSL and b.SalaryYear='" + Year + "' and b.SalaryMonth='" + Month + "' and b.WorkRegion='" + Region + "' and b.ViewMode=1 and b.DeleteMode=0 order by b.Id";
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
             DataTable dt = GetDataTable(cmd);// added for binding the DataTable with the executed results, which is used for excel export
             cmd.CommandType = CommandType.Text;

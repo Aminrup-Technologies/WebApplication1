@@ -122,7 +122,7 @@ namespace WebApplication1.bussiness.production
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
-            string cmdString = "select ROW_NUMBER() OVER (ORDER BY b.Id) AS SrNo, a.WorkmanSL, a.FullName, b.UANNo, CEILING(a.BasicSalary) as Basic1, CEILING(a.BasicSalary) as Basic2, CEILING(a.BasicSalary) as Basic3, CEILING(a.BasicSalary) as Basic4, a.PFPay,CEILING(ROUND((a.BasicSalary*0.0367),0,3)) as Value1, CEILING(ROUND((a.BasicSalary*0.0833),0)) as Value2, a.SalaryEndDay, a.Present, (a.SalaryEndDay-a.Present) as NCPday, 0 as refund from tbl_trialpayroll a, tbl_Employee_Mustertable b where a.WorkRegion ='" + Region + "' and a.SalaryMonth='" + Month + "' and a.SalaryYear='" + Year + "' and a.SalaryStartDay='" + Date1 + "' and a.SalaryEndDay='" + Date2 + "' and a.WorkmanSL=b.WorkmanSL order by a.Id";
+            string cmdString = "select ROW_NUMBER() OVER (ORDER BY b.Id) AS SrNo, a.WorkmanSL, a.FullName, b.UANNo, CEILING(a.BasicSalary) as Basic1, CEILING(a.BasicSalary) as Basic2, CEILING(a.BasicSalary) as Basic3, CEILING(a.BasicSalary) as Basic4, a.PFPay,CEILING(ROUND((a.BasicSalary*0.0367),0,3)) as Value1, CEILING(ROUND((a.BasicSalary*0.0833),0)) as Value2, a.SalaryEndDay, a.Present, (a.SalaryEndDay-a.Present) as NCPday, 0 as refund from tbl_trialpayroll a, tbl_Employee_Mustertable b where a.WorkRegion ='" + Region + "' and a.SalaryMonth='" + Month + "' and a.SalaryYear='" + Year + "' and a.SalaryStartDay='" + Date1 + "' and a.SalaryEndDay='" + Date2 + "' and a.WorkmanSL=b.WorkmanSL and a.ViewMode=1 and a.DeleteMode=0 order by a.Id";
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
             cmd.CommandType = CommandType.Text;
             using (SqlDataReader re = cmd.ExecuteReader())
@@ -184,7 +184,8 @@ namespace WebApplication1.bussiness.production
                 AND a.SalaryYear = @Year 
                 AND a.SalaryStartDay = @Date1 
                 AND a.SalaryEndDay = @Date2 
-                AND a.WorkmanSL = b.WorkmanSL 
+                AND a.WorkmanSL = b.WorkmanSL
+                and a.ViewMode=1 and a.DeleteMode=0 
             ORDER BY 
             a.Id";
 
@@ -277,6 +278,7 @@ namespace WebApplication1.bussiness.production
               AND a.SalaryYear   = @Year
               AND a.SalaryStartDay = @Date1
               AND a.SalaryEndDay   = @Date2
+                and a.ViewMode=1 and a.DeleteMode=0
             ORDER BY a.Id;";
 
             using (var cmd = new SqlCommand(sql, dbcl.Conn))
@@ -410,7 +412,7 @@ namespace WebApplication1.bussiness.production
               FROM tbl_trialpayroll a
               INNER JOIN tbl_Employee_Mustertable b ON a.WorkmanSL=b.WorkmanSL
               WHERE a.WorkRegion=@Region AND a.SalaryMonth=@Month AND a.SalaryYear=@Year
-                AND a.SalaryStartDay=@Date1 AND a.SalaryEndDay=@Date2
+                AND a.SalaryStartDay=@Date1 AND a.SalaryEndDay=@Date2 and a.ViewMode=1 and a.DeleteMode=0
               ORDER BY a.Id;";
 
             using (var cmd = new SqlCommand(sql, dbcl.Conn))

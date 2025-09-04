@@ -213,7 +213,7 @@ namespace WebApplication1.bussiness.production
 
             string query = "select WorkmanSL, WorkRegion, FullName, SkillCategory, SkillDesignation,FixedSalary_YesNo, FixedAmount, WorkHours, OTFactor, OTMultiplier, DA_VDA, HRA,Conv_Allowance, Medical_Allowance, Washing_Allowance, ATT_Allowance, SPCL_Allowance, Misc_Earnings, OT_Divisibility, Cur_Advance, Cur_Fines, Cur_Others from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and F17_YesNo='Yes' order by Id";
 
-            //string query = "select WorkmanSL, WorkRegion, FullName, SkillCategory, SkillDesignation,FixedSalary_YesNo, FixedAmount, WorkHours, OTFactor, OTMultiplier, DA_VDA, HRA,Conv_Allowance, Medical_Allowance, Washing_Allowance, ATT_Allowance, SPCL_Allowance, Misc_Earnings, OT_Divisibility, Cur_Advance, Cur_Fines, Cur_Others from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and F17_YesNo='Yes' and WorkmanSL='A410' order by Id";
+            //string query = "select WorkmanSL, WorkRegion, FullName, SkillCategory, SkillDesignation,FixedSalary_YesNo, FixedAmount, WorkHours, OTFactor, OTMultiplier, DA_VDA, HRA,Conv_Allowance, Medical_Allowance, Washing_Allowance, ATT_Allowance, SPCL_Allowance, Misc_Earnings, OT_Divisibility, Cur_Advance, Cur_Fines, Cur_Others from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and F17_YesNo='Yes' and WorkmanSL='A878' order by Id";
 
             BindGridByQuery(query);
         }
@@ -303,7 +303,7 @@ namespace WebApplication1.bussiness.production
 
 
         }
-        protected void GridView_DataBound(object sender, EventArgs e)
+        protected void GridView_DataBound_OLD(object sender, EventArgs e)
         {
             for (int i = 0; i <= GridView.Rows.Count - 1; i++)
             {
@@ -732,6 +732,435 @@ namespace WebApplication1.bussiness.production
 
             //btnExport.Enabled = true;
         }
+
+
+        // This prevents any carry-over between rows. No business logic changed.
+        void ResetToZero(params Label[] labels)
+        {
+            if (labels == null) return;
+            foreach (var l in labels)
+                if (l != null) l.Text = "0";
+        }
+
+        protected void GridView_DataBound(object sender, EventArgs e)
+        {
+            for (int i = 0; i <= GridView.Rows.Count - 1; i++)
+            {
+                Label lbl_WorkRegion = (Label)GridView.Rows[i].FindControl("lbl_WorkRegion");
+                Label lbl_WorkmanSL = (Label)GridView.Rows[i].FindControl("lbl_WorkmanSL");
+
+                Label lbl_payrate = (Label)GridView.Rows[i].FindControl("lbl_payrate");
+                Label lbl_skill_category = (Label)GridView.Rows[i].FindControl("lbl_SkillCategory");
+
+                Label lbl_WorkHours = (Label)GridView.Rows[i].FindControl("lbl_WorkHours");
+                Label lbl_OTFactor = (Label)GridView.Rows[i].FindControl("lbl_OTFactor");
+                Label lbl_OTMultiplier = (Label)GridView.Rows[i].FindControl("lbl_OTMultiplier");
+                Label lbl_OT_Divisibility = (Label)GridView.Rows[i].FindControl("lbl_OT_Divisibility");
+
+                Label lbl_presents = (Label)GridView.Rows[i].FindControl("lbl_presents"); //Total Payable Days
+                                                                                          //Label lblAbsent = (Label)GridView.Rows[i].FindControl("lblAbsent");
+                Label lbl_flcount = (Label)GridView.Rows[i].FindControl("lbl_flcount");
+                Label lbl_flpcount = (Label)GridView.Rows[i].FindControl("lbl_flpcount");
+                Label lbl_halfdaycount = (Label)GridView.Rows[i].FindControl("lbl_halfdaycount");
+                Label lbl_nhpcount = (Label)GridView.Rows[i].FindControl("lbl_nhpcount");
+                Label lbl_nhcount = (Label)GridView.Rows[i].FindControl("lbl_nhcount");
+                Label lbl_oddayscount = (Label)GridView.Rows[i].FindControl("lbl_oddayscount");
+                Label lbl_presentdayscount = (Label)GridView.Rows[i].FindControl("lbl_presentdayscount");  // Total P Counts
+                                                                                                           //Label lbl_pendingcount = (Label)GridView.Rows[i].FindControl("lbl_pendingcount");
+                Label lbl_ttlot = (Label)GridView.Rows[i].FindControl("lbl_ttlot");
+
+                Label lbl_FixedSalary_YesNo = (Label)GridView.Rows[i].FindControl("lbl_FixedSalary_YesNo");
+                Label lbl_FixedAmount = (Label)GridView.Rows[i].FindControl("lbl_FixedAmount");
+                Label lbl_fixedwagerate = (Label)GridView.Rows[i].FindControl("lbl_fixedwagerate");
+                Label lbl_fixratesal = (Label)GridView.Rows[i].FindControl("lbl_fixratesal");
+
+                Label lbl_DA_VDA = (Label)GridView.Rows[i].FindControl("lbl_DA_VDA");
+                Label lbl_HRA = (Label)GridView.Rows[i].FindControl("lbl_HRA");
+                Label lbl_Conv_Allowance = (Label)GridView.Rows[i].FindControl("lbl_Conv_Allowance");
+                Label lbl_Medical_Allowance = (Label)GridView.Rows[i].FindControl("lbl_Medical_Allowance");
+                Label lbl_Washing_Allowance = (Label)GridView.Rows[i].FindControl("lbl_Washing_Allowance");
+                Label lbl_ATT_Allowance = (Label)GridView.Rows[i].FindControl("lbl_ATT_Allowance");
+                Label lbl_SPCL_Allowance = (Label)GridView.Rows[i].FindControl("lbl_SPCL_Allowance");
+                Label lbl_Misc_Earnings = (Label)GridView.Rows[i].FindControl("lbl_Misc_Earnings");
+
+                Label lbl_Cur_Advance = (Label)GridView.Rows[i].FindControl("lbl_Cur_Advance");
+                Label lbl_Cur_Fines = (Label)GridView.Rows[i].FindControl("lbl_Cur_Fines");
+                Label lbl_Cur_Others = (Label)GridView.Rows[i].FindControl("lbl_Cur_Others");
+
+                Label lbl_otherspay = (Label)GridView.Rows[i].FindControl("lbl_otherspay");
+
+                Label lbl_basicsalary = (Label)GridView.Rows[i].FindControl("lbl_basicsalary");
+                Label lbl_PFPay = (Label)GridView.Rows[i].FindControl("lbl_PFPay");
+                Label lbl_otwages = (Label)GridView.Rows[i].FindControl("lbl_otwages");
+
+                Label lbl_actualgross = (Label)GridView.Rows[i].FindControl("lbl_actualgross");
+                Label lbl_grossamount = (Label)GridView.Rows[i].FindControl("lbl_grossamount");
+
+                Label lbl_esicpay = (Label)GridView.Rows[i].FindControl("lbl_esicpay");
+                Label lbl_netpay1 = (Label)GridView.Rows[i].FindControl("lbl_netpay1");
+                Label lbl_netpay2 = (Label)GridView.Rows[i].FindControl("lbl_netpay2");
+
+                Label lbl_DaVdaPay = (Label)GridView.Rows[i].FindControl("lbl_DaVdaPay");
+                Label lbl_HRAPay = (Label)GridView.Rows[i].FindControl("lbl_HRAPay");
+                Label lbl_ConvPay = (Label)GridView.Rows[i].FindControl("lbl_ConvPay");
+                Label lbl_MedPay = (Label)GridView.Rows[i].FindControl("lbl_MedPay");
+                Label lbl_WashPay = (Label)GridView.Rows[i].FindControl("lbl_WashPay");
+                Label lbl_AttPay = (Label)GridView.Rows[i].FindControl("lbl_AttPay");
+                Label lbl_SPCLPay = (Label)GridView.Rows[i].FindControl("lbl_SPCLPay");
+                Label lbl_MiscPay = (Label)GridView.Rows[i].FindControl("lbl_MiscPay");
+
+                Label lbl_ttlded = (Label)GridView.Rows[i].FindControl("lbl_ttlded");
+                Label lbl_netpayfnl = (Label)GridView.Rows[i].FindControl("lbl_netpayfnl");
+
+                // ========= RESET VALUE-HOLDER LABELS (per record) =========
+                ResetToZero(
+                    lbl_presents, lbl_flcount, lbl_flpcount, lbl_halfdaycount, lbl_nhpcount, lbl_nhcount,
+                    lbl_oddayscount, lbl_presentdayscount, lbl_ttlot, lbl_payrate, lbl_fixedwagerate,
+                    lbl_fixratesal, lbl_basicsalary, lbl_PFPay, lbl_otwages, lbl_actualgross,
+                    lbl_grossamount, lbl_esicpay, lbl_netpay1, lbl_netpay2, lbl_otherspay,
+                    lbl_DaVdaPay, lbl_HRAPay, lbl_ConvPay, lbl_MedPay, lbl_WashPay, lbl_AttPay,
+                    lbl_SPCLPay, lbl_MiscPay, lbl_ttlded, lbl_netpayfnl
+                );
+                // ========= END RESET BLOCK =========
+
+                TotalPresents = .0m;
+                //----------------- Function call to find out the Total Present aganist the Employee Workman Sl----------------//
+                string empwrk = lbl_WorkmanSL.Text.ToString();
+                PayRoll.FindEmployeeTotalPresentByDates2_SP(date1, date2, empwrk, ref TotalPresents);
+                lbl_presents.Text = TotalPresents.ToString();
+
+                Dictionary<string, int> attendanceData = new Dictionary<string, int>();
+                PayRoll.GetEmployeeAttendanceCounts(month.ToString(), year.ToString(), empwrk, out attendanceData);
+
+                //lblAbsent.Text = attendanceData["Ab"].ToString();
+                lbl_flcount.Text = attendanceData["FL"].ToString();
+                lbl_flpcount.Text = attendanceData["FP"].ToString();
+                lbl_halfdaycount.Text = attendanceData["HD"].ToString();
+                //lbl_halfdaycount.Text = (Convert.ToDecimal(attendanceData["HD"]) * 0.5m).ToString();
+                lbl_nhpcount.Text = attendanceData["HP"].ToString();
+                lbl_nhcount.Text = attendanceData["NH"].ToString();
+                lbl_oddayscount.Text = attendanceData["OD"].ToString();
+                lbl_presentdayscount.Text = attendanceData["P"].ToString();
+                //lbl_pendingcount.Text = attendanceData["Pending"].ToString();
+
+                //----------------- Function call to find out the Total OverTime Unit aganist the Employee Workman Sl----------------//
+                decimal TotalOT = .0m;
+                PayRoll.FindEmployeeTotalOTByDates1(date1, date2, empwrk, ref TotalOT);
+                lbl_ttlot.Text = TotalOT.ToString();
+
+                //----------------- Function call to find out the Daily Pay Rate aganist the Employee Skill Category----------------//
+                decimal dr = 0.0m;
+                string skillevel = lbl_skill_category.Text.ToString();
+                string workregion = lbl_WorkRegion.Text.ToString();
+                PayRoll.FindPayCadre(skillevel, workregion, ref dr);
+                lbl_payrate.Text = dr.ToString();
+
+                if (workregion == "KPO")
+                {
+                    if (empwrk == "K68" || empwrk == "K91" || empwrk == "K92" || empwrk == "K579" || empwrk == "K584" || empwrk == "K612" || empwrk == "K620")
+                    {
+                        CalWorkingDaysF = 26;
+                    }
+                    else
+                    {
+                        CalWorkingDaysF = CalWorkingDays;
+                    }
+                }
+                else
+                {
+                    CalWorkingDaysF = CalWorkingDays;
+                }
+
+                //----------------- Calculation for Employee who are in Fixed Salary----------------//
+                string fixedyesno = lbl_FixedSalary_YesNo.Text.ToString();
+                decimal fixedamount = Convert.ToDecimal(lbl_FixedAmount.Text.ToString());
+                decimal fdr = Convert.ToDecimal(fixedamount) / Convert.ToDecimal(CalWorkingDaysF);
+                decimal fnlfdr = Math.Round(fdr, 2);
+                lbl_fixedwagerate.Text = fnlfdr.ToString();
+
+                //------------ Wage of Fixed rate ---------------   ( FixedAmount / CalenderDays ) x  PresentDays
+                decimal FixRateSalary = 0.0m;
+                FixRateSalary = Math.Round(fdr * TotalPresents, 2);
+                lbl_fixratesal.Text = FixRateSalary.ToString();
+
+                //-------------Basic Salary or Basic Wages  -----------   Daily PayRate x Present Days
+                decimal BasicSalary = 0.0m;
+                PayRoll.BasicSalaryCalculation(TotalPresents, dr, ref BasicSalary);
+                lbl_basicsalary.Text = BasicSalary.ToString();
+
+                decimal DaVdaAmount = Convert.ToDecimal(lbl_DA_VDA.Text.ToString());
+                decimal HRAAmount = Convert.ToDecimal(lbl_HRA.Text.ToString());
+                decimal ConvAmount = Convert.ToDecimal(lbl_Conv_Allowance.Text.ToString());
+                decimal MedAmount = Convert.ToDecimal(lbl_Medical_Allowance.Text.ToString());
+                decimal WashAmount = Convert.ToDecimal(lbl_Washing_Allowance.Text.ToString());
+                decimal AttAmount = Convert.ToDecimal(lbl_ATT_Allowance.Text.ToString());
+                decimal SPCLAmount = Convert.ToDecimal(lbl_SPCL_Allowance.Text.ToString());
+                decimal MiscAmount = Convert.ToDecimal(lbl_Misc_Earnings.Text.ToString());
+
+                int AdvanceAmt = Convert.ToInt32(lbl_Cur_Advance.Text.ToString());
+                int FinesAmt = Convert.ToInt32(lbl_Cur_Fines.Text.ToString());
+                int OthersAmt = Convert.ToInt32(lbl_Cur_Others.Text.ToString());
+
+                decimal DaVdaPay = .0m;
+                decimal HRAPay = .0m;
+                decimal ConvPay = .0m;
+                decimal MedPay = .0m;
+                decimal WashPay = .0m;
+                decimal WashPayF = .0m;
+                decimal AttPay = .0m;
+                decimal SPCLPay = .0m;
+                decimal MiscPay = .0m;
+
+                //---------------- DA/VDA Alowances Cal-------------------------------------//
+                PayRoll.EmployeeOthersPayCalculations1(TotalPresents, CalWorkingDaysF, DaVdaAmount, ref DaVdaPay);
+                lbl_DaVdaPay.Text = DaVdaPay.ToString();
+
+                //---------------- HRA Alowances Cal-------------------------------------//
+                if (workregion == "RSP")
+                {
+                    decimal hramult = 0.05m;
+                    HRAPay = Math.Ceiling(BasicSalary * hramult);
+                    lbl_HRAPay.Text = HRAPay.ToString();
+                }
+                else
+                {
+                    PayRoll.EmployeeOthersPayCalculations2(TotalPresents, CalWorkingDaysF, HRAAmount, ref HRAPay);
+                    lbl_HRAPay.Text = HRAPay.ToString();
+                }
+
+                //---------------- Conv Alowances Cal-------------------------------------//
+                PayRoll.EmployeeOthersPayCalculations3(TotalPresents, CalWorkingDaysF, ConvAmount, ref ConvPay);
+                lbl_ConvPay.Text = ConvPay.ToString();
+
+                //---------------- Medical Alowances Cal-------------------------------------//
+                PayRoll.EmployeeOthersPayCalculations4(TotalPresents, CalWorkingDaysF, MedAmount, ref MedPay);
+                lbl_MedPay.Text = MedPay.ToString();
+                WashPay = 0;
+                WashPayF = 0;
+
+                //---------------- Wash Alowances Cal-------------------------------------//
+                PayRoll.EmployeeWashPayCalculations(TotalPresents, CalWorkingDaysF, WashBreak, ref WashPay);
+                if (WashPay <= 0) { WashPayF = 0; } else { WashPayF = WashPay; }
+
+                //---------------- Att Alowances Cal-------------------------------------//
+                PayRoll.EmployeeOthersPayCalculations6(TotalPresents, CalWorkingDaysF, AttAmount, ref AttPay);
+                lbl_AttPay.Text = AttPay.ToString();
+
+                if (workregion == "RSP")
+                {
+                    decimal awamult = 157.69m;
+                    SPCLPay = Math.Round(TotalPresents * awamult, 2);
+                    lbl_SPCLPay.Text = SPCLPay.ToString();
+                }
+                else
+                {
+                    //---------------- SPCL Alowances Cal-------------------------------------//
+                    PayRoll.EmployeeOthersPayCalculations7(TotalPresents, CalWorkingDaysF, SPCLAmount, ref SPCLPay);
+                    lbl_SPCLPay.Text = SPCLPay.ToString();
+                }
+
+                //---------------- MISC Alowances Cal-------------------------------------//
+                PayRoll.EmployeeOthersPayCalculations8(TotalPresents, CalWorkingDaysF, MiscAmount, ref MiscPay);
+                lbl_MiscPay.Text = MiscPay.ToString();
+
+                //--------------- PF Calucations --------------------//
+                decimal PFPay = 0.0m;
+                PayRoll.PFPayCalculation(BasicSalary, ref PFPay);
+                lbl_PFPay.Text = PFPay.ToString();
+
+                //---------------- OT Pay -------- Gross Rate
+                decimal otpay = 0.0m;
+                decimal wrkhrs = Convert.ToDecimal(lbl_WorkHours.Text.ToString());
+                decimal otdiv = Convert.ToDecimal(lbl_OT_Divisibility.Text.ToString());  //Added on 29-11-2021
+                decimal otfactor = Convert.ToDecimal(lbl_OTFactor.Text.ToString());
+                string otrate = lbl_OTMultiplier.Text.ToString();
+
+                decimal actualgross = 0.0m;
+                decimal grossesic = 0.0m;
+                decimal otherpay = 0.0m;
+                decimal otherpayF = 0.0m;
+
+                if (fixedyesno == "Yes")  ///Check whether the employee is in Fixed or Daily Rate Payroll
+                {
+                    if (otrate == "Gross")
+                    {
+                        if (TotalOT >= 1)
+                        {
+                            decimal otdays = TotalOT / otdiv;
+                            // OTPay on FixedRate
+                            otpay = Math.Round(fdr * otdays * otfactor, 0);
+                            lbl_otwages.Text = otpay.ToString();
+                        }
+                        else
+                        {
+                            lbl_otwages.Text = otpay.ToString();
+                        }
+                        otherpay = FixRateSalary - BasicSalary - WashPayF;
+                        actualgross = BasicSalary + otpay + otherpay + WashPayF;
+                    }
+                    else
+                    {
+                        if (TotalOT >= 1)
+                        {
+                            decimal otdays = TotalOT / otdiv;
+                            //OTPay on DailyRate
+                            otpay = Math.Round(dr * otdays * otfactor, 0);
+                            lbl_otwages.Text = otpay.ToString();
+                        }
+                        else
+                        {
+                            lbl_otwages.Text = otpay.ToString();
+                        }
+                        otherpay = FixRateSalary - BasicSalary - WashPayF;
+
+                        actualgross = BasicSalary + otpay + otherpay + WashPayF;
+                    }
+                    lbl_actualgross.Text = actualgross.ToString();
+                }
+                else
+                {
+                    if (otrate == "Gross")
+                    {
+                        if (TotalOT >= 1)
+                        {
+                            decimal otdays = TotalOT / otdiv;
+                            // OTPay on FixedRate
+                            otpay = Math.Round(fdr * otdays * otfactor, 0);
+                            lbl_otwages.Text = otpay.ToString();
+                        }
+                        else
+                        {
+                            lbl_otwages.Text = otpay.ToString();
+                        }
+                        WashPayF = 0;
+                        otherpay = 0;
+                        actualgross = BasicSalary + otpay + otherpay + WashPayF;
+                    }
+                    else
+                    {
+                        if (TotalOT >= 1)
+                        {
+                            decimal otdays = TotalOT / otdiv;
+                            //OTPay on DailyRate
+                            otpay = Math.Round(dr * otdays * otfactor, 0);
+                            lbl_otwages.Text = otpay.ToString();
+                        }
+                        else
+                        {
+                            lbl_otwages.Text = otpay.ToString();
+                        }
+                        WashPayF = 0;
+                        otherpay = 0;
+                        actualgross = BasicSalary + otpay + otherpay + WashPayF + HRAPay + SPCLPay;
+                    }
+                    lbl_actualgross.Text = actualgross.ToString();
+                }
+
+                //----------------Gross Calculation & NET Payment 2 -------------------------------//
+                decimal washgross = actualgross + WashPayF + ConvPay;
+
+                if (actualgross > GorssBreaker)
+                {
+                    grossesic = GorssBreaker - WashPayF;
+                }
+                else
+                {
+                    grossesic = actualgross - WashPayF;
+                }
+
+                lbl_grossamount.Text = grossesic.ToString();
+                if (otherpay < 0)
+                {
+                    otherpayF = 0;
+                }
+                else
+                {
+                    otherpayF = otherpay;
+                }
+                lbl_otherspay.Text = otherpayF.ToString();
+                lbl_WashPay.Text = WashPayF.ToString();
+                //--------------------- ESIC pay---------------------------------------------------//
+                decimal esicpay = 0.0m;
+                esicpay = Math.Round(grossesic * 0.0075m, 0);
+                lbl_esicpay.Text = esicpay.ToString();
+
+                //--------------------- NET Payment -------------------------------------------------//
+                decimal netpay1 = 0.0m;
+                decimal newgross = grossesic;
+                netpay1 = Math.Round(newgross - PFPay - esicpay + WashPayF + ConvPay, 0);
+
+                //Here total deductions means --- Employee side deductions
+                decimal ttldeductions = AdvanceAmt + FinesAmt + OthersAmt;
+                lbl_ttlded.Text = ttldeductions.ToString();
+
+                decimal netpay1final = .0m;
+                decimal netpay2 = 0.0m;
+                if (fixedyesno == "Yes")
+                {
+                    if (actualgross > WashBreak)
+                    {
+                        netpay2 = actualgross - newgross + HRAPay - WashPayF;
+                    }
+                    else
+                    {
+                        netpay2 = 0.0m;
+                    }
+                }
+                else
+                {
+                    netpay2 = actualgross - netpay1 - PFPay - esicpay + HRAPay - WashPayF;
+                }
+
+                //to deduct max amount from Pay2, if it is greater then or equal to the total deduction amount
+                decimal check = netpay2 - ttldeductions;
+                decimal netpay2_finalaftrded = .0m;
+                if (workregion == "KPO")
+                {
+                    if (check > 0)
+                    {
+                        netpay2_finalaftrded = netpay2 - ttldeductions;
+                        netpay1final = netpay1;
+                    }
+                    else
+                    {
+                        netpay2_finalaftrded = netpay2;
+                        netpay1final = netpay1 - ttldeductions;
+                    }
+                }
+                else if (workregion == "AGL")
+                {
+                    netpay2_finalaftrded = netpay2;
+                    netpay1final = netpay1 - ttldeductions;
+                }
+                else if (workregion == "NINL")
+                {
+                    netpay2_finalaftrded = netpay2;
+                    netpay1final = netpay1 - ttldeductions;
+                }
+                else if (workregion == "JSR")
+                {
+                    netpay2_finalaftrded = netpay2;
+                    netpay1final = netpay1 - ttldeductions;
+                }
+                else if (workregion == "RSP")
+                {
+                    netpay2_finalaftrded = netpay2 - HRAPay;
+                    netpay1final = netpay1 - ttldeductions;
+                }
+                else
+                {
+                    netpay2_finalaftrded = netpay2;
+                    netpay1final = netpay1 - ttldeductions;
+                }
+
+                lbl_netpay1.Text = netpay1.ToString();
+                lbl_netpayfnl.Text = netpay1final.ToString();
+                lbl_netpay2.Text = netpay2_finalaftrded.ToString();///---1
+            }
+
+            //btnExport.Enabled = true;
+        }
+
 
         protected void btn_excelexport_Click(object sender, EventArgs e)
         {
