@@ -41,7 +41,8 @@
 
                 <div class="title_right">
                     <div class="pull-right">
-                        <asp:Button ID="btnExport" runat="server" Enabled="false" Text="Export To Excel" CssClass="btn btn-success btn-sm" OnClick="btn_excelexport_Click" />
+                        <asp:Button ID="btnExport" runat="server" Enabled="false" Text="Export To Excel" CssClass="btn btn-success btn-sm" OnClick="btn_excelexport_Click" />&nbsp;|&nbsp;
+                        <asp:Button ID="btn_txtdownload" runat="server" Text="Download ECR .txt" OnClick="btn_txtdownload_Click" CssClass="btn btn-primary btn-sm" />
                     </div>
                 </div>
 

@@ -13,6 +13,12 @@ namespace WebApplication1.bussiness.production
     public partial class view_monthlyjobs : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
+
+        public static string state = string.Empty;
+        public static string region = string.Empty;
+        public static string comp = string.Empty;
+        public static string datalock = string.Empty;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -24,26 +30,69 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-                    string CmdString1 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = 'IN' order by Id ";
-                    BindRegions(CmdString1);
-
                     dbcl.CalDateCombo1(DDL_Day, DDL_Month, DDL_Year);
 
                     DateTime d = DateTime.Now;
                     string month = d.Month.ToString();
                     string year = d.Year.ToString();
-                    string region = Session["REGION"].ToString();
+                    //string region = Session["REGION"].ToString();
 
-                    if (Session["USTATE"].ToString() == "PI")
+                    if (Session["WORKMAN"].ToString() == "J8")
                     {
-                        //string CmdString2 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = 'IN' order by Id ";
-                        //BindRegions(CmdString2);
+                        if (Session["Changer"] != null)
+                        {
+                            string[] retrievedArray = (string[])Session["Changer"];
+                            region = retrievedArray[1].ToString();
+                            comp = retrievedArray[2].ToString();
+                            state = retrievedArray[0].ToString();
+                            datalock = retrievedArray[3].ToString();
+                            //Session["Changer"]= null;
+                        }
+                        else
+                        {
+                            region = Session["REGION"].ToString();
+                            comp = Session["COMPANY_CODE"].ToString();
+                            state = Session["STATE"].ToString();
+                            datalock = "0";
+                        }
+
+                        //string CmdString2 = "select Category_Type, Category_DB from tlb_payroll_category where Country_Code = 'IN' and State_Code='" + state + "' and WorkRegion_Code='" + region + "' and Company_Code='" + comp + "' order by Id desc";
+                        //BindSkillCategory(CmdString2);
+
+                        string CmdString1 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = 'IN' and State_Code='" + state + "' order by Id ";
+                        BindRegions(CmdString1);
+
+                        //string CmdString3 = "select Id, WorkmanSL, FullName, SkillCategory,SkillDesignation,DOJ,SafetyPassNo, F16_YesNo,F17_YesNo, FixedSalary_YesNo, FixedAmount,WorkHours, OTFactor, OTMultiplier, OT_Divisibility, DA_VDA, HRA, Conv_Allowance, Medical_Allowance, ATT_Allowance, SPCL_Allowance,Misc_Earnings,Washing_Allowance from tbl_Employee_Mustertable where WorkRegion = '" + region + "' and WorkCompany='" + comp + "' and WorkStatus='Active' and F16_YesNo='Yes' and F17_YesNo='Yes' order by Id desc";
+                        //BindGrid(CmdString3);
+
+                        //DDL_EmpWorkStatus.SelectedIndex = 2;
                     }
                     else
                     {
                         CheckforUser();
                         GridBinder(year, month, region);
                     }
+
+                    //string CmdString1 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = 'IN' order by Id ";
+                    //BindRegions(CmdString1);
+
+                    //dbcl.CalDateCombo1(DDL_Day, DDL_Month, DDL_Year);
+
+                    //DateTime d = DateTime.Now;
+                    //string month = d.Month.ToString();
+                    //string year = d.Year.ToString();
+                    //string region = Session["REGION"].ToString();
+
+                    //if (Session["USTATE"].ToString() == "PI")
+                    //{
+                    //    //string CmdString2 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = 'IN' order by Id ";
+                    //    //BindRegions(CmdString2);
+                    //}
+                    //else
+                    //{
+                    //    CheckforUser();
+                    //    GridBinder(year, month, region);
+                    //}
                 }
             }
         }

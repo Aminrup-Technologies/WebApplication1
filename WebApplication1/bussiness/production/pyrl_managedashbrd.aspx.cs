@@ -22,6 +22,8 @@ namespace WebApplication1.bussiness.production
         public static Int32 activeDedEmpCount = 0;
         public static Int32 inactiveDedEmpCount = 0;
         public static Int32 worksiteCount = 0;
+        public static string StatusMsg = string.Empty;
+
 
         public static string state = string.Empty;
         public static string region = string.Empty;
@@ -272,14 +274,14 @@ namespace WebApplication1.bussiness.production
         }
 
 
-        private void PayrollFactorsInputs_Checker(string DDL_StateValue, string DDL_Value, string DDL_CompValue)
+        private void PayrollFactorsInputs_Checker_OLD(string DDL_StateValue, string DDL_Value, string DDL_CompValue)
         {
             // Set up the database connection
             string connectionString = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 // Create the SqlCommand object for calling the stored procedure
-                SqlCommand command = new SqlCommand("SP_GetEmpPayrollFactor_Status", connection);
+                SqlCommand command = new SqlCommand("SP_GetEmpPayrollFactor_StatusMsg", connection);
                 command.CommandType = CommandType.StoredProcedure;
 
                 // Add input parameter
@@ -304,6 +306,7 @@ namespace WebApplication1.bussiness.production
                 command.Parameters.Add("@CompleteDataEmpCount", SqlDbType.Int).Direction = ParameterDirection.Output;
                 command.Parameters.Add("@InCompleteDataEmpCount", SqlDbType.Int).Direction = ParameterDirection.Output;
                 command.Parameters.Add("@Status", SqlDbType.Int).Direction = ParameterDirection.Output;
+                command.Parameters.Add("@StatusMessage", SqlDbType.VarChar).Direction = ParameterDirection.Output;
 
                 // Open the connection and execute the stored procedure
                 connection.Open();
@@ -326,8 +329,11 @@ namespace WebApplication1.bussiness.production
                 int CompDataEmpCount = Convert.ToInt32(command.Parameters["@CompleteDataEmpCount"].Value);
                 int InCompDataEmpCount = Convert.ToInt32(command.Parameters["@InCompleteDataEmpCount"].Value);
                 int Status = Convert.ToInt32(command.Parameters["@Status"].Value);
+                string StatusMessage = Convert.ToString(command.Parameters["@Status"].Value);
 
                 PayrollFactorStatus = Status;
+                StatusMsg = StatusMessage;
+
                 // Retrieve other output parameters in a similar manner
 
                 // Close the connection
@@ -335,6 +341,75 @@ namespace WebApplication1.bussiness.production
 
             }
         }
+
+        private void PayrollFactorsInputs_Checker(string DDL_StateValue, string DDL_Value, string DDL_CompValue)
+        {
+            string connectionString = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                SqlCommand command = new SqlCommand("SP_GetEmpPayrollFactor_StatusMsg", connection);
+                command.CommandType = CommandType.StoredProcedure;
+
+                // Input parameters
+                command.Parameters.AddWithValue("@RegionID", DDL_Value);
+                command.Parameters.AddWithValue("@CompanyID", DDL_CompValue);
+                command.Parameters.AddWithValue("@WorkState", DDL_StateValue);
+
+                // Output parameters
+                command.Parameters.Add("@EmployeeCount", SqlDbType.Int).Direction = ParameterDirection.Output;
+                command.Parameters.Add("@HS_EmpCount", SqlDbType.Int).Direction = ParameterDirection.Output;
+                command.Parameters.Add("@S_EmpCount", SqlDbType.Int).Direction = ParameterDirection.Output;
+                command.Parameters.Add("@SS_EmpCount", SqlDbType.Int).Direction = ParameterDirection.Output;
+                command.Parameters.Add("@US_EmpCount", SqlDbType.Int).Direction = ParameterDirection.Output;
+                command.Parameters.Add("@NP_EmpCount", SqlDbType.Int).Direction = ParameterDirection.Output;
+                command.Parameters.Add("@F16_Yes_EmpCount", SqlDbType.Int).Direction = ParameterDirection.Output;
+                command.Parameters.Add("@F16_No_EmpCount", SqlDbType.Int).Direction = ParameterDirection.Output;
+                command.Parameters.Add("@F17_Yes_EmpCount", SqlDbType.Int).Direction = ParameterDirection.Output;
+                command.Parameters.Add("@F17_No_EmpCount", SqlDbType.Int).Direction = ParameterDirection.Output;
+                command.Parameters.Add("@FS_Yes_NZCount", SqlDbType.Int).Direction = ParameterDirection.Output;
+                command.Parameters.Add("@FS_Yes_ZCount", SqlDbType.Int).Direction = ParameterDirection.Output;
+                command.Parameters.Add("@FS_No_ZCount", SqlDbType.Int).Direction = ParameterDirection.Output;
+                command.Parameters.Add("@FS_No_NZCount", SqlDbType.Int).Direction = ParameterDirection.Output;
+                command.Parameters.Add("@CompleteDataEmpCount", SqlDbType.Int).Direction = ParameterDirection.Output;
+                command.Parameters.Add("@InCompleteDataEmpCount", SqlDbType.Int).Direction = ParameterDirection.Output;
+                command.Parameters.Add("@Status", SqlDbType.Int).Direction = ParameterDirection.Output;
+
+                // IMPORTANT: specify Size for VarChar output
+                command.Parameters.Add("@StatusMessage", SqlDbType.VarChar, 4000).Direction = ParameterDirection.Output;
+
+                // Execute
+                connection.Open();
+                command.ExecuteNonQuery();
+
+                // Read outputs
+                int employeeCount = Convert.ToInt32(command.Parameters["@EmployeeCount"].Value);
+                int hsEmpCount = Convert.ToInt32(command.Parameters["@HS_EmpCount"].Value);
+                int sEmpCount = Convert.ToInt32(command.Parameters["@S_EmpCount"].Value);
+                int ssEmpCount = Convert.ToInt32(command.Parameters["@SS_EmpCount"].Value);
+                int usEmpCount = Convert.ToInt32(command.Parameters["@US_EmpCount"].Value);
+                int npEmpCount = Convert.ToInt32(command.Parameters["@NP_EmpCount"].Value);
+                int f16YesEmpCount = Convert.ToInt32(command.Parameters["@F16_Yes_EmpCount"].Value);
+                int f16NoEmpCount = Convert.ToInt32(command.Parameters["@F16_No_EmpCount"].Value);
+                int f17YesEmpCount = Convert.ToInt32(command.Parameters["@F17_Yes_EmpCount"].Value);
+                int f17NoEmpCount = Convert.ToInt32(command.Parameters["@F17_No_EmpCount"].Value);
+                int fsYesnzEmpCount = Convert.ToInt32(command.Parameters["@FS_Yes_NZCount"].Value);
+                int fsYeszEmpCount = Convert.ToInt32(command.Parameters["@FS_Yes_ZCount"].Value);
+                int fsNozEmpCount = Convert.ToInt32(command.Parameters["@FS_No_ZCount"].Value);
+                int fsnonzEmpCount = Convert.ToInt32(command.Parameters["@FS_No_NZCount"].Value);
+                int compDataEmpCount = Convert.ToInt32(command.Parameters["@CompleteDataEmpCount"].Value);
+                int inCompDataEmpCount = Convert.ToInt32(command.Parameters["@InCompleteDataEmpCount"].Value);
+                int status = Convert.ToInt32(command.Parameters["@Status"].Value);
+
+                // ✅ Correct parameter name here
+                string statusMessage = Convert.ToString(command.Parameters["@StatusMessage"].Value);
+
+                PayrollFactorStatus = status;
+                StatusMsg = statusMessage;
+
+                connection.Close();
+            }
+        }
+
 
         public void BindSP_GetEmpBankFactor_Status(string DDL_StateValue, string regionID, string companyID)
         {
@@ -471,6 +546,41 @@ namespace WebApplication1.bussiness.production
                 lbl_factorsstatus.Visible = true;
                 lbl_factorsstatus.Text = "Error!";
                 div_factorsstatus.Attributes["class"] = "badge bg-red";
+
+                string title = "Notifications : Error";
+                string body = StatusMsg;
+
+                // Escape text for JavaScript
+                title = title.Replace("'", "\\'").Replace(Environment.NewLine, "\\n");
+                body = body.Replace("'", "\\'").Replace(Environment.NewLine, "\\n");
+
+                // First try modal popup
+                string modalScript = $"ShowPopup('{title}', '{body}');";
+
+                // As a backup, prepare PNotify notification
+                string pnotifyScript = $@"
+                new PNotify({{
+                    title: '{title}',
+                    text: '{body}',
+                    type: 'error',
+                    styling: 'bootstrap3'
+                }});";
+
+                // Combine both (modal first, fallback next)
+                string finalScript = modalScript + Environment.NewLine + pnotifyScript;
+
+                // Use ScriptManager if inside UpdatePanel, else ClientScript
+                ScriptManager.RegisterStartupScript(
+                    this,
+                    this.GetType(),
+                    "PopupAndNotify",
+                    finalScript,
+                    true
+                );
+
+                ATS_F17.HRef = "#";
+                ATS_F17.Attributes["onclick"] = "return false;";
+                ATS_F17.Attributes["class"] += " disabled"; // style it as disabled
             }
             else
             {

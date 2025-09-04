@@ -105,9 +105,11 @@ namespace WebApplication1.bussiness.production
             str = str + "<td width='5%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>EPF WAGES</td>";
             str = str + "<td width='5%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>EPS WAGES</td>";
             str = str + "<td width='5%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>EDLI WAGES</td>";
-            str = str + "<td width='1%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>EPF CONTRI REMITTED</td>";
-            str = str + "<td width='1%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>EPF EPS DIFF REMITTED</td>";
-            str = str + "<td width='1%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>--</td>";
+            str = str + "<td width='1%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>EPF CONTRIBUTION (EE Share)</td>";
+            //str = str + "<td width='1%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>EPF EPS DIFF REMITTED</td>";
+            //str = str + "<td width='1%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>--</td>";
+            str = str + "<td width='1%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>EPS CONTRIBUTION (ER Share 8.33%)</td>";
+            str = str + "<td width='1%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>EPF CONTRIBUTION (ER Share 3.67%)</td>";
             str = str + "<td width='1%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>SALARY DAYS</td>";
             str = str + "<td width='1%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>NCP DAYS</td>";
             str = str + "<td width='1%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>REFUND OF ADVANCES</td>";
@@ -136,8 +138,10 @@ namespace WebApplication1.bussiness.production
                     str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Basic3"].ToString() + "</td>";
                     str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Basic4"].ToString() + "</td>";
                     str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["PFPay"].ToString() + "</td>";
-                    str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Value1"].ToString() + "</td>";
+                    //str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Value1"].ToString() + "</td>";
+                    //str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Value2"].ToString() + "</td>";
                     str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Value2"].ToString() + "</td>";
+                    str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Value1"].ToString() + "</td>";
                     str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["SalaryEndDay"].ToString() + "</td>";
                     str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["NCPday"].ToString() + "</td>";
                     str = str + "<td width='4%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["refund"].ToString() + "</td></tr>";
@@ -208,8 +212,10 @@ namespace WebApplication1.bussiness.production
                     str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Basic3"].ToString() + "</td>";
                     str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Basic4"].ToString() + "</td>";
                     str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["PFPay"].ToString() + "</td>";
-                    str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Value1"].ToString() + "</td>";
+                    //str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Value1"].ToString() + "</td>";
+                    //str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Value2"].ToString() + "</td>";
                     str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Value2"].ToString() + "</td>";
+                    str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Value1"].ToString() + "</td>";
                     str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["SalaryEndDay"].ToString() + "</td>";
                     str = str + "<td width='5%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["NCPday"].ToString() + "</td>";
                     str = str + "<td width='4%' style='border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["refund"].ToString() + "</td></tr>";
@@ -243,6 +249,112 @@ namespace WebApplication1.bussiness.production
         {
             Response.Redirect("pyrl_managedashbrd.aspx");
         }
+
+        private string BuildEcrText(string Year, string Month, string Region, string Date1, string Date2)
+        {
+            var sb = new System.Text.StringBuilder();
+            const string delim = "#~#";
+
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
+
+            // NOTE: Basic1 = Gross, Basic2 = EPF Wages, Basic3 = EPS Wages, Basic4 = EDLI Wages (capped 15k)
+            string sql = @"
+            SELECT 
+                a.FullName,
+                b.UANNo,
+                CEILING(a.BasicSalary) AS Gross,              -- Basic1
+                CEILING(a.BasicSalary) AS EPF_Wages,          -- Basic2
+                CEILING(a.BasicSalary) AS EPS_Wages,          -- Basic3
+                CASE WHEN CEILING(a.BasicSalary) > 15000 THEN 15000 ELSE CEILING(a.BasicSalary) END AS EDLI_Wages, -- Basic4
+                a.PFPay AS EPF_EE_12,                         -- Employee share (12%). If needed, compute: CEILING(ROUND(a.BasicSalary*0.12,0))
+                CEILING(ROUND((a.BasicSalary * 0.0833), 0)) AS EPS_ER_833,  -- Employer EPS 8.33%
+                CEILING(ROUND((a.BasicSalary * 0.0367), 0)) AS EPF_ER_367   -- Employer EPF 3.67%
+            FROM tbl_trialpayroll a
+            INNER JOIN tbl_Employee_Mustertable b ON a.WorkmanSL = b.WorkmanSL
+            WHERE a.WorkRegion   = @Region
+              AND a.SalaryMonth  = @Month
+              AND a.SalaryYear   = @Year
+              AND a.SalaryStartDay = @Date1
+              AND a.SalaryEndDay   = @Date2
+            ORDER BY a.Id;";
+
+            using (var cmd = new SqlCommand(sql, dbcl.Conn))
+            {
+                cmd.Parameters.AddWithValue("@Region", Region);
+                cmd.Parameters.AddWithValue("@Month", Month);
+                cmd.Parameters.AddWithValue("@Year", Year);
+                cmd.Parameters.AddWithValue("@Date1", Date1);
+                cmd.Parameters.AddWithValue("@Date2", Date2);
+
+                using (var re = cmd.ExecuteReader())
+                {
+                    while (re.Read())
+                    {
+                        // Force safe strings (trim, avoid delimiter conflicts if any)
+                        string uan = (re["UANNo"] ?? "").ToString().Trim();
+                        string name = (re["FullName"] ?? "").ToString().Trim();
+
+                        // Integers as strings
+                        string gross = Convert.ToInt32(re["Gross"]).ToString();
+                        string epfW = Convert.ToInt32(re["EPF_Wages"]).ToString();
+                        string epsW = Convert.ToInt32(re["EPS_Wages"]).ToString();
+                        string edliW = Convert.ToInt32(re["EDLI_Wages"]).ToString();
+                        string epfEE = Convert.ToInt32(re["EPF_EE_12"]).ToString();     // 12%
+                        string epsER = Convert.ToInt32(re["EPS_ER_833"]).ToString();    // 8.33%
+                        string epfER = Convert.ToInt32(re["EPF_ER_367"]).ToString();    // 3.67%
+
+                        // Per your note: NCP Days = 0, Refund of Advances = 0
+                        const string ncpDays = "0";
+                        const string refund = "0";
+
+                        sb.Append(uan).Append(delim)
+                          .Append(name).Append(delim)
+                          .Append(gross).Append(delim)
+                          .Append(epfW).Append(delim)
+                          .Append(epsW).Append(delim)
+                          .Append(edliW).Append(delim)
+                          .Append(epfEE).Append(delim)
+                          .Append(epsER).Append(delim)
+                          .Append(epfER).Append(delim)
+                          .Append(ncpDays).Append(delim)
+                          .Append(refund).AppendLine();
+                    }
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        protected void btn_txtdownload_Click(object sender, EventArgs e)
+        {
+            string regn = region; // your existing variable
+            string month = DDL_Month.SelectedItem.Text;
+            string year = DDL_Year.SelectedItem.Text;
+
+            string current_year = DDL_Year.SelectedItem.Text.ToString();
+            string current_month1 = DDL_Month.SelectedItem.Text.ToString();
+            string current_month2 = DDL_Month.SelectedValue.ToString();
+
+            int month1 = int.Parse(current_month2);
+            int year1 = int.Parse(current_year);
+            int daysInMonth = DateTime.DaysInMonth(year1, month1);
+
+            string strtday = "01";
+            string endday = daysInMonth.ToString("D2");
+
+            string payload = BuildEcrText(year, current_month2, regn, strtday, endday);
+
+            Response.Clear();
+            Response.Buffer = true;
+            Response.ContentType = "text/plain";
+            Response.AddHeader("Content-Disposition", $"attachment;filename=ECR_{regn}_{month}_{year}.txt");
+            // Avoid BOM; Write string directly
+            Response.Write(payload);
+            Response.Flush();
+            Response.End();
+        }
+
 
     }
 }
