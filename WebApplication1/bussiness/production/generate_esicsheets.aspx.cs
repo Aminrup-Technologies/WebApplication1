@@ -19,6 +19,21 @@ namespace WebApplication1.bussiness.production
         public static string comp = string.Empty;
         public static string datalock = string.Empty;
 
+        // at class level
+        private static readonly System.Text.RegularExpressions.Regex _esicNameNonAlpha =
+            new System.Text.RegularExpressions.Regex(@"[^A-Za-z ]+", System.Text.RegularExpressions.RegexOptions.Compiled);
+        private static readonly System.Text.RegularExpressions.Regex _esicNameMultiSpace =
+            new System.Text.RegularExpressions.Regex(@"\s{2,}", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+        private static string SanitizeNameForEsicFast(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return "";
+            var s = _esicNameNonAlpha.Replace(name, " ");
+            return _esicNameMultiSpace.Replace(s, " ").Trim();
+        }
+
+        private static int Ceil(decimal v) => (int)Math.Ceiling(v);
+
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -157,21 +172,21 @@ namespace WebApplication1.bussiness.production
             dbcl.ConnectDb();
 
             string cmdString = @"
-        SELECT 
-            ROW_NUMBER() OVER (ORDER BY a.Id) AS SrNo,
-            a.WorkmanSL,
-            a.FullName,
-            b.ESICNo,
-            a.Present,
-            a.ESICGross
-        FROM tbl_trialpayroll a
-        INNER JOIN tbl_Employee_Mustertable b ON a.WorkmanSL = b.WorkmanSL
-        WHERE a.WorkRegion    = @Region
-          AND a.SalaryMonth   = @Month
-          AND a.SalaryYear    = @Year
-          AND a.SalaryStartDay = @Date1
-          AND a.SalaryEndDay   = @Date2
-        ORDER BY a.Id;";
+            SELECT 
+                ROW_NUMBER() OVER (ORDER BY a.Id) AS SrNo,
+                a.WorkmanSL,
+                a.FullName,
+                b.ESICNo,
+                a.Present,
+                a.ESICGross
+            FROM tbl_trialpayroll a
+            INNER JOIN tbl_Employee_Mustertable b ON a.WorkmanSL = b.WorkmanSL
+            WHERE a.WorkRegion    = @Region
+              AND a.SalaryMonth   = @Month
+              AND a.SalaryYear    = @Year
+              AND a.SalaryStartDay = @Date1
+              AND a.SalaryEndDay   = @Date2
+            ORDER BY a.Id;";
 
             using (SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn))
             {
@@ -218,7 +233,7 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_excelexport_Click(object sender, EventArgs e)
         {
-            string strt = "PFSheet";
+            string strt = "ESIC_Sheet";
             string regn = region;
             string month = DDL_Month.SelectedItem.Text.ToString();
             string year = DDL_Year.SelectedItem.Text.ToString();
@@ -272,19 +287,19 @@ namespace WebApplication1.bussiness.production
             dbcl.ConnectDb();
 
             string sql = @"
-        SELECT 
-            b.ESICNo,
-            a.FullName,
-            a.Present,
-            a.ESICGross
-        FROM tbl_trialpayroll a
-        INNER JOIN tbl_Employee_Mustertable b ON a.WorkmanSL = b.WorkmanSL
-        WHERE a.WorkRegion    = @Region
-          AND a.SalaryMonth   = @Month
-          AND a.SalaryYear    = @Year
-          AND a.SalaryStartDay = @Date1
-          AND a.SalaryEndDay   = @Date2
-        ORDER BY a.Id;";
+                SELECT 
+                    b.ESICNo,
+                    a.FullName,
+                    a.Present,
+                    a.ESICGross
+                FROM tbl_trialpayroll a
+                INNER JOIN tbl_Employee_Mustertable b ON a.WorkmanSL = b.WorkmanSL
+                WHERE a.WorkRegion    = @Region
+                  AND a.SalaryMonth   = @Month
+                  AND a.SalaryYear    = @Year
+                  AND a.SalaryStartDay = @Date1
+                  AND a.SalaryEndDay   = @Date2
+                ORDER BY a.Id;";
 
             using (var cmd = new SqlCommand(sql, dbcl.Conn))
             {
@@ -324,7 +339,7 @@ namespace WebApplication1.bussiness.production
             return sb.ToString();
         }
 
-        protected void btn_esicdownload_Click(object sender, EventArgs e)
+        protected void btn_esicdownload_Click_OLD(object sender, EventArgs e)
         {
             string regn = region;
             string month = DDL_Month.SelectedValue;
@@ -353,7 +368,195 @@ namespace WebApplication1.bussiness.production
             Response.End();
         }
 
+        protected void btn_esicdownload_Click(object sender, EventArgs e)
+        {
+            string current_year = DDL_Year.SelectedItem.Text.ToString();
+            string current_month1 = DDL_Month.SelectedItem.Text.ToString();
+            string current_month2 = DDL_Month.SelectedValue.ToString();
 
+            int month1 = int.Parse(current_month2);
+            int year1 = int.Parse(current_year);
+            int daysInMonth = DateTime.DaysInMonth(year1, month1);
+
+            string strtday = "01";
+            string endday = daysInMonth.ToString("D2");
+
+            var rows = LoadRows(DDL_Year.SelectedValue, DDL_Month.SelectedValue, region,
+                                strtday as string ?? "", endday as string ?? "");
+            string payload = BuildEsicCsv(rows, includeHeader: true, tab: false);
+
+            Response.Clear(); Response.Buffer = true;
+            Response.ContentType = "text/csv";
+            Response.AddHeader("Content-Disposition",
+                $"attachment;filename=ESIC_{region}_{DDL_Month.SelectedValue}_{DDL_Year.SelectedValue}.csv");
+            Response.Write(payload);
+            Response.Flush(); Response.End();
+        }
+
+        protected void btn_txtdownload_Click(object sender, EventArgs e)
+        {
+            string current_year = DDL_Year.SelectedItem.Text.ToString();
+            string current_month1 = DDL_Month.SelectedItem.Text.ToString();
+            string current_month2 = DDL_Month.SelectedValue.ToString();
+
+            int month1 = int.Parse(current_month2);
+            int year1 = int.Parse(current_year);
+            int daysInMonth = DateTime.DaysInMonth(year1, month1);
+
+            string strtday = "01";
+            string endday = daysInMonth.ToString("D2");
+
+            var rows = LoadRows(DDL_Year.SelectedValue, DDL_Month.SelectedValue, region,
+                                strtday as string ?? "", endday as string ?? "");
+            string payload = BuildPfTxt(rows);
+
+            Response.Clear(); Response.Buffer = true;
+            Response.ContentType = "text/plain";
+            Response.AddHeader("Content-Disposition",
+                $"attachment;filename=ECR_{region}_{DDL_Month.SelectedValue}_{DDL_Year.SelectedValue}.txt");
+            Response.Write(payload);
+            Response.Flush(); Response.End();
+        }
+
+        private string BuildPfTxt(List<PayrollRow> rows)
+        {
+            const string delim = "#~#";
+            // Rough capacity estimate: ~70 chars per line * rows
+            var sb = new System.Text.StringBuilder(rows.Count * 80);
+
+            foreach (var x in rows)
+            {
+                int basic = Ceil(x.BasicSalary);
+                int gross = basic;
+                int epfW = basic;
+                int epsW = basic;
+                int edliW = Math.Min(basic, 15000);
+
+                int epfEE = x.PFPay > 0 ? (int)Math.Round(x.PFPay, 0) : Ceil(x.BasicSalary * 0.12m);
+                int epsER = Ceil(x.BasicSalary * 0.0833m);
+                int epfER = Ceil(x.BasicSalary * 0.0367m);
+
+                const string ncp = "0";
+                const string refund = "0";
+
+                sb.Append(x.UANNo).Append(delim)
+                  .Append((x.FullName ?? "").Trim()).Append(delim)
+                  .Append(gross).Append(delim)
+                  .Append(epfW).Append(delim)
+                  .Append(epsW).Append(delim)
+                  .Append(edliW).Append(delim)
+                  .Append(epfEE).Append(delim)
+                  .Append(epsER).Append(delim)
+                  .Append(epfER).Append(delim)
+                  .Append(ncp).Append(delim)
+                  .Append(refund).AppendLine();
+            }
+            return sb.ToString();
+        }
+
+        private string BuildEsicCsv(List<PayrollRow> rows, bool includeHeader = true, bool tab = false)
+        {
+            string sep = tab ? "\t" : ",";
+            var sb = new System.Text.StringBuilder(rows.Count * 64);
+
+            if (includeHeader)
+            {
+                sb.Append(string.Join(sep, new[]{
+            "IP Number (10 Digits)","IP Name",
+            "No of Days for which wages paid/payable during the month",
+            "Total Monthly Wages","Reason Code for Zero working days","Last Working Day"
+        })).AppendLine();
+            }
+
+            foreach (var x in rows)
+            {
+                string ip = (x.ESICNo ?? "").Trim();
+                if (ip.Length < 10) ip = ip.PadLeft(10, '0');
+
+                string name = SanitizeNameForEsicFast(x.FullName);
+                if (!tab) name = "\"" + name.Replace("\"", "\"\"") + "\"";
+
+                int days = (int)Math.Round(x.Present);
+                int wages = (int)Math.Round(x.ESICGross);
+                int reason = (days == 0 ? 11 : 0);
+                string lwd = ""; // blank (no LWD source)
+
+                sb.Append(ip).Append(sep).Append(name).Append(sep)
+                  .Append(days).Append(sep).Append(wages).Append(sep)
+                  .Append(reason).Append(sep).Append(lwd).AppendLine();
+            }
+            return sb.ToString();
+        }
+
+        private string MakeKey(string y, string m, string r, string d1, string d2) => $"PAYROLL:{y}:{m}:{r}:{d1}:{d2}";
+
+        private List<PayrollRow> LoadRows(string year, string month, string region, string date1, string date2)
+        {
+            var key = MakeKey(year, month, region, date1, date2);
+            var cached = HttpRuntime.Cache[key] as List<PayrollRow>;
+            if (cached != null) return cached;
+
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
+
+            var rows = new List<PayrollRow>();
+            string sql = @"
+              SELECT a.Id, a.WorkmanSL, a.FullName, a.BasicSalary, a.Present, a.PFPay, a.ESICGross,
+                     b.UANNo, b.ESICNo
+              FROM tbl_trialpayroll a
+              INNER JOIN tbl_Employee_Mustertable b ON a.WorkmanSL=b.WorkmanSL
+              WHERE a.WorkRegion=@Region AND a.SalaryMonth=@Month AND a.SalaryYear=@Year
+                AND a.SalaryStartDay=@Date1 AND a.SalaryEndDay=@Date2
+              ORDER BY a.Id;";
+
+            using (var cmd = new SqlCommand(sql, dbcl.Conn))
+            {
+                cmd.Parameters.AddWithValue("@Region", region);
+                cmd.Parameters.AddWithValue("@Month", month);
+                cmd.Parameters.AddWithValue("@Year", year);
+                cmd.Parameters.AddWithValue("@Date1", date1);
+                cmd.Parameters.AddWithValue("@Date2", date2);
+
+                using (var r = cmd.ExecuteReader())
+                {
+                    while (r.Read())
+                    {
+                        rows.Add(new PayrollRow
+                        {
+                            Id = r["Id"] == DBNull.Value ? 0 : Convert.ToInt32(r["Id"]),
+                            WorkmanSL = (r["WorkmanSL"] ?? "").ToString(),
+                            FullName = (r["FullName"] ?? "").ToString(),
+                            UANNo = (r["UANNo"] ?? "").ToString(),
+                            ESICNo = (r["ESICNo"] ?? "").ToString(),
+                            BasicSalary = r["BasicSalary"] == DBNull.Value ? 0 : Convert.ToDecimal(r["BasicSalary"]),
+                            Present = r["Present"] == DBNull.Value ? 0 : Convert.ToDecimal(r["Present"]),
+                            PFPay = r["PFPay"] == DBNull.Value ? 0 : Convert.ToDecimal(r["PFPay"]),
+                            ESICGross = r["ESICGross"] == DBNull.Value ? 0 : Convert.ToDecimal(r["ESICGross"])
+                        });
+                    }
+                }
+            }
+
+            HttpRuntime.Cache.Insert(key, rows, null,
+                DateTime.UtcNow.AddMinutes(10), System.Web.Caching.Cache.NoSlidingExpiration);
+
+            return rows;
+        }
+
+
+        // Simple DTO to hold payroll data
+        public class PayrollRow
+        {
+            public int Id { get; set; }
+            public string WorkmanSL { get; set; }
+            public string FullName { get; set; }
+            public string UANNo { get; set; }
+            public string ESICNo { get; set; }
+            public decimal BasicSalary { get; set; }
+            public decimal Present { get; set; }
+            public decimal PFPay { get; set; }
+            public decimal ESICGross { get; set; }
+        }
 
     }
 }

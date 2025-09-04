@@ -326,7 +326,7 @@ namespace WebApplication1.bussiness.production
             return sb.ToString();
         }
 
-        protected void btn_txtdownload_Click(object sender, EventArgs e)
+        protected void btn_txtdownload_Click_OLD(object sender, EventArgs e)
         {
             string regn = region; // your existing variable
             string month = DDL_Month.SelectedItem.Text;
@@ -355,6 +355,150 @@ namespace WebApplication1.bussiness.production
             Response.End();
         }
 
+        protected void btn_txtdownload_Click(object sender, EventArgs e)
+        {
+            string current_year = DDL_Year.SelectedItem.Text.ToString();
+            string current_month1 = DDL_Month.SelectedItem.Text.ToString();
+            string current_month2 = DDL_Month.SelectedValue.ToString();
+
+            int month1 = int.Parse(current_month2);
+            int year1 = int.Parse(current_year);
+            int daysInMonth = DateTime.DaysInMonth(year1, month1);
+
+            string strtday = "01";
+            string endday = daysInMonth.ToString("D2");
+
+            var rows = LoadRows(DDL_Year.SelectedValue, DDL_Month.SelectedValue, region,
+                                strtday as string ?? "", endday as string ?? "");
+            string payload = BuildPfTxt(rows);
+
+            Response.Clear(); Response.Buffer = true;
+            Response.ContentType = "text/plain";
+            Response.AddHeader("Content-Disposition",
+                $"attachment;filename=ECR_{region}_{DDL_Month.SelectedValue}_{DDL_Year.SelectedValue}.txt");
+            Response.Write(payload);
+            Response.Flush(); Response.End();
+        }
+
+        // Simple DTO to hold payroll data
+        public class PayrollRow
+        {
+            public int Id { get; set; }
+            public string WorkmanSL { get; set; }
+            public string FullName { get; set; }
+            public string UANNo { get; set; }
+            public string ESICNo { get; set; }
+            public decimal BasicSalary { get; set; }
+            public decimal Present { get; set; }
+            public decimal PFPay { get; set; }
+            public decimal ESICGross { get; set; }
+        }
+
+        private List<PayrollRow> LoadRows(string year, string month, string region, string date1, string date2)
+        {
+            var key = MakeKey(year, month, region, date1, date2);
+            var cached = HttpRuntime.Cache[key] as List<PayrollRow>;
+            if (cached != null) return cached;
+
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
+
+            var rows = new List<PayrollRow>();
+            string sql = @"
+              SELECT a.Id, a.WorkmanSL, a.FullName, a.BasicSalary, a.Present, a.PFPay, a.ESICGross,
+                     b.UANNo, b.ESICNo
+              FROM tbl_trialpayroll a
+              INNER JOIN tbl_Employee_Mustertable b ON a.WorkmanSL=b.WorkmanSL
+              WHERE a.WorkRegion=@Region AND a.SalaryMonth=@Month AND a.SalaryYear=@Year
+                AND a.SalaryStartDay=@Date1 AND a.SalaryEndDay=@Date2
+              ORDER BY a.Id;";
+
+            using (var cmd = new SqlCommand(sql, dbcl.Conn))
+            {
+                cmd.Parameters.AddWithValue("@Region", region);
+                cmd.Parameters.AddWithValue("@Month", month);
+                cmd.Parameters.AddWithValue("@Year", year);
+                cmd.Parameters.AddWithValue("@Date1", date1);
+                cmd.Parameters.AddWithValue("@Date2", date2);
+
+                using (var r = cmd.ExecuteReader())
+                {
+                    while (r.Read())
+                    {
+                        rows.Add(new PayrollRow
+                        {
+                            Id = r["Id"] == DBNull.Value ? 0 : Convert.ToInt32(r["Id"]),
+                            WorkmanSL = (r["WorkmanSL"] ?? "").ToString(),
+                            FullName = (r["FullName"] ?? "").ToString(),
+                            UANNo = (r["UANNo"] ?? "").ToString(),
+                            ESICNo = (r["ESICNo"] ?? "").ToString(),
+                            BasicSalary = r["BasicSalary"] == DBNull.Value ? 0 : Convert.ToDecimal(r["BasicSalary"]),
+                            Present = r["Present"] == DBNull.Value ? 0 : Convert.ToDecimal(r["Present"]),
+                            PFPay = r["PFPay"] == DBNull.Value ? 0 : Convert.ToDecimal(r["PFPay"]),
+                            ESICGross = r["ESICGross"] == DBNull.Value ? 0 : Convert.ToDecimal(r["ESICGross"])
+                        });
+                    }
+                }
+            }
+
+            HttpRuntime.Cache.Insert(key, rows, null,
+                DateTime.UtcNow.AddMinutes(10), System.Web.Caching.Cache.NoSlidingExpiration);
+
+            return rows;
+        }
+
+        private string MakeKey(string y, string m, string r, string d1, string d2) => $"PAYROLL:{y}:{m}:{r}:{d1}:{d2}";
+
+        private string BuildPfTxt(List<PayrollRow> rows)
+        {
+            const string delim = "#~#";
+            // Rough capacity estimate: ~70 chars per line * rows
+            var sb = new System.Text.StringBuilder(rows.Count * 80);
+
+            foreach (var x in rows)
+            {
+                int basic = Ceil(x.BasicSalary);
+                int gross = basic;
+                int epfW = basic;
+                int epsW = basic;
+                int edliW = Math.Min(basic, 15000);
+
+                int epfEE = x.PFPay > 0 ? (int)Math.Round(x.PFPay, 0) : Ceil(x.BasicSalary * 0.12m);
+                int epsER = Ceil(x.BasicSalary * 0.0833m);
+                int epfER = Ceil(x.BasicSalary * 0.0367m);
+
+                const string ncp = "0";
+                const string refund = "0";
+
+                sb.Append(x.UANNo).Append(delim)
+                  .Append((x.FullName ?? "").Trim()).Append(delim)
+                  .Append(gross).Append(delim)
+                  .Append(epfW).Append(delim)
+                  .Append(epsW).Append(delim)
+                  .Append(edliW).Append(delim)
+                  .Append(epfEE).Append(delim)
+                  .Append(epsER).Append(delim)
+                  .Append(epfER).Append(delim)
+                  .Append(ncp).Append(delim)
+                  .Append(refund).AppendLine();
+            }
+            return sb.ToString();
+        }
+
+        // at class level
+        private static readonly System.Text.RegularExpressions.Regex _esicNameNonAlpha =
+            new System.Text.RegularExpressions.Regex(@"[^A-Za-z ]+", System.Text.RegularExpressions.RegexOptions.Compiled);
+        private static readonly System.Text.RegularExpressions.Regex _esicNameMultiSpace =
+            new System.Text.RegularExpressions.Regex(@"\s{2,}", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+        private static string SanitizeNameForEsicFast(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return "";
+            var s = _esicNameNonAlpha.Replace(name, " ");
+            return _esicNameMultiSpace.Replace(s, " ").Trim();
+        }
+
+        private static int Ceil(decimal v) => (int)Math.Ceiling(v);
 
     }
 }
