@@ -163,7 +163,10 @@ namespace WebApplication1.bussiness.production
                 b.UANNo, 
                 CEILING(a.BasicSalary) AS Basic1, 
                 CEILING(a.BasicSalary) AS Basic2, 
-                CEILING(a.BasicSalary) AS Basic3, 
+                CASE 
+                    WHEN CEILING(a.BasicSalary) > 15000 THEN 15000 
+                    ELSE CEILING(a.BasicSalary) 
+                END AS Basic3,  
                 CASE 
                     WHEN CEILING(a.BasicSalary) > 15000 THEN 15000 
                     ELSE CEILING(a.BasicSalary) 
@@ -266,7 +269,7 @@ namespace WebApplication1.bussiness.production
                 b.UANNo,
                 CEILING(a.BasicSalary) AS Gross,              -- Basic1
                 CEILING(a.BasicSalary) AS EPF_Wages,          -- Basic2
-                CEILING(a.BasicSalary) AS EPS_Wages,          -- Basic3
+                CASE WHEN CEILING(a.BasicSalary) > 15000 THEN 15000 ELSE CEILING(a.BasicSalary) END AS EPS_Wages, -- Basic3
                 CASE WHEN CEILING(a.BasicSalary) > 15000 THEN 15000 ELSE CEILING(a.BasicSalary) END AS EDLI_Wages, -- Basic4
                 a.PFPay AS EPF_EE_12,                         -- Employee share (12%). If needed, compute: CEILING(ROUND(a.BasicSalary*0.12,0))
                 CEILING(ROUND((a.BasicSalary * 0.0833), 0)) AS EPS_ER_833,  -- Employer EPS 8.33%

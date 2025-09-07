@@ -209,13 +209,34 @@ namespace WebApplication1.bussiness.production
             }
 
 
-            //string query = "select WorkmanSL, WorkRegion, FullName, SkillCategory, SkillDesignation,FixedSalary_YesNo, FixedAmount, WorkHours, OTFactor, OTMultiplier, DA_VDA, HRA,Conv_Allowance, Medical_Allowance, Washing_Allowance, ATT_Allowance, SPCL_Allowance, Misc_Earnings from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' order by Id";
+            ////string query = "select WorkmanSL, WorkRegion, FullName, SkillCategory, SkillDesignation,FixedSalary_YesNo, FixedAmount, WorkHours, OTFactor, OTMultiplier, DA_VDA, HRA,Conv_Allowance, Medical_Allowance, Washing_Allowance, ATT_Allowance, SPCL_Allowance, Misc_Earnings from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' order by Id";
 
-            string query = "select WorkmanSL, WorkRegion, FullName, SkillCategory, SkillDesignation,FixedSalary_YesNo, FixedAmount, WorkHours, OTFactor, OTMultiplier, DA_VDA, HRA,Conv_Allowance, Medical_Allowance, Washing_Allowance, ATT_Allowance, SPCL_Allowance, Misc_Earnings, OT_Divisibility, Cur_Advance, Cur_Fines, Cur_Others from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and F17_YesNo='Yes' order by Id";
+            //string query = "select WorkmanSL, WorkRegion, FullName, SkillCategory, SkillDesignation,FixedSalary_YesNo, FixedAmount, WorkHours, OTFactor, OTMultiplier, DA_VDA, HRA,Conv_Allowance, Medical_Allowance, Washing_Allowance, ATT_Allowance, SPCL_Allowance, Misc_Earnings, OT_Divisibility, Cur_Advance, Cur_Fines, Cur_Others from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and F17_YesNo='Yes' order by Id";
 
-            //string query = "select WorkmanSL, WorkRegion, FullName, SkillCategory, SkillDesignation,FixedSalary_YesNo, FixedAmount, WorkHours, OTFactor, OTMultiplier, DA_VDA, HRA,Conv_Allowance, Medical_Allowance, Washing_Allowance, ATT_Allowance, SPCL_Allowance, Misc_Earnings, OT_Divisibility, Cur_Advance, Cur_Fines, Cur_Others from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and F17_YesNo='Yes' and WorkmanSL='A878' order by Id";
+            ////string query = "select WorkmanSL, WorkRegion, FullName, SkillCategory, SkillDesignation,FixedSalary_YesNo, FixedAmount, WorkHours, OTFactor, OTMultiplier, DA_VDA, HRA,Conv_Allowance, Medical_Allowance, Washing_Allowance, ATT_Allowance, SPCL_Allowance, Misc_Earnings, OT_Divisibility, Cur_Advance, Cur_Fines, Cur_Others from tbl_Employee_Mustertable where WorkRegion='" + region + "' and WorkStatus='" + DDL_EmpWorkStatus.SelectedItem.Text.ToString() + "' and F17_YesNo='Yes' and WorkmanSL='A878' order by Id";
 
-            BindGridByQuery(query);
+            //BindGridByQuery(query);
+
+            string query = @"
+            SELECT WorkmanSL, WorkRegion, FullName, SkillCategory, SkillDesignation,
+                   FixedSalary_YesNo, FixedAmount, WorkHours, OTFactor, OTMultiplier,
+                   DA_VDA, HRA, Conv_Allowance, Medical_Allowance, Washing_Allowance,
+                   ATT_Allowance, SPCL_Allowance, Misc_Earnings, OT_Divisibility,
+                   Cur_Advance, Cur_Fines, Cur_Others
+            FROM tbl_Employee_Mustertable
+            WHERE WorkRegion = @WorkRegion
+              AND WorkStatus = @WorkStatus
+              AND F17_YesNo = 'Yes'
+            ORDER BY Id";
+
+            SqlParameter[] parms = new SqlParameter[]
+            {
+                new SqlParameter("@WorkRegion", SqlDbType.VarChar, 50) { Value = (object)region ?? DBNull.Value },
+                new SqlParameter("@WorkStatus", SqlDbType.VarChar, 50) { Value = (object)DDL_EmpWorkStatus.SelectedItem.Text ?? DBNull.Value }
+            };
+
+            BindGridByQuery(query, parms);
+
         }
 
 
@@ -272,7 +293,76 @@ namespace WebApplication1.bussiness.production
             return flag;
         }
 
+        // Keep your original single-argument method but route to the parameterized overload
         private void BindGridByQuery(string query)
+        {
+            BindGridByQuery(query, null);
+        }
+
+        // Parameterized overload using SqlParameter[]
+        private void BindGridByQuery(string query, SqlParameter[] parameters)
+        {
+            try
+            {
+                // Ensure dbcl establishes the connection object (same as your current pattern)
+                dbcl.Sqlconnection();
+
+                // Do not 'using' the dbcl.Conn here (to avoid disposing a shared connection object).
+                SqlConnection conn = dbcl.Conn;
+
+                try
+                {
+                    if (conn.State != ConnectionState.Open)
+                        conn.Open();
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        // If parameters provided, add them
+                        if (parameters != null && parameters.Length > 0)
+                        {
+                            cmd.Parameters.AddRange(parameters);
+                        }
+
+                        // Optional: set a timeout (adjust if needed)
+                        cmd.CommandTimeout = 90;
+
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            // Ensure DataTable exists and is cleared
+                            if (dt_emps == null) dt_emps = new DataTable();
+                            else dt_emps.Clear();
+
+                            da.Fill(dt_emps);
+
+                            GridView.DataSource = dt_emps;
+                            GridView.DataBind();
+                            f17grid.Visible = true;
+                        } // da disposed
+                    } // cmd disposed
+                }
+                finally
+                {
+                    // Close connection if we opened it here
+                    if (conn != null && conn.State == ConnectionState.Open)
+                    {
+                        conn.Close();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log exception server-side in production. Show friendly message to user.
+                string title = "Notifications :";
+                string body = "Unable to load employee data. Contact administrator.";
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+
+                // Optionally set label for debugging (remove in production)
+                // lbl_msg.Text = ex.Message;
+            }
+        }
+
+
+        private void BindGridByQuery_OLD(string query)
         {
             try
             {

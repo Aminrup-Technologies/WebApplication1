@@ -409,7 +409,7 @@ namespace WebApplication1.bussiness.production
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             dt_emps.Clear();
-            string cmdString = "select WorkmanSL from tbl_trialpayroll where SalaryYear='" + Year + "' and SalaryMonth='" + Month + "' and Region='" + Region + "' and a.ViewMode=1 and a.DeleteMode=0 order by Id";
+            string cmdString = "select WorkmanSL from tbl_trialpayroll where SalaryYear='" + Year + "' and SalaryMonth='" + Month + "' and Region='" + Region + "' and ViewMode=1 and DeleteMode=0 order by Id";
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
             cmd.CommandType = CommandType.Text;
             int Sl = 1;
