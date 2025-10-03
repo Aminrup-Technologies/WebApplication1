@@ -132,7 +132,7 @@ namespace WebApplication1.bussiness.production
 
         protected void DDL_Region_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = 'IN' and State_Code ='OD' and Work_Region_Code = '" + DDL_Region.SelectedValue.ToString() + "' order by Id ";
+            string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = 'IN' and State_Code ='"+ state + "' and Work_Region_Code = '" + DDL_Region.SelectedValue.ToString() + "' order by Id ";
             BindCompany(CmdString3);
         }
 
