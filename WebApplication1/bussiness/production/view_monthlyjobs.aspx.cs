@@ -37,8 +37,8 @@ namespace WebApplication1.bussiness.production
                     string year = d.Year.ToString();
                     //string region = Session["REGION"].ToString();
 
-                    if (Session["WORKMAN"].ToString() == "J8")
-                    {
+                    //if (Session["WORKMAN"].ToString() == "J8")
+                    //{
                         if (Session["Changer"] != null)
                         {
                             string[] retrievedArray = (string[])Session["Changer"];
@@ -66,12 +66,12 @@ namespace WebApplication1.bussiness.production
                         //BindGrid(CmdString3);
 
                         //DDL_EmpWorkStatus.SelectedIndex = 2;
-                    }
-                    else
-                    {
-                        CheckforUser();
-                        GridBinder(year, month, region);
-                    }
+                    //}
+                    //else
+                    //{
+                    //    CheckforUser();
+                    //    GridBinder(year, month, region);
+                    //}
 
                     //string CmdString1 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = 'IN' order by Id ";
                     //BindRegions(CmdString1);

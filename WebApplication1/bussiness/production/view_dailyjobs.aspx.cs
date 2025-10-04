@@ -15,6 +15,11 @@ namespace WebApplication1.bussiness.production
         CountChecker CC = new CountChecker();
         Boolean flag = false;
 
+        public static string state = string.Empty;
+        public static string region = string.Empty;
+        public static string comp = string.Empty;
+        public static string datalock = string.Empty;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -26,6 +31,23 @@ namespace WebApplication1.bussiness.production
                 else
                 {
                     flag = false;
+
+                    if (Session["Changer"] != null)
+                    {
+                        string[] retrievedArray = (string[])Session["Changer"];
+                        region = retrievedArray[1].ToString();
+                        comp = retrievedArray[2].ToString();
+                        state = retrievedArray[0].ToString();
+                        datalock = retrievedArray[3].ToString();
+                        //Session["Changer"]= null;
+                    }
+                    else
+                    {
+                        region = Session["REGION"].ToString();
+                        comp = Session["COMPANY_CODE"].ToString();
+                        state = Session["STATE"].ToString();
+                        datalock = "0";
+                    }
 
                     string Date = Request.QueryString["Date"];
                     if (Date != null)
@@ -41,20 +63,25 @@ namespace WebApplication1.bussiness.production
                         GridBinder();
                     }
 
-                    if (Session["USTATE"].ToString() == "PI")
-                    {
-                        rgnrow1.Visible = true;
-                        rgnrow2.Visible = true;
+                    string CmdString2 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = 'IN' and State_Code='" + state + "' order by Id ";
+                    BindRegions(CmdString2);
 
-                        comprow1.Visible = true;
-                        comprow2.Visible = true;
-                        string CmdString2 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = 'IN' order by Id ";
-                        BindRegions(CmdString2);
-                    }
-                    else
-                    {
-                        WorksiteBinder();
-                    }
+                    WorksiteBinder();
+
+                    //if (Session["USTATE"].ToString() == "PI")
+                    //{
+                    //    rgnrow1.Visible = true;
+                    //    rgnrow2.Visible = true;
+
+                    //    comprow1.Visible = true;
+                    //    comprow2.Visible = true;
+                    //    string CmdString2 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = 'IN' order by Id ";
+                    //    BindRegions(CmdString2);
+                    //}
+                    //else
+                    //{
+                    //    WorksiteBinder();
+                    //}
                 }
             }
         }
@@ -121,7 +148,7 @@ namespace WebApplication1.bussiness.production
             string month = d.Month.ToString();
             string year = d.Year.ToString();
             string day = d.Day.ToString();
-            string region = Session["REGION"].ToString();
+            //string region = Session["REGION"].ToString();
 
             string query = "select * from tbl_jobs a where YEAR(CreatedDate)='" + YYYY + "' and MONTH(CreatedDate)='" + MM + "' and DAY(CreatedDate)='" + DD + "' and JOB_Region='" + region + "' order by Id desc";
             BindGridView1(query);
@@ -379,7 +406,7 @@ namespace WebApplication1.bussiness.production
             }
             else
             {
-                string CmdString2 = "select Worksite_Name, DB_Code from tlb_atsworksites where WorkRegion_Code='" + Session["REGION"].ToString() + "' and Company_Code = '" + Session["COMPANY_CODE"].ToString() + "' order by Id";
+                string CmdString2 = "select Worksite_Name, DB_Code from tlb_atsworksites where WorkRegion_Code='" + region + "' and Company_Code = '" + comp + "' order by Id";
                 BindWorkSites(CmdString2);
             }
         }
@@ -403,14 +430,14 @@ namespace WebApplication1.bussiness.production
             string month = DDL_Month.SelectedItem.Text.ToString();
             string year = DDL_Year.SelectedItem.Text.ToString();
             string day = DDL_Day.SelectedItem.Text.ToString();
-            string region = Session["REGION"].ToString();
+            //string region = Session["REGION"].ToString();
             if (Session["USTATE"].ToString() == "PI")
             {
                 if (DDL_Region.SelectedIndex!=0)
                 {
                     if (DDL_Company.SelectedIndex!=0)
                     {
-                        region = DDL_Region.SelectedValue.ToString();
+                        //region = DDL_Region.SelectedValue.ToString();
                         if (DDL_Worksite.SelectedIndex == 0)
                         {
                             string query = "select * from tbl_jobs a where YEAR(CreatedDate)='" + year + "' and MONTH(CreatedDate)='" + month + "' and DAY(CreatedDate)='" + day + "' and JOB_Region='" + region + "' and JOB_Company='"+DDL_Company.SelectedValue.ToString()+"' order by Id desc";
