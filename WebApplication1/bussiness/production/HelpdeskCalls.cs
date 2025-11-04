@@ -60,10 +60,10 @@ namespace WebApplication1.bussiness.production
 
         public void SendEmail(string hlpdskid, string createdByWorkman, string createdByName, string creatorRegion, string creatorComp, string root1Value, string root2Value, string root3Value, string priorityLevel, string description)
         {
-            string smtpServer = "smtp.gmail.com";
+            string smtpServer = "smtp.zoho.in";
             int smtpPort = 587;
-            string smtpUsername = "it_helpdesk@atswork.in";
-            string smtpPassword = "ltxf rkgx blrz xdld";
+            string smtpUsername = "it.support@aminruptechnologies.co.in";
+            string smtpPassword = "TPw800QrVMU2";
 
             try
             {
@@ -78,7 +78,7 @@ namespace WebApplication1.bussiness.production
                         mail.From = new MailAddress(smtpUsername);
                         // Add recipient email addresses
                         //mail.To.Add("kaushik@atswork.in");
-                        mail.To.Add("anupam.sharma@atswork.in");
+                        mail.To.Add("hr@atswork.in");
                         mail.CC.Add("office@atswork.in");
                         // Set email subject and body
                         mail.Subject = "Grivance Ticket Created #"+ hlpdskid + " with Priority Level : " + priorityLevel + "!";

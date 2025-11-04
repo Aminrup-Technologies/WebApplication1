@@ -143,11 +143,11 @@ namespace WebApplication1.bussiness.production
 
         public void SendEmail(string recipientEmail, string mailSubject, string emailBody)
         {
-            string smtpServer = "smtp.gmail.com";
+            string smtpServer = "smtp.zoho.in";
             int smtpPort = 587;
-            string smtpUsername = "it_helpdesk@atswork.in";
+            string smtpUsername = "it.support@aminruptechnologies.co.in";
             //string smtpPassword = "W4rqD>Vq5>g25jS$";
-            string smtpPassword = "ltxf rkgx blrz xdld";
+            string smtpPassword = "TPw800QrVMU2";
 
             try
             {
@@ -176,10 +176,10 @@ namespace WebApplication1.bussiness.production
 
         public void SendEmailCC(string recipientEmail, string ccEmail, string mailSubject, string emailBody)
         {
-            string smtpServer = "smtp.gmail.com";
+            string smtpServer = "smtp.zoho.in";
             int smtpPort = 587;
-            string smtpUsername = "it_helpdesk@atswork.in";
-            string smtpPassword = "ltxf rkgx blrz xdld";
+            string smtpUsername = "it.support@aminruptechnologies.co.in";
+            string smtpPassword = "TPw800QrVMU2";
 
             try
             {

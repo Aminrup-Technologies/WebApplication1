@@ -811,22 +811,22 @@ namespace WebApplication1.bussiness.production
                     if (lbl_jobrgn.Text.ToString() == "JSR")
                     {
                         string Subject = "Missing PO and Skill Category Mapping : Region='" + lbl_jobrgn.Text.ToString() + "' || Company= '" + lbl_jobcompay.Text.ToString() + "' || Workorder='" + lbl_wrkordr.Text.ToString() + "' || JOBID='" + lbl_jobid.Text.ToString() + "'";
-                        dbcl.SendEmail("anupam.sharma@atswork.in", Subject, emailBody);
+                        dbcl.SendEmail("hr@atswork.in", Subject, emailBody);
                     }
                     else if (lbl_jobrgn.Text.ToString() == "KPO")
                     {
                         string Subject = "Missing PO and Skill Category Mapping : Region='" + lbl_jobrgn.Text.ToString() + "' || Company= '" + lbl_jobcompay.Text.ToString() + "' || Workorder='" + lbl_wrkordr.Text.ToString() + "' || JOBID='" + lbl_jobid.Text.ToString() + "'";
-                        dbcl.SendEmail("kulamanidas1977@gmail.com", Subject, emailBody);
+                        dbcl.SendEmail("hr@atswork.in", Subject, emailBody);
                     }
                     else if (lbl_jobrgn.Text.ToString() == "NINL")
                     {
                         string Subject = "Missing PO and Skill Category Mapping : Region='" + lbl_jobrgn.Text.ToString() + "' || Company= '" + lbl_jobcompay.Text.ToString() + "' || Workorder='" + lbl_wrkordr.Text.ToString() + "' || JOBID='" + lbl_jobid.Text.ToString() + "'";
-                        dbcl.SendEmail("debaduttajena1980@gmail.com", Subject, emailBody);
+                        dbcl.SendEmail("hr@atswork.in", Subject, emailBody);
                     }
                     else if (lbl_jobrgn.Text.ToString() == "AGL")
                     {
                         string Subject = "Missing PO and Skill Category Mapping : Region='" + lbl_jobrgn.Text.ToString() + "' || Company= '" + lbl_jobcompay.Text.ToString() + "' || Workorder='" + lbl_wrkordr.Text.ToString() + "' || JOBID='" + lbl_jobid.Text.ToString() + "'";
-                        dbcl.SendEmail("sonuvittu111@gmail.com", Subject, emailBody);
+                        dbcl.SendEmail("hr@atswork.in", Subject, emailBody);
                     }
                 }
 
@@ -879,7 +879,7 @@ namespace WebApplication1.bussiness.production
                 mail.Body = body;
                 mail.IsBodyHtml = true;
 
-                using (SmtpClient smtp = new SmtpClient("smtp.gmail.com"))
+                using (SmtpClient smtp = new SmtpClient("smtp.zoho.in"))
                 {
                     smtp.Port = 587;
                     smtp.Credentials = new NetworkCredential("your_email@gmail.com", "your_password");

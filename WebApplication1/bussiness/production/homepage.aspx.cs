@@ -1083,10 +1083,10 @@ namespace WebApplication1.bussiness.production
 
         public void SendOTPByEmail(string email, string otp)
         {
-            string smtpServer = "smtp.gmail.com";
+            string smtpServer = "smtp.zoho.in";
             int smtpPort = 587;
-            string smtpUsername = "it_helpdesk@atswork.in";
-            string smtpPassword = "ltxf rkgx blrz xdld";
+            string smtpUsername = "it.support@aminruptechnologies.co.in";
+            string smtpPassword = "TPw800QrVMU2";
 
             using (SmtpClient client = new SmtpClient(smtpServer, smtpPort))
             {
@@ -1162,10 +1162,10 @@ namespace WebApplication1.bussiness.production
 
         protected void SendOTPEmail(string recipientEmail, string otp)
         {
-            string smtpServer = "smtp.gmail.com";
+            string smtpServer = "smtp.zoho.in";
             int smtpPort = 587;
-            string smtpUsername = "it_helpdesk@atswork.in";
-            string smtpPassword = "ltxf rkgx blrz xdld";
+            string smtpUsername = "it.support@aminruptechnologies.co.in";
+            string smtpPassword = "TPw800QrVMU2";
 
             try
             {
