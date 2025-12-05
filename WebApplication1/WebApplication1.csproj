@@ -323,6 +323,7 @@
     <Content Include="bussiness\production\rpts\supplymemo.aspx" />
     <Content Include="bussiness\production\rpts\testing.aspx" />
     <Content Include="bussiness\production\str\strdshbrd.aspx" />
+    <Content Include="bussiness\production\usertoggle.aspx" />
     <Content Include="bussiness\production\vw_emp_attencal.aspx" />
     <Content Include="bussiness\production\vw_inchsupmem.aspx" />
     <Content Include="bussiness\production\vw_lineitemjobs.aspx" />
@@ -886,6 +887,13 @@
       <DependentUpon>strdshbrd.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\TransferDAL.cs" />
+    <Compile Include="bussiness\production\usertoggle.aspx.cs">
+      <DependentUpon>usertoggle.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\usertoggle.aspx.designer.cs">
+      <DependentUpon>usertoggle.aspx</DependentUpon>
+    </Compile>
     <Compile Include="bussiness\production\vw_emp_attencal.aspx.cs">
       <DependentUpon>vw_emp_attencal.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

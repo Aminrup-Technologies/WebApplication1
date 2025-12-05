@@ -91,7 +91,6 @@ namespace WebApplication1.bussiness.production
 
                     if (count == 0)
                     {
-                        // Insert a default record
                         string insertQuery = @"INSERT INTO tbl_EmployeeDocsDetails (WorkmanSL, AadhaarYesNo, BankYesNo, TenYesNo, TwelveYesNo, GraduationYesNo, NoticeAccepted) VALUES (@WorkmanSL, 0, 0, 0, 0, 0, 0)";
                         SqlCommand insertCmd = new SqlCommand(insertQuery, connection);
                         insertCmd.Parameters.AddWithValue("@WorkmanSL", Session["WORKMAN"].ToString());
@@ -99,44 +98,96 @@ namespace WebApplication1.bussiness.production
                     }
                     else
                     {
-                        // Fetch the record
                         string selectQuery = "SELECT * FROM tbl_EmployeeDocsDetails WHERE WorkmanSL = @WorkmanSL";
                         SqlCommand selectCmd = new SqlCommand(selectQuery, connection);
                         selectCmd.Parameters.AddWithValue("@WorkmanSL", Session["WORKMAN"].ToString());
 
                         using (SqlDataReader reader = selectCmd.ExecuteReader())
                         {
+                            //if (reader.Read())
+                            //{
+                            //    bool aadhaarStatus = reader["AadhaarYesNo"] != DBNull.Value && Convert.ToInt32(reader["AadhaarYesNo"]) == 1;
+                            //    bool bankStatus = reader["BankYesNo"] != DBNull.Value && Convert.ToInt32(reader["BankYesNo"]) == 1;
+                            //    bool panStatus = reader["PanYesNo"] != DBNull.Value && Convert.ToInt32(reader["PanYesNo"]) == 1;
+                            //    bool tenStatus = reader["TenYesNo"] != DBNull.Value && Convert.ToInt32(reader["TenYesNo"]) == 1;
+                            //    bool twelveStatus = reader["TwelveYesNo"] != DBNull.Value && Convert.ToInt32(reader["TwelveYesNo"]) == 1;
+                            //    bool graduationStatus = reader["GraduationYesNo"] != DBNull.Value && Convert.ToInt32(reader["GraduationYesNo"]) == 1;
+                            //    bool noticeAccepted = Convert.ToInt32(reader["NoticeAccepted"] ?? 0) == 1;
+                            //    DateTime? skipDate = reader["SkipDate"] != DBNull.Value ? Convert.ToDateTime(reader["SkipDate"]) : (DateTime?)null;
+
+                            //    if (!noticeAccepted)
+                            //    {
+                            //        if (skipDate.HasValue && skipDate.Value > DateTime.Now)
+                            //        {
+                            //            // Skip showing the modal as the SkipDate is in the future
+                            //            Console.WriteLine("SkipDate is valid. Modal skipped.");
+                            //        }
+                            //        else
+                            //        {
+                            //            // Trigger modal display for document upload notice
+                            //            ClientScript.RegisterStartupScript(this.GetType(), "ShowDocModal", "ShowDocModal();", true);
+                            //        }
+                            //    }
+                            //    else
+                            //    {
+                            //        // Optional: Actions when notice has already been accepted
+                            //        Console.WriteLine("Notice already accepted.");
+                            //    }
+                            //}
+
                             if (reader.Read())
                             {
-                                // Fetch the document statuses
                                 bool aadhaarStatus = reader["AadhaarYesNo"] != DBNull.Value && Convert.ToInt32(reader["AadhaarYesNo"]) == 1;
                                 bool bankStatus = reader["BankYesNo"] != DBNull.Value && Convert.ToInt32(reader["BankYesNo"]) == 1;
                                 bool panStatus = reader["PanYesNo"] != DBNull.Value && Convert.ToInt32(reader["PanYesNo"]) == 1;
                                 bool tenStatus = reader["TenYesNo"] != DBNull.Value && Convert.ToInt32(reader["TenYesNo"]) == 1;
                                 bool twelveStatus = reader["TwelveYesNo"] != DBNull.Value && Convert.ToInt32(reader["TwelveYesNo"]) == 1;
                                 bool graduationStatus = reader["GraduationYesNo"] != DBNull.Value && Convert.ToInt32(reader["GraduationYesNo"]) == 1;
-                                bool noticeAccepted = Convert.ToInt32(reader["NoticeAccepted"] ?? 0) == 1;
+
+                                // New bypass column check (safe, quick variant). Add column IsBypassed BIT to the table if you haven't yet.
+                                bool isBypassed = reader["IsBypassed"] != DBNull.Value && Convert.ToInt32(reader["IsBypassed"]) == 1;
+
+                                bool noticeAccepted = reader["NoticeAccepted"] != DBNull.Value && Convert.ToInt32(reader["NoticeAccepted"]) == 1;
                                 DateTime? skipDate = reader["SkipDate"] != DBNull.Value ? Convert.ToDateTime(reader["SkipDate"]) : (DateTime?)null;
 
+                                // If user is bypassed/exempt, allow them through (no redirect/modal).
+                                if (isBypassed)
+                                {
+                                    // Optionally, you may want to log or set a flag in session.
+                                    return;
+                                }
+
+                                // ---- NEW LOGIC: Check if all required documents uploaded ----
+                                bool allDocsUploaded = aadhaarStatus && panStatus && bankStatus && tenStatus && twelveStatus && graduationStatus;
+
+                                if (!allDocsUploaded)
+                                {
+                                    // Close reader and force redirect to usertoggle.aspx
+                                    reader.Close();
+                                    Response.Redirect("usertoggle.aspx", false);
+                                    Context.ApplicationInstance.CompleteRequest();
+                                    return;
+                                }
+
+                                // ---- Existing Notice Check (redirect if notice not accepted and not skipped) ----
                                 if (!noticeAccepted)
                                 {
                                     if (skipDate.HasValue && skipDate.Value > DateTime.Now)
                                     {
-                                        // Skip showing the modal as the SkipDate is in the future
-                                        Console.WriteLine("SkipDate is valid. Modal skipped.");
+                                        // User has chosen to skip for some days, allow access (do nothing).
                                     }
                                     else
                                     {
-                                        // Trigger modal display for document upload notice
-                                        ClientScript.RegisterStartupScript(this.GetType(), "ShowDocModal", "ShowDocModal();", true);
+                                        // Close reader then redirect to upload page
+                                        reader.Close();
+                                        Response.Redirect("usertoggle.aspx", false);
+                                        Context.ApplicationInstance.CompleteRequest();
+                                        return;
                                     }
                                 }
-                                else
-                                {
-                                    // Optional: Actions when notice has already been accepted
-                                    Console.WriteLine("Notice already accepted.");
-                                }
                             }
+
+
                         }
                     }
                 }

@@ -1244,7 +1244,7 @@ namespace WebApplication1.bussiness.production
                 doc.Open();
                 //var fontFamily = FontFactory.GetFont("TIMES ROMAN", 15, BaseColor.BLUE);
                 // 1) Adding logo to right side top
-                string imagePath = Server.MapPath("~\\erp_images") + "\\ats_translogo.png";
+                string imagePath = Server.MapPath("~\\erp_images") + "\\Picture1.png";
                 iTextSharp.text.Image image = iTextSharp.text.Image.GetInstance(imagePath);
                 image.Alignment = Element.ALIGN_MIDDLE;
                 // set width and height
@@ -1380,7 +1380,7 @@ namespace WebApplication1.bussiness.production
                 Note.Alignment = 1;
                 doc.Add(Note);
                 Paragraph address = new Paragraph();
-                address.Add(new Chunk(@"(Automation & Techinal Services.)
+                address.Add(new Chunk(@"(Automation & Technical Services.)
         Address: Near Samudayik Vikas Bhawan, Jemco Basti, Telco, Jamshedpur - 831004.", new Font(Font.FontFamily.COURIER, 9, 1, BaseColor.BLACK)));
                 address.Alignment = 1;
                 doc.Add(address);
