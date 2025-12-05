@@ -158,7 +158,7 @@ namespace WebApplication1.bussiness.production
                                 }
 
                                 // ---- NEW LOGIC: Check if all required documents uploaded ----
-                                bool allDocsUploaded = aadhaarStatus && panStatus && bankStatus && tenStatus && twelveStatus && graduationStatus;
+                                bool allDocsUploaded = aadhaarStatus && panStatus && bankStatus && tenStatus && twelveStatus;
 
                                 if (!allDocsUploaded)
                                 {

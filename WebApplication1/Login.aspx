@@ -96,7 +96,7 @@
                                 <br />
                                 <div>
                                     <p>
-                                        © 2021-2024 All Rights Reserved. <span style="font-weight: bold; color: darkred;">
+                                        © 2021-2025 All Rights Reserved. <span style="font-weight: bold; color: darkred;">
                                             <asp:Label ID="lbl_compfooter" runat="server" Text="ATS,JSR"></asp:Label></span> Powered by <a href="#" target="_blank">Aminrup Technologies</a>
                                     </p>
                                 </div>

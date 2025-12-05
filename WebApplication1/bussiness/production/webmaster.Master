@@ -385,7 +385,7 @@
                 <asp:Label ID="lblTime1" runat="server" Text="N/A" Font-Bold="true" ForeColor="IndianRed" Visible="true"></asp:Label>
                     || Time :
 					<asp:Label ID="lblTime" runat="server" Text="N/A" Font-Bold="true" ForeColor="Black" Visible="true"></asp:Label>
-                    || © 2021-2024 <span style="font-weight: bold; color: darkred;">ATS,JSR</span>
+                    || © 2021-2025 <span style="font-weight: bold; color: darkred;">ATS,JSR</span>
                     || Powered by <a href="#" target="_blank"><span style="font-weight: bold; color: blue;">Aminrup Technologies, JSR</span></a>
                 </div>
                 <div class="clearfix"></div>
