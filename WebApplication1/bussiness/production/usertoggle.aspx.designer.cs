@@ -7,13 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WebApplication1.bussiness.production
-{
-
-
-    public partial class usertoggle
-    {
-
+namespace WebApplication1.bussiness.production {
+    
+    
+    public partial class usertoggle {
+        
         /// <summary>
         /// ScriptManager1 control.
         /// </summary>
@@ -22,7 +20,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.ScriptManager ScriptManager1;
-
+        
         /// <summary>
         /// UpdatePanelAadhaar control.
         /// </summary>
@@ -31,7 +29,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.UpdatePanel UpdatePanelAadhaar;
-
+        
         /// <summary>
         /// imgAadhaarPreview control.
         /// </summary>
@@ -40,7 +38,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlImage imgAadhaarPreview;
-
+        
         /// <summary>
         /// fuAadhaarImage control.
         /// </summary>
@@ -49,7 +47,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.FileUpload fuAadhaarImage;
-
+        
         /// <summary>
         /// txtAadhaarNo control.
         /// </summary>
@@ -58,7 +56,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtAadhaarNo;
-
+        
         /// <summary>
         /// txtAadhaarName control.
         /// </summary>
@@ -67,7 +65,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtAadhaarName;
-
+        
         /// <summary>
         /// txtIssueDate control.
         /// </summary>
@@ -76,7 +74,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtIssueDate;
-
+        
         /// <summary>
         /// btnSubmitAadhaar control.
         /// </summary>
@@ -85,7 +83,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnSubmitAadhaar;
-
+        
         /// <summary>
         /// lblAadhaarStatus control.
         /// </summary>
@@ -94,7 +92,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblAadhaarStatus;
-
+        
         /// <summary>
         /// updPanCard control.
         /// </summary>
@@ -103,7 +101,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.UpdatePanel updPanCard;
-
+        
         /// <summary>
         /// imgPanPreview control.
         /// </summary>
@@ -112,7 +110,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlImage imgPanPreview;
-
+        
         /// <summary>
         /// fuPANImage control.
         /// </summary>
@@ -121,7 +119,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.FileUpload fuPANImage;
-
+        
         /// <summary>
         /// txtPANNumber control.
         /// </summary>
@@ -130,7 +128,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtPANNumber;
-
+        
         /// <summary>
         /// txtPANName control.
         /// </summary>
@@ -139,7 +137,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtPANName;
-
+        
         /// <summary>
         /// txtPANIssueDate control.
         /// </summary>
@@ -148,7 +146,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtPANIssueDate;
-
+        
         /// <summary>
         /// btnSubmitPAN control.
         /// </summary>
@@ -157,7 +155,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnSubmitPAN;
-
+        
         /// <summary>
         /// btnClearPAN control.
         /// </summary>
@@ -166,7 +164,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnClearPAN;
-
+        
         /// <summary>
         /// lblPanMessage control.
         /// </summary>
@@ -175,7 +173,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblPanMessage;
-
+        
         /// <summary>
         /// updBankDetails control.
         /// </summary>
@@ -184,7 +182,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.UpdatePanel updBankDetails;
-
+        
         /// <summary>
         /// imgBankPreview control.
         /// </summary>
@@ -193,7 +191,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlImage imgBankPreview;
-
+        
         /// <summary>
         /// fuBankImage control.
         /// </summary>
@@ -202,7 +200,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.FileUpload fuBankImage;
-
+        
         /// <summary>
         /// txtAccountNumber control.
         /// </summary>
@@ -211,7 +209,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtAccountNumber;
-
+        
         /// <summary>
         /// txtIFSC control.
         /// </summary>
@@ -220,7 +218,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtIFSC;
-
+        
         /// <summary>
         /// txtBankName control.
         /// </summary>
@@ -229,7 +227,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtBankName;
-
+        
         /// <summary>
         /// txtAccountHolder control.
         /// </summary>
@@ -238,7 +236,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtAccountHolder;
-
+        
         /// <summary>
         /// btnSubmitBank control.
         /// </summary>
@@ -247,7 +245,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnSubmitBank;
-
+        
         /// <summary>
         /// btnClearBank control.
         /// </summary>
@@ -256,7 +254,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnClearBank;
-
+        
         /// <summary>
         /// lblBankMessage control.
         /// </summary>
@@ -265,7 +263,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblBankMessage;
-
+        
         /// <summary>
         /// updEducation control.
         /// </summary>
@@ -274,7 +272,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.UpdatePanel updEducation;
-
+        
         /// <summary>
         /// lblEducationStatus control.
         /// </summary>
@@ -283,7 +281,16 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblEducationStatus;
-
+        
+        /// <summary>
+        /// chk10NA control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chk10NA;
+        
         /// <summary>
         /// img10Preview control.
         /// </summary>
@@ -292,7 +299,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlImage img10Preview;
-
+        
         /// <summary>
         /// fu10Image control.
         /// </summary>
@@ -301,7 +308,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.FileUpload fu10Image;
-
+        
         /// <summary>
         /// txt10Board control.
         /// </summary>
@@ -310,7 +317,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txt10Board;
-
+        
         /// <summary>
         /// lbl10BoardError control.
         /// </summary>
@@ -319,7 +326,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl10BoardError;
-
+        
         /// <summary>
         /// txt10Year control.
         /// </summary>
@@ -328,7 +335,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txt10Year;
-
+        
         /// <summary>
         /// lbl10YearError control.
         /// </summary>
@@ -337,7 +344,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl10YearError;
-
+        
         /// <summary>
         /// txt10Marks control.
         /// </summary>
@@ -346,7 +353,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txt10Marks;
-
+        
         /// <summary>
         /// lbl10MarksError control.
         /// </summary>
@@ -355,7 +362,16 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl10MarksError;
-
+        
+        /// <summary>
+        /// chk12NA control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chk12NA;
+        
         /// <summary>
         /// img12Preview control.
         /// </summary>
@@ -364,7 +380,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlImage img12Preview;
-
+        
         /// <summary>
         /// fu12Image control.
         /// </summary>
@@ -373,7 +389,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.FileUpload fu12Image;
-
+        
         /// <summary>
         /// txt12Board control.
         /// </summary>
@@ -382,7 +398,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txt12Board;
-
+        
         /// <summary>
         /// lbl12BoardError control.
         /// </summary>
@@ -391,7 +407,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl12BoardError;
-
+        
         /// <summary>
         /// txt12Year control.
         /// </summary>
@@ -400,7 +416,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txt12Year;
-
+        
         /// <summary>
         /// lbl12YearError control.
         /// </summary>
@@ -409,7 +425,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl12YearError;
-
+        
         /// <summary>
         /// txt12Marks control.
         /// </summary>
@@ -418,7 +434,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txt12Marks;
-
+        
         /// <summary>
         /// lbl12MarksError control.
         /// </summary>
@@ -427,7 +443,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl12MarksError;
-
+        
         /// <summary>
         /// chkUGNA control.
         /// </summary>
@@ -436,7 +452,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox chkUGNA;
-
+        
         /// <summary>
         /// imgUGPreview control.
         /// </summary>
@@ -445,7 +461,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlImage imgUGPreview;
-
+        
         /// <summary>
         /// fuUGImage control.
         /// </summary>
@@ -454,7 +470,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.FileUpload fuUGImage;
-
+        
         /// <summary>
         /// txtUGBoard control.
         /// </summary>
@@ -463,7 +479,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtUGBoard;
-
+        
         /// <summary>
         /// lblUGBoardError control.
         /// </summary>
@@ -472,7 +488,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblUGBoardError;
-
+        
         /// <summary>
         /// txtUGYear control.
         /// </summary>
@@ -481,7 +497,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtUGYear;
-
+        
         /// <summary>
         /// lblUGYearError control.
         /// </summary>
@@ -490,7 +506,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblUGYearError;
-
+        
         /// <summary>
         /// txtUGMarks control.
         /// </summary>
@@ -499,7 +515,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtUGMarks;
-
+        
         /// <summary>
         /// lblUGMarksError control.
         /// </summary>
@@ -508,7 +524,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblUGMarksError;
-
+        
         /// <summary>
         /// chkPGNA control.
         /// </summary>
@@ -517,7 +533,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox chkPGNA;
-
+        
         /// <summary>
         /// imgPGPreview control.
         /// </summary>
@@ -526,7 +542,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlImage imgPGPreview;
-
+        
         /// <summary>
         /// fuPGImage control.
         /// </summary>
@@ -535,7 +551,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.FileUpload fuPGImage;
-
+        
         /// <summary>
         /// txtPGBoard control.
         /// </summary>
@@ -544,7 +560,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtPGBoard;
-
+        
         /// <summary>
         /// lblPGBoardError control.
         /// </summary>
@@ -553,7 +569,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblPGBoardError;
-
+        
         /// <summary>
         /// txtPGYear control.
         /// </summary>
@@ -562,7 +578,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtPGYear;
-
+        
         /// <summary>
         /// lblPGYearError control.
         /// </summary>
@@ -571,7 +587,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblPGYearError;
-
+        
         /// <summary>
         /// txtPGMarks control.
         /// </summary>
@@ -580,7 +596,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtPGMarks;
-
+        
         /// <summary>
         /// lblPGMarksError control.
         /// </summary>
@@ -589,7 +605,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblPGMarksError;
-
+        
         /// <summary>
         /// btnSubmitEducation control.
         /// </summary>
@@ -598,7 +614,7 @@ namespace WebApplication1.bussiness.production
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnSubmitEducation;
-
+        
         /// <summary>
         /// btnClearEducation control.
         /// </summary>

@@ -1484,6 +1484,202 @@ namespace WebApplication1.bussiness.production
             int currentYear = DateTime.Now.Year;
             bool hasError = false;
 
+            // NA flags for all levels (10th/12th/UG/PG)
+            bool is10NA = chk10NA?.Checked ?? false;
+            bool is12NA = chk12NA?.Checked ?? false;
+            bool isUGNA = chkUGNA?.Checked ?? false;
+            bool isPGNA = chkPGNA?.Checked ?? false;
+
+            // Try parsing years (use 0 when NA)
+            int year10 = is10NA ? 0 : TryParseYear(txt10Year.Text.Trim());
+            int year12 = is12NA ? 0 : TryParseYear(txt12Year.Text.Trim());
+            int yearUG = isUGNA ? 0 : TryParseYear(txtUGYear.Text.Trim());
+            int yearPG = isPGNA ? 0 : TryParseYear(txtPGYear.Text.Trim());
+
+            // Validation
+            // 10th: validate only if NOT N/A
+            if (!is10NA)
+            {
+                if (!ValidateBasicFields(txt10Board, txt10Year, txt10Marks) || !IsValid10thYear(year10, currentYear))
+                {
+                    AddErrorHighlight(txt10Year);
+                    hasError = true;
+                }
+            }
+
+            // 12th: validate only if NOT N/A
+            if (!is12NA)
+            {
+                // Pass year10 (may be 0 when 10th is NA) so IsValid12thYear can handle that scenario.
+                if (!ValidateBasicFields(txt12Board, txt12Year, txt12Marks) || !IsValid12thYear(year10, year12, currentYear))
+                {
+                    AddErrorHighlight(txt12Year);
+                    hasError = true;
+                }
+            }
+
+            // UG: validate only if NOT N/A
+            if (!isUGNA)
+            {
+                if (!ValidateBasicFields(txtUGBoard, txtUGYear, txtUGMarks) || !IsValidUGYear(year12, yearUG, currentYear))
+                {
+                    AddErrorHighlight(txtUGYear);
+                    hasError = true;
+                }
+            }
+
+            // PG: validate only if NOT N/A
+            if (!isPGNA)
+            {
+                if (!ValidateBasicFields(txtPGBoard, txtPGYear, txtPGMarks) || !IsValidPGYear(yearUG, yearPG, currentYear))
+                {
+                    AddErrorHighlight(txtPGYear);
+                    hasError = true;
+                }
+            }
+
+            if (hasError)
+            {
+                lblEducationStatus.Text = "Please fix the highlighted fields.";
+                lblEducationStatus.CssClass = "error-msg";
+                ScriptManager.RegisterStartupScript(this, GetType(), "alertValidation", "alert('Please fix the highlighted fields.');", true);
+                return;
+            }
+
+            // === Save uploaded files FIRST (outside transaction) ===
+            string file10 = "NA", file12 = "NA", fileUG = "NA", filePG = "NA";
+            try
+            {
+                if (!is10NA && fu10Image.HasFile)
+                    file10 = SaveEmployeeDocument(fu10Image, userID, "Education/10th");
+
+                if (!is12NA && fu12Image.HasFile)
+                    file12 = SaveEmployeeDocument(fu12Image, userID, "Education/12th");
+
+                if (!isUGNA && fuUGImage.HasFile)
+                    fileUG = SaveEmployeeDocument(fuUGImage, userID, "Education/UG");
+
+                if (!isPGNA && fuPGImage.HasFile)
+                    filePG = SaveEmployeeDocument(fuPGImage, userID, "Education/PG");
+            }
+            catch (Exception exFile)
+            {
+                lblEducationStatus.Text = "Error saving file(s): " + exFile.Message;
+                lblEducationStatus.CssClass = "error-msg";
+                string safeMsg = exFile.Message.Replace("'", "\\'");
+                ScriptManager.RegisterStartupScript(
+                    this,
+                    GetType(),
+                    "alertFileError",
+                    "alert('Error saving file(s): " + safeMsg + "');",
+                    true
+                );
+                return;
+            }
+
+            // === DB transaction: Save/Update rows and update docs table ===
+            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString))
+            {
+                con.Open();
+                using (SqlTransaction tx = con.BeginTransaction())
+                {
+                    try
+                    {
+                        // For NA fields, pass "N/A" / "0" as you did for UG/PG earlier
+                        string saved10 = SaveOrUpdateEducation(
+                            con, tx, userID,
+                            "10th", "SSC",
+                            is10NA ? "N/A" : txt10Board.Text.Trim(),
+                            is10NA ? "0" : txt10Year.Text.Trim(),
+                            is10NA ? "N/A" : txt10Marks.Text.Trim(),
+                            file10,
+                            is10NA
+                        );
+
+                        string saved12 = SaveOrUpdateEducation(
+                            con, tx, userID,
+                            "12th", "HSC",
+                            is12NA ? "N/A" : txt12Board.Text.Trim(),
+                            is12NA ? "0" : txt12Year.Text.Trim(),
+                            is12NA ? "N/A" : txt12Marks.Text.Trim(),
+                            file12,
+                            is12NA
+                        );
+
+                        string savedUG = SaveOrUpdateEducation(
+                            con, tx, userID,
+                            "UG", "B.Tech",
+                            isUGNA ? "N/A" : txtUGBoard.Text.Trim(),
+                            isUGNA ? "0" : txtUGYear.Text.Trim(),
+                            isUGNA ? "N/A" : txtUGMarks.Text.Trim(),
+                            fileUG,
+                            isUGNA
+                        );
+
+                        string savedPG = SaveOrUpdateEducation(
+                            con, tx, userID,
+                            "PG", "M.Tech",
+                            isPGNA ? "N/A" : txtPGBoard.Text.Trim(),
+                            isPGNA ? "0" : txtPGYear.Text.Trim(),
+                            isPGNA ? "N/A" : txtPGMarks.Text.Trim(),
+                            filePG,
+                            isPGNA
+                        );
+
+                        int tenFlag = (saved10 != null && saved10 != "NA") ? 1 : 0;
+                        int twelveFlag = (saved12 != null && saved12 != "NA") ? 1 : 0;
+                        int gradFlag = (savedUG != null && savedUG != "NA") ? 1 : 0;
+                        int pgFlag = (savedPG != null && savedPG != "NA") ? 1 : 0;
+
+                        // Update docs table (nullable-aware)
+                        UpdateEducationDocs(con, tx,
+                            workmanSL: userID,
+                            tenYesNo: tenFlag, tenPath: (tenFlag == 1 ? saved10 : null), tenDate: tenFlag == 1 ? (DateTime?)DateTime.Now : null,
+                            twelveYesNo: twelveFlag, twelvePath: (twelveFlag == 1 ? saved12 : null), twelveDate: twelveFlag == 1 ? (DateTime?)DateTime.Now : null,
+                            gradYesNo: gradFlag, gradPath: (gradFlag == 1 ? savedUG : null), gradDate: gradFlag == 1 ? (DateTime?)DateTime.Now : null,
+                            updatedByWrk: userID, updatedByName: Session["FullName"]?.ToString()
+                        );
+
+
+                        tx.Commit();
+
+                        lblEducationStatus.CssClass = "success-msg";
+                        lblEducationStatus.Text = "Education details saved successfully.";
+                        btnSubmitEducation.Text = "Update";
+                        btnSubmitEducation.CssClass = "btn btn-warning";
+                        ScriptManager.RegisterStartupScript(this, GetType(), "alertSuccess", "alert('Education details saved successfully.');", true);
+                    }
+                    catch (Exception ex)
+                    {
+                        try { tx.Rollback(); } catch { /* ignore rollback exceptions */ }
+                        lblEducationStatus.Text = "Error saving education details: " + ex.Message;
+                        lblEducationStatus.CssClass = "error-msg";
+                        string safeMessage = ex.Message.Replace("'", "\\'").Replace(Environment.NewLine, " ");
+                        ScriptManager.RegisterStartupScript(this, GetType(), "alertException", $"alert('Error saving education details: {safeMessage}');", true);
+                    }
+                }
+            }
+        }
+
+
+        protected void btnSubmitEducation_Click_10Dec25(object sender, EventArgs e)
+        {
+            ClearAllHighlights();
+            lblEducationStatus.Text = "";
+            lblEducationStatus.CssClass = "";
+
+            string userID = Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : null;
+            if (string.IsNullOrEmpty(userID))
+            {
+                lblEducationStatus.Text = "Session expired. Please login again.";
+                lblEducationStatus.CssClass = "error-msg";
+                ScriptManager.RegisterStartupScript(this, GetType(), "alertSession", "alert('Session expired. Please login again.');", true);
+                return;
+            }
+
+            int currentYear = DateTime.Now.Year;
+            bool hasError = false;
+
             // Try parsing all years first
             int year10 = TryParseYear(txt10Year.Text.Trim());
             int year12 = TryParseYear(txt12Year.Text.Trim());
@@ -1586,9 +1782,6 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-        // Saves or updates a single EducationDetails row using the provided tx.
-        // documentPath should be the web-relative path returned by SaveEmployeeDocument (e.g. "/Uploads/W123/Education/10th_file.jpg") or "NA" if none.
-        // Returns the documentPath actually stored ("" when none).
         private string SaveOrUpdateEducation(SqlConnection con, SqlTransaction tx,
             string userID,
             string qualificationType,   // "10th", "12th", "UG", "PG"
@@ -1847,14 +2040,8 @@ namespace WebApplication1.bussiness.production
             );
         }
 
-        private void UpdateEducationDocs(SqlConnection conn, SqlTransaction tx,
-    string workmanSL,
-    int? tenYesNo, string tenPath, DateTime? tenDate,
-    int? twelveYesNo, string twelvePath, DateTime? twelveDate,
-    int? gradYesNo, string gradPath, DateTime? gradDate,
-    string updatedByWrk = null, string updatedByName = null)
+        private void UpdateEducationDocs(SqlConnection conn, SqlTransaction tx, string workmanSL, int? tenYesNo, string tenPath, DateTime? tenDate, int? twelveYesNo, string twelvePath, DateTime? twelveDate, int? gradYesNo, string gradPath, DateTime? gradDate, string updatedByWrk = null, string updatedByName = null)
         {
-            // Call the nullable-aware upsert helper. All other fields passed as null so they remain unchanged.
             UpsertEmployeeDocsDetails(conn, tx,
                 workmanSL,
                 aadhaarYesNo: null, aadhaarID: null, aadhaarPath: null, aadhaarDate: null,
@@ -1867,10 +2054,6 @@ namespace WebApplication1.bussiness.production
             );
         }
 
-        // -----------------------------
-        // Upsert helper for tbl_EmployeeDocsDetails
-        // Ensures there is a row for the given WorkmanSL (userID) and updates the document flags/paths/dates.
-        // Call this inside an existing SqlTransaction (pass same SqlConnection + SqlTransaction).
         private void UpsertEmployeeDocsDetails(SqlConnection conn, SqlTransaction tx,
             string workmanSL,
             int? aadhaarYesNo, string aadhaarID, string aadhaarPath, DateTime? aadhaarDate,
@@ -1891,8 +2074,6 @@ namespace WebApplication1.bussiness.production
 
                     if (cnt > 0)
                     {
-                        // Update only columns for which caller passed non-null values.
-                        // Use COALESCE/ISNULL so NULL params leave the column unchanged.
                         string updateSql = @"
                             UPDATE tbl_EmployeeDocsDetails SET
                                 AadhaarYesNo = ISNULL(@AadhaarYesNo, AadhaarYesNo),
@@ -1922,7 +2103,6 @@ namespace WebApplication1.bussiness.production
 
                         using (SqlCommand upd = new SqlCommand(updateSql, conn, tx))
                         {
-                            // nullable ints: use DBNull.Value when null
                             upd.Parameters.AddWithValue("@AadhaarYesNo", (object)aadhaarYesNo ?? DBNull.Value);
                             upd.Parameters.AddWithValue("@AadhaarID", (object)(aadhaarID ?? (string)null) ?? DBNull.Value);
                             upd.Parameters.AddWithValue("@AddhaarPath", (object)(aadhaarPath ?? (string)null) ?? DBNull.Value);
@@ -1958,7 +2138,6 @@ namespace WebApplication1.bussiness.production
                     }
                     else
                     {
-                        // Insert: use ISNULL on flags to default to 0; other values can be NULL.
                         string insertSql = @"
                             INSERT INTO tbl_EmployeeDocsDetails
                             (WorkmanSL, AadhaarYesNo, AadhaarID, AddhaarPath, AddhaarDate,
@@ -2016,7 +2195,6 @@ namespace WebApplication1.bussiness.production
             }
             catch (Exception ex)
             {
-                // Log for diagnostics; do not swallow — rethrow so caller can rollback/handle.
                 try
                 {
                     System.Diagnostics.Trace.TraceError($"UpsertEmployeeDocsDetails failed for WorkmanSL={workmanSL}: {ex}");
@@ -2027,8 +2205,6 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-
-        // 🔹 Delete record if UG/PG not applicable
         private void DeleteEducationRecord(SqlConnection con, string userID, string qualificationType)
         {
             string deleteQuery = "DELETE FROM EducationDetails WHERE UserID = @UserID AND QualificationType = @QualificationType";
@@ -2038,7 +2214,6 @@ namespace WebApplication1.bussiness.production
             deleteCmd.ExecuteNonQuery();
         }
 
-        // 🔹 Handle uploaded file
         private string GetUploadedFileName(FileUpload fileUpload, string qualificationType)
         {
             if (fileUpload.HasFile)
@@ -2058,8 +2233,6 @@ namespace WebApplication1.bussiness.production
             }
             return "NA";
         }
-
-
 
         private void AddErrorHighlight(Control ctrl)
         {
@@ -2098,10 +2271,7 @@ namespace WebApplication1.bussiness.production
 
             using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString))
             {
-                string query = @"
-        SELECT QualificationType, BoardOrInstitute, PassingYear, MarksOrGrade, DocumentPath, IsNA
-        FROM EducationDetails
-        WHERE UserID = @UserID";
+                string query = @"SELECT QualificationType, BoardOrInstitute, PassingYear, MarksOrGrade, DocumentPath, IsNA FROM EducationDetails WHERE UserID = @UserID";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {

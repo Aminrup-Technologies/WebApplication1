@@ -200,6 +200,16 @@
             border: 2px solid #e74c3c !important;
             background-color: #fceae9;
         }
+
+
+        .na-disabled {
+            opacity: 0.6;
+            pointer-events: none; /* makes inputs inside not clickable if you prefer */
+        }
+        .na-checkbox {
+            margin-left: 8px;
+            vertical-align: middle;
+        }
     </style>
 </asp:Content>
 
@@ -420,7 +430,13 @@
 
 
                                         <div class="education-block">
-                                            <div class="edu-header">10th</div>
+                                            <%--<div class="edu-header">10th</div>--%>
+                                            <div class="edu-header">
+                                                10th
+                                                <asp:CheckBox ID="chk10NA" runat="server" Text="N/A" CssClass="na-checkbox"
+                                                    AutoPostBack="false"
+                                                    onclick="toggleNA(this, 'txt10Board', 'txt10Year', 'txt10Marks', 'fu10Image', 'img10Preview')" />
+                                            </div>
                                             <div class="form-section">
                                                 <div class="image-upload-wrapper">
                                                     <div class="image-preview">
@@ -448,10 +464,14 @@
                                             </div>
                                         </div>
 
-
-                                        <!-- 12th Block -->
                                         <div class="education-block">
-                                            <div class="edu-header">12th</div>
+                                            <%--<div class="edu-header">12th</div>--%>
+                                            <div class="edu-header">
+                                                12th
+                                                <asp:CheckBox ID="chk12NA" runat="server" Text="N/A" CssClass="na-checkbox"
+                                                    AutoPostBack="false"
+                                                    onclick="toggleNA(this, 'txt12Board', 'txt12Year', 'txt12Marks', 'fu12Image', 'img12Preview')" />
+                                            </div>
                                             <div class="form-section">
                                                 <div class="image-upload-wrapper">
                                                     <div class="image-preview">
@@ -485,8 +505,8 @@
                                         <div class="education-block">
                                             <div class="edu-header">
                                                 UG
-        <asp:CheckBox ID="chkUGNA" runat="server" Text="N/A" CssClass="na-checkbox"
-            AutoPostBack="false" onclick="toggleNA(this, 'txtUGBoard', 'txtUGYear', 'txtUGMarks', 'fuUGImage', 'imgUGPreview')" />
+                                                <asp:CheckBox ID="chkUGNA" runat="server" Text="N/A" CssClass="na-checkbox"
+                                                    AutoPostBack="false" onclick="toggleNA(this, 'txtUGBoard', 'txtUGYear', 'txtUGMarks', 'fuUGImage', 'imgUGPreview')" />
                                             </div>
                                             <div class="form-section">
                                                 <div class="image-upload-wrapper">
@@ -870,29 +890,66 @@
 
         // Enable/disable all related fields when N/A is checked
         function toggleNA(checkbox, txtBoardId, txtYearId, txtMarksId, fileUploadId, imgPreviewId) {
-            const disabled = checkbox.checked;
-            const fields = [txtBoardId, txtYearId, txtMarksId, fileUploadId];
-            fields.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.disabled = disabled;
-                    if (el.tagName === "INPUT" && el.type === "file" && disabled) {
-                        document.getElementById(imgPreviewId).src = "../images/default-doc.png";
-                        el.value = ""; // clear file
-                    }
-                }
+            const disabled = !!checkbox.checked;
+
+            // helper: try getElementById, otherwise find by id suffix (helps with ASP.NET client ids)
+            function getEl(id) {
+                if (!id) return null;
+                const byId = document.getElementById(id);
+                if (byId) return byId;
+                // fallback: element whose id ends with the given id (e.g. ctl00$...$txtUGBoard)
+                return document.querySelector(`[id$='${id}']`);
+            }
+
+            // Collect the inputs
+            const ids = [txtBoardId, txtYearId, txtMarksId, fileUploadId];
+            const els = ids.map(getEl);
+
+            // Enable/disable inputs + aria + class toggles
+            els.forEach(el => {
+                if (!el) return;
+                // for inputs/selects/textarea
+                if (typeof el.disabled !== "undefined") el.disabled = disabled;
+                el.setAttribute('aria-disabled', disabled);
             });
 
-            // Clear validations and values
+            // Clear values when disabling
             if (disabled) {
                 [txtBoardId, txtYearId, txtMarksId].forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) el.value = "";
-                    const valSpan = document.getElementById("val" + id.substring(3)); // e.g. valUGYear
-                    if (valSpan) valSpan.innerText = "";
+                    const el = getEl(id);
+                    if (el && ('value' in el)) el.value = "";
+                });
+
+                const fileEl = getEl(fileUploadId);
+                if (fileEl && fileEl.tagName === "INPUT" && fileEl.type === "file") {
+                    try { fileEl.value = ""; } catch (e) { /* some browsers restrict clearing file - ignore */ }
+                    const img = getEl(imgPreviewId);
+                    if (img && img.tagName === "IMG") img.src = "../images/default-doc.png";
+                }
+            }
+
+            // Clear validation messages inside the same education-block (robust)
+            // Prefer proximity to the checkbox so we only clear messages for that section
+            const block = checkbox.closest ? checkbox.closest('.education-block') : null;
+            if (block) {
+                const valMsgs = block.querySelectorAll('.validation-msg');
+                valMsgs.forEach(vm => { vm.innerText = ""; vm.style.display = disabled ? "none" : ""; });
+                // visually grey out the form-fields area
+                const formFields = block.querySelector('.form-fields');
+                if (formFields) {
+                    if (disabled) formFields.classList.add('na-disabled');
+                    else formFields.classList.remove('na-disabled');
+                }
+            } else {
+                // fallback: try clearing elements using naming convention for labels (e.g. lblUGYearError)
+                [txtBoardId, txtYearId, txtMarksId].forEach(id => {
+                    const suffix = id.replace(/^txt/, ''); // txtUGYear -> UGYear
+                    const lbl = document.getElementById('lbl' + suffix + 'Error') || document.querySelector(`[id$='lbl${suffix}Error']`);
+                    if (lbl) { lbl.innerText = ""; lbl.style.display = disabled ? "none" : ""; }
                 });
             }
         }
+
 
         function clearEducationFields() {
             const fieldGroups = [

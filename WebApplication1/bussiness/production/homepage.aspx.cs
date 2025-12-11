@@ -142,7 +142,7 @@ namespace WebApplication1.bussiness.production
                                 bool panStatus = reader["PanYesNo"] != DBNull.Value && Convert.ToInt32(reader["PanYesNo"]) == 1;
                                 bool tenStatus = reader["TenYesNo"] != DBNull.Value && Convert.ToInt32(reader["TenYesNo"]) == 1;
                                 bool twelveStatus = reader["TwelveYesNo"] != DBNull.Value && Convert.ToInt32(reader["TwelveYesNo"]) == 1;
-                                bool graduationStatus = reader["GraduationYesNo"] != DBNull.Value && Convert.ToInt32(reader["GraduationYesNo"]) == 1;
+                                //bool graduationStatus = reader["GraduationYesNo"] != DBNull.Value && Convert.ToInt32(reader["GraduationYesNo"]) == 1;
 
                                 // New bypass column check (safe, quick variant). Add column IsBypassed BIT to the table if you haven't yet.
                                 bool isBypassed = reader["IsBypassed"] != DBNull.Value && Convert.ToInt32(reader["IsBypassed"]) == 1;
@@ -158,7 +158,7 @@ namespace WebApplication1.bussiness.production
                                 }
 
                                 // ---- NEW LOGIC: Check if all required documents uploaded ----
-                                bool allDocsUploaded = aadhaarStatus && panStatus && bankStatus && tenStatus && twelveStatus;
+                                bool allDocsUploaded = aadhaarStatus && panStatus && bankStatus;
 
                                 if (!allDocsUploaded)
                                 {
@@ -175,14 +175,17 @@ namespace WebApplication1.bussiness.production
                                     if (skipDate.HasValue && skipDate.Value > DateTime.Now)
                                     {
                                         // User has chosen to skip for some days, allow access (do nothing).
-                                    }
-                                    else
-                                    {
                                         // Close reader then redirect to upload page
                                         reader.Close();
                                         Response.Redirect("usertoggle.aspx", false);
                                         Context.ApplicationInstance.CompleteRequest();
                                         return;
+                                    }
+                                    else
+                                    {
+                                        ClientScript.RegisterStartupScript(this.GetType(), "ShowDocModal", "ShowDocModal();", true);
+
+                                        
                                     }
                                 }
                             }
