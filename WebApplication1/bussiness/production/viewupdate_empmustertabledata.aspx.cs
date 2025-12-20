@@ -7,6 +7,7 @@ using System.Web.UI.WebControls;
 using System.Data.SqlClient;
 using System.Data;
 using System.Drawing;
+using System.IO;
 
 namespace WebApplication1.bussiness.production
 {
@@ -154,8 +155,14 @@ namespace WebApplication1.bussiness.production
                     //txt_empmothername.Text = dt.Rows[0]["Fathername"].ToString();
                     txt_empmothername.Text = "N/A";
 
-                    string dob = dt.Rows[0]["DOB"].ToString();
-                    txt_DOB.Text = dob;
+                    //string dob = dt.Rows[0]["DOB"].ToString();
+                    //txt_DOB.Text = dob;
+
+                    if (dt.Rows[0]["DOB"] != DBNull.Value)
+                    {
+                        txt_DOB.Text = Convert.ToDateTime(dt.Rows[0]["DOB"])
+                            .ToString("yyyy-MM-dd");
+                    }
 
                     txt_bloodgroup.Text = dt.Rows[0]["BloodGroup"].ToString();
                     txt_Mobile_Number.Text = dt.Rows[0]["MobileNo"].ToString();
@@ -163,8 +170,14 @@ namespace WebApplication1.bussiness.production
                     string qualification = dt.Rows[0]["QualificationDB"].ToString();
                     DDL_HighestEdu.SelectedValue = qualification;
 
-                    string doj = dt.Rows[0]["DOJ"].ToString();
-                    txt_DOJ.Text = doj;
+                    //string doj = dt.Rows[0]["DOJ"].ToString();
+                    //txt_DOJ.Text = doj;
+
+                    if (dt.Rows[0]["DOJ"] != DBNull.Value)
+                    {
+                        txt_DOJ.Text = Convert.ToDateTime(dt.Rows[0]["DOJ"])
+                            .ToString("yyyy-MM-dd");
+                    }
 
                     string worksite = dt.Rows[0]["Worksite_Code"].ToString();
                     DDL_Worksites.SelectedValue = worksite;
@@ -192,6 +205,8 @@ namespace WebApplication1.bussiness.production
 
                     txt_uanno.Text = dt.Rows[0]["UANNo"].ToString();
                     txt_esicno.Text = dt.Rows[0]["ESICNo"].ToString();
+
+                    CaptureOriginalValues();
                 }
             }
             catch (Exception ex)
@@ -199,6 +214,90 @@ namespace WebApplication1.bussiness.production
                 string title = "Notifications :";
                 string body = "Error : " + ex.Message;
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+            }
+        }
+
+
+        private string GetAllFieldChanges()
+        {
+            if (ViewState["ORIGINAL_DATA"] == null)
+                return "";
+
+            Dictionary<string, string> original =
+                (Dictionary<string, string>)ViewState["ORIGINAL_DATA"];
+
+            List<string> changes = new List<string>();
+
+            CompareValue(changes, original, "FirstName", txt_empfname.Text);
+            CompareValue(changes, original, "MiddleName", txt_empmdname.Text);
+            CompareValue(changes, original, "LastName", txt_emplstname.Text);
+            CompareValue(changes, original, "FullName", txt_fullanme.Text);
+            CompareValue(changes, original, "FatherName", txt_empfathername.Text);
+            CompareValue(changes, original, "DOB", txt_DOB.Text);
+            CompareValue(changes, original, "DOJ", txt_DOJ.Text);
+            CompareValue(changes, original, "MobileNo", txt_Mobile_Number.Text);
+            CompareValue(changes, original, "BloodGroup", txt_bloodgroup.Text);
+
+            CompareValue(changes, original, "Qualification", DDL_HighestEdu.SelectedItem.Text);
+            CompareValue(changes, original, "WorkCountry", DDL_WorkCountry.SelectedValue);
+            CompareValue(changes, original, "WorkState", DDL_WorkStates.SelectedValue);
+            CompareValue(changes, original, "WorkRegion", DDL_WorkRegion.SelectedValue);
+            CompareValue(changes, original, "Company", DDL_Company.SelectedValue);
+            CompareValue(changes, original, "Worksite", DDL_Worksites.SelectedValue);
+
+            CompareValue(changes, original, "SkillCategory", DDL_SkillCategory.SelectedValue);
+            CompareValue(changes, original, "SkillDesignation", DDL_SkillDesignation.SelectedValue);
+
+            CompareValue(changes, original, "EmployeeType", DDL_EmployeeType.SelectedValue);
+            CompareValue(changes, original, "RolePermission", DDL_RolePermissions.SelectedValue);
+
+            CompareValue(changes, original, "WorkHours", DDL_WorkHours.SelectedValue);
+            CompareValue(changes, original, "OTFactor", DDL_OTFactor.SelectedValue);
+
+            CompareValue(changes, original, "UAN", txt_uanno.Text);
+            CompareValue(changes, original, "ESIC", txt_esicno.Text);
+
+            return string.Join(Environment.NewLine, changes);
+        }
+
+        private void WriteFullAuditLog(string changes)
+        {
+            string folder = Server.MapPath("~/bussiness/production/Logs/EmployeeEdits/");
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
+
+            string file = Path.Combine(
+                folder,
+                $"EMP_{txt_workman.Text}_{DateTime.Now:yyyyMMdd}.log"
+            );
+
+            string log =
+                $"Timestamp : {DateTime.Now:dd-MM-yyyy HH:mm:ss}\n" +
+                $"Modified By : {Session["USERNAME"]} ({Session["WORKMAN"]})\n" +
+                $"Employee : {txt_workman.Text}\n" +
+                $"Changes:\n{changes}\n" +
+                $"------------------------------------------\n";
+
+            File.AppendAllText(file, log);
+        }
+
+
+
+        private void CompareValue(
+            List<string> changes,
+            Dictionary<string, string> original,
+            string key,
+            string currentValue)
+        {
+            string oldValue = original.ContainsKey(key)
+                ? (original[key] ?? "").Trim()
+                : "";
+
+            string newValue = (currentValue ?? "").Trim();
+
+            if (oldValue != newValue)
+            {
+                changes.Add(key + ": '" + oldValue + "' → '" + newValue + "'");
             }
         }
 
@@ -511,6 +610,45 @@ namespace WebApplication1.bussiness.production
             dbcl.DisconnectDb();
         }
 
+        private void CaptureOriginalValues()
+        {
+            var original = new Dictionary<string, string>();
+
+            original["FirstName"] = txt_empfname.Text;
+            original["MiddleName"] = txt_empmdname.Text;
+            original["LastName"] = txt_emplstname.Text;
+            original["FullName"] = txt_fullanme.Text;
+            original["FatherName"] = txt_empfathername.Text;
+            original["DOB"] = txt_DOB.Text;
+            original["DOJ"] = txt_DOJ.Text;
+            original["MobileNo"] = txt_Mobile_Number.Text;
+            original["BloodGroup"] = txt_bloodgroup.Text;
+
+            original["Qualification"] = DDL_HighestEdu.SelectedItem.Text;
+            original["QualificationDB"] = DDL_HighestEdu.SelectedValue;
+
+            original["WorkCountry"] = DDL_WorkCountry.SelectedValue;
+            original["WorkState"] = DDL_WorkStates.SelectedValue;
+            original["WorkRegion"] = DDL_WorkRegion.SelectedValue;
+            original["Company"] = DDL_Company.SelectedValue;
+            original["Worksite"] = DDL_Worksites.SelectedValue;
+
+            original["SkillCategory"] = DDL_SkillCategory.SelectedValue;
+            original["SkillDesignation"] = DDL_SkillDesignation.SelectedValue;
+
+            original["EmployeeType"] = DDL_EmployeeType.SelectedValue;
+            original["RolePermission"] = DDL_RolePermissions.SelectedValue;
+
+            original["WorkHours"] = DDL_WorkHours.SelectedValue;
+            original["OTFactor"] = DDL_OTFactor.SelectedValue;
+
+            original["UAN"] = txt_uanno.Text;
+            original["ESIC"] = txt_esicno.Text;
+
+            ViewState["ORIGINAL_DATA"] = original;
+        }
+
+
         private Int32 Update_EmplyeeMusterData()
         {
             //Code to Insert values into the DB goes here
@@ -621,21 +759,55 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_save_Click(object sender, EventArgs e)
         {
+            // Step 1: detect changes
+            string changes = GetAllFieldChanges();
+
+            if (string.IsNullOrWhiteSpace(changes))
+            {
+                // Use your EXISTING popup
+                string title = "Info";
+                string body = "No changes detected.";
+                ClientScript.RegisterStartupScript(
+                    this.GetType(),
+                    "Popup",
+                    "ShowPopup('" + title + "', '" + body + "');",
+                    true
+                );
+                return;
+            }
+
+            // Step 2: if not confirmed yet, show audit popup
+            if (Request["__EVENTTARGET"] != btn_save.UniqueID)
+            {
+                string safeChanges = HttpUtility.JavaScriptStringEncode(changes);
+
+                ClientScript.RegisterStartupScript(
+                    this.GetType(),
+                    "auditPopup",
+                    "showAuditPopup('" + safeChanges + "');",
+                    true
+                );
+                return;
+            }
+
+            // Step 3: confirmed → update DB
             if (Update_EmplyeeMusterData() != 0)
             {
-                string title = "Notifications :";
-                string body = "Data Updated";
-                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                //WriteFullAuditLog(changes);
+                WriteModuleAuditLog("PERSONAL_PROF", changes);
 
-
-            }
-            else
-            {
                 string title = "Notifications :";
-                string body = "Data NOT Updated";
-                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                string body = "Data Updated Successfully";
+                ClientScript.RegisterStartupScript(
+                    this.GetType(),
+                    "Popup",
+                    "ShowPopup('" + title + "', '" + body + "');",
+                    true
+                );
             }
         }
+
+
         protected void btn_cancel_Click(object sender, EventArgs e)
         {
             Response.Redirect("view_emp_mastertbldata.aspx");
@@ -660,24 +832,43 @@ namespace WebApplication1.bussiness.production
             }
             else if (btn_bankedit.Text.ToString() == "Save Changes")
             {
+                string bankChanges = GetBankFieldChanges();
+                //if (UpdateBankDetails() == true)
+                //{
+                //    EmpBankDataBinder();
+                //    DDL_BankName.Enabled = false;
+                //    //txt_nwbankname.ReadOnly = false;
+                //    txt_nwaccno.ReadOnly = false;
+                //    txt_nwcnfaccno.ReadOnly = false;
+                //    txt_nwifsc.ReadOnly = false;
+                //    txt_nwbranchname.ReadOnly = false;
+                //    btn_bankedit.Text = "Make Changes";
 
-                if (UpdateBankDetails() == true)
+                //    string title = "Notifications :";
+                //    string body = "Employee Bank Details has been updated...!";
+                //    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+
+                //    //ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup1();", true);
+                //}
+
+                if (UpdateBankDetails())
                 {
+                    if (!string.IsNullOrWhiteSpace(bankChanges))
+                    {
+                        WriteModuleAuditLog("BANK_DETAILS", bankChanges);
+                    }
+
                     EmpBankDataBinder();
-                    DDL_BankName.Enabled = false;
-                    //txt_nwbankname.ReadOnly = false;
-                    txt_nwaccno.ReadOnly = false;
-                    txt_nwcnfaccno.ReadOnly = false;
-                    txt_nwifsc.ReadOnly = false;
-                    txt_nwbranchname.ReadOnly = false;
                     btn_bankedit.Text = "Make Changes";
 
-                    string title = "Notifications :";
-                    string body = "Employee Bank Details has been updated...!";
-                    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
-
-                    //ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup1();", true);
+                    ClientScript.RegisterStartupScript(
+                        this.GetType(),
+                        "Popup",
+                        "ShowPopup('Notifications :','Employee Bank Details updated');",
+                        true
+                    );
                 }
+
                 else
                 {
                     //txt_nwbankname.ReadOnly = true;
@@ -691,6 +882,26 @@ namespace WebApplication1.bussiness.production
                 }
             }
         }
+
+        private string GetBankFieldChanges()
+        {
+            if (ViewState["ORIGINAL_BANK_DATA"] == null)
+                return "";
+
+            Dictionary<string, string> original =
+                (Dictionary<string, string>)ViewState["ORIGINAL_BANK_DATA"];
+
+            List<string> changes = new List<string>();
+
+            CompareValue(changes, original, "Payment_Bank", DDL_BankName.SelectedItem.Text);
+            CompareValue(changes, original, "Payment_Account", txt_nwaccno.Text);
+            CompareValue(changes, original, "Payment_IFSC", txt_nwifsc.Text);
+            CompareValue(changes, original, "BankBranch", txt_nwbranchname.Text);
+
+            return string.Join(Environment.NewLine, changes);
+        }
+
+
         private Boolean UpdateBankDetails()
         {
             Boolean flag = false;
@@ -763,6 +974,7 @@ namespace WebApplication1.bussiness.production
                     txt_branchnm.Text = branch;
                     txt_nwbranchname.Text = branch;
 
+                    CaptureOriginalBankValues();
                 }
                 dbcl.DisconnectDb();
             }
@@ -772,6 +984,31 @@ namespace WebApplication1.bussiness.production
                 lbl_msg.ForeColor = System.Drawing.Color.Red;
                 lbl_msg.Text = "Error: " + ex.Message.ToString();
             }
+        }
+
+        private void CaptureOriginalBankValues()
+        {
+            Dictionary<string, string> bank = new Dictionary<string, string>();
+
+            bank["Payment_Bank"] = txt_banknanme.Text;
+            bank["Payment_Account"] = txt_accountno.Text;
+            bank["Payment_IFSC"] = txt_ifsccode.Text;
+            bank["BankBranch"] = txt_branchnm.Text;
+
+            ViewState["ORIGINAL_BANK_DATA"] = bank;
+        }
+
+        private void CaptureOriginalGPValues()
+        {
+            Dictionary<string, string> gp = new Dictionary<string, string>();
+
+            gp["GatePassNo"] = txt_gpno.Text;
+            gp["GatePassExpiry"] = txt_gpvalidity.Text;
+            gp["SafetyPassNo"] = txt_rfidno.Text;
+            gp["SafetyPassExpiry"] = txt_rfidvalidity.Text;
+            gp["PVExpiry"] = txt_pvvalidity.Text;
+
+            ViewState["ORIGINAL_GP_DATA"] = gp;
         }
 
 
@@ -802,9 +1039,15 @@ namespace WebApplication1.bussiness.production
             else if (btn_gtpsedit.Text.ToString() == "Save Changes")
             {
 
-                ///function to make changes in DB
-                ///
+                string gpChanges = GetGPFieldChanges();
+
                 ReflectNewGPData();
+
+                if (!string.IsNullOrWhiteSpace(gpChanges))
+                {
+                    WriteModuleAuditLog("GATE_PASS", gpChanges);
+                }
+
                 DisplayNewGPData();
                 nwgprow1.Visible = false;
                 nwgprow2.Visible = false;
@@ -826,6 +1069,30 @@ namespace WebApplication1.bussiness.production
                 ClientScript.RegisterStartupScript(this.GetType(), "alert", "ShowPopup2();", true);
             }
         }
+
+        private void WriteModuleAuditLog(string module, string changes)
+        {
+            string folder = Server.MapPath("~/bussiness/production/Logs/EmployeeEdits/");
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
+
+            string file = Path.Combine(
+                folder,
+                $"EMP_{txt_workman.Text}_{DateTime.Now:yyyyMMdd}.log"
+            );
+
+            string log =
+                $"[{DateTime.Now:dd-MM-yyyy HH:mm:ss}]\n" +
+                $"Module : {module}\n" +
+                $"Employee : {txt_workman.Text}\n" +
+                $"Modified By : {Session["USERNAME"]} ({Session["WORKMAN"]})\n" +
+                $"Changes:\n{changes}\n" +
+                $"---------------------------------------------\n";
+
+            File.AppendAllText(file, log);
+        }
+
+
         protected void btn_cancelgpedit_Click(object sender, EventArgs e)
         {
             nwgprow1.Visible = false;
@@ -954,6 +1221,8 @@ namespace WebApplication1.bussiness.production
                         txt_pvvalidity.ForeColor = Color.OrangeRed;
                         //lbl_pvdays.ForeColor = Color.OrangeRed;
                     }
+
+                    CaptureOriginalGPValues();
                 }
                 dbcl.DisconnectDb();
             }
@@ -964,5 +1233,25 @@ namespace WebApplication1.bussiness.production
                 lbl_msg.Text = "Error: " + ex.Message.ToString();
             }
         }
+
+        private string GetGPFieldChanges()
+        {
+            if (ViewState["ORIGINAL_GP_DATA"] == null)
+                return "";
+
+            Dictionary<string, string> original =
+                (Dictionary<string, string>)ViewState["ORIGINAL_GP_DATA"];
+
+            List<string> changes = new List<string>();
+
+            CompareValue(changes, original, "GatePassNo", txt_nwgpno.Text);
+            CompareValue(changes, original, "GatePassExpiry", txt_nwgpvalidity.Text);
+            CompareValue(changes, original, "SafetyPassNo", txt_nwsftyno.Text);
+            CompareValue(changes, original, "SafetyPassExpiry", txt_nwsftyvalidity.Text);
+            CompareValue(changes, original, "PVExpiry", txt_nwpvvalidity.Text);
+
+            return string.Join(Environment.NewLine, changes);
+        }
+
     }
 }

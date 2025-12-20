@@ -110,7 +110,7 @@
                                     <label style="font-weight: bold; color: blue;">Mother Name <span class="text text-danger">*</span></label>
                                 </div>
                                 <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_empmothername" class="form-control form-control-sm rounded" placeholder="txt_Mothername..." runat="server"></asp:TextBox>
+                                    <asp:TextBox ID="txt_empmothername" class="form-control form-control-sm rounded" ReadOnly="true" placeholder="txt_Mothername..." runat="server"></asp:TextBox>
                                     <asp:RequiredFieldValidator ID="RequiredFieldValidator5a" runat="server" Display="Dynamic" ErrorMessage="This field is required" ForeColor="Red" ControlToValidate="txt_empmothername" SetFocusOnError="true"></asp:RequiredFieldValidator>
                                 </div>
 
@@ -118,7 +118,7 @@
                                     <label>Employee Date Of Birth <span class="text text-danger">*</span></label>
                                 </div>
                                 <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_DOB" runat="server" class="date-picker form-control rounded" placeholder="yyyy-mm-dd" required="required" onfocus="this.type='date'" onmouseover="this.type='date'" onclick="this.type = 'date'" onblur="this.type='text'" onmouseout="timeFunctionLong(this)"></asp:TextBox>
+                                    <asp:TextBox ID="txt_DOB" runat="server" class="date-picker form-control rounded" placeholder="yyyy-mm-dd" required="required" onfocus="this.blur();" onmouseover="this.type='date'" onclick="this.type = 'date'" onblur="this.type='text'" onmouseout="timeFunctionLong(this)"></asp:TextBox>
                                     <script>
                                         function timeFunctionLong(txt_DOB) {
                                             setTimeout(function () {
@@ -162,7 +162,7 @@
                                     <label>Employee Date Of Joining <span class="text text-danger">*</span></label>
                                 </div>
                                 <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_DOJ" runat="server" class="date-picker form-control rounded" placeholder="yyyy-mm-dd" required="required" onfocus="this.type='date'" onmouseover="this.type='date'" onclick="this.type = 'date'" onblur="this.type='text'" onmouseout="timeFunctionLong(this)"></asp:TextBox>
+                                    <asp:TextBox ID="txt_DOJ" runat="server" class="date-picker form-control rounded" placeholder="yyyy-mm-dd" required="required" onfocus="this.blur();" onmouseover="this.type='date'" onclick="this.type = 'date'" onblur="this.type='text'" onmouseout="timeFunctionLong(this)"></asp:TextBox>
                                     <script>
                                         function timeFunctionLong(txt_DOJ) {
                                             setTimeout(function () {
@@ -314,8 +314,8 @@
                                     <label>Bank Name<span class="text text-danger">*</span></label>
                                 </div>
                                 <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-									<asp:TextBox ID="txt_banknanme" class="form-control form-control-sm rounded" placeholder="Enter Bank Name" runat="server" ReadOnly="true"></asp:TextBox>
-								</div>
+                                    <asp:TextBox ID="txt_banknanme" class="form-control form-control-sm rounded" placeholder="Enter Bank Name" runat="server" ReadOnly="true"></asp:TextBox>
+                                </div>
 
                                 <div class="col-md-2 col-sm-6 col-xs-6 form-group">
                                     <label>Bank Account No<span class="text text-danger">*</span></label>
@@ -356,7 +356,7 @@
                                     </div>
                                     <div class="col-md-6 col-sm-12">
                                         <asp:Button ID="btn_cancel" runat="server" Text="BACK" class="btn btn-danger btn-sm" OnClick="btn_cancel_Click" CausesValidation="false" />
-                                        <asp:Button ID="btn_save" runat="server" Text="UPDATE ALL" Enabled="true" class="btn btn-success btn-sm" OnClick="btn_save_Click" />
+                                        <asp:Button ID="btn_save" runat="server" Text="UPDATE ALL" Enabled="true" class="btn btn-success btn-sm" OnClientClick="return confirmSave();" OnClick="btn_save_Click" />
                                     </div>
                                 </div>
                             </div>
@@ -561,6 +561,37 @@
                 </div>
             </div>
             <%--- Up-loader Modal -------- END --%>
+
+            <!-- Audit Change Preview Modal -->
+            <div id="AuditPopup" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+
+                        <div class="modal-header bg-info text-white">
+                            <h5 class="modal-title" id="auditModalTitle">Change Preview</h5>
+                            <button type="button" class="close text-white" data-dismiss="modal">
+                                <span>&times;</span>
+                            </button>
+                        </div>
+
+                        <div class="modal-body" id="auditModalBody"
+                            style="max-height: 400px; overflow: auto; font-size: 13px;">
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">
+                                Cancel
+                            </button>
+                            <button type="button" class="btn btn-success btn-sm"
+                                onclick="confirmAuditSave();">
+                                Confirm & Save
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
     <script type="text/javascript">
@@ -576,6 +607,24 @@
 
         function ShowPopup2() {
             $("#myModal2").modal("show");
+        }
+
+        function confirmSave() {
+            return confirm("Are you sure you want to save the changes?");
+        }
+
+        var __auditConfirmed = false;
+
+        function showAuditPopup(changes) {
+            document.getElementById("auditModalBody").innerHTML =
+                changes.replace(/\n/g, "<br/>");
+            $('#AuditPopup').modal('show');
+        }
+
+        function confirmAuditSave() {
+            __auditConfirmed = true;
+            $('#AuditPopup').modal('hide');
+            __doPostBack('<%= btn_save.UniqueID %>', '');
         }
     </script>
 </asp:Content>
