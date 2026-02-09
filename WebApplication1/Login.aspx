@@ -87,7 +87,7 @@
             <asp:Image ID="Image1" runat="server" ImageUrl="~/erp_images/ats_translogo.png" Height="80" Width="80" CssClass="brand-logo" />
 
             <div id="login_section">
-                <h1 class="h4 text-center fw-bold mb-4">ATS Cloud ERP</h1>
+                <h1 class="h4 text-center fw-bold mb-4">Work-Sure ERP</h1>
 
                 <div class="mb-3">
                     <label class="form-label small fw-bold text-muted">USER ID</label>

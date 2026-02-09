@@ -241,11 +241,17 @@ namespace WebApplication1.bussiness.production
             {
                 string CmdString2 = "select * from tlb_payroll_wages where Country_Code = '" + DDL_WorkCountry.SelectedValue.ToString() + "' and State_Code ='" + DDL_WorkStates.SelectedValue.ToString() + "' and WorkRegion_Code='" + DDL_Region.SelectedValue.ToString() + "' and Company_Code = '" + DDL_Company.SelectedValue.ToString() + "' order by Id";
                 BindGrid(CmdString2);
+
+                string CmdString3a = "select Category_Type, Category_DB from tlb_payroll_category where Country_Code = '" + DDL_WorkCountry.SelectedValue.ToString() + "' and State_Code ='" + DDL_WorkStates.SelectedValue.ToString() + "' and WorkRegion_Code = '" + DDL_Region.SelectedValue.ToString() + "' and Company_Code='" + DDL_Company.SelectedValue.ToString() + "' order by Id ";
+                BindSkillCategory(CmdString3a);
             }
             else
             {
                 string CmdString2 = "select * from tlb_payroll_wages where Country_Code = 'IN' and State_Code ='" + state + "' and WorkRegion_Code='" + region + "' and Company_Code = '" + comp + "' order by Id";
                 BindGrid(CmdString2);
+
+                string CmdString3a = "select Category_Type, Category_DB from tlb_payroll_category where Country_Code = 'IN' and State_Code ='" + state + "' and WorkRegion_Code = '" + region + "' and Company_Code='" + comp + "' order by Id ";
+                BindSkillCategory(CmdString3a);
             }
         }
 
@@ -253,7 +259,7 @@ namespace WebApplication1.bussiness.production
         {
             if (Session["USTATE"].ToString() == "PI")
             {
-                string CmdString2 = "select * from tlb_payroll_designation where Country_Code = '" + DDL_WorkCountry.SelectedValue.ToString() + "' and State_Code ='" + DDL_WorkStates.SelectedValue.ToString() + "' and WorkRegion_Code='" + DDL_Region.SelectedValue.ToString() + "' and Company_Code = '" + DDL_Company.SelectedValue.ToString() + "' and Category_DB='" + DDl_Category_type.SelectedValue.ToString() + "' order by Id";
+                string CmdString2 = "select * from tlb_payroll_wages where Country_Code = '" + DDL_WorkCountry.SelectedValue.ToString() + "' and State_Code ='" + DDL_WorkStates.SelectedValue.ToString() + "' and WorkRegion_Code='" + DDL_Region.SelectedValue.ToString() + "' and Company_Code = '" + DDL_Company.SelectedValue.ToString() + "' and Category_DB='" + DDl_Category_type.SelectedValue.ToString() + "' order by Id";
                 BindGrid(CmdString2);
             }
             else
