@@ -4094,20 +4094,6 @@
     <Content Include="bussiness\vendors\validator\index.html" />
     <Content Include="bussiness\vendors\validator\multifield.js" />
     <Content Include="bussiness\vendors\validator\validator.js" />
-    <Content Include="Images\Category\209c725a-9e70-4d52-b639-329c51977eac.png" />
-    <Content Include="Images\Category\356c72ec-f714-4ee1-96eb-1d8a3fe246b6.jpeg" />
-    <Content Include="Images\Category\46eac499-2aa9-4a6b-a307-b4b5a3e4d846.jpeg" />
-    <Content Include="Images\Category\a4ca4a90-adec-4226-b02a-e44999fdccb2.png" />
-    <Content Include="Images\Category\ad9c70d3-512f-46b1-8522-30316b078990.jpeg" />
-    <Content Include="Images\Category\c1c68370-3634-4329-aeee-6e18624527c1.jpg" />
-    <Content Include="Images\Login.jpg" />
-    <Content Include="Images\Product\29cefc2f-2033-48ab-9d8e-c70db08ddae9.jpeg" />
-    <Content Include="Images\Product\3cf999f0-1764-4eaf-908e-ec6fb40614d4.png" />
-    <Content Include="Images\Product\50f2ac59-c336-427b-b416-1b59a19efdb3.jpeg" />
-    <Content Include="Images\Product\8662a321-4f76-4815-8aeb-d5fe44201a08.jpg" />
-    <Content Include="Images\Product\9031f5c2-482a-43e8-b20d-82666bfe2970.jpeg" />
-    <Content Include="Images\Product\a793a4f9-c0d8-4b7b-a7b7-3cf9ffe5a1b3.jpeg" />
-    <Content Include="Images\Product\e6af9b89-e2dd-45d8-b4bc-67a5313eac73.jpeg" />
     <Content Include="login.aspx" />
     <Content Include="packages.config">
       <SubType>Designer</SubType>
@@ -6208,8 +6194,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bussiness\production\Logs\" />
-    <Folder Include="Images\Application\" />
-    <Folder Include="Images\User\" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="bussiness\vendors\devbridge-autocomplete\src\jquery.autocomplete.d.ts" />
