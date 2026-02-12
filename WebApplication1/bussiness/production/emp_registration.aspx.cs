@@ -446,8 +446,6 @@ namespace WebApplication1.bussiness.production
 
                 SqlCommand cmd = new SqlCommand("SP_InsertInto_EmployeeMusterTable", dbcl.Conn);
                 cmd.CommandType = CommandType.StoredProcedure;
-
-                // 1. STANDARD FIELDS
                 cmd.Parameters.AddWithValue("@WorkStatus", "Active");
                 cmd.Parameters.AddWithValue("@LoginID", LoginID);
                 cmd.Parameters.AddWithValue("@LoginPassword", hashedPwd); // Standard: Hash goes to Password col
@@ -477,7 +475,6 @@ namespace WebApplication1.bussiness.production
                 cmd.Parameters.AddWithValue("@BloodGroup", txt_bloodgroup.Text);
                 cmd.Parameters.AddWithValue("@MobileNo", txt_Mobile_Number.Text);
 
-                // Safe Date Parsing
                 DateTime dob;
                 if (DateTime.TryParse(txt_DOB.Text, out dob)) cmd.Parameters.AddWithValue("@DOB", dob);
                 else cmd.Parameters.AddWithValue("@DOB", DBNull.Value);
@@ -501,15 +498,14 @@ namespace WebApplication1.bussiness.production
                 cmd.Parameters.AddWithValue("@SkillCategoryDB", DDL_SkillCategory.SelectedValue.ToString()); // SP expects Varchar(50)
                 cmd.Parameters.AddWithValue("@SkillDesignationDB", DDL_SkillDesignation.SelectedValue.ToString()); // SP expects Varchar(50)
 
-                int userRoleDB = 0;
-                int.TryParse(DDL_EmployeeType.SelectedValue, out userRoleDB);
-                cmd.Parameters.AddWithValue("@UserRoleDB", userRoleDB); // SP expects INT
+                //int userRoleDB = 0;
+                //int.TryParse(DDL_EmployeeType.SelectedValue, out userRoleDB);
+                cmd.Parameters.AddWithValue("@UserRoleDB", DDL_EmployeeType.SelectedValue.ToString()); // SP expects INT
 
-                int rolePermissionDB = 0;
-                int.TryParse(DDL_RolePermissions.SelectedValue, out rolePermissionDB);
-                cmd.Parameters.AddWithValue("@RolePermissionDB", rolePermissionDB); // SP expects INT
+                //int rolePermissionDB = 0;
+                //int.TryParse(DDL_RolePermissions.SelectedValue, out rolePermissionDB);
+                cmd.Parameters.AddWithValue("@RolePermissionDB", DDL_RolePermissions.SelectedValue.ToString()); // SP expects INT
 
-                // 4. OTHER FIELDS
                 int workHours = 0;
                 int.TryParse(DDL_WorkHours.SelectedValue, out workHours);
                 cmd.Parameters.AddWithValue("@WorkHours", workHours);
@@ -542,9 +538,8 @@ namespace WebApplication1.bussiness.production
                 cmd.Parameters.AddWithValue("@BankBranch", txt_bankbranch.Text.ToUpper());
                 cmd.Parameters.AddWithValue("@RegistrationType", "Single");
 
-                // Session handling
-                string registeredBy = Session["USERNAME"] != null ? Session["USERNAME"].ToString() : "Admin";
-                string registeredByWrk = Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "000";
+                string registeredBy = Session["USERNAME"] != null ? Session["USERNAME"].ToString() : "ATS ADMIN";
+                string registeredByWrk = Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "J8";
 
                 cmd.Parameters.AddWithValue("@Registered_ByName", registeredBy);
                 cmd.Parameters.AddWithValue("@Registered_ByWRK", registeredByWrk);
