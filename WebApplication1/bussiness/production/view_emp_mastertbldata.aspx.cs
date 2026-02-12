@@ -47,8 +47,12 @@ namespace WebApplication1.bussiness.production
                         datalock = "0";
                     }
 
-                    string CmdString2 = "select * from tbl_Employee_Mustertable where WorkRegion = '" + region + "' and WorkCompany='" + comp + "' order by Id desc";
-                    BindGrid(CmdString2);
+                    // OPTIMIZED QUERY: Only select columns you display
+                    string optimizedQuery = @"
+                        SELECT Id, WorkmanSL, WorkStatus, FullName, SkillCategory, SkillDesignation, 
+                               Fathername, DOR, DOJ, MobileNo, Email, WorkSite, SafetyPassNo, BloodGroup, SafetyPassExpiry, UANNo  -- <--- ADDED THESE COLUMNS
+                        FROM tbl_Employee_Mustertable WHERE WorkRegion = '" + region + "' AND WorkCompany='" + comp + "' ORDER BY Id DESC";
+                    BindGrid(optimizedQuery);
                 }
             }
         }
@@ -96,81 +100,61 @@ namespace WebApplication1.bussiness.production
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
-            SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
-            SqlDataAdapter ad = new SqlDataAdapter(cmd);
-            DataTable ds = new DataTable();
-            ad.Fill(ds);
-            GridView1.DataSource = ds;
-            GridView1.DataBind();
+            using (SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn))
+            {
+                using (SqlDataAdapter ad = new SqlDataAdapter(cmd))
+                {
+                    DataTable ds = new DataTable();
+                    ad.Fill(ds);
+
+                    GridView1.DataSource = ds;
+                    GridView1.DataBind();
+                }
+            }
             dbcl.Conn.Close();
         }
 
-        protected void OnPageIndexChanging(object sender, GridViewPageEventArgs e)
+        // REQUIRED FOR GENTELELLA DATATABLES TO WORK
+        protected void GridView1_PreRender(object sender, EventArgs e)
         {
-            GridView1.PageIndex = e.NewPageIndex;
-            string CmdString2 = "select * from tbl_Employee_Mustertable where WorkRegion = '" + region + "' and WorkCompany='" + comp + "' order by Id desc";
-            BindGrid(CmdString2);
-        }
-
-        protected void GridView1_RowDataBound(object sender, GridViewRowEventArgs e)
-        {
-            for (int i = 0; i <= GridView1.Rows.Count - 1; i++)
+            if (GridView1.Rows.Count > 0)
             {
-                Label lbl_WorkStatus = (Label)GridView1.Rows[i].FindControl("lbl_WorkStatus");
-
-                Button btn_workstatus = (Button)GridView1.Rows[i].FindControl("btn_workstatus");
-
-                string jobidstatus = lbl_WorkStatus.Text.ToString();
-
-                if (jobidstatus == "Active")
-                {
-                    btn_workstatus.CssClass = "btn btn-success btn-sm";
-                }
-                else
-                {
-                    btn_workstatus.CssClass = "btn btn-sm btn-danger";
-                }
+                // This is REQUIRED for DataTables to work
+                GridView1.UseAccessibleHeader = true;
+                GridView1.HeaderRow.TableSection = TableRowSection.TableHeader;
             }
         }
 
         protected void GridView1_RowCommand(object sender, GridViewCommandEventArgs e)
         {
-            //string rowIndex = Convert.ToString(e.CommandArgument);
-
-            //Determine the RowIndex of the Row whose Button was clicked.
-            int rowIndex = Convert.ToInt32(e.CommandArgument);
-
-            //Reference the GridView Row.
-            GridViewRow row = GridView1.Rows[rowIndex];
-
-            //Fetch value of Name.
-            string dbid = (row.FindControl("lbl_Id") as Label).Text;
-            string empwrk = (row.FindControl("lbl_WorkmanSL") as Label).Text;
-            string empname = (row.FindControl("lbl_FullName") as Label).Text;
-            string workstatus = (row.FindControl("lbl_WorkStatus") as Label).Text;
-
             if (e.CommandName == "Swap_WorkStatus")
             {
-                if (workstatus == "InActive")
-                {
-                    dbcl.executeRdr("update tbl_Employee_Mustertable set WorkStatus ='Active' where WorkmanSL='" + empwrk + "' and Id = '" + dbid + "'");
-                    string title = "Notification :";
-                    string body = "Status Changed";
-                    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
-                }
-                else
-                {
-                    dbcl.executeRdr("update tbl_Employee_Mustertable set WorkStatus ='InActive' where WorkmanSL='" + empwrk + "' and Id = '" + dbid + "'");
-                    string title = "Notification :";
-                    string body = "Status Changed";
-                    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
-                }
-                string CmdString2 = "select * from tbl_Employee_Mustertable where WorkRegion = '" + region + "' and WorkCompany='" + comp + "' order by Id desc";
-                BindGrid(CmdString2);
+                // SPLIT THE ARGUMENT WE PASSED IN ASPX
+                // Format: "ID,WorkmanSL,CurrentStatus"
+                string[] args = e.CommandArgument.ToString().Split(',');
+                string dbId = args[0];
+                string empWrk = args[1];
+                string currentStatus = args[2];
+
+                string newStatus = (currentStatus == "Active") ? "InActive" : "Active";
+
+                // Update Database
+                string updateQry = "UPDATE tbl_Employee_Mustertable SET WorkStatus = '" + newStatus + "' WHERE Id = '" + dbId + "'";
+                dbcl.executeRdr(updateQry);
+
+                // Show Notification
+                string title = "Success";
+                string body = "Employee " + empWrk + " is now " + newStatus;
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+
+                // Rebind
+                string optimizedQuery = @"SELECT Id, WorkmanSL, WorkStatus, FullName, SkillCategory, SkillDesignation, Fathername, DOR, DOJ, MobileNo, Email, WorkSite, SafetyPassNo FROM tbl_Employee_Mustertable WHERE WorkRegion = '" + region + "' AND WorkCompany='" + comp + "' ORDER BY Id DESC";
+                BindGrid(optimizedQuery);
             }
             else if (e.CommandName == "View_Details")
             {
-                Response.Redirect("viewupdate_empmustertabledata.aspx?ID="+ empwrk + "");
+                string empWrk = e.CommandArgument.ToString();
+                Response.Redirect("viewupdate_empmustertabledata.aspx?ID=" + empWrk);
             }
         }
     }
