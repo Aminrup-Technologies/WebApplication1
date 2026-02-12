@@ -315,10 +315,36 @@ namespace WebApplication1.gentelella_master.production
         {
             dbcl.WriteToFile("User :" + lbl_loginusername1.Text.ToString() + " Singout Successfully");
             //Update loginstatus and Last Login Information i.e. date
+            LogoutUser();
             dbcl.UPDT_EmpMuster_LogoutInfo(Session["WORKMAN"].ToString(), Session["USERID"].ToString());
             Session.Abandon();
             Response.Redirect("~/login.aspx", false);
         }
+
+        protected void LogoutUser()
+        {
+            dbcl.SPreturn_dt(
+                @"UPDATE tbl_UserLoginAudit
+          SET LogoutTime = GETDATE()
+          WHERE SessionID=@SID AND LogoutTime IS NULL",
+                new SqlParameter[]
+                {
+            new SqlParameter("@SID", Session.SessionID)
+                });
+
+            dbcl.SPreturn_dt(
+                "UPDATE tbl_Employee_Mustertable SET LastLogout=GETDATE(), LoginStatus=0 WHERE LoginID=@ID",
+                new SqlParameter[]
+                {
+            new SqlParameter("@ID", Session["USERID"].ToString())
+                });
+
+            Session.Clear();
+            Session.Abandon();
+            Response.Redirect("~/login.aspx");
+        }
+
+
 
 
         //-------------- below code is added on 03-08-2024------------//

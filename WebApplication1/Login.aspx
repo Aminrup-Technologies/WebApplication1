@@ -14,7 +14,7 @@
     <link href="https://cdn.jsdelivr.net/npm/@pnotify/core@5.2.0/dist/PNotify.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@pnotify/core@5.2.0/dist/BrightTheme.css" rel="stylesheet">
 
-    <style>
+    <style type="text/css">
         body {
             background: #f0f2f5;
             min-height: 100vh;
@@ -83,6 +83,7 @@
 </head>
 <body>
     <form id="form1" runat="server">
+        <asp:ScriptManager ID="ScriptManager1" runat="server" />
         <div class="login-card">
             <asp:Image ID="Image1" runat="server" ImageUrl="~/erp_images/ats_translogo.png" Height="80" Width="80" CssClass="brand-logo" />
 
@@ -148,7 +149,12 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@pnotify/core@5.2.0/dist/PNotify.js"></script>
     <script>
-        function notify(title, text, type) {
+        window.notify = function (title, text, type) {
+            if (typeof PNotify === "undefined") {
+                alert(title + ": " + text);
+                return;
+            }
+
             PNotify.alert({
                 title: title,
                 text: text,
@@ -156,7 +162,7 @@
                 delay: 3000,
                 addClass: 'pnotify-custom'
             });
-        }
+        };
 
         function validateLogin() {
             const id = document.getElementById('<%= txt_loginid.ClientID %>').value;
@@ -173,12 +179,17 @@
             document.getElementById('forgot_section').style.display = showForgot ? 'block' : 'none';
         }
 
-        document.getElementById('pass-toggle').addEventListener('click', function () {
-            const input = document.getElementById('<%= txt_password.ClientID %>');
-            const icon = document.getElementById('eye-icon');
-            input.type = input.type === "password" ? "text" : "password";
-            icon.classList.toggle('fa-eye');
-            icon.classList.toggle('fa-eye-slash');
+        document.addEventListener("DOMContentLoaded", function () {
+            const toggle = document.getElementById('pass-toggle');
+            if (!toggle) return;
+
+            toggle.addEventListener('click', function () {
+                const input = document.getElementById('<%= txt_password.ClientID %>');
+                const icon = document.getElementById('eye-icon');
+                input.type = input.type === "password" ? "text" : "password";
+                icon.classList.toggle('fa-eye');
+                icon.classList.toggle('fa-eye-slash');
+            });
         });
     </script>
 </body>

@@ -391,12 +391,36 @@ namespace WebApplication1.bussiness.production
                     txt_nwmobileno.Text = "";
                     txt_nwemailadd.Text = "";
 
-                    int contactUpdateStatus = GetContactUpdateStatus(Workman);
-                    if (contactUpdateStatus == 0 || contactUpdateStatus == -1)
+                    //int contactUpdateStatus = GetContactUpdateStatus(Workman);
+                    //if (contactUpdateStatus == 0 || contactUpdateStatus == -1)
+                    //{
+                    //    btn_cancel_contactdata.Enabled = false;
+                    //    btn_sv_contactdata.Enabled = true;
+                    //    ClientScript.RegisterStartupScript(this.GetType(), "alert9", "ShowContactModal();", true);
+                    //}
+
+                    bool isContactExpired = IsContactExpired(dt.Rows[0]);
+
+                    if (isContactExpired)
                     {
-                        btn_cancel_contactdata.Enabled = false;
-                        btn_sv_contactdata.Enabled = true;
-                        ClientScript.RegisterStartupScript(this.GetType(), "alert9", "ShowContactModal();", true);
+                        // Hard-disable bypass
+                        btn_cancel_contactdata.Enabled = false; // Confirm
+                        btn_cancel1.Enabled = false;             // CANCEL
+                        btn_sv_contactdata.Enabled = true;       // Make Changes
+
+                        // Show modal (cannot close)
+                        ClientScript.RegisterStartupScript(
+                            this.GetType(),
+                            "ShowContactModal",
+                            "$('#myModal4').modal('show');",
+                            true
+                        );
+                    }
+                    else
+                    {
+                        // Contact valid → normal behavior
+                        btn_cancel_contactdata.Enabled = true;
+                        btn_cancel1.Enabled = true;
                     }
                 }
                 else
@@ -405,6 +429,24 @@ namespace WebApplication1.bussiness.production
                 }
             }
         }
+
+        private bool IsContactExpired(DataRow row)
+        {
+            // Status must be verified
+            if (row["ContactUpdateStatus"] == DBNull.Value ||
+                Convert.ToInt32(row["ContactUpdateStatus"]) != 1)
+                return true;
+
+            // Date must exist
+            if (row["ContactUpdateOn"] == DBNull.Value)
+                return true;
+
+            DateTime lastUpdate = Convert.ToDateTime(row["ContactUpdateOn"]);
+
+            // 60-day rule
+            return lastUpdate < DateTime.Now.AddDays(-60);
+        }
+
 
         private void EmployeeDeductionsBinder()
         {
@@ -986,10 +1028,34 @@ namespace WebApplication1.bussiness.production
         {
             //Update loginstatus and Last Login Information i.e. date
             dbcl.UPDT_EmpMuster_LogoutInfo(Session["WORKMAN"].ToString(), Session["USERID"].ToString());
-
+            LogoutUser();
             Session.Abandon();
             Response.Redirect("~/login.aspx", false);
         }
+
+        protected void LogoutUser()
+        {
+            dbcl.SPreturn_dt(
+                @"UPDATE tbl_UserLoginAudit
+          SET LogoutTime = GETDATE()
+          WHERE SessionID=@SID AND LogoutTime IS NULL",
+                new SqlParameter[]
+                {
+            new SqlParameter("@SID", Session.SessionID)
+                });
+
+            dbcl.SPreturn_dt(
+                "UPDATE tbl_Employee_Mustertable SET LastLogout=GETDATE(), LoginStatus=0 WHERE LoginID=@ID",
+                new SqlParameter[]
+                {
+            new SqlParameter("@ID", Session["USERID"].ToString())
+                });
+
+            Session.Clear();
+            Session.Abandon();
+            Response.Redirect("~/login.aspx");
+        }
+
 
         public int GetContactUpdateStatus(string workmanSL)
         {

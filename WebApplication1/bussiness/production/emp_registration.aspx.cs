@@ -326,14 +326,27 @@ namespace WebApplication1.bussiness.production
             }
         }
 
+        private string HashPassword(string password)
+        {
+            using (var sha = System.Security.Cryptography.SHA256.Create())
+            {
+                var bytes = sha.ComputeHash(
+                    System.Text.Encoding.UTF8.GetBytes(password));
+                return Convert.ToBase64String(bytes);
+            }
+        }
+
+
         private Int32 Insert_EmplyeeMusterData()
         {
             //Code to Generate Unique Employee ID Goes here
             string LoginID = "";
+            string LoginPassword = "";
+            string hashedPwd = HashPassword(LoginPassword);
             dbcl.GenerateLoginID(ref LoginID);
 
             //Code to Generate Unique Login Password Goes here
-            string LoginPassword = "";
+            
             Int32 password_length = 6;
             dbcl.GenerateLoginPassword(password_length, ref LoginPassword);
 
@@ -347,6 +360,7 @@ namespace WebApplication1.bussiness.production
                 cmd.Parameters.AddWithValue("@WorkStatus", "Active");
                 cmd.Parameters.AddWithValue("@LoginID", LoginID);
                 cmd.Parameters.AddWithValue("@LoginPassword", LoginPassword);
+                cmd.Parameters.AddWithValue("@LoginPassword_Plain", hashedPwd);
                 cmd.Parameters.AddWithValue("@WorkCountry", DDL_WorkCountry.SelectedValue.ToString());
                 cmd.Parameters.AddWithValue("@WorkState", DDL_WorkStates.SelectedValue.ToString());
                 cmd.Parameters.AddWithValue("@WorkRegion", DDL_WorkRegion.SelectedValue.ToString());
@@ -384,10 +398,14 @@ namespace WebApplication1.bussiness.production
                 cmd.Parameters.AddWithValue("@WorkSite", DDL_Worksites.SelectedItem.Text.ToString());
                 cmd.Parameters.AddWithValue("@Worksite_Code", DDL_Worksites.SelectedValue.ToString());
                 cmd.Parameters.AddWithValue("@SkillCategory", DDL_SkillCategory.SelectedItem.Text.ToString());
+                cmd.Parameters.AddWithValue("@SkillCategoryDB", DDL_SkillCategory.SelectedValue.ToString());
                 //Skill Category DB is Auto Feed from Backend
                 cmd.Parameters.AddWithValue("@SkillDesignation", DDL_SkillDesignation.SelectedItem.Text.ToString());
+                cmd.Parameters.AddWithValue("@SkillDesignationDB", DDL_SkillDesignation.SelectedValue.ToString());
                 //Skill designation DB Code is auto feed from the back end
                 cmd.Parameters.AddWithValue("@User_RoleType", DDL_EmployeeType.SelectedItem.Text.ToString());
+                cmd.Parameters.AddWithValue("@UserRoleDB", Convert.ToInt32(DDL_EmployeeType.SelectedValue));
+                cmd.Parameters.AddWithValue("@RolePermissionDB", Convert.ToInt32(DDL_RolePermissions.SelectedValue));
                 cmd.Parameters.AddWithValue("@Role_Permission", DDL_RolePermissions.SelectedItem.Text.ToString());
                 cmd.Parameters.AddWithValue("@WorkHours", DDL_WorkHours.SelectedValue.ToString());
                 cmd.Parameters.AddWithValue("@OTFactor", DDL_OTFactor.SelectedValue.ToString());
@@ -407,9 +425,9 @@ namespace WebApplication1.bussiness.production
                 cmd.Parameters.AddWithValue("@Registered_ByName", Session["USERNAME"].ToString());
                 cmd.Parameters.AddWithValue("@Registered_ByWRK", Session["WORKMAN"].ToString());
                 cmd.Parameters.AddWithValue("@LoginStatus", 0);
-                cmd.Parameters.AddWithValue("@LastLogin", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt"));
-                cmd.Parameters.AddWithValue("@LastLogout", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt"));
-                cmd.Parameters.AddWithValue("@PasswordExpiry", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt"));
+                cmd.Parameters.AddWithValue("@LastLogin", DateTime.Now);
+                cmd.Parameters.AddWithValue("@LastLogout", DateTime.Now);
+                cmd.Parameters.AddWithValue("@PasswordExpiry", DateTime.Now.AddDays(90));
                 dbcl.ConnectDb();
                 flag = cmd.ExecuteNonQuery();
             }

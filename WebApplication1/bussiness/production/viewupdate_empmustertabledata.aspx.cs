@@ -649,7 +649,7 @@ namespace WebApplication1.bussiness.production
         }
 
 
-        private Int32 Update_EmplyeeMusterData()
+        private Int32 Update_EmplyeeMusterData_OLD()
         {
             //Code to Insert values into the DB goes here
             int flag = 0;
@@ -756,6 +756,107 @@ namespace WebApplication1.bussiness.production
             return flag;
         }
 
+        private Int32 Update_EmplyeeMusterData()
+        {
+            int flag = 0;
+            try
+            {
+                dbcl.Sqlconnection();
+                SqlCommand cmd = new SqlCommand("SP_Update_EmployeeMusterTable", dbcl.Conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                // 1. IDENTIFIER
+                cmd.Parameters.AddWithValue("@WorkmanSL", txt_workman.Text.TrimEnd());
+
+                // 2. PERSONAL DETAILS
+                cmd.Parameters.AddWithValue("@FirstName", txt_empfname.Text);
+
+                // Middle Name Logic
+                string mdname = txt_empmdname.Text.ToUpper();
+                if (string.IsNullOrWhiteSpace(mdname) || mdname == "#N/A" || mdname == "#NA" || mdname == "NA" || mdname == "N/A")
+                {
+                    cmd.Parameters.AddWithValue("@MiddleName", DBNull.Value);
+                }
+                else
+                {
+                    cmd.Parameters.AddWithValue("@MiddleName", mdname);
+                }
+
+                // Last Name Logic
+                string lstname = txt_emplstname.Text.ToUpper();
+                if (string.IsNullOrWhiteSpace(lstname) || lstname == "#N/A" || lstname == "#NA")
+                {
+                    cmd.Parameters.AddWithValue("@LastName", DBNull.Value);
+                }
+                else
+                {
+                    cmd.Parameters.AddWithValue("@LastName", lstname);
+                }
+
+                cmd.Parameters.AddWithValue("@FullName", txt_fullanme.Text.ToUpper());
+                cmd.Parameters.AddWithValue("@Fathername", txt_empfathername.Text.ToUpper());
+                cmd.Parameters.AddWithValue("@BloodGroup", txt_bloodgroup.Text);
+                cmd.Parameters.AddWithValue("@MobileNo", txt_Mobile_Number.Text);
+
+                // Dates
+                cmd.Parameters.AddWithValue("@DOB", Convert.ToDateTime(txt_DOB.Text));
+                cmd.Parameters.AddWithValue("@DOJ", Convert.ToDateTime(txt_DOJ.Text));
+
+                // Qualification (Text & Value)
+                cmd.Parameters.AddWithValue("@Qualification", DDL_HighestEdu.SelectedItem.Text);
+                cmd.Parameters.AddWithValue("@QualificationDB", DDL_HighestEdu.SelectedValue);
+
+                // 3. WORK DETAILS (Passing both Text and ID)
+                cmd.Parameters.AddWithValue("@WorkSite", DDL_Worksites.SelectedItem.Text);
+                cmd.Parameters.AddWithValue("@Worksite_Code", DDL_Worksites.SelectedValue);
+
+                cmd.Parameters.AddWithValue("@SkillCategory", DDL_SkillCategory.SelectedItem.Text);
+                cmd.Parameters.AddWithValue("@SkillCategoryDB", DDL_SkillCategory.SelectedValue);
+
+                cmd.Parameters.AddWithValue("@SkillDesignation", DDL_SkillDesignation.SelectedItem.Text);
+                cmd.Parameters.AddWithValue("@SkillDesignationDB", DDL_SkillDesignation.SelectedValue);
+
+                cmd.Parameters.AddWithValue("@User_RoleType", DDL_EmployeeType.SelectedItem.Text);
+                cmd.Parameters.AddWithValue("@UserRoleDB", DDL_EmployeeType.SelectedValue); // Ensure this parses to INT in SP if needed, or pass as object
+
+                cmd.Parameters.AddWithValue("@Role_Permission", DDL_RolePermissions.SelectedItem.Text);
+                cmd.Parameters.AddWithValue("@RolePermissionDB", DDL_RolePermissions.SelectedValue);
+
+                cmd.Parameters.AddWithValue("@WorkHours", DDL_WorkHours.SelectedValue);
+                cmd.Parameters.AddWithValue("@OTFactor", DDL_OTFactor.SelectedValue);
+
+                // 4. STATUTORY DETAILS
+                cmd.Parameters.AddWithValue("@UANNo", txt_uanno.Text);
+                cmd.Parameters.AddWithValue("@ESICNo", txt_esicno.Text);
+
+                // 5. AUDIT TRAILS
+                cmd.Parameters.AddWithValue("@LastModifiedDate", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt"));
+                cmd.Parameters.AddWithValue("@LastModifiedByName", Session["USERNAME"].ToString());
+                cmd.Parameters.AddWithValue("@LastModifiedByWrk", Session["WORKMAN"].ToString());
+
+                dbcl.ConnectDb();
+                flag = cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                lbl_msg.Visible = true;
+                lbl_msg.Text = ex.Message;
+                lbl_msg.ForeColor = System.Drawing.Color.IndianRed;
+            }
+            finally
+            {
+                dbcl.DisconnectDb(); // Moved Disconnect to finally block for safety
+            }
+
+            if (flag != 0)
+            {
+                lbl_msg.Visible = true;
+                lbl_msg.Text = "Record Updated Successfully..!";
+                lbl_msg.ForeColor = System.Drawing.Color.DarkGreen;
+            }
+
+            return flag;
+        }
 
         protected void btn_save_Click(object sender, EventArgs e)
         {
