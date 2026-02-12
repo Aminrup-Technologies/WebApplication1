@@ -306,6 +306,7 @@
     <Content Include="bussiness\production\jobs_approverdash.aspx" />
     <Content Include="bussiness\production\job_create_summary.aspx" />
     <Content Include="bussiness\production\js\jquery-1.9.1.js" />
+    <Content Include="bussiness\production\login.aspx" />
     <Content Include="bussiness\production\magician.aspx" />
     <Content Include="bussiness\production\manage_profile.aspx" />
     <Content Include="bussiness\production\manage_rolls.aspx" />
@@ -5517,6 +5518,13 @@
     </Compile>
     <Compile Include="bussiness\production\job_create_summary.aspx.designer.cs">
       <DependentUpon>job_create_summary.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\login.aspx.cs">
+      <DependentUpon>login.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\login.aspx.designer.cs">
+      <DependentUpon>login.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\LoginUserData.cs" />
     <Compile Include="bussiness\production\magician.aspx.cs">
