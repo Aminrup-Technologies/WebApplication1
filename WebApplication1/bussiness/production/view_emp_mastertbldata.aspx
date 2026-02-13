@@ -23,6 +23,29 @@
     </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+
+    <div id="MyPopup" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel2">Notification</h4>
+                </div>
+
+                <div class="modal-body">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <div class="right_col" role="main">
         <div class="">
             <div class="row">
@@ -56,21 +79,28 @@
                                         <asp:TemplateField HeaderText="Status" HeaderStyle-Width="50px">
                                             <ItemTemplate>
                                                 <asp:Button ID="btn_workstatus" runat="server" Text='<%# Eval("WorkStatus") %>'
-                                                    CssClass='<%# Eval("WorkStatus").ToString() == "Active" ? "btn btn-xs btn-success" : "btn btn-xs btn-danger" %>'
+                                                    CssClass='<%# Eval("WorkStatus").ToString() == "Active" ? "btn btn-sm btn-success" : "btn btn-sm btn-danger" %>'
                                                     CommandName="Swap_WorkStatus" CommandArgument='<%# Eval("Id") + "," + Eval("WorkmanSL") + "," + Eval("WorkStatus") %>' />
                                             </ItemTemplate>
                                         </asp:TemplateField>
 
-                                        <asp:TemplateField HeaderText="Employee Details">
+                                        <asp:TemplateField HeaderText="Employee Details" HeaderStyle-Width="30%">
                                             <ItemTemplate>
-                                                <span class="badge badge-info" style="font-size: 0.9em; margin-right: 5px;"><%# Eval("WorkmanSL") %></span>
+                                                <div style="margin-bottom: 4px;">
+                                                    <span class="badge badge-info" title="Employee Code" style="margin-right: 2px;">
+                                                        <%# Eval("WorkmanSL") %>
+                                                    </span>
 
-                                                <strong style="font-size: 1.1em; color: #2A3F54; text-transform: uppercase;">
-                                                    <%# Eval("FullName") %>
-                                                </strong>
-                                                <br />
+                                                    <span class="badge" style="background-color: #E7E7E7; color: #555; border: 1px solid #ccc; margin-right: 5px;" title="System Login ID">
+                                                        <i class="fa fa-key"></i><%# Eval("LoginID") %>
+                                                    </span>
 
-                                                <div style="margin-top: 4px; color: #73879C; font-size: 0.9em;">
+                                                    <strong style="font-size: 1.1em; color: #2A3F54; text-transform: uppercase; vertical-align: middle;">
+                                                        <%# Eval("FullName") %>
+                                                    </strong>
+                                                </div>
+
+                                                <div style="color: #73879C; font-size: 0.9em; margin-bottom: 2px;">
                                                     <i class="fa fa-briefcase"></i>
                                                     <span><%# Eval("SkillDesignation") %></span>
 
@@ -99,14 +129,20 @@
                                             </ItemTemplate>
                                         </asp:TemplateField>
 
-                                        <asp:TemplateField HeaderText="Contact Info">
+                                        <asp:TemplateField HeaderText="Contact Info" HeaderStyle-Width="15%">
                                             <ItemTemplate>
-                                                <i class="fa fa-mobile" style="font-size: 1.2em;"></i><%# Eval("MobileNo") %><br />
-                                                <small>
-                                                    <%# string.IsNullOrEmpty(Eval("UANNo").ToString()) ? 
-                                                    "<i class='fa fa-envelope-o'></i> " + Eval("Email") : 
-                                                    "<strong>UAN:</strong> " + Eval("UANNo") %>
-                                                </small>
+                                                <div style="line-height: 1.6;">
+                                                    <i class="fa fa-phone-square" style="font-size: 1.1em; color: #26B99A;"></i>
+                                                    <span style="font-weight: 600; color: #555;">
+                                                        <%# Eval("MobileNo") %>
+                                                    </span>
+                                                    <br />
+
+                                                    <i class="fa fa-envelope" style="font-size: 1em; color: #3498DB;"></i>
+                                                    <span style="font-size: 0.9em; color: #73879C;">
+                                                        <%# string.IsNullOrEmpty(Eval("Email").ToString()) ? "N/A" : Eval("Email") %>
+                                                    </span>
+                                                </div>
                                             </ItemTemplate>
                                         </asp:TemplateField>
 
@@ -122,13 +158,23 @@
                                             </ItemTemplate>
                                         </asp:TemplateField>
 
-                                        <asp:TemplateField HeaderText="Action">
+                                        <asp:TemplateField HeaderText="Action" HeaderStyle-Width="15%">
                                             <ItemTemplate>
-                                                <asp:LinkButton ID="btn_viewdetails" runat="server" CssClass="btn btn-info btn-xs"
-                                                    CommandName="View_Details"
-                                                    CommandArgument='<%# Eval("WorkmanSL") %>'>
-                <i class="fa fa-eye"></i> View
-                                                </asp:LinkButton>
+                                                <div class="btn-group btn-group-sm">
+                                                    <asp:LinkButton ID="btn_viewdetails" runat="server" CssClass="btn btn-info"
+                                                        CommandName="View_Details" CommandArgument='<%# Eval("WorkmanSL") %>'
+                                                        ToolTip="View Profile">
+                                                        <i class="fa fa-eye"></i>
+                                                    </asp:LinkButton>
+                                                    &nbsp;&nbsp;
+                                                    <asp:LinkButton ID="btn_resetpwd" runat="server" CssClass="btn btn-warning"
+                                                        CommandName="Reset_Password"
+                                                        CommandArgument='<%# Eval("WorkmanSL") + "|" + (Eval("Email") ?? "") + "|" + Eval("FullName") + "|" + Eval("LoginID") %>'
+                                                        OnClientClick="return confirm('Are you sure you want to reset the password for this user?');"
+                                                        ToolTip="Reset Password & Email">
+                                                        <i class="fa fa-key"></i>
+                                                    </asp:LinkButton>
+                                                </div>
                                             </ItemTemplate>
                                         </asp:TemplateField>
                                     </Columns>
@@ -151,11 +197,18 @@
     <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
 
     <script type="text/javascript">
-        // Use 'jqNew' instead of '$' to avoid conflict with Master Page's jQuery 1.7.2
+        // -------------------------------------------------------------------------
+        // CRITICAL: Handle jQuery Conflict
+        // -------------------------------------------------------------------------
+        // jqNew = jQuery 3.6.0 (For DataTables)
+        // $     = Master Page jQuery (For Modals & Theme)
         var jqNew = $.noConflict(true);
 
+        // -------------------------------------------------------------------------
+        // 1. Initialize DataTables using jqNew (The new jQuery)
+        // -------------------------------------------------------------------------
         jqNew(document).ready(function () {
-            jqNew('#<%= GridView1.ClientID %>').DataTable({
+            var table = jqNew('#<%= GridView1.ClientID %>').DataTable({
                 "paging": true,
                 "lengthChange": true,
                 "searching": true,
@@ -164,18 +217,26 @@
                 "autoWidth": false,
                 "responsive": true,
                 "pageLength": 10,
-                "dom": 'Bfrtip', // Defines where buttons appear
+                "dom": 'Bfrtip',
                 "buttons": [
                     {
                         extend: 'excelHtml5',
                         text: '<i class="fa fa-file-excel-o"></i> Export Excel',
-                        className: 'btn btn-success btn-sm', // Matches your theme
-                        title: 'Employee_Master_Data'
+                        className: 'btn btn-success btn-sm',
+                        title: 'Employee_Master_Data',
+                        exportOptions: {
+                            columns: ':not(:last-child)' // Hide Action column
+                        }
                     },
                     {
                         extend: 'pdfHtml5',
                         text: '<i class="fa fa-file-pdf-o"></i> PDF',
-                        className: 'btn btn-danger btn-sm'
+                        className: 'btn btn-danger btn-sm',
+                        orientation: 'landscape',
+                        pageSize: 'LEGAL',
+                        exportOptions: {
+                            columns: ':not(:last-child)'
+                        }
                     },
                     'copy', 'print'
                 ],
@@ -185,5 +246,36 @@
                 }
             });
         });
+
+        // -------------------------------------------------------------------------
+        // 2. Popup Function (Use '$' for Global Bootstrap)
+        // -------------------------------------------------------------------------
+        function ShowPopup(title, body) {
+            // FIX: Use '$' here because the Master Page loads Bootstrap 
+            // and attaches it to the global jQuery variable, not jqNew.
+            $("#MyPopup .modal-title").html(title);
+            $("#MyPopup .modal-body").html(body);
+            $("#MyPopup").modal("show");
+        }
+
+        // FUNCTION TO COPY TEXT
+        function CopyShareText() {
+            // 1. Get the hidden text
+            var copyText = document.getElementById("txtShare");
+
+            // 2. Show it temporarily so we can select it (required for some browsers)
+            copyText.style.display = "block";
+
+            // 3. Select and Copy
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); // For mobile devices
+            document.execCommand("copy");
+
+            // 4. Hide it again
+            copyText.style.display = "none";
+
+            // 5. Visual Feedback (Optional: simple alert or button text change)
+            alert("Credentials copied! You can now paste them in WhatsApp/Teams.");
+        }
     </script>
 </asp:Content>
