@@ -1129,6 +1129,15 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Button btn_svpass;
         
         /// <summary>
+        /// p_verify_reason control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl p_verify_reason;
+        
+        /// <summary>
         /// lbl_oldmobileno control.
         /// </summary>
         /// <remarks>

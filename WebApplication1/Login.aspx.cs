@@ -131,10 +131,10 @@ namespace WebApplication1.bussiness.production
             Context.ApplicationInstance.CompleteRequest();
         }
 
-        private void PerformLogin(string id, string pass)
+        private void PerformLogin_13Feb26(string id, string pass)
         {
-            //string hashedPass = HashPassword(pass);
-            string hashedPass = pass;
+            string hashedPass = HashPassword(pass);
+            //string hashedPass = pass;
 
             string query = @"
             SELECT TOP 1 
@@ -232,6 +232,161 @@ namespace WebApplication1.bussiness.production
                 (!string.IsNullOrEmpty(photo) && File.Exists(Path.Combine(rootFolder, photo)))
                 ? photo
                 : "No_Image.jpg";
+
+            Response.Redirect("~/bussiness/production/homepage.aspx", false);
+            Context.ApplicationInstance.CompleteRequest();
+        }
+
+        private void PerformLogin(string id, string pass)
+        {
+            // 1. Calculate the hash of the input password immediately
+            string inputHashedPass = HashPassword(pass);
+
+            string query = @"
+    SELECT TOP 1 
+        LoginID, LoginPassword,
+        WorkStatus, DOR, PasswordExpiry,
+        WorkmanSL, FirstName, FullName,
+        User_RoleType, UserRoleDB, RolePermissionDB,
+        WorkRegion, WorkState, WorkCompany,
+        WorkSite, Worksite_Code,
+        SkillDesignation, SkillCategory,
+        PrfPicFile
+    FROM tbl_Employee_Mustertable
+    WHERE LoginID = @LoginID";
+
+            DataTable dt = dbcl.SPreturn_dt(
+                query,
+                new SqlParameter[]
+                {
+            new SqlParameter("@LoginID", id)
+                });
+
+            // 2. Check if User Exists
+            if (dt.Rows.Count == 0)
+            {
+                InsertLoginAudit(id, null, "FAILED", "InvalidUser");
+                Notify("Failed", "Invalid ID or Password.", "error");
+                return;
+            }
+
+            DataRow row = dt.Rows[0];
+            string storedPassword = row["LoginPassword"].ToString();
+            string workmanSL = row["WorkmanSL"].ToString();
+
+            // =========================================================================
+            // HYBRID PASSWORD CHECK (Migration Logic)
+            // =========================================================================
+            bool isPasswordValid = false;
+            bool needsMigration = false;
+
+            // Check A: Is it already hashed? (Standard secure login)
+            if (storedPassword == inputHashedPass)
+            {
+                isPasswordValid = true;
+            }
+            // Check B: Is it plain text? (Legacy login)
+            else if (storedPassword == pass)
+            {
+                isPasswordValid = true;
+                needsMigration = true; // Mark for update
+            }
+
+            if (!isPasswordValid)
+            {
+                InsertLoginAudit(id, workmanSL, "FAILED", "InvalidPassword");
+                Notify("Failed", "Invalid ID or Password.", "error");
+                return;
+            }
+
+            // 3. If it was a legacy plain-text login, update DB to hash immediately
+            if (needsMigration)
+            {
+                string updatePassQuery = "UPDATE tbl_Employee_Mustertable SET LoginPassword=@NewHash WHERE LoginID=@ID";
+                dbcl.SPreturn_dt(updatePassQuery, new SqlParameter[] {
+            new SqlParameter("@NewHash", inputHashedPass),
+            new SqlParameter("@ID", id)
+        });
+            }
+            // =========================================================================
+
+            // 4. Work status Check
+            if (row["WorkStatus"].ToString() != "Active")
+            {
+                InsertLoginAudit(id, workmanSL, "BLOCKED", "Inactive");
+                Notify("Denied", "Account is inactive.", "error");
+                return;
+            }
+
+            // 5. Exit / Relieving check (DOR)
+            if (row["DOR"] != DBNull.Value && Convert.ToDateTime(row["DOR"]) <= DateTime.Now)
+            {
+                InsertLoginAudit(id, workmanSL, "BLOCKED", "DORExpired");
+                Notify("Denied", "User access has been closed.", "error");
+                return;
+            }
+
+            // 6. Password expiry
+            if (row["PasswordExpiry"] != DBNull.Value &&
+                Convert.ToDateTime(row["PasswordExpiry"]) < DateTime.Now)
+            {
+                InsertLoginAudit(id, workmanSL, "BLOCKED", "PasswordExpired");
+                Notify("Expired", "Password expired. Reset required.", "error");
+                return;
+            }
+
+            // 7. SUCCESS LOGIN AUDIT
+            InsertLoginAudit(id, workmanSL, "SUCCESS", null);
+
+            // 8. Update master summary (LastLogin)
+            dbcl.SPreturn_dt(
+                "UPDATE tbl_Employee_Mustertable SET LastLogin=GETDATE(), LoginStatus=1 WHERE LoginID=@ID",
+                new SqlParameter[]
+                {
+            new SqlParameter("@ID", id)
+                });
+
+            // 9. Set Sessions
+            Session["USERID"] = row["LoginID"].ToString();
+            Session["WORKMAN"] = workmanSL;
+            Session["USERFNAME"] = row["FirstName"].ToString();
+            Session["USERNAME"] = row["FullName"].ToString();
+            Session["USERTYPE"] = row["User_RoleType"].ToString();
+            Session["UserRoleDB"] = row["UserRoleDB"].ToString();
+            Session["RolePermissionDB"] = row["RolePermissionDB"].ToString();
+            Session["REGION"] = row["WorkRegion"].ToString();
+            Session["STATE"] = row["WorkState"].ToString();
+            Session["COMPANY_CODE"] = row["WorkCompany"].ToString();
+            Session["U_SITE"] = row["WorkSite"].ToString();
+            Session["U_SITECODE"] = row["Worksite_Code"].ToString();
+            Session["U_DESG"] = row["SkillDesignation"].ToString();
+            Session["U_SKILL"] = row["SkillCategory"].ToString();
+
+            string photo = row["PrfPicFile"].ToString();
+            // Assuming rootFolder is defined at class level or passed in context
+            // If rootFolder isn't available in this scope, ensure you define it or use Server.MapPath
+            string photoPath = string.Empty;
+
+            // Safety check for path combination
+            if (!string.IsNullOrEmpty(photo))
+            {
+                // Adjust this based on where 'rootFolder' comes from in your actual code
+                // e.g., string rootFolder = Server.MapPath("~/UserPhotos/"); 
+                if (Directory.Exists(rootFolder) && File.Exists(Path.Combine(rootFolder, photo)))
+                {
+                    photoPath = photo;
+                }
+                else
+                {
+                    photoPath = "No_Image.jpg";
+                }
+            }
+            else
+            {
+                photoPath = "No_Image.jpg";
+            }
+
+            Session["User_Photo"] = photoPath;
 
             Response.Redirect("~/bussiness/production/homepage.aspx", false);
             Context.ApplicationInstance.CompleteRequest();
