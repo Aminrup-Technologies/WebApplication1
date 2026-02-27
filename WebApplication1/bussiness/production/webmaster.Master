@@ -13,41 +13,30 @@
 
     <title>Cloud ERP</title>
 
-    <!-- Bootstrap -->
     <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <!-- Font Awesome -->
     <link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
-    <!-- NProgress -->
     <link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
-    <!-- iCheck -->
     <link href="../vendors/iCheck/skins/flat/green.css" rel="stylesheet">
 
-    <!-- bootstrap-progressbar -->
     <link href="../vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
-    <!-- JQVMap -->
     <link href="../vendors/jqvmap/dist/jqvmap.min.css" rel="stylesheet" />
-    <!-- bootstrap-daterangepicker -->
     <link href="../vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
     <link href="../vendors/DataTables/datatables.min.css" rel="stylesheet" />
-    <!-- PNotify -->
     <link href="../vendors/pnotify/dist/pnotify.css" rel="stylesheet">
     <link href="../vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
     <link href="../vendors/pnotify/dist/pnotify.nonblock.css" rel="stylesheet">
 
 
-    <!-- Real Time Notification -->
     <script src="../../Scripts/jquery-3.6.4.min.js"></script>
     <script src="../../Scripts/jquery.signalR-2.4.3.min.js"></script>
     <script src="/signalr/hubs"></script>
 
     <link href="css/loader.css" rel="stylesheet" />
-    <!-- Custom Theme Style -->
     <link href="../build/css/custom.css" rel="stylesheet" />
 
     <asp:ContentPlaceHolder ID="head" runat="server">
     </asp:ContentPlaceHolder>
 
-    <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=UA-197761506-1"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -59,7 +48,6 @@
         //setTimeout("preventBack()", 0);
         //window.onunload = function () { null };
     </script>
-    <!-- Matomo -->
     <script>
       var _paq = window._paq = window._paq || [];
       /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
@@ -73,8 +61,6 @@
         g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
       })();
     </script>
-    <!-- End Matomo Code -->
-
     <script src="../../Scripts/jquery-1.7.2.min.js"></script>
     <script type="text/javascript">
         var idleTimeout;
@@ -150,9 +136,56 @@
             display: block;
             margin: 0 auto;
         }
+
+        /* =========================================================
+           DESKTOP ONLY (Screens 992px and wider)
+           ========================================================= */
+        @media (min-width: 992px) {
+            /* 1. Hide the hamburger toggle completely on desktop */
+            #menu_toggle { display: none !important; }
+
+            /* 2. KILL THE FLYOUTS: Completely hide floating menus */
+            body.nav-sm .nav.child_menu, 
+            body.nav-sm .active-sm {
+                display: none !important; 
+            }
+
+            /* 3. Lock main content so it NEVER jumps */
+            body.nav-md .container.body .right_col,
+            body.nav-sm .container.body .right_col {
+                margin-left: 70px !important; 
+                width: auto !important; 
+                padding: 10px 20px !important;
+                z-index: 1;
+            }
+
+            /* 4. Make the sidebar float OVER the content when expanded */
+            .col-md-3.left_col {
+                position: fixed !important; 
+                z-index: 9999 !important;
+                height: 100vh !important;
+                overflow-y: auto !important;
+                transition: width 0.2s ease; 
+            }
+            
+            /* 5. Fix top navigation padding */
+            .nav_menu { width: 100%; margin-bottom: 0; }
+            
+            /* 6. Hide ATS text in narrow mode */
+            body.nav-sm .site_title span { display: none !important; }
+            body.nav-sm .nav_title { width: 70px !important; }
+        }
+
+        /* =========================================================
+           MOBILE ONLY (Screens smaller than 992px)
+           ========================================================= */
+        @media (max-width: 991px) {
+            /* Ensure the hamburger toggle is visible so users can tap it */
+            #menu_toggle { display: block !important; }
+        }
     </style>
 </head>
-<body class="nav-md footer_fixed">
+<body class="nav-sm footer_fixed">
     <div id="loader">
         <img src="../../erp_images/Hourglass.gif" alt="loadergif" />
     </div>
@@ -160,9 +193,8 @@
         <form id="form1" runat="server">
             <%-- Page loader removed on 03-07-2023, upon request from users --%>
             <%--<div id="page-loader">
-			<!-- Your page loader content goes here -->
-			<img src="../../erp_images/Hourglass.gif" alt="loadergif" />
-		</div>--%>
+            <img src="../../erp_images/Hourglass.gif" alt="loadergif" />
+        </div>--%>
 
 
             <div class="container body">
@@ -177,7 +209,6 @@
 
                             <div class="clearfix"></div>
 
-                            <!-- menu profile quick info -->
                             <div class="profile clearfix">
                                 <div class="profile_pic">
                                     <img id="ProfilePic_1" src="..." runat="server" alt="..." class="img-circle profile_img">
@@ -187,11 +218,8 @@
                                 <asp:Label ID="lbl_loginusername1" runat="server" Text="Login_Name" Font-Bold="true"></asp:Label>
                                 </div>
                             </div>
-                            <!-- /menu profile quick info -->
-
                             <br />
 
-                            <!-- sidebar menu -->
                             <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
                                 <div class="menu_section">
                                     <h3>General</h3>
@@ -293,9 +321,6 @@
                                 </div>
 
                             </div>
-                            <!-- /sidebar menu -->
-
-                            <!-- /menu footer buttons -->
                             <div class="sidebar-footer hidden-small">
                                 <a data-toggle="tooltip" data-placement="top" title="Settings">
                                     <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
@@ -310,11 +335,9 @@
                                     <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
                                 </a>
                             </div>
-                            <!-- /menu footer buttons -->
-                        </div>
+                            </div>
                     </div>
 
-                    <!-- top navigation -->
                     <div class="top_nav">
                         <div class="nav_menu">
                             <div class="nav toggle">
@@ -337,8 +360,7 @@
                             </nav>
                         </div>
                     </div>
-                    <!-- /top navigation -->
-                </div>
+                    </div>
                 <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server"></asp:ContentPlaceHolder>
             </div>
 
@@ -374,7 +396,6 @@
             <%--- Logout Modal -------- END --%>
 
             <br />
-            <!-- footer content -->
             <footer>
                 <div class="text-center" id="iprow" runat="server" visible="false">
                     Login from IP :
@@ -384,14 +405,12 @@
                     Autologout >
                 <asp:Label ID="lblTime1" runat="server" Text="N/A" Font-Bold="true" ForeColor="IndianRed" Visible="true"></asp:Label>
                     || Time :
-					<asp:Label ID="lblTime" runat="server" Text="N/A" Font-Bold="true" ForeColor="Black" Visible="true"></asp:Label>
+                    <asp:Label ID="lblTime" runat="server" Text="N/A" Font-Bold="true" ForeColor="Black" Visible="true"></asp:Label>
                     || © 2021-2025 <span style="font-weight: bold; color: darkred;">ATS,JSR</span>
                     || Powered by <a href="#" target="_blank"><span style="font-weight: bold; color: blue;">Aminrup Technologies, JSR</span></a>
                 </div>
                 <div class="clearfix"></div>
             </footer>
-            <!-- /footer content -->
-
             <script type="text/javascript">
                 //document.addEventListener("DOMContentLoaded", function () {
                 //    // Simulate a delay of 2 seconds (2000 milliseconds)
@@ -407,59 +426,89 @@
                 });
             </script>
 
-            <!-- jQuery -->
             <script src="../vendors/jquery/dist/jquery.min.js"></script>
 
-            <!-- Bootstrap -->
             <script src="../vendors/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
-            <!-- FastClick -->
             <script src="../vendors/fastclick/lib/fastclick.js"></script>
 
-            <!-- NProgress -->
             <script src="../vendors/nprogress/nprogress.js"></script>
 
-            <!-- Chart.js -->
             <script src="../vendors/Chart.js/dist/Chart.min.js"></script>
 
-            <!-- gauge.js -->
             <script src="../vendors/gauge.js/dist/gauge.min.js"></script>
 
-            <!-- bootstrap-progressbar -->
             <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
-            <!-- iCheck -->
             <script src="../vendors/iCheck/icheck.min.js"></script>
 
-            <!-- Skycons -->
             <script src="../vendors/skycons/skycons.js"></script>
 
-            <!-- Flot -->
             <script src="../vendors/Flot/jquery.flot.js"></script>
             <script src="../vendors/Flot/jquery.flot.pie.js"></script>
             <script src="../vendors/Flot/jquery.flot.time.js"></script>
             <script src="../vendors/Flot/jquery.flot.stack.js"></script>
             <script src="../vendors/Flot/jquery.flot.resize.js"></script>
 
-            <!-- Flot plugins -->
             <script src="../vendors/flot.orderbars/js/jquery.flot.orderBars.js"></script>
             <script src="../vendors/flot-spline/js/jquery.flot.spline.min.js"></script>
             <script src="../vendors/flot.curvedlines/curvedLines.js"></script>
 
-            <!-- DateJS -->
             <script src="../vendors/DateJS/build/date.js"></script>
-            <!-- bootstrap-daterangepicker -->
             <script src="../vendors/moment/min/moment.min.js"></script>
             <script src="../vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
 
-            <!-- Custom Theme Scripts -->
             <script src="../build/js/custom.js"></script>
 
-            <!-- PNotify -->
             <script src="../vendors/pnotify/dist/pnotify.js"></script>
             <script src="../vendors/pnotify/dist/pnotify.buttons.js"></script>
             <script src="../vendors/pnotify/dist/pnotify.nonblock.js"></script>
 
             <script src="../vendors/jQuery-Smart-Wizard/js/jquery.smartWizard.js"></script>
+
+            <script type="text/javascript">
+                $(document).ready(function() {
+                    var $body = $('body');
+                    var $sidebar = $('.left_col');
+
+                    // Helper function to check if the user is on a Desktop
+                    function isDesktop() {
+                        return $(window).width() >= 992;
+                    }
+
+                    // 1. Initial Load setup
+                    if (isDesktop()) {
+                        // Force Narrow Mode on Desktop
+                        $body.removeClass('nav-md').addClass('nav-sm');
+                    } else {
+                        // Ensure mobile loads correctly
+                        $body.removeClass('nav-sm').addClass('nav-md');
+                    }
+
+                    // 2. Temporarily expand the sidebar when hovered (ONLY ON DESKTOP)
+                    $sidebar.hover(
+                        function() {
+                            if (isDesktop()) {
+                                $body.removeClass('nav-sm').addClass('nav-md');
+                            }
+                        },
+                        function() {
+                            if (isDesktop()) {
+                                $body.removeClass('nav-md').addClass('nav-sm');
+                                // Close any open accordions
+                                $('.child_menu').slideUp(200);
+                                $('ul.side-menu li').removeClass('active');
+                            }
+                        }
+                    );
+
+                    // 3. Handle screen resizing (e.g., rotating a tablet)
+                    $(window).resize(function() {
+                        if (isDesktop()) {
+                            $body.removeClass('nav-md').addClass('nav-sm');
+                        }
+                    });
+                });
+            </script>
         </form>
     </div>
 </body>

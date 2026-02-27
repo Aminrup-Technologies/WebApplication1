@@ -1,630 +1,480 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="viewupdate_empmustertabledata.aspx.cs" Inherits="WebApplication1.bussiness.production.viewupdate_empmustertabledata" %>
+﻿<%@ Page Title="Master Control Center" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="viewupdate_empmustertabledata.aspx.cs" Inherits="WebApplication1.bussiness.production.viewupdate_empmustertabledata" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-</asp:Content>
-<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-    <div class="right_col" role="main">
-        <div class="">
-            <div class="page-title">
-                <div class="title_left">
-                    <h3>Employee Muster Data Update</h3>
-                </div>
-            </div>
+    <style type="text/css">
+        /* Compact Admin Theme */
+        body {
+            font-size: 13px;
+        }
+
+        .form-control {
+            height: 30px;
+            padding: 2px 6px;
+            font-size: 12px;
+        }
+
+        label {
+            font-size: 12px;
+            margin-bottom: 2px;
+            font-weight: 600;
+            color: #444;
+        }
+
+        .form-group {
+            margin-bottom: 8px;
+        }
+
+        .x_panel {
+            padding: 10px;
+        }
+
+        /* Tab Styling */
+        .nav-tabs.bar_tabs > li.active {
+            border-top: 3px solid #1ABB9C;
+            margin-top: 0;
+            background: #fff;
+        }
+
+        .tab-pane {
+            padding-top: 15px;
+        }
+
+        .badge-verified {
+            background-color: #26b99a;
+            color: white;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .section-header {
+            border-bottom: 2px solid #E6E9ED;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+            color: #2a3f54;
+            font-weight: 700;
+            font-size: 14px;
+        }
+    </style>
 
-            <div class="clearfix"></div>
-
-            <div class="row">
-                <div class="col-md-12 col-sm-12">
-                    <div class="x_panel">
-                        <%--<div class="x_title">
-							<h2>View & Update Employee Muster Data</h2>
-							<ul class="nav navbar-right panel_toolbox">
-								<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-							</ul>
-							<div class="clearfix"></div>
-						</div>--%>
-
-                        <div class="x_content">
-                            <div class="row">
-
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <label>Work Country</label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:DropDownList ID="DDL_WorkCountry" runat="server" CssClass="form-control form-control-sm rounded" Enabled="false"></asp:DropDownList>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <label>Work State</label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:DropDownList ID="DDL_WorkStates" runat="server" CssClass="form-control form-control-sm rounded" Enabled="false"></asp:DropDownList>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <label>Work Region</label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:DropDownList ID="DDL_WorkRegion" runat="server" CssClass="form-control form-control-sm rounded" Enabled="false"></asp:DropDownList>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <label>Company Name</label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:DropDownList ID="DDL_Company" runat="server" CssClass="form-control form-control-sm rounded" Enabled="false"></asp:DropDownList>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <label>Employee Workman SL</label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_workman" class="form-control form-control-sm rounded" runat="server" MaxLength="5" ReadOnly="true"></asp:TextBox>
-                                </div>
-
-                                <div class="col-md-12 center-margin">
-                                    <div class="ln_solid"></div>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <label>First Name <span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_empfname" class="form-control form-control-sm rounded" placeholder="First Name" runat="server"></asp:TextBox>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" Display="Dynamic" ErrorMessage="This field is required" ForeColor="Red" ControlToValidate="txt_empfname" SetFocusOnError="true"></asp:RequiredFieldValidator>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <label>Middle Name</label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_empmdname" class="form-control form-control-sm rounded" placeholder="Middle Name" runat="server"></asp:TextBox>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <label>Last Name <span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_emplstname" class="form-control form-control-sm rounded" placeholder="Last Name" runat="server"></asp:TextBox>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator3" runat="server" Display="Dynamic" ErrorMessage="This field is required" ForeColor="Red" ControlToValidate="txt_emplstname" SetFocusOnError="true"></asp:RequiredFieldValidator>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <label>Full Name <span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_fullanme" class="form-control form-control-sm rounded" placeholder="Full Name" runat="server"></asp:TextBox>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator26" runat="server" Display="Dynamic" ErrorMessage="This field is required" ForeColor="Red" ControlToValidate="txt_fullanme" SetFocusOnError="true"></asp:RequiredFieldValidator>
-                                </div>
-
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label style="font-weight: bold; color: blue;">Father Name <span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_empfathername" class="form-control form-control-sm rounded" placeholder="Enter Employee Father's Name" runat="server"></asp:TextBox>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator4" runat="server" Display="Dynamic" ErrorMessage="This field is required" ForeColor="Red" ControlToValidate="txt_empfathername" SetFocusOnError="true"></asp:RequiredFieldValidator>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label style="font-weight: bold; color: blue;">Mother Name <span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_empmothername" class="form-control form-control-sm rounded" ReadOnly="true" placeholder="txt_Mothername..." runat="server"></asp:TextBox>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator5a" runat="server" Display="Dynamic" ErrorMessage="This field is required" ForeColor="Red" ControlToValidate="txt_empmothername" SetFocusOnError="true"></asp:RequiredFieldValidator>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>Employee Date Of Birth <span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_DOB" runat="server" class="date-picker form-control rounded" placeholder="yyyy-mm-dd" required="required" onfocus="this.blur();" onmouseover="this.type='date'" onclick="this.type = 'date'" onblur="this.type='text'" onmouseout="timeFunctionLong(this)"></asp:TextBox>
-                                    <script>
-                                        function timeFunctionLong(txt_DOB) {
-                                            setTimeout(function () {
-                                                txt_DOB.type = 'text';
-                                            }, 60000);
-                                        }
-                                    </script>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>Employee Blood Group<span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_bloodgroup" class="form-control form-control-sm rounded" placeholder="Enter Blood Group" runat="server" MaxLength="4"></asp:TextBox>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator6" runat="server" Display="Dynamic" ErrorMessage="This field is required" ForeColor="Red" ControlToValidate="txt_bloodgroup" SetFocusOnError="true"></asp:RequiredFieldValidator>
-                                </div>
-
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>Mobile Number<span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_Mobile_Number" class="form-control form-control-sm rounded" placeholder="Enter Employee Contact" runat="server" MaxLength="10"></asp:TextBox>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator12" runat="server" Display="Dynamic" ErrorMessage="This field is required" ForeColor="Red" ControlToValidate="txt_Mobile_Number" SetFocusOnError="true"></asp:RequiredFieldValidator>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>Highest Qualification<span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:DropDownList ID="DDL_HighestEdu" runat="server" CssClass="form-control form-control-sm rounded"></asp:DropDownList>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator24" runat="server" Display="Dynamic" InitialValue="--Select--" ErrorMessage="This field is required" ForeColor="Red" ControlToValidate="DDL_HighestEdu" SetFocusOnError="true"></asp:RequiredFieldValidator>
-                                </div>
-
-                                <div class="col-md-12 center-margin">
-                                    <div class="ln_solid"></div>
-                                </div>
-
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>Employee Date Of Joining <span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_DOJ" runat="server" class="date-picker form-control rounded" placeholder="yyyy-mm-dd" required="required" onfocus="this.blur();" onmouseover="this.type='date'" onclick="this.type = 'date'" onblur="this.type='text'" onmouseout="timeFunctionLong(this)"></asp:TextBox>
-                                    <script>
-                                        function timeFunctionLong(txt_DOJ) {
-                                            setTimeout(function () {
-                                                txt_DOJ.type = 'text';
-                                            }, 60000);
-                                        }
-                                    </script>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>Employee Work-site <span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:DropDownList ID="DDL_Worksites" runat="server" CssClass="form-control form-control-sm rounded"></asp:DropDownList>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator14" runat="server" ErrorMessage="Selection is required" Display="Dynamic" ForeColor="Red" InitialValue="Please Select Option" ControlToValidate="DDL_Worksites"></asp:RequiredFieldValidator>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>Employee Skill Category <span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:DropDownList ID="DDL_SkillCategory" runat="server" CssClass="form-control form-control-sm rounded" AutoPostBack="true" OnSelectedIndexChanged="DDL_SkillCategory_SelectedIndexChanged"></asp:DropDownList>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator15" runat="server" ErrorMessage="Selection is required" Display="Dynamic" ForeColor="Red" InitialValue="Please Select Option" ControlToValidate="DDL_SkillCategory"></asp:RequiredFieldValidator>
-                                </div>
-
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>Employee Skill Designation<span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:DropDownList ID="DDL_SkillDesignation" runat="server" Enabled="false" CssClass="form-control form-control-sm rounded"></asp:DropDownList>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator16" runat="server" ErrorMessage="Selection is required" Display="Dynamic" ForeColor="Red" InitialValue="Please Select Option" ControlToValidate="DDL_SkillDesignation"></asp:RequiredFieldValidator>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>Select Employee Role<span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:DropDownList ID="DDL_EmployeeType" runat="server" CssClass="form-control form-control-sm rounded" AutoPostBack="true" OnSelectedIndexChanged="DDL_EmployeeType_SelectedIndexChanged"></asp:DropDownList>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator19" runat="server" ErrorMessage="Selection is required" Display="Dynamic" ForeColor="Red" InitialValue="Please Select Option" ControlToValidate="DDL_EmployeeType"></asp:RequiredFieldValidator>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>Select Role - Permissions<span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:DropDownList ID="DDL_RolePermissions" runat="server" CssClass="form-control form-control-sm rounded" Enabled="false"></asp:DropDownList>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator25" runat="server" ErrorMessage="Selection is required" Display="Dynamic" ForeColor="Red" InitialValue="Please Select Option" ControlToValidate="DDL_RolePermissions"></asp:RequiredFieldValidator>
-                                </div>
-
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>Employee Work Hours<span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:DropDownList ID="DDL_WorkHours" runat="server" CssClass="form-control form-control-sm rounded"></asp:DropDownList>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator17" runat="server" ErrorMessage="Selection is required" Display="Dynamic" ForeColor="Red" InitialValue="Please Select Option" ControlToValidate="DDL_WorkHours"></asp:RequiredFieldValidator>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>Employee OT Factor<span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:DropDownList ID="DDL_OTFactor" runat="server" CssClass="form-control form-control-sm rounded"></asp:DropDownList>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator18" runat="server" ErrorMessage="Selection is required" Display="Dynamic" ForeColor="Red" InitialValue="Please Select Option" ControlToValidate="DDL_OTFactor"></asp:RequiredFieldValidator>
-                                </div>
-
-                                <div class="col-md-12 center-margin">
-                                    <div class="ln_solid"></div>
-                                </div>
-
-
-
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>Safety Pass No<span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_rfidno" class="form-control form-control-sm rounded" placeholder="Enter Saftey Pass No" runat="server" ReadOnly="true" BackColor="#efefef"></asp:TextBox>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>Safety Pass Validity<span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_rfidvalidity" runat="server" CssClass="form-control form-control-sm rounded" ReadOnly="true" BackColor="#efefef"></asp:TextBox>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>Gate pass No<span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_gpno" class="form-control form-control-sm rounded" placeholder="Enter Gate Pass No" runat="server" ReadOnly="true" BackColor="#efefef"></asp:TextBox>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>Gate pass Validity<span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_gpvalidity" runat="server" CssClass="form-control form-control-sm rounded" ReadOnly="true" BackColor="#efefef"></asp:TextBox>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>Police Verification Validity<span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_pvvalidity" runat="server" CssClass="form-control form-control-sm rounded" ReadOnly="true" BackColor="#efefef"></asp:TextBox>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>UPDATE<span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <button type="button" class="btn btn-primary btn-sm" id="btnShowPopup2" data-toggle="modal" data-target="#myModal2">
-                                        Update GP
-                                    </button>
-                                </div>
-
-
-
-
-                                <div class="col-md-12 center-margin">
-                                    <div class="ln_solid"></div>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>UAN No<span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_uanno" class="form-control form-control-sm rounded" placeholder="Enter Employee UAN No" runat="server"></asp:TextBox>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator20" runat="server" Display="Dynamic" ErrorMessage="This field is required" ForeColor="Red" ControlToValidate="txt_uanno" SetFocusOnError="true"></asp:RequiredFieldValidator>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>ESIC No<span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_esicno" class="form-control form-control-sm rounded" placeholder="Enter Employee ESIC No" runat="server"></asp:TextBox>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator21" runat="server" Display="Dynamic" ErrorMessage="This field is required" ForeColor="Red" ControlToValidate="txt_esicno" SetFocusOnError="true"></asp:RequiredFieldValidator>
-                                </div>
-
-
-
-                                <div class="col-md-12 center-margin">
-                                    <div class="ln_solid"></div>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>Bank Name<span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_banknanme" class="form-control form-control-sm rounded" placeholder="Enter Bank Name" runat="server" ReadOnly="true"></asp:TextBox>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>Bank Account No<span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_accountno" class="form-control form-control-sm rounded" placeholder="Enter bank account number" ReadOnly="true" runat="server"></asp:TextBox>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>Bank IFSC Code<span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_ifsccode" class="form-control form-control-sm rounded" placeholder="Enter bank IFSC Code" ReadOnly="true" runat="server"></asp:TextBox>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>Bank Branch Name<span class="text text-danger">*</span></label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <asp:TextBox ID="txt_branchnm" class="form-control form-control-sm rounded" placeholder="Enter bank branch name" ReadOnly="true" runat="server"></asp:TextBox>
-                                </div>
-
-                                <div class="col-md-2 col-sm-6 col-xs-6 form-group">
-                                    <label>UPDATE</label>
-                                </div>
-                                <div class="col-md-2 col-sm-6 col-xs-6  form-group">
-                                    <button type="button" class="btn btn-primary btn-sm" id="btnShowPopup" data-toggle="modal" data-target="#myModal">Update Bank</button>
-                                </div>
-                            </div>
-
-
-                            <%--button   start--%>
-                            <div class="col-md-6 center-margin">
-                                <div class="ln_solid"></div>
-                                <div class="item form-group row">
-                                    <div class="col-md-6 col-sm-12">
-                                        <asp:Label ID="lbl_msg" runat="server" Text="Click UPDATE to Save Data!!"></asp:Label>
-                                    </div>
-                                    <div class="col-md-6 col-sm-12">
-                                        <asp:Button ID="btn_cancel" runat="server" Text="BACK" class="btn btn-danger btn-sm" OnClick="btn_cancel_Click" CausesValidation="false" />
-                                        <asp:Button ID="btn_save" runat="server" Text="UPDATE ALL" Enabled="true" class="btn btn-success btn-sm" OnClientClick="return confirmSave();" OnClick="btn_save_Click" />
-                                    </div>
-                                </div>
-                            </div>
-                            <%--button   end--%>
-
-                            <!-- Small modal -->
-                            <asp:Button ID="ShowPopup" runat="server" Text="Button" class="btn btn-primary" Visible="false" data-toggle="modal" data-target=".bs-example-modal-sm" />
-                            <div id="MyPopup" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-hidden="true">
-                                <div class="modal-dialog modal-sm">
-                                    <div class="modal-content">
-
-                                        <div class="modal-header">
-                                            <h4 class="modal-title" id="myModalLabel2"></h4>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">×</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Small Modal - END---->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <%--- Up-loader Modal --%>
-            <div class="modal fade" id="myModal">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title">Update Salary Account Details</h4>
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <div class="col-md-6 col-sm-12 form-group">
-                                            <label>Enter Bank Name :<span class="text text-danger"></span></label>
-                                        </div>
-                                        <div class="col-md-6 col-sm-12 form-group">
-                                            <%--<asp:TextBox ID="txt_nwbankname" runat="server" class="form-control form-control-sm rounded" ReadOnly="true"></asp:TextBox>
-											<asp:RequiredFieldValidator ID="RFV1" runat="server" ValidationGroup="BANK" Display="Dynamic" ForeColor="Red" ControlToValidate="txt_nwbankname" ErrorMessage="**"></asp:RequiredFieldValidator>--%>
-                                        </div>
-
-                                        <div class="col-md-6 col-sm-12 form-group">
-                                            <asp:DropDownList ID="DDL_BankName" runat="server" CssClass="form-control form-control-sm rounded" Enabled="false"></asp:DropDownList>
-                                            <asp:RequiredFieldValidator ID="RFV_BankName" runat="server" ErrorMessage="Selection is required" Display="Dynamic" ForeColor="Red" InitialValue="Please Select Option" ControlToValidate="DDL_BankName"></asp:RequiredFieldValidator>
-                                        </div>
-
-                                        <div class="col-md-6 col-sm-12 form-group">
-                                            <label>Enter Account Number :<span class="text text-danger"></span></label>
-                                        </div>
-                                        <div class="col-md-6 col-sm-12 form-group">
-                                            <asp:TextBox ID="txt_nwaccno" runat="server" class="form-control form-control-sm rounded" ReadOnly="true"></asp:TextBox>
-                                            <asp:RequiredFieldValidator ID="RFV2" runat="server" ValidationGroup="BANK" Display="Dynamic" ForeColor="Red" ErrorMessage="**" ControlToValidate="txt_nwaccno"></asp:RequiredFieldValidator>
-                                        </div>
-
-                                        <div class="col-md-6 col-sm-12 form-group">
-                                            <label>Re-Enter Account Number :<span class="text text-danger"></span></label>
-                                        </div>
-                                        <div class="col-md-6 col-sm-12 form-group">
-                                            <asp:TextBox ID="txt_nwcnfaccno" runat="server" class="form-control form-control-sm rounded" ReadOnly="true"></asp:TextBox>
-                                            <asp:RequiredFieldValidator ID="RFV3" runat="server" ValidationGroup="BANK" ErrorMessage="**" ControlToValidate="txt_nwcnfaccno"></asp:RequiredFieldValidator>
-                                            <asp:CompareValidator ID="CV1" runat="server" ValidationGroup="BANK" Display="Dynamic" ForeColor="Red" ErrorMessage="Enter same Account Number" ControlToCompare="txt_nwaccno" ControlToValidate="txt_nwcnfaccno"></asp:CompareValidator>
-                                        </div>
-
-                                        <div class="col-md-6 col-sm-12 form-group">
-                                            <label>Enter IFSC Code :<span class="text text-danger"></span></label>
-                                        </div>
-                                        <div class="col-md-6 col-sm-12 form-group">
-                                            <asp:TextBox ID="txt_nwifsc" runat="server" class="form-control form-control-sm rounded" ReadOnly="true"></asp:TextBox>
-                                            <asp:RequiredFieldValidator ID="RFV4" runat="server" ValidationGroup="BANK" Display="Dynamic" ForeColor="Red" ErrorMessage="**" ControlToValidate="txt_nwifsc"></asp:RequiredFieldValidator>
-                                        </div>
-
-                                        <div class="col-md-6 col-sm-12 form-group">
-                                            <label>Enter Branch Name :<span class="text text-danger"></span></label>
-                                        </div>
-                                        <div class="col-md-6 col-sm-12 form-group">
-                                            <asp:TextBox ID="txt_nwbranchname" runat="server" class="form-control form-control-sm rounded" ReadOnly="true"></asp:TextBox>
-                                        </div>
-                                    </div>
-                                    <asp:Label ID="lblMessage" runat="server"></asp:Label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <asp:Button ID="btn_bankedit" runat="server" ValidationGroup="BANK" Enabled="true" CausesValidation="true" Text="Make Changes" CssClass="btn btn-info btn-sm" OnClick="btn_bankedit_Click" />
-                            <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <%--- Up-loader Modal -------- END --%>
-
-
-            <%--- Up-loader Modal --%>
-            <div class="modal fade" id="myModal2">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title">Update Gatepass Details</h4>
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-
-                                        <div class="col-md-6 col-sm-12 form-group">
-                                            <label>Gatepass No :<span class="text text-danger"></span></label>
-                                        </div>
-                                        <div class="col-md-6 col-sm-12 form-group">
-                                            <asp:Label ID="lbl_oldgpno" runat="server" Text="N/A" CssClass="form-control form-control-sm rounded" BackColor="#e6e6e6"></asp:Label>
-                                        </div>
-
-                                        <div class="col-md-6 col-sm-12 form-group" id="nwgprow1" runat="server" visible="false">
-                                            <label style="font-weight: bold; color: darkblue;">Enter New Gatepass No :<span class="text text-danger"></span></label>
-                                        </div>
-                                        <div class="col-md-6 col-sm-12 form-group" id="nwgprow2" runat="server" visible="false">
-                                            <asp:TextBox ID="txt_nwgpno" runat="server" CssClass="form-control form-control-sm rounded" BorderColor="Blue" BorderWidth="2px"></asp:TextBox>
-                                            <asp:RequiredFieldValidator ID="RequiredFieldValidator2" ValidationGroup="GPDATA" ControlToValidate="txt_nwgpno" runat="server" ErrorMessage="Required" ForeColor="Red" Display="Dynamic" SetFocusOnError="true" InitialValue=""></asp:RequiredFieldValidator>
-                                        </div>
-
-                                        <div class="col-md-6 col-sm-12 form-group">
-                                            <label>Gatepass Validity :<span class="text text-danger"></span></label>
-                                        </div>
-                                        <div class="col-md-6 col-sm-12 form-group">
-                                            <asp:Label ID="lbl_oldgpvalidity" runat="server" Text="N/A" CssClass="form-control form-control-sm rounded" BackColor="#e6e6e6"></asp:Label>
-                                        </div>
-
-                                        <div class="col-md-6 col-sm-12 form-group" id="nwgpvalrow1" runat="server" visible="false">
-                                            <label style="font-weight: bold; color: darkblue;">New Gatepass Validity :<span class="text text-danger"></span></label>
-                                        </div>
-                                        <div class="col-md-6 col-sm-12 form-group" id="nwgpvalrow2" runat="server" visible="false">
-                                            <asp:TextBox ID="txt_nwgpvalidity" runat="server" CssClass="form-control form-control-sm rounded" class='date' type="date" name="date" BorderColor="Blue" BorderWidth="2px"></asp:TextBox>
-                                            <asp:RequiredFieldValidator ID="RequiredFieldValidator5" ValidationGroup="GPDATA" ControlToValidate="txt_nwgpvalidity" runat="server" ErrorMessage="Required" ForeColor="Red" Display="Dynamic" SetFocusOnError="true" InitialValue=""></asp:RequiredFieldValidator>
-                                        </div>
-
-                                        <div class="col-md-6 col-sm-12 form-group">
-                                            <label>Safety No :<span class="text text-danger"></span></label>
-                                        </div>
-                                        <div class="col-md-6 col-sm-12 form-group">
-                                            <asp:Label ID="lbl_oldsftyno" runat="server" Text="N/A" CssClass="form-control form-control-sm rounded" BackColor="#e6e6e6"></asp:Label>
-                                        </div>
-
-                                        <div class="col-md-6 col-sm-12 form-group" id="nwsftyrow1" runat="server" visible="false">
-                                            <label style="font-weight: bold; color: darkblue;">Enter New Safety No :<span class="text text-danger"></span></label>
-                                        </div>
-                                        <div class="col-md-6 col-sm-12 form-group" id="nwsftyrow2" runat="server" visible="false">
-                                            <asp:TextBox ID="txt_nwsftyno" runat="server" CssClass="form-control form-control-sm rounded" BorderColor="Blue" BorderWidth="2px"></asp:TextBox>
-                                            <asp:RequiredFieldValidator ID="RequiredFieldValidator7" ValidationGroup="GPDATA" ControlToValidate="txt_nwsftyno" runat="server" ErrorMessage="Required" ForeColor="Red" Display="Dynamic" SetFocusOnError="true" InitialValue=""></asp:RequiredFieldValidator>
-                                        </div>
-
-                                        <div class="col-md-6 col-sm-12 form-group">
-                                            <label>Safety Validity :<span class="text text-danger"></span></label>
-                                        </div>
-                                        <div class="col-md-6 col-sm-12 form-group">
-                                            <asp:Label ID="lbl_oldsftyval" runat="server" Text="N/A" CssClass="form-control form-control-sm rounded"></asp:Label>
-                                        </div>
-
-                                        <div class="col-md-6 col-sm-12 form-group" id="nwrfidrow1" runat="server" visible="false">
-                                            <label style="font-weight: bold; color: darkblue;">New Safety Validity :<span class="text text-danger"></span></label>
-                                        </div>
-                                        <div class="col-md-6 col-sm-12 form-group" id="nwrfidrow2" runat="server" visible="false">
-                                            <asp:TextBox ID="txt_nwsftyvalidity" runat="server" CssClass="form-control form-control-sm rounded" class='date' type="date" name="date" BorderColor="Blue" BorderWidth="2px"></asp:TextBox>
-                                            <asp:RequiredFieldValidator ID="RequiredFieldValidator8" ValidationGroup="GPDATA" ControlToValidate="txt_nwsftyvalidity" runat="server" ErrorMessage="Required" ForeColor="Red" Display="Dynamic" SetFocusOnError="true" InitialValue=""></asp:RequiredFieldValidator>
-                                        </div>
-
-                                        <div class="col-md-6 col-sm-12 form-group">
-                                            <label>PV Validity :<span class="text text-danger"></span></label>
-                                        </div>
-                                        <div class="col-md-6 col-sm-12 form-group">
-                                            <asp:Label ID="lbl_oldpvvalidity" runat="server" Text="N/A" CssClass="form-control form-control-sm rounded"></asp:Label>
-                                        </div>
-
-                                        <div class="col-md-6 col-sm-12 form-group" id="nwpvrow1" runat="server" visible="false">
-                                            <label style="font-weight: bold; color: darkblue;">New PV Validity :<span class="text text-danger"></span></label>
-                                        </div>
-                                        <div class="col-md-6 col-sm-12 form-group" id="nwpvrow2" runat="server" visible="false">
-                                            <asp:TextBox ID="txt_nwpvvalidity" runat="server" CssClass="form-control form-control-sm rounded" class='date' type="date" name="date" BorderColor="Blue" BorderWidth="2px"></asp:TextBox>
-                                            <asp:RequiredFieldValidator ID="RequiredFieldValidator9" ValidationGroup="GPDATA" ControlToValidate="txt_nwpvvalidity" runat="server" ErrorMessage="Required" ForeColor="Red" Display="Dynamic" SetFocusOnError="true" InitialValue=""></asp:RequiredFieldValidator>
-                                        </div>
-                                    </div>
-                                    <asp:Label ID="Label1" runat="server"></asp:Label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <asp:Button ID="btn_gtpsedit" runat="server" CausesValidation="true" ValidationGroup="GPDATA" Text="Make Changes" CssClass="btn btn-info btn-sm" OnClick="btn_gtpsedit_Click" />
-                            <asp:Button ID="btn_cancelgpedit" runat="server" CausesValidation="false" Text="Cancel" CssClass="btn btn-warning btn-sm" OnClick="btn_cancelgpedit_Click" />
-                            <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <%--- Up-loader Modal -------- END --%>
-
-            <!-- Audit Change Preview Modal -->
-            <div id="AuditPopup" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-
-                        <div class="modal-header bg-info text-white">
-                            <h5 class="modal-title" id="auditModalTitle">Change Preview</h5>
-                            <button type="button" class="close text-white" data-dismiss="modal">
-                                <span>&times;</span>
-                            </button>
-                        </div>
-
-                        <div class="modal-body" id="auditModalBody"
-                            style="max-height: 400px; overflow: auto; font-size: 13px;">
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">
-                                Cancel
-                            </button>
-                            <button type="button" class="btn btn-success btn-sm"
-                                onclick="confirmAuditSave();">
-                                Confirm & Save
-                            </button>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
     <script type="text/javascript">
+        $(document).ready(function () {
+            // 1. Get saved tab from HiddenField
+            var activeTab = $('#<%= hfActiveTab.ClientID %>').val();
+
+            // 2. Logic to activate the correct tab
+            if (activeTab && activeTab != "") {
+                // Remove default active classes
+                $('.nav-tabs li').removeClass('active');
+                $('.tab-pane').removeClass('active in show');
+
+                // Add active class to the specific tab link's parent <li>
+                $('.nav-tabs a[href="' + activeTab + '"]').parent('li').addClass('active');
+
+                // Show the corresponding content div
+                $(activeTab).addClass('active in show');
+            } else {
+                // Default to first tab if nothing saved
+                $('.nav-tabs li:first').addClass('active');
+                $('.tab-pane:first').addClass('active in show');
+            }
+
+            // 3. Save tab ID on click
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                var target = $(e.target).attr("href");
+                $('#<%= hfActiveTab.ClientID %>').val(target);
+            });
+        });
+
         function ShowPopup(title, body) {
-            $("#MyPopup .modal-title").html(title);
-            $("#MyPopup .modal-body").html(body);
+            $("#popTitle").text(title);
+            $("#popBody").html(body);
             $("#MyPopup").modal("show");
         }
-
-        function ShowPopup1() {
-            $("#myModal").modal("show");
-        }
-
-        function ShowPopup2() {
-            $("#myModal2").modal("show");
-        }
-
-        function confirmSave() {
-            return confirm("Are you sure you want to save the changes?");
-        }
-
-        var __auditConfirmed = false;
-
-        function showAuditPopup(changes) {
-            document.getElementById("auditModalBody").innerHTML =
-                changes.replace(/\n/g, "<br/>");
-            $('#AuditPopup').modal('show');
-        }
-
-        function confirmAuditSave() {
-            __auditConfirmed = true;
-            $('#AuditPopup').modal('hide');
-            __doPostBack('<%= btn_save.UniqueID %>', '');
-        }
     </script>
+</asp:Content>
+
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <asp:HiddenField ID="hfActiveTab" runat="server" />
+
+    <div class="right_col" role="main">
+        <div class="page-title">
+            <div class="title_left">
+                <h3><i class="fa fa-users"></i>Employee Master Control</h3>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>
+                            <asp:Label ID="lbl_EmpNameHeader" runat="server" Text="Employee Name" />
+                            <small>(ID:
+                                <asp:Label ID="lbl_EmpID" runat="server" ForeColor="#1ABB9C" />)</small></h2>
+                        <ul class="nav navbar-right panel_toolbox">
+                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                        </ul>
+                        <div class="clearfix"></div>
+                    </div>
+
+                    <div class="x_content">
+                        <ul class="nav nav-tabs bar_tabs" id="masterTab" role="tablist">
+                            <li class="active"><a data-toggle="tab" href="#tab_personal"><i class="fa fa-user"></i>Personal</a></li>
+                            <li><a data-toggle="tab" href="#tab_job"><i class="fa fa-briefcase"></i>Job & Skills</a></li>
+                            <li><a data-toggle="tab" href="#tab_payroll"><i class="fa fa-money"></i>Payroll</a></li>
+                            <li><a data-toggle="tab" href="#tab_bank"><i class="fa fa-bank"></i>Bank/Statutory</a></li>
+                            <li><a data-toggle="tab" href="#tab_compliance"><i class="fa fa-shield"></i>Compliance</a></li>
+                            <li><a data-toggle="tab" href="#tab_docs"><i class="fa fa-file-pdf-o"></i>Documents</a></li>
+                            <li><a data-toggle="tab" href="#tab_admin" class="text-danger"><i class="fa fa-lock"></i><b>Admin/Exit</b></a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <div id="tab_personal" class="tab-pane fade in active">
+                                <h4 class="section-header">Identity Details</h4>
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>First Name *</label><asp:TextBox ID="txt_fname" runat="server" CssClass="form-control" />
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>Middle Name</label><asp:TextBox ID="txt_mname" runat="server" CssClass="form-control" />
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>Last Name *</label><asp:TextBox ID="txt_lname" runat="server" CssClass="form-control" />
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>Full Name (Auto)</label><asp:TextBox ID="txt_fullname" runat="server" CssClass="form-control" ReadOnly="true" BackColor="#f2f2f2" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>Father's Name</label><asp:TextBox ID="txt_father" runat="server" CssClass="form-control" />
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>Mother's Name</label><asp:TextBox ID="txt_mother" runat="server" CssClass="form-control" />
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>DOB *</label><asp:TextBox ID="txt_dob" runat="server" CssClass="form-control" TextMode="Date" />
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>Blood Group</label><asp:TextBox ID="txt_blood" runat="server" CssClass="form-control" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>Mobile No *</label><asp:TextBox ID="txt_mobile" runat="server" CssClass="form-control" MaxLength="10" />
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>Email ID</label><asp:TextBox ID="txt_email" runat="server" CssClass="form-control" />
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>Education</label><asp:DropDownList ID="DDL_Education" runat="server" CssClass="form-control"></asp:DropDownList>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="tab_job" class="tab-pane fade">
+
+                                <h4 class="section-header"><i class="fa fa-sitemap"></i>Organization Hierarchy</h4>
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>Work Country</label>
+                                        <asp:TextBox ID="txt_Country" runat="server" CssClass="form-control" ReadOnly="true" BackColor="#f9f9f9" />
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>Work State</label>
+                                        <asp:TextBox ID="txt_State" runat="server" CssClass="form-control" ReadOnly="true" BackColor="#f9f9f9" />
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>Work Region</label>
+                                        <asp:TextBox ID="txt_Region" runat="server" CssClass="form-control" ReadOnly="true" BackColor="#f9f9f9" />
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>Company Code</label>
+                                        <asp:TextBox ID="txt_Company" runat="server" CssClass="form-control" ReadOnly="true" BackColor="#f9f9f9" />
+                                    </div>
+                                </div>
+
+                                <h4 class="section-header mt-2"><i class="fa fa-briefcase"></i>Job Mapping</h4>
+                                <div class="row">
+                                    <div class="col-md-4 col-sm-6 form-group">
+                                        <label>Worksite</label>
+                                        <asp:DropDownList ID="DDL_Worksite" runat="server" CssClass="form-control" />
+                                    </div>
+                                    <div class="col-md-4 col-sm-6 form-group">
+                                        <label>Skill Category</label>
+                                        <asp:DropDownList ID="DDL_SkillCat" runat="server" CssClass="form-control" AutoPostBack="true" OnSelectedIndexChanged="DDL_SkillCat_SelectedIndexChanged" />
+                                    </div>
+                                    <div class="col-md-4 col-sm-6 form-group">
+                                        <label>Skill Designation</label>
+                                        <asp:DropDownList ID="DDL_Designation" runat="server" CssClass="form-control" />
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>Role Type</label>
+                                        <asp:DropDownList ID="DDL_UserRole" runat="server" CssClass="form-control"></asp:DropDownList>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>Permission Level</label>
+                                        <asp:DropDownList ID="DDL_Role" runat="server" CssClass="form-control" />
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>Work Hours</label>
+                                        <asp:DropDownList ID="DDL_WorkHours" runat="server" CssClass="form-control" />
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>Date of Joining</label>
+                                        <asp:TextBox ID="txt_doj" runat="server" CssClass="form-control" TextMode="Date" />
+                                    </div>
+                                </div>
+
+                                <h4 class="section-header mt-2"><i class="fa fa-clock-o"></i>System Access Log</h4>
+                                <div class="row">
+                                    <div class="col-md-4 col-sm-6 form-group">
+                                        <label>Login Active?</label>
+                                        <asp:Label ID="lbl_LoginStatus" runat="server" CssClass="form-control" Style="border: none; font-weight: bold;"></asp:Label>
+                                    </div>
+                                    <div class="col-md-4 col-sm-6 form-group">
+                                        <label>Last Login Time</label>
+                                        <asp:TextBox ID="txt_LastLogin" runat="server" CssClass="form-control" ReadOnly="true" />
+                                    </div>
+                                    <div class="col-md-4 col-sm-6 form-group">
+                                        <label>Last Logout Time</label>
+                                        <asp:TextBox ID="txt_LastLogout" runat="server" CssClass="form-control" ReadOnly="true" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="tab_payroll" class="tab-pane fade">
+                                <h4 class="section-header">Earnings Configuration</h4>
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>Fixed Salary</label><asp:TextBox ID="txt_fixed_amt" runat="server" CssClass="form-control" Text="0.00" />
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>DA / VDA</label><asp:TextBox ID="txt_da_vda" runat="server" CssClass="form-control" Text="0.00" />
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>HRA</label><asp:TextBox ID="txt_hra" runat="server" CssClass="form-control" Text="0.00" />
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>Conv. Allowance</label><asp:TextBox ID="txt_conv" runat="server" CssClass="form-control" Text="0.00" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>Medical Allow.</label><asp:TextBox ID="txt_medical" runat="server" CssClass="form-control" Text="0.00" />
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>Washing Allow.</label><asp:TextBox ID="txt_washing" runat="server" CssClass="form-control" Text="0.00" />
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>Att. Bonus</label><asp:TextBox ID="txt_att_bonus" runat="server" CssClass="form-control" Text="0.00" />
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 form-group">
+                                        <label>OT Factor</label><asp:DropDownList ID="DDL_OTFactor" runat="server" CssClass="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="tab_bank" class="tab-pane fade">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h4 class="section-header">Statutory Info</h4>
+                                        <div class="form-group">
+                                            <label>UAN Number</label><asp:TextBox ID="txt_uan" runat="server" CssClass="form-control" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label>ESIC Number</label><asp:TextBox ID="txt_esic" runat="server" CssClass="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6" style="border-left: 1px solid #ddd;">
+                                        <h4 class="section-header">Bank Details (Salary)</h4>
+                                        <div class="form-group">
+                                            <label>Bank Name</label><asp:DropDownList ID="DDL_BankName" runat="server" CssClass="form-control" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Account Number</label><asp:TextBox ID="txt_acc_no" runat="server" CssClass="form-control" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label>IFSC Code</label><asp:TextBox ID="txt_ifsc" runat="server" CssClass="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="tab_compliance" class="tab-pane fade">
+                                <h4 class="section-header">Gate & Safety</h4>
+                                <div class="row">
+                                    <div class="col-md-4 form-group">
+                                        <label>Safety Pass No</label><asp:TextBox ID="txt_rfid" runat="server" CssClass="form-control" />
+                                    </div>
+                                    <div class="col-md-4 form-group">
+                                        <label>Safety Validity</label><asp:TextBox ID="txt_rfid_val" runat="server" CssClass="form-control" TextMode="Date" />
+                                    </div>
+                                    <div class="col-md-4 form-group">
+                                        <label>PV Expiry</label><asp:TextBox ID="txt_pv_val" runat="server" CssClass="form-control" TextMode="Date" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 form-group">
+                                        <label>Gatepass No</label><asp:TextBox ID="txt_gp_no" runat="server" CssClass="form-control" />
+                                    </div>
+                                    <div class="col-md-4 form-group">
+                                        <label>Gatepass Expiry</label><asp:TextBox ID="txt_gp_val" runat="server" CssClass="form-control" TextMode="Date" />
+                                    </div>
+                                </div>
+                                <h4 class="section-header mt-3">Account Security</h4>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label>Plain Password</label><asp:TextBox ID="txt_plain_pass" runat="server" CssClass="form-control" ReadOnly="true" />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>Security Q1</label><asp:TextBox ID="txt_sq1" runat="server" CssClass="form-control" ReadOnly="true" />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>Answer 1</label><asp:TextBox ID="txt_sqans1" runat="server" CssClass="form-control" ReadOnly="true" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="tab_docs" class="tab-pane fade">
+                                <h4 class="section-header">Document Verification</h4>
+                                <div class="alert alert-info" style="padding: 5px;">
+                                    <i class="fa fa-info-circle"></i><strong>Rejection Note:</strong> Enter reason below before rejecting.
+                                    <asp:TextBox ID="txt_DocAdminNote" runat="server" CssClass="form-control mt-1" placeholder="e.g. Image blurry, please scan original..." />
+                                </div>
+                                <table class="table table-striped table-hover table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <th>Document Type</th>
+                                            <th>Status</th>
+                                            <th>Uploaded On</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Aadhaar Card</td>
+                                            <td>
+                                                <asp:Label ID="lbl_AadhaarStat" runat="server" /></td>
+                                            <td>
+                                                <asp:Label ID="lbl_AadhaarDate" runat="server" /></td>
+                                            <td>
+                                                <asp:HyperLink ID="lnk_ViewAadhaar" runat="server" Target="_blank" CssClass="btn btn-primary btn-xs"><i class="fa fa-eye"></i></asp:HyperLink>
+                                                <asp:Button ID="btn_RejectAadhaar" runat="server" Text="Reject" CssClass="btn btn-danger btn-xs" OnClick="btn_RejectDoc_Click" CommandArgument="Aadhaar" OnClientClick="return confirm('Reject Aadhaar?');" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>PAN Card</td>
+                                            <td>
+                                                <asp:Label ID="lbl_PanStat" runat="server" /></td>
+                                            <td>
+                                                <asp:Label ID="lbl_PanDate" runat="server" /></td>
+                                            <td>
+                                                <asp:HyperLink ID="lnk_ViewPan" runat="server" Target="_blank" CssClass="btn btn-primary btn-xs"><i class="fa fa-eye"></i></asp:HyperLink>
+                                                <asp:Button ID="btn_RejectPan" runat="server" Text="Reject" CssClass="btn btn-danger btn-xs" OnClick="btn_RejectDoc_Click" CommandArgument="Pan" OnClientClick="return confirm('Reject PAN?');" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Bank Proof</td>
+                                            <td>
+                                                <asp:Label ID="lbl_BankStat" runat="server" /></td>
+                                            <td>
+                                                <asp:Label ID="lbl_BankDate" runat="server" /></td>
+                                            <td>
+                                                <asp:HyperLink ID="lnk_ViewBank" runat="server" Target="_blank" CssClass="btn btn-primary btn-xs"><i class="fa fa-eye"></i></asp:HyperLink>
+                                                <asp:Button ID="btn_RejectBank" runat="server" Text="Reject" CssClass="btn btn-danger btn-xs" OnClick="btn_RejectDoc_Click" CommandArgument="Bank" OnClientClick="return confirm('Reject Bank Doc?');" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div id="tab_admin" class="tab-pane fade">
+                                <div class="admin-alert">
+                                    <h4 class="text-danger section-header"><i class="fa fa-exclamation-triangle"></i>Account & Exit Management</h4>
+                                    <div class="row">
+                                        <div class="col-md-4 form-group">
+                                            <label>Current Status</label>
+                                            <asp:Label ID="lbl_CurrentStatus" runat="server" CssClass="badge badge-info p-2 d-block" Text="Loading..."></asp:Label>
+                                        </div>
+                                        <div class="col-md-4 form-group">
+                                            <label>Set Status Action</label>
+                                            <asp:DropDownList ID="DDL_AdminStatus" runat="server" CssClass="form-control" AutoPostBack="true" OnSelectedIndexChanged="DDL_AdminStatus_SelectedIndexChanged">
+                                                <asp:ListItem Text="Active" Value="Active" />
+                                                <asp:ListItem Text="Blocked (Admin)" Value="Blocked" />
+                                                <asp:ListItem Text="Exited (Final)" Value="Exited" />
+                                            </asp:DropDownList>
+                                        </div>
+                                        <div class="col-md-4 form-group">
+                                            <label>Login Access</label>
+                                            <asp:DropDownList ID="DDL_LoginAccess" runat="server" CssClass="form-control">
+                                                <asp:ListItem Text="Enabled" Value="1" />
+                                                <asp:ListItem Text="Disabled" Value="0" />
+                                            </asp:DropDownList>
+                                        </div>
+                                    </div>
+
+                                    <asp:Panel ID="pnl_Exit" runat="server" Visible="false">
+                                        <div class="row">
+                                            <div class="col-md-4 form-group">
+                                                <label>Date of Relief (DOR) *</label>
+                                                <asp:TextBox ID="txt_DOR" runat="server" CssClass="form-control" TextMode="Date" />
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>Exit Type *</label>
+                                                <asp:DropDownList ID="DDL_ExitType" runat="server" CssClass="form-control">
+                                                    <asp:ListItem Text="-- Select --" Value="" />
+                                                    <asp:ListItem Text="Resigned" Value="Resigned" />
+                                                    <asp:ListItem Text="Terminated" Value="Terminated" />
+                                                    <asp:ListItem Text="Absconded" Value="Absconded" />
+                                                    <asp:ListItem Text="Retired" Value="Retired" />
+                                                </asp:DropDownList>
+                                            </div>
+                                        </div>
+                                    </asp:Panel>
+
+                                    <div class="row mt-2">
+                                        <div class="col-md-12">
+                                            <label>Reason for Action / Change Log <span class="text-danger">*</span></label>
+                                            <asp:TextBox ID="txt_AdminReason" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="2" placeholder="Required for Audit Trail..." />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ln_solid"></div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <asp:Label ID="lbl_msg" runat="server" Font-Bold="true"></asp:Label>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <asp:Button ID="btn_Cancel" runat="server" Text="Back to List" CssClass="btn btn-default btn-sm" PostBackUrl="view_emp_mastertbldata.aspx" CausesValidation="false" />
+                                <asp:Button ID="btn_SaveAll" runat="server" Text="SAVE ALL CHANGES" CssClass="btn btn-success btn-sm" OnClick="btn_SaveAll_Click" OnClientClick="return confirm('Are you sure you want to commit these changes to the Database?');" />
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="MyPopup" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="popTitle"></h4>
+                </div>
+                <div class="modal-body" id="popBody"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </asp:Content>
