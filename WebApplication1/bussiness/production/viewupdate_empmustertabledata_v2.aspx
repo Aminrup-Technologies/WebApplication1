@@ -268,6 +268,7 @@
                             <li><a data-toggle="tab" href="#tab_compliance"><i class="fa fa-shield"></i>Compliance</a></li>
                             <li><a data-toggle="tab" href="#tab_docs"><i class="fa fa-file-pdf-o"></i>Documents</a></li>
                             <li><a data-toggle="tab" href="#tab_admin" class="text-danger"><i class="fa fa-lock"></i><b>Access & Exit</b></a></li>
+                            <li><a data-toggle="tab" href="#tab_logs" class="text-info"><i class="fa fa-history"></i> <b>History & Logs</b></a></li>
                         </ul>
 
                         <div class="tab-content">
@@ -713,6 +714,13 @@
                                             <asp:TextBox ID="txt_AdminReason" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="2" placeholder="Required reason for updating this Master record..." />
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+
+                            <div id="tab_logs" class="tab-pane fade">
+                                <h4 class="section-header"><i class="fa fa-history"></i> Audit & Change History</h4>
+                                <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 4px; padding: 15px; max-height: 600px; overflow-y: auto; font-family: Consolas, monospace; font-size: 13px; line-height: 1.6; color: #333;">
+                                    <asp:Literal ID="lit_AuditLogs" runat="server"></asp:Literal>
                                 </div>
                             </div>
                         </div>

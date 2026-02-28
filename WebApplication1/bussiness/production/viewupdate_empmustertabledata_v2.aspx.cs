@@ -34,12 +34,51 @@ namespace WebApplication1.bussiness.production
                     lbl_EmpID.Text = id;
                     LoadEmployeeData(id);
                     LoadDocumentData(id);
+
+                    // --- NEW: Load Audit Logs ---
+                    LoadAuditLogs(id);
                 }
                 else
                 {
                     ShowPopup("Error", "No Employee ID provided.");
                     btn_SaveAll.Enabled = false;
                 }
+            }
+        }
+
+        private void LoadAuditLogs(string empId)
+        {
+            try
+            {
+                string logPath = Server.MapPath("~/bussiness/production/Logs/EmployeeEdits/EmpLog_" + empId + ".txt");
+
+                if (File.Exists(logPath))
+                {
+                    string fileContent = File.ReadAllText(logPath);
+
+                    // Regex lookahead pattern to split the file by the DateTime prefix: "YYYY-MM-DD HH:mm:ss |"
+                    // This ensures multi-line details stay grouped with their parent timestamp
+                    string pattern = @"(?=\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \|)";
+                    string[] entries = System.Text.RegularExpressions.Regex.Split(fileContent, pattern);
+
+                    // Filter empties, reverse to show newest first
+                    var reversedEntries = entries.Where(e => !string.IsNullOrWhiteSpace(e)).Reverse();
+
+                    // Format with a nice visual separator
+                    string divider = "<hr style='margin: 10px 0; border-top: 1px dashed #ccc;' />";
+                    string formattedContent = string.Join(divider, reversedEntries);
+
+                    // Replace literal newlines with HTML breaks
+                    lit_AuditLogs.Text = formattedContent.Replace(Environment.NewLine, "<br/>").Replace("\n", "<br/>");
+                }
+                else
+                {
+                    lit_AuditLogs.Text = "<span class='text-muted'>No audit logs found for this employee. System is tracking changes from now on.</span>";
+                }
+            }
+            catch (Exception ex)
+            {
+                lit_AuditLogs.Text = "<span class='text-danger'>Unable to load audit logs: " + ex.Message + "</span>";
             }
         }
 
@@ -312,6 +351,7 @@ namespace WebApplication1.bussiness.production
 
                 // Refresh the UI
                 LoadEmployeeData(lbl_EmpID.Text);
+                LoadAuditLogs(lbl_EmpID.Text);
             }
             catch (Exception ex)
             {
@@ -462,6 +502,7 @@ namespace WebApplication1.bussiness.production
 
                 LogAudit(lbl_EmpID.Text, "DOC_APPROVE", string.Format("{0} document approved.", docType));
                 LoadDocumentData(lbl_EmpID.Text);
+                LoadAuditLogs(lbl_EmpID.Text);
                 ShowPopup("Approved", "Document has been marked as Approved.");
             }
             catch (Exception ex) { ShowPopup("Error", ex.Message); }
@@ -516,6 +557,7 @@ namespace WebApplication1.bussiness.production
 
                 LogAudit(lbl_EmpID.Text, "DOC_REJECT", string.Format("{0} rejected. Reason: {1}", docType, reason));
                 LoadDocumentData(lbl_EmpID.Text);
+                LoadAuditLogs(lbl_EmpID.Text);
                 txt_DocAdminNote.Text = "";
                 ShowPopup("Rejected", "Document rejected successfully. The employee will be forced to re-upload on next login.");
             }
@@ -723,6 +765,7 @@ namespace WebApplication1.bussiness.production
                 ShowPopup("Success", "Employee Record Updated Successfully! Audit Log generated.");
 
                 LoadEmployeeData(lbl_EmpID.Text);
+                LoadAuditLogs(lbl_EmpID.Text);
             }
             catch (Exception ex)
             {
