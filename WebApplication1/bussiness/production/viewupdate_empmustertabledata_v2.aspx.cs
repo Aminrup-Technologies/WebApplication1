@@ -195,9 +195,38 @@ namespace WebApplication1.bussiness.production
                     txt_pv_val.Text = FormatDate(dr["PVExpiry"]);
                     txt_gp_no.Text = dr["GatePassNo"].ToString();
                     txt_gp_val.Text = FormatDate(dr["GatePassExpiry"]);
+
                     txt_GPModBy.Text = dr["GP_ModifierName"].ToString();
                     txt_GPModDt.Text = FormatDate(dr["GP_ModifiedDate"]);
-                    txt_GPAppr.Text = dr["GP_UpdateApproval"].ToString();
+
+                    string gpStatus = dr["GP_UpdateApproval"].ToString();
+                    txt_GPAppr.Text = string.IsNullOrEmpty(gpStatus) ? "N/A" : gpStatus;
+
+                    // Toggle Button Visibility & Colors based on Approval Status
+                    if (gpStatus == "Pending")
+                    {
+                        txt_GPAppr.ForeColor = System.Drawing.Color.DarkOrange;
+                        btn_ApproveGP.Visible = true;
+                        btn_RejectGP.Visible = true;
+                    }
+                    else if (gpStatus == "Approved")
+                    {
+                        txt_GPAppr.ForeColor = System.Drawing.Color.Green;
+                        btn_ApproveGP.Visible = false;
+                        btn_RejectGP.Visible = false;
+                    }
+                    else if (gpStatus == "Rejected")
+                    {
+                        txt_GPAppr.ForeColor = System.Drawing.Color.Red;
+                        btn_ApproveGP.Visible = false;
+                        btn_RejectGP.Visible = false;
+                    }
+                    else
+                    {
+                        txt_GPAppr.ForeColor = System.Drawing.Color.Black;
+                        btn_ApproveGP.Visible = false;
+                        btn_RejectGP.Visible = false;
+                    }
 
                     // --- 7. Security / Admin ---
                     txt_LoginID.Text = dr["LoginID"].ToString();
@@ -242,6 +271,56 @@ namespace WebApplication1.bussiness.production
                 }
             }
             catch (Exception ex) { ShowPopup("Load Error", ex.Message); }
+        }
+
+        protected void btn_ApproveGP_Click(object sender, EventArgs e)
+        {
+            UpdateGPStatus("Approved");
+        }
+
+        protected void btn_RejectGP_Click(object sender, EventArgs e)
+        {
+            UpdateGPStatus("Rejected");
+        }
+
+        private void UpdateGPStatus(string newStatus)
+        {
+            try
+            {
+                dbcl.Sqlconnection();
+                if (dbcl.Conn.State == ConnectionState.Closed) dbcl.ConnectDb();
+
+                string query = @"UPDATE tbl_Employee_Mustertable 
+                                 SET GP_UpdateApproval = @Status, 
+                                     GP_ModifierName = @MODBY, 
+                                     GP_ModifierWrk = @MODWRK, 
+                                     GP_ModifiedDate = GETDATE() 
+                                 WHERE WorkmanSL = @ID";
+
+                SqlCommand cmd = new SqlCommand(query, dbcl.Conn);
+                cmd.Parameters.AddWithValue("@Status", newStatus);
+                cmd.Parameters.AddWithValue("@MODBY", Session["USERNAME"] != null ? Session["USERNAME"].ToString() : "SYSTEM");
+                cmd.Parameters.AddWithValue("@MODWRK", Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "SYSTEM");
+                cmd.Parameters.AddWithValue("@ID", lbl_EmpID.Text);
+
+                cmd.ExecuteNonQuery();
+
+                // Audit Log
+                LogAudit(lbl_EmpID.Text, "COMPLIANCE_" + newStatus.ToUpper(), "Compliance details marked as " + newStatus + " by HR.");
+
+                ShowPopup("Success", "Compliance details have been successfully marked as " + newStatus + ".");
+
+                // Refresh the UI
+                LoadEmployeeData(lbl_EmpID.Text);
+            }
+            catch (Exception ex)
+            {
+                ShowPopup("Error", "Failed to update compliance status: " + ex.Message);
+            }
+            finally
+            {
+                dbcl.DisconnectDb();
+            }
         }
 
         protected void DDL_SkillCat_SelectedIndexChanged(object sender, EventArgs e)
@@ -487,7 +566,7 @@ namespace WebApplication1.bussiness.production
                     UANNo=@UAN, ESICNo=@ESIC, Payment_Bank=@BNK, Payment_Account=@ACC, Payment_IFSC=@IFSC, BankBranch=@BBRANCH,
                     
                     SafetyPassNo=@RFID, SafetyPassExpiry=@RFIDVAL, PVExpiry=@PVVAL,
-                    GatePassNo=@GP, GatePassExpiry=@GPVAL,
+                    GatePassNo=@GP, GatePassExpiry=@GPVAL, GP_UpdateApproval='Approved',
                     
                     SQ1=@SQ1, SQAns1=@SQA1, SQ2=@SQ2, SQAns2=@SQA2, LoginPassword_Plain=@LPP,
                     WorkStatus=@STAT, LoginStatus=@LOGIN, 

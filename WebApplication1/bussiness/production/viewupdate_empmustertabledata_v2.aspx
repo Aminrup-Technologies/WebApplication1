@@ -246,7 +246,7 @@
                     <div class="x_title">
                         <h2>
                             <asp:Label ID="lbl_EmpNameHeader" runat="server" Text="Employee Name" />
-                            <small>(ID:
+                            <small>(Workman SL:
                                 <asp:Label ID="lbl_EmpID" runat="server" ForeColor="#1ABB9C" Font-Bold="true" />)</small>
                         </h2>
                         <ul class="nav navbar-right panel_toolbox">
@@ -459,24 +459,31 @@
                             <div id="tab_compliance" class="tab-pane fade">
                                 <h4 class="section-header">Gate & Safety Passes</h4>
                                 <div class="row">
-                                    <div class="col-md-3 form-group">
-                                        <label>Gatepass No</label><asp:TextBox ID="txt_gp_no" runat="server" CssClass="form-control" /></div>
-                                    <div class="col-md-3 form-group">
-                                        <label>Gatepass Expiry</label><asp:TextBox ID="txt_gp_val" runat="server" CssClass="form-control" TextMode="Date" /></div>
-                                    <div class="col-md-3 form-group">
-                                        <label>Safety Pass No</label><asp:TextBox ID="txt_rfid" runat="server" CssClass="form-control" /></div>
-                                    <div class="col-md-3 form-group">
-                                        <label>Safety Validity</label><asp:TextBox ID="txt_rfid_val" runat="server" CssClass="form-control" TextMode="Date" /></div>
-                                    <div class="col-md-3 form-group">
-                                        <label>Police Verif. (PV) Expiry</label><asp:TextBox ID="txt_pv_val" runat="server" CssClass="form-control" TextMode="Date" /></div>
+                                    <div class="col-md-3 form-group"><label>Gatepass No</label><asp:TextBox ID="txt_gp_no" runat="server" CssClass="form-control" /></div>
+                                    <div class="col-md-3 form-group"><label>Gatepass Expiry</label><asp:TextBox ID="txt_gp_val" runat="server" CssClass="form-control" TextMode="Date" /></div>
+                                    <div class="col-md-3 form-group"><label>Safety Pass No</label><asp:TextBox ID="txt_rfid" runat="server" CssClass="form-control" /></div>
+                                    <div class="col-md-3 form-group"><label>Safety Validity</label><asp:TextBox ID="txt_rfid_val" runat="server" CssClass="form-control" TextMode="Date" /></div>
+                                    <div class="col-md-3 form-group"><label>Police Verif. (PV) Expiry</label><asp:TextBox ID="txt_pv_val" runat="server" CssClass="form-control" TextMode="Date" /></div>
                                 </div>
-                                <div class="row mt-2">
+                                
+                                <h4 class="section-header mt-3">Modification Tracking & Approval</h4>
+                                <div class="row">
                                     <div class="col-md-3 form-group">
-                                        <label>GP Last Modified By</label><asp:TextBox ID="txt_GPModBy" runat="server" CssClass="form-control readonly-text" ReadOnly="true" /></div>
+                                        <label>GP Last Modified By</label>
+                                        <asp:TextBox ID="txt_GPModBy" runat="server" CssClass="form-control readonly-text" ReadOnly="true" />
+                                    </div>
                                     <div class="col-md-3 form-group">
-                                        <label>GP Modified Date</label><asp:TextBox ID="txt_GPModDt" runat="server" CssClass="form-control readonly-text" ReadOnly="true" /></div>
+                                        <label>GP Modified Date</label>
+                                        <asp:TextBox ID="txt_GPModDt" runat="server" CssClass="form-control readonly-text" ReadOnly="true" />
+                                    </div>
                                     <div class="col-md-3 form-group">
-                                        <label>GP Approval Status</label><asp:TextBox ID="txt_GPAppr" runat="server" CssClass="form-control readonly-text" ReadOnly="true" /></div>
+                                        <label>GP Approval Status</label>
+                                        <asp:TextBox ID="txt_GPAppr" runat="server" CssClass="form-control readonly-text" ReadOnly="true" Font-Bold="true" />
+                                    </div>
+                                    <div class="col-md-3 form-group" style="margin-top: 22px;">
+                                        <asp:Button ID="btn_ApproveGP" runat="server" Text="Approve" CssClass="btn btn-success btn-sm" OnClick="btn_ApproveGP_Click" Visible="false" />
+                                        <asp:Button ID="btn_RejectGP" runat="server" Text="Reject" CssClass="btn btn-danger btn-sm" OnClick="btn_RejectGP_Click" Visible="false" OnClientClick="return confirm('Are you sure you want to reject these Gate/Safety pass details?');" />
+                                    </div>
                                 </div>
                             </div>
 
@@ -506,9 +513,9 @@
                                             <td>
                                                 <asp:Label ID="lbl_AadhaarDate" runat="server" /></td>
                                             <td>
-                                                <asp:HyperLink ID="lnk_ViewAadhaar" runat="server" Target="_blank" CssClass="btn btn-info btn-xs"><i class="fa fa-eye"></i> View</asp:HyperLink>
-                                                <asp:Button ID="btn_ApproveAadhaar" runat="server" Text="Approve" CssClass="btn btn-success btn-xs" OnClick="btn_ApproveDoc_Click" CommandArgument="Aadhaar" />
-                                                <asp:Button ID="btn_RejectAadhaar" runat="server" Text="Reject" CssClass="btn btn-danger btn-xs" OnClick="btn_RejectDoc_Click" CommandArgument="Aadhaar" OnClientClick="return confirm('Reject Aadhaar?');" />
+                                                <asp:HyperLink ID="lnk_ViewAadhaar" runat="server" Target="_blank" CssClass="btn btn-info btn-sm"><i class="fa fa-eye"></i> View</asp:HyperLink>
+                                                <asp:Button ID="btn_ApproveAadhaar" runat="server" Text="Approve" CssClass="btn btn-success btn-sm" OnClick="btn_ApproveDoc_Click" CommandArgument="Aadhaar" />
+                                                <asp:Button ID="btn_RejectAadhaar" runat="server" Text="Reject" CssClass="btn btn-danger btn-sm" OnClick="btn_RejectDoc_Click" CommandArgument="Aadhaar" OnClientClick="return confirm('Reject Aadhaar?');" />
                                             </td>
                                         </tr>
                                         <tr>
@@ -520,9 +527,9 @@
                                             <td>
                                                 <asp:Label ID="lbl_PanDate" runat="server" /></td>
                                             <td>
-                                                <asp:HyperLink ID="lnk_ViewPan" runat="server" Target="_blank" CssClass="btn btn-info btn-xs"><i class="fa fa-eye"></i> View</asp:HyperLink>
-                                                <asp:Button ID="btn_ApprovePan" runat="server" Text="Approve" CssClass="btn btn-success btn-xs" OnClick="btn_ApproveDoc_Click" CommandArgument="Pan" />
-                                                <asp:Button ID="btn_RejectPan" runat="server" Text="Reject" CssClass="btn btn-danger btn-xs" OnClick="btn_RejectDoc_Click" CommandArgument="Pan" OnClientClick="return confirm('Reject PAN?');" />
+                                                <asp:HyperLink ID="lnk_ViewPan" runat="server" Target="_blank" CssClass="btn btn-info btn-sm"><i class="fa fa-eye"></i> View</asp:HyperLink>
+                                                <asp:Button ID="btn_ApprovePan" runat="server" Text="Approve" CssClass="btn btn-success btn-sm" OnClick="btn_ApproveDoc_Click" CommandArgument="Pan" />
+                                                <asp:Button ID="btn_RejectPan" runat="server" Text="Reject" CssClass="btn btn-danger btn-sm" OnClick="btn_RejectDoc_Click" CommandArgument="Pan" OnClientClick="return confirm('Reject PAN?');" />
                                             </td>
                                         </tr>
                                         <tr>
@@ -534,9 +541,9 @@
                                             <td>
                                                 <asp:Label ID="lbl_BankDate" runat="server" /></td>
                                             <td>
-                                                <asp:HyperLink ID="lnk_ViewBank" runat="server" Target="_blank" CssClass="btn btn-info btn-xs"><i class="fa fa-eye"></i> View</asp:HyperLink>
-                                                <asp:Button ID="btn_ApproveBank" runat="server" Text="Approve" CssClass="btn btn-success btn-xs" OnClick="btn_ApproveDoc_Click" CommandArgument="Bank" />
-                                                <asp:Button ID="btn_RejectBank" runat="server" Text="Reject" CssClass="btn btn-danger btn-xs" OnClick="btn_RejectDoc_Click" CommandArgument="Bank" OnClientClick="return confirm('Reject Bank Doc?');" />
+                                                <asp:HyperLink ID="lnk_ViewBank" runat="server" Target="_blank" CssClass="btn btn-info btn-sm"><i class="fa fa-eye"></i> View</asp:HyperLink>
+                                                <asp:Button ID="btn_ApproveBank" runat="server" Text="Approve" CssClass="btn btn-success btn-sm" OnClick="btn_ApproveDoc_Click" CommandArgument="Bank" />
+                                                <asp:Button ID="btn_RejectBank" runat="server" Text="Reject" CssClass="btn btn-danger btn-sm" OnClick="btn_RejectDoc_Click" CommandArgument="Bank" OnClientClick="return confirm('Reject Bank Doc?');" />
                                             </td>
                                         </tr>
                                         <tr>
@@ -548,9 +555,9 @@
                                             <td>
                                                 <asp:Label ID="lbl_TenDate" runat="server" /></td>
                                             <td>
-                                                <asp:HyperLink ID="lnk_ViewTen" runat="server" Target="_blank" CssClass="btn btn-info btn-xs"><i class="fa fa-eye"></i> View</asp:HyperLink>
-                                                <asp:Button ID="btn_ApproveTen" runat="server" Text="Approve" CssClass="btn btn-success btn-xs" OnClick="btn_ApproveDoc_Click" CommandArgument="Ten" />
-                                                <asp:Button ID="btn_RejectTen" runat="server" Text="Reject" CssClass="btn btn-danger btn-xs" OnClick="btn_RejectDoc_Click" CommandArgument="Ten" OnClientClick="return confirm('Reject 10th Doc?');" />
+                                                <asp:HyperLink ID="lnk_ViewTen" runat="server" Target="_blank" CssClass="btn btn-info btn-sm"><i class="fa fa-eye"></i> View</asp:HyperLink>
+                                                <asp:Button ID="btn_ApproveTen" runat="server" Text="Approve" CssClass="btn btn-success btn-sm" OnClick="btn_ApproveDoc_Click" CommandArgument="Ten" />
+                                                <asp:Button ID="btn_RejectTen" runat="server" Text="Reject" CssClass="btn btn-danger btn-sm" OnClick="btn_RejectDoc_Click" CommandArgument="Ten" OnClientClick="return confirm('Reject 10th Doc?');" />
                                             </td>
                                         </tr>
                                         <tr>
@@ -562,9 +569,9 @@
                                             <td>
                                                 <asp:Label ID="lbl_TwelveDate" runat="server" /></td>
                                             <td>
-                                                <asp:HyperLink ID="lnk_ViewTwelve" runat="server" Target="_blank" CssClass="btn btn-info btn-xs"><i class="fa fa-eye"></i> View</asp:HyperLink>
-                                                <asp:Button ID="btn_ApproveTwelve" runat="server" Text="Approve" CssClass="btn btn-success btn-xs" OnClick="btn_ApproveDoc_Click" CommandArgument="Twelve" />
-                                                <asp:Button ID="btn_RejectTwelve" runat="server" Text="Reject" CssClass="btn btn-danger btn-xs" OnClick="btn_RejectDoc_Click" CommandArgument="Twelve" OnClientClick="return confirm('Reject 12th Doc?');" />
+                                                <asp:HyperLink ID="lnk_ViewTwelve" runat="server" Target="_blank" CssClass="btn btn-info btn-sm"><i class="fa fa-eye"></i> View</asp:HyperLink>
+                                                <asp:Button ID="btn_ApproveTwelve" runat="server" Text="Approve" CssClass="btn btn-success btn-sm" OnClick="btn_ApproveDoc_Click" CommandArgument="Twelve" />
+                                                <asp:Button ID="btn_RejectTwelve" runat="server" Text="Reject" CssClass="btn btn-danger btn-sm" OnClick="btn_RejectDoc_Click" CommandArgument="Twelve" OnClientClick="return confirm('Reject 12th Doc?');" />
                                             </td>
                                         </tr>
                                         <tr>
@@ -576,9 +583,9 @@
                                             <td>
                                                 <asp:Label ID="lbl_GradDate" runat="server" /></td>
                                             <td>
-                                                <asp:HyperLink ID="lnk_ViewGrad" runat="server" Target="_blank" CssClass="btn btn-info btn-xs"><i class="fa fa-eye"></i> View</asp:HyperLink>
-                                                <asp:Button ID="btn_ApproveGrad" runat="server" Text="Approve" CssClass="btn btn-success btn-xs" OnClick="btn_ApproveDoc_Click" CommandArgument="Grad" />
-                                                <asp:Button ID="btn_RejectGrad" runat="server" Text="Reject" CssClass="btn btn-danger btn-xs" OnClick="btn_RejectDoc_Click" CommandArgument="Grad" OnClientClick="return confirm('Reject Graduation Doc?');" />
+                                                <asp:HyperLink ID="lnk_ViewGrad" runat="server" Target="_blank" CssClass="btn btn-info btn-sm"><i class="fa fa-eye"></i> View</asp:HyperLink>
+                                                <asp:Button ID="btn_ApproveGrad" runat="server" Text="Approve" CssClass="btn btn-success btn-sm" OnClick="btn_ApproveDoc_Click" CommandArgument="Grad" />
+                                                <asp:Button ID="btn_RejectGrad" runat="server" Text="Reject" CssClass="btn btn-danger btn-sm" OnClick="btn_RejectDoc_Click" CommandArgument="Grad" OnClientClick="return confirm('Reject Graduation Doc?');" />
                                             </td>
                                         </tr>
                                     </tbody>

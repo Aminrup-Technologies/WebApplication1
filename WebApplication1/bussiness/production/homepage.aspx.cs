@@ -205,59 +205,79 @@ namespace WebApplication1.bussiness.production
 
         private void EmployeeDataLoader()
         {
-            // 1. Wrap in Try/Finally to ensure DB disconnects even if code crashes
+            // Wrap in Try/Finally to ensure DB disconnects even if code crashes
             try
             {
                 string query = "select * from tbl_Employee_Mustertable where WorkmanSL=@WorkmanSL and LoginID=@LoginID";
                 SqlParameter[] pram = {
-                    new SqlParameter("@WorkmanSL", Session["WORKMAN"]?.ToString() ?? ""), // Safety for Session nulls
-                    new SqlParameter("@LoginID", Session["USERID"]?.ToString() ?? ""),
-                };
+            new SqlParameter("@WorkmanSL", Session["WORKMAN"]?.ToString() ?? ""),
+            new SqlParameter("@LoginID", Session["USERID"]?.ToString() ?? ""),
+        };
 
                 dt = dbcl.SPreturn_dt(query, pram);
 
                 if (dt.Rows.Count > 0)
                 {
-                    // Use DataRow for cleaner syntax
                     DataRow row = dt.Rows[0];
                     string WorkStatus = row["WorkStatus"].ToString();
 
                     if (WorkStatus == "Active")
                     {
                         // Basic Strings (Safe to use ToString)
-                        lbl_id.Text = row["LoginID"].ToString();
-                        lbl_region.Text = row["WorkRegion"].ToString();
-                        lbl_wrkcopmany.Text = row["WorkCompany"].ToString();
+                        string UserID = row["LoginID"].ToString();
+                        lbl_id.Text = UserID;
+
+                        string Region = row["WorkRegion"].ToString();
+                        lbl_region.Text = Region;
+
+                        string Company = row["WorkCompany"].ToString();
+                        lbl_wrkcopmany.Text = Company;
 
                         string state = row["WorkState"].ToString();
                         Session["USTATE"] = state;
                         lbl_state.Text = state;
-                        lbl_workmansl.Text = row["WorkmanSL"].ToString();
 
-                        // User Details
-                        Session["SKIL"] = row["SkillCategory"].ToString();
+                        string Workman = row["WorkmanSL"].ToString();
+                        lbl_workmansl.Text = Workman;
+
+                        // User variables defined in original scope
+                        string User_FirstName = row["FirstName"].ToString();
+                        string User_FullName = row["FullName"].ToString();
+                        string User_Type = row["User_RoleType"].ToString();
+                        string User_Permission = row["Role_Permission"].ToString();
+
+                        string User_Worksite = row["WorkSite"].ToString();
+                        lbl_wrksite.Text = User_Worksite;
+
+                        string User_WRKSTCode = row["Worksite_Code"].ToString();
+
+                        string User_Skill = row["SkillCategory"].ToString();
+                        Session["SKIL"] = User_Skill;
+
                         string User_Desg = row["SkillDesignation"].ToString();
                         Session["DESG"] = User_Desg;
-                        lbl_wrksite.Text = row["WorkSite"].ToString();
-                        lbl_desg.Text = User_Desg;
-                        lbl_skillcat.Text = row["SkillCategory"].ToString();
-                        lbl_oldmobileno.Text = row["MobileNo"].ToString();
 
-                        // --- FIX 1: DATE OF JOINING (NULL SAFETY) ---
+                        // --- FIX: DATE OF JOINING (NULL SAFETY) ---
                         string doj = row["DOJ"].ToString();
                         if (!string.IsNullOrEmpty(doj))
                         {
                             DateTime oDate = Convert.ToDateTime(doj);
-                            lbl_workage.Text = CalculateYourWorkAge(oDate);
+                            string age = CalculateYourWorkAge(oDate);
+                            lbl_workage.Text = age.ToString();
                             lbl_doj.Text = DateBinder(doj);
                         }
                         else
                         {
                             lbl_workage.Text = "N/A";
-                            lbl_doj.Text = "";
+                            lbl_doj.Text = "-";
                         }
 
-                        // --- FIX 2: GATE PASS (NULL SAFETY) ---
+                        string mobile = row["MobileNo"].ToString();
+                        lbl_oldmobileno.Text = string.IsNullOrEmpty(mobile) ? "N/A" : mobile;
+                        lbl_desg.Text = User_Desg;
+                        lbl_skillcat.Text = User_Skill;
+
+                        // --- FIX: GATE PASS (NULL SAFETY) ---
                         string gpno = row["GatePassNo"].ToString();
                         lbl_gpno.Text = gpno;
                         lbl_oldgpno.Text = gpno;
@@ -272,10 +292,11 @@ namespace WebApplication1.bussiness.production
                             {
                                 lbl_gpexpdays.ForeColor = Color.OrangeRed;
                                 lbl_gpvalidity.ForeColor = Color.OrangeRed;
-                                // ... (Color logic)
+                                lbl_gpno.ForeColor = Color.OrangeRed;
+                                lbl_oldgpno.ForeColor = Color.OrangeRed;
 
                                 string title = "Notifications :";
-                                string body = "Kindly update your Gatepass Data...!!!";
+                                string body = "Kindly update your Gatepass Data, Your Gatepass has expired...!!!";
                                 ClientScript.RegisterStartupScript(this.GetType(), "Popup1", "ShowPopup('" + title + "', '" + body + "');", true);
                             }
                             lbl_gpexpdays.Text = gpdays.ToString();
@@ -287,27 +308,79 @@ namespace WebApplication1.bussiness.production
                         else
                         {
                             lbl_gpexpdays.Text = "N/A";
+                            lbl_gpvalidity.Text = "-";
                         }
 
-                        // --- SAFETY PASS & PV (Apply similar null checks as above) ---
-                        // ... (Repeat IsNullOrEmpty checks for rfidval and pvvalidity) ...
+                        // --- FIX: SAFETY PASS / RFID (NULL SAFETY) ---
+                        string rfidno = row["SafetyPassNo"].ToString();
+                        lbl_rfidno.Text = rfidno;
+                        lbl_oldsftyno.Text = rfidno;
+                        txt_nwsftyno.Text = rfidno;
 
-                        // --- PASSWORD EXPIRY ---
+                        string rfidval = row["SafetyPassExpiry"].ToString();
+                        if (!string.IsNullOrEmpty(rfidval))
+                        {
+                            string rfidvaldt = DateBinder(rfidval);
+                            lbl_rfidvalidity.Text = rfidvaldt;
+                            lbl_oldsftyval.Text = rfidvaldt;
+                            txt_nwsftyvalidity.Text = rfidvaldt;
+
+                            Int32 rfiddays = 0;
+                            FindDaysLeft(rfidval, ref rfiddays);
+                            lbl_rfiddays.Text = rfiddays.ToString();
+                            if (rfiddays < 14)
+                            {
+                                lbl_rfidno.ForeColor = Color.OrangeRed;
+                                lbl_rfidvalidity.ForeColor = Color.OrangeRed;
+                                lbl_rfiddays.ForeColor = Color.OrangeRed;
+                            }
+                        }
+                        else
+                        {
+                            lbl_rfiddays.Text = "N/A";
+                            lbl_rfidvalidity.Text = "-";
+                        }
+
+                        // --- FIX: POLICE VERIFICATION / PV (NULL SAFETY) ---
+                        string pvvalidity = row["PVExpiry"].ToString();
+                        if (!string.IsNullOrEmpty(pvvalidity))
+                        {
+                            string pvvaldt = DateBinder(pvvalidity);
+                            lbl_pvvalidity.Text = pvvaldt;
+                            lbl_oldpvvalidity.Text = pvvaldt;
+                            txt_nwpvvalidity.Text = pvvaldt;
+
+                            Int32 pvdays = 0;
+                            FindDaysLeft(pvvalidity, ref pvdays);
+                            lbl_pvdays.Text = pvdays.ToString();
+                            if (pvdays < 14)
+                            {
+                                lbl_pvvalidity.ForeColor = Color.OrangeRed;
+                                lbl_pvdays.ForeColor = Color.OrangeRed;
+                            }
+                        }
+                        else
+                        {
+                            lbl_pvdays.Text = "N/A";
+                            lbl_pvvalidity.Text = "-";
+                        }
+
+                        // --- FIX: PASSWORD EXPIRY (NULL SAFETY) ---
                         string PasswordExpiry = row["PasswordExpiry"].ToString();
                         if (!string.IsNullOrEmpty(PasswordExpiry))
                         {
                             Int32 psexpdays = 0;
                             FindDaysLeft(PasswordExpiry, ref psexpdays);
 
-                            // JS Injection
                             string PN_PasswordExpiry_script = $@"<script type='text/javascript'>
-                                new PNotify({{
-                                    title: 'Regular Notice',
-                                    text: 'Your login password will expire in {psexpdays} days.',
-                                    type: 'info',
-                                    styling: 'bootstrap3'
-                                }});
-                            </script>";
+                            new PNotify({{
+                                title: 'Regular Notice',
+                                text: 'Your login password will expire in {psexpdays} days.',
+                                type: 'info',
+                                styling: 'bootstrap3'
+                            }});
+                        </script>";
+
                             ClientScript.RegisterStartupScript(this.GetType(), "ShowExpiryNotification", PN_PasswordExpiry_script, false);
 
                             if (psexpdays <= 15)
@@ -318,51 +391,55 @@ namespace WebApplication1.bussiness.production
                         }
 
                         // Banking Info
-                        lbl_bankname.Text = row["Payment_Bank"].ToString();
-                        txt_bankname.Text = row["Payment_Bank"].ToString();
-                        lbl_accno.Text = row["Payment_Account"].ToString();
-                        txt_accno.Text = row["Payment_Account"].ToString();
-                        txt_cnfaccno.Text = row["Payment_Account"].ToString();
-                        lbl_ifsc.Text = row["Payment_IFSC"].ToString();
-                        txt_ifsc.Text = row["Payment_IFSC"].ToString();
-                        lbl_branch.Text = row["BankBranch"].ToString();
-                        txt_branchname.Text = row["BankBranch"].ToString();
+                        string bankname = row["Payment_Bank"].ToString();
+                        lbl_bankname.Text = bankname;
+                        txt_bankname.Text = bankname;
+
+                        string bankacc = row["Payment_Account"].ToString();
+                        lbl_accno.Text = bankacc;
+                        txt_accno.Text = bankacc;
+                        txt_cnfaccno.Text = bankacc;
+
+                        string bankifsc = row["Payment_IFSC"].ToString();
+                        lbl_ifsc.Text = bankifsc;
+                        txt_ifsc.Text = bankifsc;
+
+                        string branch = row["BankBranch"].ToString();
+                        lbl_branch.Text = branch;
+                        txt_branchname.Text = branch;
 
                         string updtdt = row["BankUpdatedOn"].ToString();
                         string updtbyname = row["BankUpdatedByName"].ToString();
                         lbl_bankupdtinfo.Text = "Last updated on " + updtdt + " by " + updtbyname + ".";
 
-                        lbl_pfno.Text = row["UANNo"].ToString();
-                        lbl_esicno.Text = row["ESICNo"].ToString();
+                        string pfno = row["UANNo"].ToString();
+                        lbl_pfno.Text = pfno;
+                        string esicno = row["ESICNo"].ToString();
+                        lbl_esicno.Text = esicno;
 
-                        // Update Login Stats
-                        dbcl.UPDT_EmpMuster_LoginInfo(row["WorkmanSL"].ToString(), row["LoginID"].ToString());
+                        // Close Connection early since data reading is complete
+                        dbcl.DisconnectDb();
 
-                        // --- CONTACT LOGIC START ---
+                        // Update loginstatus and Last Login Information i.e. date
+                        dbcl.UPDT_EmpMuster_LoginInfo(Workman, UserID);
 
-                        // 1. Retrieve Data
+                        // --- NEW CONTACT LOGIC & UI POPUP ---
                         string email = row["Email"].ToString();
-                        string mobile = row["MobileNo"].ToString();
-
-                        // 2. Set UI Labels
                         lbl_oldemailadd.Text = string.IsNullOrEmpty(email) ? "N/A" : email;
-                        lbl_oldmobileno.Text = string.IsNullOrEmpty(mobile) ? "N/A" : mobile;
 
-                        // 3. Determine if there is data to verify
-                        // (Used to enable/disable the "Confirm" button)
+                        txt_nwmobileno.Text = "";
+                        txt_nwemailadd.Text = "";
+
                         bool hasData = !string.IsNullOrEmpty(email) || !string.IsNullOrEmpty(mobile);
-
-                        // 4. Check Expiry Status (using the 90-day logic helper)
                         bool isContactExpired = IsContactExpired(row);
 
-                        // 5. Generate Dynamic Text for the Alert Box
+                        // Generate Dynamic Text for the Alert Box
                         string lastUpdateText = "";
                         if (row["ContactUpdateOn"] != DBNull.Value)
                         {
                             DateTime lastDate;
                             if (DateTime.TryParse(row["ContactUpdateOn"].ToString(), out lastDate))
                             {
-                                // Example: "Your last verification was on 12-Nov-2025."
                                 lastUpdateText = $"Your last verification was on <strong>{lastDate.ToString("dd-MMM-yyyy")}</strong>.";
                             }
                             else
@@ -375,37 +452,29 @@ namespace WebApplication1.bussiness.production
                             lastUpdateText = "We have no record of a previous verification.";
                         }
 
-                        // 6. Inject Text into the Alert Box
-                        // Ensure your <p id="p_verify_reason" runat="server"> exists in the .aspx
+                        // Inject this into the HTML alert block
                         p_verify_reason.InnerHtml = $"{lastUpdateText} <br/> Our policy requires re-verification every 90 days.";
 
-                        // 7. Apply Button Logic & Trigger Modal
                         if (isContactExpired)
                         {
-                            // --- FORCE UPDATE MODE (Expired) ---
+                            btn_cancel1.Enabled = false;            // CANCEL disabled
+                            btn_sv_contactdata.Enabled = true;      // Make Changes enabled
+                            btn_cancel_contactdata.Enabled = hasData; // Confirm enabled only if data exists
 
-                            // DISABLE "Cancel" to prevent closing the modal without action
-                            btn_cancel1.Enabled = false;
-
-                            // ENABLE "Make Changes" (Always allowed to fix data)
-                            btn_sv_contactdata.Enabled = true;
-
-                            // ENABLE "Confirm" ONLY if there is data.
-                            // FIX: This allows users to simply click "Confirm" if the old number is still correct.
-                            btn_cancel_contactdata.Enabled = hasData;
-
-                            // Show the modal
-                            ClientScript.RegisterStartupScript(this.GetType(), "ShowContactModal", "$('#myModal4').modal('show');", true);
+                            ClientScript.RegisterStartupScript(
+                                this.GetType(),
+                                "ShowContactModal",
+                                "$('#myModal4').modal('show');",
+                                true
+                            );
                         }
                         else
                         {
-                            // --- NORMAL MODE (User clicked profile to edit manually) ---
-                            btn_cancel1.Enabled = true;            // Allow closing
-                            btn_sv_contactdata.Enabled = true;     // Allow editing
-                            btn_cancel_contactdata.Enabled = true; // Allow confirming
+                            // Contact valid → normal editing behavior allowed
+                            btn_cancel_contactdata.Enabled = true;
+                            btn_sv_contactdata.Enabled = true;
+                            btn_cancel1.Enabled = true;
                         }
-
-                        // --- CONTACT LOGIC END ---
                     }
                     else
                     {
@@ -415,12 +484,12 @@ namespace WebApplication1.bussiness.production
             }
             catch (Exception ex)
             {
-                // Add your error logging here
-                // Console.WriteLine(ex.Message);
+                // Appropriate error handling/logging
+                Console.WriteLine(ex.Message);
             }
             finally
             {
-                // 3. This guarantees the connection closes
+                // Guarantee connection closure
                 dbcl.DisconnectDb();
             }
         }

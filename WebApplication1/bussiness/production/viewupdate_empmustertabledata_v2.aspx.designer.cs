@@ -634,6 +634,24 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.TextBox txt_GPAppr;
         
         /// <summary>
+        /// btn_ApproveGP control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btn_ApproveGP;
+        
+        /// <summary>
+        /// btn_RejectGP control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btn_RejectGP;
+        
+        /// <summary>
         /// txt_DocAdminNote control.
         /// </summary>
         /// <remarks>
