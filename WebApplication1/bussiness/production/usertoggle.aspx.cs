@@ -44,6 +44,8 @@ namespace WebApplication1.bussiness.production
                     LoadPANDetails();
                     LoadBankDetails();
                     LoadEducationDetails();
+                    // --- NEW: Load HR Rejection Feedback ---
+                    LoadRejectionNote(workman);
                 }
             }
             catch (ThreadAbortException) // redirect may still raise this in older code paths; let it bubble
@@ -60,7 +62,37 @@ namespace WebApplication1.bussiness.production
             }
         }
 
+        private void LoadRejectionNote(string workmanSL)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString))
+                {
+                    string query = "SELECT RejectionNote FROM tbl_EmployeeDocsDetails WHERE WorkmanSL = @WorkmanSL";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@WorkmanSL", workmanSL);
+                        conn.Open();
+                        object note = cmd.ExecuteScalar();
 
+                        if (note != null && note != DBNull.Value && !string.IsNullOrWhiteSpace(note.ToString()))
+                        {
+                            divRejectionAlert.Visible = true;
+                            lblRejectionNote.Text = note.ToString();
+                        }
+                        else
+                        {
+                            divRejectionAlert.Visible = false;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Failsafe: hide alert if DB errors out
+                divRejectionAlert.Visible = false;
+            }
+        }
         private void LoadAadhaarDetails(string WorkmanSL)
         {
             //string WorkmanSL = Session["WorkmanSL"]?.ToString();
@@ -1205,7 +1237,7 @@ namespace WebApplication1.bussiness.production
                                 GradDate = ISNULL(@GradDate, GradDate),
                                 UpdatedByWrk = COALESCE(@UpdatedByWrk, UpdatedByWrk),
                                 UpdatedByName = COALESCE(@UpdatedByName, UpdatedByName),
-                                Timestamp = GETDATE()
+                                Timestamp = GETDATE(), RejectionNote = NULL
                             WHERE WorkmanSL = @WorkmanSL";
 
                         using (SqlCommand upd = new SqlCommand(updateSql, conn, tx))

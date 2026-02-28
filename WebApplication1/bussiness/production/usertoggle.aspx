@@ -206,6 +206,7 @@
             opacity: 0.6;
             pointer-events: none; /* makes inputs inside not clickable if you prefer */
         }
+
         .na-checkbox {
             margin-left: 8px;
             vertical-align: middle;
@@ -228,6 +229,14 @@
                         </div>
                         <div class="x_content">
 
+                            <div id="divRejectionAlert" runat="server" class="alert alert-danger" visible="false" style="border-radius: 4px; padding: 15px; margin-bottom: 20px;">
+                                <h4 style="margin-top: 0; color: #a94442;"><i class="fa fa-exclamation-triangle"></i>Action Required: Document Rejected</h4>
+                                <asp:Label ID="lblRejectionNote" runat="server" Font-Bold="true" Font-Size="14px"></asp:Label>
+                                <div style="margin-top: 10px; font-size: 12px; color: #a94442;">
+                                    Please review the HR feedback above and re-upload the correct document. Once uploaded, this message will disappear and your file will be sent back for review.
+   
+                                </div>
+                            </div>
 
                             <!-- Aadhaar Card Toggle Section -->
                             <div class="toggle-bar" onclick="toggleSection('aadhaarSection')">
@@ -686,31 +695,31 @@
 
         function validateDate() {
             const date = document.getElementById('<%= txtIssueDate.ClientID %>').value;
-                const msg = document.getElementById('dateValidation');
-                const today = new Date().toISOString().split("T")[0];
-                msg.innerText = (date && date <= today) ? "" : "Invalid or future date";
-            }
+            const msg = document.getElementById('dateValidation');
+            const today = new Date().toISOString().split("T")[0];
+            msg.innerText = (date && date <= today) ? "" : "Invalid or future date";
+        }
 
-            function validateAllAadhaar() {
-                validateAadhaar();
-                validateName();
-                validateDate();
+        function validateAllAadhaar() {
+            validateAadhaar();
+            validateName();
+            validateDate();
 
-                return !document.getElementById('aadhaarValidation').innerText &&
-                       !document.getElementById('nameValidation').innerText &&
-                       !document.getElementById('dateValidation').innerText;
-            }
+            return !document.getElementById('aadhaarValidation').innerText &&
+                   !document.getElementById('nameValidation').innerText &&
+                   !document.getElementById('dateValidation').innerText;
+        }
 
-            function clearAadhaarForm() {
-                document.getElementById('<%= txtAadhaarNo.ClientID %>').value = "";
-             document.getElementById('<%= txtAadhaarName.ClientID %>').value = "";
-             document.getElementById('<%= txtIssueDate.ClientID %>').value = "";
-             document.getElementById('<%= fuAadhaarImage.ClientID %>').value = "";
-             document.getElementById('imgAadhaarPreview').src = "~/images/placeholder.png";
-             document.getElementById('aadhaarValidation').innerText = "";
-             document.getElementById('nameValidation').innerText = "";
-             document.getElementById('dateValidation').innerText = "";
-             document.getElementById('<%= lblAadhaarStatus.ClientID %>').innerText = "";
+        function clearAadhaarForm() {
+            document.getElementById('<%= txtAadhaarNo.ClientID %>').value = "";
+                document.getElementById('<%= txtAadhaarName.ClientID %>').value = "";
+                document.getElementById('<%= txtIssueDate.ClientID %>').value = "";
+                document.getElementById('<%= fuAadhaarImage.ClientID %>').value = "";
+                document.getElementById('imgAadhaarPreview').src = "~/images/placeholder.png";
+                document.getElementById('aadhaarValidation').innerText = "";
+                document.getElementById('nameValidation').innerText = "";
+                document.getElementById('dateValidation').innerText = "";
+                document.getElementById('<%= lblAadhaarStatus.ClientID %>').innerText = "";
          }
     </script>
 
@@ -824,17 +833,17 @@
 
             // Validate IFSC
             let ifsc = document.getElementById('<%= txtIFSC.ClientID %>');
-        let ifscMsg = document.getElementById('ifscValidation');
-        const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
-        if (!ifscRegex.test(ifsc.value.trim())) {
-            ifscMsg.innerText = "Enter a valid IFSC code (e.g., SBIN0001234).";
-            isValid = false;
-        } else {
-            ifscMsg.innerText = "";
-        }
+            let ifscMsg = document.getElementById('ifscValidation');
+            const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
+            if (!ifscRegex.test(ifsc.value.trim())) {
+                ifscMsg.innerText = "Enter a valid IFSC code (e.g., SBIN0001234).";
+                isValid = false;
+            } else {
+                ifscMsg.innerText = "";
+            }
 
             // Validate Bank Name
-        let bank = document.getElementById('<%= txtBankName.ClientID %>');
+            let bank = document.getElementById('<%= txtBankName.ClientID %>');
         let bankMsg = document.getElementById('bankNameValidation');
         if (bank.value.trim() === "") {
             bankMsg.innerText = "Bank Name is required.";
