@@ -10,69 +10,20 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-
     <link href="https://cdn.jsdelivr.net/npm/@pnotify/core@5.2.0/dist/PNotify.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@pnotify/core@5.2.0/dist/BrightTheme.css" rel="stylesheet">
 
     <style type="text/css">
-        body {
-            background: #f0f2f5;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Inter', sans-serif;
-            padding: 15px;
-        }
-
-        .login-card {
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            width: 100%;
-            max-width: 400px;
-            padding: 2.5rem;
-        }
-
-        .brand-logo {
-            display: block;
-            margin: 0 auto 1.2rem;
-        }
-
-        .btn-success {
-            background-color: #198754;
-            border: none;
-            padding: 0.7rem;
-            font-weight: 600;
-        }
-
-        #forgot_section {
-            display: none;
-        }
-
-        .pnotify-custom {
-            border-radius: 8px;
-            font-weight: 600;
-        }
-
-        .footer-text {
-            font-size: 0.8rem; /* Small, professional size */
-            text-align: center;
-            margin-top: 2.5rem; /* Spacing from the buttons */
-            color: #6c757d; /* Muted gray text */
-            border-top: 1px solid #e9ecef; /* Thin separator line */
-            padding-top: 1rem;
-        }
-
-            .footer-text a {
-                color: #198754; /* Match the success button color */
-                transition: color 0.2s;
-            }
-
-                .footer-text a:hover {
-                    color: #146c43; /* Darker green on hover */
-                    text-decoration: underline !important;
-                }
+        body { background: #f0f2f5; min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; padding: 15px; }
+        .login-card { background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 420px; padding: 2.5rem; }
+        .brand-logo { display: block; margin: 0 auto 1.2rem; }
+        .btn-success { background-color: #198754; border: none; padding: 0.7rem; font-weight: 600; }
+        .nav-pills .nav-link { border-radius: 8px; font-weight: 600; color: #6c757d; }
+        .nav-pills .nav-link.active { background-color: #198754; color: #fff; }
+        .pnotify-custom { border-radius: 8px; font-weight: 600; }
+        .footer-text { font-size: 0.8rem; text-align: center; margin-top: 2.5rem; color: #6c757d; border-top: 1px solid #e9ecef; padding-top: 1rem; }
+        .footer-text a { color: #198754; transition: color 0.2s; }
+        .footer-text a:hover { color: #146c43; text-decoration: underline !important; }
     </style>
 
     <script type="text/javascript">
@@ -86,56 +37,67 @@
         <asp:ScriptManager ID="ScriptManager1" runat="server" />
         <div class="login-card">
             <asp:Image ID="Image1" runat="server" ImageUrl="~/erp_images/ats_translogo.png" Height="80" Width="80" CssClass="brand-logo" />
+            <h1 class="h5 text-center fw-bold mb-4">ATS Cloud ERP</h1>
 
-            <div id="login_section">
-                <h1 class="h4 text-center fw-bold mb-4">ATS Cloud ERP</h1>
+            <ul class="nav nav-pills nav-justified mb-4" id="loginTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button runat="server" id="tab_login_btn" class="nav-link active" data-bs-toggle="pill" data-bs-target="#pane_login" type="button" role="tab" aria-selected="true">Login</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button runat="server" id="tab_forgot_btn" class="nav-link" data-bs-toggle="pill" data-bs-target="#pane_forgot" type="button" role="tab" aria-selected="false">Reset Password</button>
+                </li>
+            </ul>
 
-                <div class="mb-3">
-                    <label class="form-label small fw-bold text-muted">USER ID</label>
-                    <asp:TextBox ID="txt_loginid" runat="server" CssClass="form-control" placeholder="ATS00__"></asp:TextBox>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label small fw-bold text-muted">PASSWORD</label>
-                    <div class="input-group">
-                        <asp:TextBox ID="txt_password" runat="server" CssClass="form-control" TextMode="Password" placeholder="••••••••"></asp:TextBox>
-                        <span class="input-group-text bg-white" id="pass-toggle" style="cursor: pointer;">
-                            <i class="fa fa-eye" id="eye-icon"></i>
-                        </span>
+            <div class="tab-content" id="loginTabsContent">
+                
+                <div runat="server" id="pane_login" class="tab-pane fade show active" role="tabpanel" ClientIDMode="Static">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">USER ID</label>
+                        <asp:TextBox ID="txt_loginid" runat="server" CssClass="form-control" placeholder="ATS00__"></asp:TextBox>
                     </div>
-                </div>
 
-                <div class="d-flex justify-content-between mb-4">
-                    <div class="form-check">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">PASSWORD</label>
+                        <div class="input-group">
+                            <asp:TextBox ID="txt_password" runat="server" CssClass="form-control" TextMode="Password" placeholder="••••••••"></asp:TextBox>
+                            <span class="input-group-text bg-white" id="pass-toggle" style="cursor: pointer;">
+                                <i class="fa fa-eye" id="eye-icon"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-4">
                         <asp:CheckBox ID="chk_remember" runat="server" CssClass="form-check-input" />
                         <label class="form-check-label small" for="chk_remember">Remember Me</label>
                     </div>
-                    <a href="javascript:void(0)" onclick="toggleUI(true)" class="small text-danger text-decoration-none fw-bold">Forgot?</a>
+
+                    <asp:Button ID="btn_login" runat="server" Text="LOG IN" CssClass="btn btn-success w-100" OnClick="btn_login_Click" OnClientClick="return validateLogin();" />
                 </div>
 
-                <asp:Button ID="btn_login" runat="server" Text="LOG IN" CssClass="btn btn-success w-100" OnClick="btn_login_Click" OnClientClick="return validateLogin();" />
-            </div>
+                <div runat="server" id="pane_forgot" class="tab-pane fade" role="tabpanel" ClientIDMode="Static">
+                    <label class="form-label small fw-bold text-muted">Employee Code</label>
+                    <asp:TextBox ID="txt_reset_code" runat="server" CssClass="form-control mb-3" placeholder="Enter Login ID"></asp:TextBox>
+                    
+                    <asp:Button ID="btn_fetch_email" runat="server" Text="FETCH DETAILS" CssClass="btn btn-secondary w-100 mb-3" OnClick="btn_fetch_email_Click" />
 
-            <div id="forgot_section">
-                <h3 class="h5 text-center fw-bold mb-3">Reset Password</h3>
-                <asp:TextBox ID="txt_reset_code" runat="server" CssClass="form-control mb-3" placeholder="Employee Code"></asp:TextBox>
-                <asp:TextBox ID="txt_reset_email" runat="server" CssClass="form-control mb-3" placeholder="Registered Email"></asp:TextBox>
+                    <asp:PlaceHolder ID="ph_email_section" runat="server" Visible="false">
+                        <label class="form-label small fw-bold text-muted">Registered Email (Edit to update)</label>
+                        <asp:TextBox ID="txt_reset_email" runat="server" CssClass="form-control mb-3" placeholder="Email Address"></asp:TextBox>
+                        <asp:Button ID="btn_send_otp" runat="server" Text="SEND OTP" CssClass="btn btn-primary w-100 mb-3" OnClick="btn_send_otp_Click" />
+                    </asp:PlaceHolder>
 
-                <asp:PlaceHolder ID="ph_otp" runat="server" Visible="false">
-                    <asp:TextBox ID="txt_otp" runat="server" CssClass="form-control mb-2" placeholder="OTP"></asp:TextBox>
-                    <asp:TextBox ID="txt_new_pass" runat="server" CssClass="form-control mb-3" TextMode="Password" placeholder="New Password"></asp:TextBox>
-                </asp:PlaceHolder>
-
-                <asp:Button ID="btn_send_otp" runat="server" Text="SEND OTP" CssClass="btn btn-primary w-100 mb-2" OnClick="btn_send_otp_Click" />
-                <asp:Button ID="btn_verify_reset" runat="server" Text="RESET PASSWORD" Visible="false" CssClass="btn btn-success w-100 mb-2" OnClick="btn_verify_reset_Click" />
-
-                <button type="button" class="btn btn-link w-100 small text-muted text-decoration-none" onclick="toggleUI(false)">Back to Login</button>
+                    <asp:PlaceHolder ID="ph_otp" runat="server" Visible="false">
+                        <label class="form-label small fw-bold text-muted">Enter OTP & New Password</label>
+                        <asp:TextBox ID="txt_otp" runat="server" CssClass="form-control mb-2" placeholder="6-Digit OTP"></asp:TextBox>
+                        <asp:TextBox ID="txt_new_pass" runat="server" CssClass="form-control mb-3" TextMode="Password" placeholder="New Password"></asp:TextBox>
+                        <asp:Button ID="btn_verify_reset" runat="server" Text="VERIFY & RESET" CssClass="btn btn-success w-100 mb-2" OnClick="btn_verify_reset_Click" />
+                    </asp:PlaceHolder>
+                </div>
             </div>
 
             <div class="footer-text">
                 <p class="mb-0">
-                    © 2021-2026 All Rights Reserved. 
-                    <br />
+                    © 2021-2026 All Rights Reserved. <br />
                     <span style="font-weight: bold; color: darkred;">
                         <asp:Label ID="lbl_compfooter" runat="server" Text="ATS,JSR"></asp:Label>
                     </span>
@@ -147,21 +109,14 @@
         </div>
     </form>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@pnotify/core@5.2.0/dist/PNotify.js"></script>
     <script>
         window.notify = function (title, text, type) {
             if (typeof PNotify === "undefined") {
-                alert(title + ": " + text);
-                return;
+                alert(title + ": " + text); return;
             }
-
-            PNotify.alert({
-                title: title,
-                text: text,
-                type: type,
-                delay: 3000,
-                addClass: 'pnotify-custom'
-            });
+            PNotify.alert({ title: title, text: text, type: type, delay: 3000, addClass: 'pnotify-custom' });
         };
 
         function validateLogin() {
@@ -174,22 +129,17 @@
             return true;
         }
 
-        function toggleUI(showForgot) {
-            document.getElementById('login_section').style.display = showForgot ? 'none' : 'block';
-            document.getElementById('forgot_section').style.display = showForgot ? 'block' : 'none';
-        }
-
         document.addEventListener("DOMContentLoaded", function () {
             const toggle = document.getElementById('pass-toggle');
-            if (!toggle) return;
-
-            toggle.addEventListener('click', function () {
-                const input = document.getElementById('<%= txt_password.ClientID %>');
-                const icon = document.getElementById('eye-icon');
-                input.type = input.type === "password" ? "text" : "password";
-                icon.classList.toggle('fa-eye');
-                icon.classList.toggle('fa-eye-slash');
-            });
+            if (toggle) {
+                toggle.addEventListener('click', function () {
+                    const input = document.getElementById('<%= txt_password.ClientID %>');
+                    const icon = document.getElementById('eye-icon');
+                    input.type = input.type === "password" ? "text" : "password";
+                    icon.classList.toggle('fa-eye');
+                    icon.classList.toggle('fa-eye-slash');
+                });
+            }
         });
     </script>
 </body>

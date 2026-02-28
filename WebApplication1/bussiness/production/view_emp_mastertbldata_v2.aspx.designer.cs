@@ -10,195 +10,195 @@
 namespace WebApplication1.bussiness.production {
     
     
-    public partial class login {
+    public partial class view_emp_mastertbldata_v2 {
         
         /// <summary>
-        /// form1 control.
+        /// hfStatusEmpDbId control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlForm form1;
+        protected global::System.Web.UI.WebControls.HiddenField hfStatusEmpDbId;
         
         /// <summary>
-        /// ScriptManager1 control.
+        /// hfStatusEmpCode control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.ScriptManager ScriptManager1;
+        protected global::System.Web.UI.WebControls.HiddenField hfStatusEmpCode;
         
         /// <summary>
-        /// Image1 control.
+        /// hfCurrentStatus control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Image Image1;
+        protected global::System.Web.UI.WebControls.HiddenField hfCurrentStatus;
         
         /// <summary>
-        /// tab_login_btn control.
+        /// ddlChangeType control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlButton tab_login_btn;
+        protected global::System.Web.UI.HtmlControls.HtmlSelect ddlChangeType;
         
         /// <summary>
-        /// tab_forgot_btn control.
+        /// ddlSpecificReason control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlButton tab_forgot_btn;
+        protected global::System.Web.UI.HtmlControls.HtmlSelect ddlSpecificReason;
         
         /// <summary>
-        /// pane_login control.
+        /// txtDOR control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl pane_login;
+        protected global::System.Web.UI.WebControls.TextBox txtDOR;
         
         /// <summary>
-        /// txt_loginid control.
+        /// txtDOE control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txt_loginid;
+        protected global::System.Web.UI.WebControls.TextBox txtDOE;
         
         /// <summary>
-        /// txt_password control.
+        /// txtStatusRemarks control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txt_password;
+        protected global::System.Web.UI.WebControls.TextBox txtStatusRemarks;
         
         /// <summary>
-        /// chk_remember control.
+        /// btnConfirmStatusChange control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox chk_remember;
+        protected global::System.Web.UI.WebControls.Button btnConfirmStatusChange;
         
         /// <summary>
-        /// btn_login control.
+        /// hfResetEmpWrk control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btn_login;
+        protected global::System.Web.UI.WebControls.HiddenField hfResetEmpWrk;
         
         /// <summary>
-        /// pane_forgot control.
+        /// hfResetEmpName control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl pane_forgot;
+        protected global::System.Web.UI.WebControls.HiddenField hfResetEmpName;
         
         /// <summary>
-        /// txt_reset_code control.
+        /// hfResetLoginID control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txt_reset_code;
+        protected global::System.Web.UI.WebControls.HiddenField hfResetLoginID;
         
         /// <summary>
-        /// btn_fetch_email control.
+        /// hfIsEmailEditMode control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btn_fetch_email;
+        protected global::System.Web.UI.WebControls.HiddenField hfIsEmailEditMode;
         
         /// <summary>
-        /// ph_email_section control.
+        /// hfResetMethod control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder ph_email_section;
+        protected global::System.Web.UI.WebControls.HiddenField hfResetMethod;
         
         /// <summary>
-        /// txt_reset_email control.
+        /// txtCurrentEmail control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txt_reset_email;
+        protected global::System.Web.UI.WebControls.TextBox txtCurrentEmail;
         
         /// <summary>
-        /// btn_send_otp control.
+        /// txtNewEmail control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btn_send_otp;
+        protected global::System.Web.UI.WebControls.TextBox txtNewEmail;
         
         /// <summary>
-        /// ph_otp control.
+        /// btnSendOTP control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder ph_otp;
+        protected global::System.Web.UI.WebControls.Button btnSendOTP;
         
         /// <summary>
-        /// txt_otp control.
+        /// txtOTP control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txt_otp;
+        protected global::System.Web.UI.WebControls.TextBox txtOTP;
         
         /// <summary>
-        /// txt_new_pass control.
+        /// btnConfirmAndReset control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txt_new_pass;
+        protected global::System.Web.UI.WebControls.Button btnConfirmAndReset;
         
         /// <summary>
-        /// btn_verify_reset control.
+        /// Button1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btn_verify_reset;
+        protected global::System.Web.UI.WebControls.Button Button1;
         
         /// <summary>
-        /// lbl_compfooter control.
+        /// GridView1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbl_compfooter;
+        protected global::System.Web.UI.WebControls.GridView GridView1;
     }
 }

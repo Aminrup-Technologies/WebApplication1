@@ -325,6 +325,8 @@
     <Content Include="bussiness\production\rpts\testing.aspx" />
     <Content Include="bussiness\production\str\strdshbrd.aspx" />
     <Content Include="bussiness\production\usertoggle.aspx" />
+    <Content Include="bussiness\production\viewupdate_empmustertabledata_v2.aspx" />
+    <Content Include="bussiness\production\view_emp_mastertbldata_v2.aspx" />
     <Content Include="bussiness\production\vw_emp_attencal.aspx" />
     <Content Include="bussiness\production\vw_inchsupmem.aspx" />
     <Content Include="bussiness\production\vw_lineitemjobs.aspx" />
@@ -5650,6 +5652,20 @@
     </Compile>
     <Compile Include="bussiness\production\usertoggle.aspx.designer.cs">
       <DependentUpon>usertoggle.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\viewupdate_empmustertabledata_v2.aspx.cs">
+      <DependentUpon>viewupdate_empmustertabledata_v2.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\viewupdate_empmustertabledata_v2.aspx.designer.cs">
+      <DependentUpon>viewupdate_empmustertabledata_v2.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\view_emp_mastertbldata_v2.aspx.cs">
+      <DependentUpon>view_emp_mastertbldata_v2.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\view_emp_mastertbldata_v2.aspx.designer.cs">
+      <DependentUpon>view_emp_mastertbldata_v2.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\vw_emp_attencal.aspx.cs">
       <DependentUpon>vw_emp_attencal.aspx</DependentUpon>

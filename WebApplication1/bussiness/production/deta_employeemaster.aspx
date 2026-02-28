@@ -30,7 +30,7 @@
                             <i class="fa fa-edit"></i>Bulk Registration
 
                         </a>
-                        <a class="btn btn-app" href="view_emp_mastertbldata.aspx" id="box_ViewMasterData" runat="server" visible="true">
+                        <a class="btn btn-app" href="view_emp_mastertbldata_v2.aspx" id="box_ViewMasterData" runat="server" visible="true">
                             <div id="ViewMasterData" class="badge bg-green" runat="server">
                                 <asp:Label ID="lbl_bankdatastatus" runat="server" Text="Ok" Visible="true"></asp:Label>
                             </div>

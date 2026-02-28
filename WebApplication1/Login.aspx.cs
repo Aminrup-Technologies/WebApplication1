@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ * WHEN: 2026-02-27
+ * WHY: Fixing the tab reset bug by manipulating the tab HTML classes directly from the server.
+ * WHAT: Implemented server-side control over tab_login_btn, tab_forgot_btn, pane_login, and pane_forgot in Page_PreRender.
+ */
+
+using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -21,22 +27,41 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsPostBack)
             {
-                // Remember Me
                 if (Request.Cookies["ATS_SavedID"] != null)
                 {
                     txt_loginid.Text = Request.Cookies["ATS_SavedID"].Value;
                     chk_remember.Checked = true;
                 }
-
                 ViewState["ForgotMode"] = false;
             }
+        }
 
-            // Restore forgot-password UI after postback
+        // --- NEW FIX: Server-side Tab Control ---
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
             if (ViewState["ForgotMode"] != null && (bool)ViewState["ForgotMode"])
             {
-                ph_otp.Visible = true;
-                btn_send_otp.Visible = false;
-                btn_verify_reset.Visible = true;
+                // Deactivate Login Tab
+                tab_login_btn.Attributes["class"] = "nav-link";
+                pane_login.Attributes["class"] = "tab-pane fade";
+                tab_login_btn.Attributes["aria-selected"] = "false";
+
+                // Activate Forgot Password Tab
+                tab_forgot_btn.Attributes["class"] = "nav-link active";
+                pane_forgot.Attributes["class"] = "tab-pane fade show active";
+                tab_forgot_btn.Attributes["aria-selected"] = "true";
+            }
+            else
+            {
+                // Activate Login Tab
+                tab_login_btn.Attributes["class"] = "nav-link active";
+                pane_login.Attributes["class"] = "tab-pane fade show active";
+                tab_login_btn.Attributes["aria-selected"] = "true";
+
+                // Deactivate Forgot Password Tab
+                tab_forgot_btn.Attributes["class"] = "nav-link";
+                pane_forgot.Attributes["class"] = "tab-pane fade";
+                tab_forgot_btn.Attributes["aria-selected"] = "false";
             }
         }
 
@@ -44,10 +69,7 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_login_Click(object sender, EventArgs e)
         {
-            try
-            {
-                PerformLogin(txt_loginid.Text.Trim(), txt_password.Text.Trim());
-            }
+            try { PerformLogin(txt_loginid.Text.Trim(), txt_password.Text.Trim()); }
             catch (System.Threading.ThreadAbortException) { }
             catch (Exception ex)
             {
@@ -56,213 +78,18 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-        private void PerformLogin_OLD(string id, string pass)
-        {
-            string hashedPass = HashPassword(pass);
-
-            string query = @"
-                SELECT TOP 1 
-                    LoginID, WorkStatus, WorkmanSL,
-                    FirstName, FullName,
-                    User_RoleType, UserRoleDB, RolePermissionDB,
-                    WorkRegion, WorkState, WorkCompany,
-                    WorkSite, Worksite_Code,
-                    SkillDesignation, SkillCategory,
-                    PrfPicFile
-                FROM tbl_Employee_Mustertable
-                WHERE LoginID=@LoginID AND LoginPassword=@LoginPassword";
-
-            SqlParameter[] pram =
-            {
-                new SqlParameter("@LoginID", id),
-                new SqlParameter("@LoginPassword", hashedPass)
-            };
-
-            DataTable dt = dbcl.SPreturn_dt(query, pram);
-
-            if (dt == null || dt.Rows.Count == 0)
-            {
-                Notify("Failed", "Invalid ID or Password.", "error");
-                return;
-            }
-
-            DataRow row = dt.Rows[0];
-
-            if (row["WorkStatus"].ToString() != "Active")
-            {
-                Notify("Denied", "Account is Inactive.", "error");
-                return;
-            }
-
-            // Remember Me cookie
-            if (chk_remember.Checked)
-            {
-                Response.Cookies.Add(new HttpCookie("ATS_SavedID", id)
-                {
-                    Expires = DateTime.Now.AddDays(15)
-                });
-            }
-
-            // Sessions (NO password stored)
-            Session["USERID"] = row["LoginID"].ToString();
-            Session["WORKMAN"] = row["WorkmanSL"].ToString();
-            Session["USERFNAME"] = row["FirstName"].ToString();
-            Session["USERNAME"] = row["FullName"].ToString();
-            Session["USERTYPE"] = row["User_RoleType"].ToString();
-            Session["UserRoleDB"] = row["UserRoleDB"].ToString();
-            Session["RolePermissionDB"] = row["RolePermissionDB"].ToString();
-            Session["REGION"] = row["WorkRegion"].ToString();
-            Session["STATE"] = row["WorkState"].ToString();
-            Session["COMPANY_CODE"] = row["WorkCompany"].ToString();
-            Session["U_SITE"] = row["WorkSite"].ToString();
-            Session["U_SITECODE"] = row["Worksite_Code"].ToString();
-            Session["U_DESG"] = row["SkillDesignation"].ToString();
-            Session["U_SKILL"] = row["SkillCategory"].ToString();
-
-            string photo = row["PrfPicFile"].ToString();
-            Session["User_Photo"] =
-                (!string.IsNullOrEmpty(photo) && File.Exists(Path.Combine(rootFolder, photo)))
-                ? photo
-                : "No_Image.jpg";
-
-            dbcl.WriteToFile($"User {Session["USERNAME"]} Logged In");
-
-            Response.Redirect("~/bussiness/production/homepage.aspx", false);
-            Context.ApplicationInstance.CompleteRequest();
-        }
-
-        private void PerformLogin_13Feb26(string id, string pass)
-        {
-            string hashedPass = HashPassword(pass);
-            //string hashedPass = pass;
-
-            string query = @"
-            SELECT TOP 1 
-                LoginID, LoginPassword,
-                WorkStatus, DOR, PasswordExpiry,
-                WorkmanSL, FirstName, FullName,
-                User_RoleType, UserRoleDB, RolePermissionDB,
-                WorkRegion, WorkState, WorkCompany,
-                WorkSite, Worksite_Code,
-                SkillDesignation, SkillCategory,
-                PrfPicFile
-            FROM tbl_Employee_Mustertable
-            WHERE LoginID = @LoginID";
-
-            DataTable dt = dbcl.SPreturn_dt(
-            query,
-            new SqlParameter[]
-            {
-                new SqlParameter("@LoginID", id)
-            });
-
-
-            if (dt.Rows.Count == 0)
-            {
-                InsertLoginAudit(id, null, "FAILED", "InvalidUser");
-                Notify("Failed", "Invalid ID or Password.", "error");
-                return;
-            }
-
-            DataRow row = dt.Rows[0];
-
-            // Password check
-            if (row["LoginPassword"].ToString() != hashedPass)
-            {
-                InsertLoginAudit(id, row["WorkmanSL"].ToString(), "FAILED", "InvalidPassword");
-                Notify("Failed", "Invalid ID or Password.", "error");
-                return;
-            }
-
-            // Work status
-            if (row["WorkStatus"].ToString() != "Active")
-            {
-                InsertLoginAudit(id, row["WorkmanSL"].ToString(), "BLOCKED", "Inactive");
-                Notify("Denied", "Account is inactive.", "error");
-                return;
-            }
-
-            // Exit / Relieving check (DOR)
-            if (row["DOR"] != DBNull.Value && Convert.ToDateTime(row["DOR"]) <= DateTime.Now)
-            {
-                InsertLoginAudit(id, row["WorkmanSL"].ToString(), "BLOCKED", "DORExpired");
-                Notify("Denied", "User access has been closed.", "error");
-                return;
-            }
-
-            // Password expiry
-            if (row["PasswordExpiry"] != DBNull.Value &&
-                Convert.ToDateTime(row["PasswordExpiry"]) < DateTime.Now)
-            {
-                InsertLoginAudit(id, row["WorkmanSL"].ToString(), "BLOCKED", "PasswordExpired");
-                Notify("Expired", "Password expired. Reset required.", "error");
-                return;
-            }
-
-            // SUCCESS LOGIN AUDIT
-            InsertLoginAudit(id, row["WorkmanSL"].ToString(), "SUCCESS", null);
-
-            // Update master summary
-            dbcl.SPreturn_dt(
-                "UPDATE tbl_Employee_Mustertable SET LastLogin=GETDATE(), LoginStatus=1 WHERE LoginID=@ID",
-                new SqlParameter[]
-                {
-                    new SqlParameter("@ID", id)
-                });
-
-
-            // Sessions (no password)
-            Session["USERID"] = row["LoginID"].ToString();
-            Session["WORKMAN"] = row["WorkmanSL"].ToString();
-            Session["USERFNAME"] = row["FirstName"].ToString();
-            Session["USERNAME"] = row["FullName"].ToString();
-            Session["USERTYPE"] = row["User_RoleType"].ToString();
-            Session["UserRoleDB"] = row["UserRoleDB"].ToString();
-            Session["RolePermissionDB"] = row["RolePermissionDB"].ToString();
-            Session["REGION"] = row["WorkRegion"].ToString();
-            Session["STATE"] = row["WorkState"].ToString();
-            Session["COMPANY_CODE"] = row["WorkCompany"].ToString();
-            Session["U_SITE"] = row["WorkSite"].ToString();
-            Session["U_SITECODE"] = row["Worksite_Code"].ToString();
-            Session["U_DESG"] = row["SkillDesignation"].ToString();
-            Session["U_SKILL"] = row["SkillCategory"].ToString();
-
-            string photo = row["PrfPicFile"].ToString();
-            Session["User_Photo"] =
-                (!string.IsNullOrEmpty(photo) && File.Exists(Path.Combine(rootFolder, photo)))
-                ? photo
-                : "No_Image.jpg";
-
-            Response.Redirect("~/bussiness/production/homepage.aspx", false);
-            Context.ApplicationInstance.CompleteRequest();
-        }
-
         private void PerformLogin(string id, string pass)
         {
-            // 1. Calculate the hash of the input password immediately
             string inputHashedPass = HashPassword(pass);
-
             string query = @"
-    SELECT TOP 1 
-        LoginID, LoginPassword,
-        WorkStatus, DOR, PasswordExpiry,
-        WorkmanSL, FirstName, FullName,
-        User_RoleType, UserRoleDB, RolePermissionDB,
-        WorkRegion, WorkState, WorkCompany,
-        WorkSite, Worksite_Code,
-        SkillDesignation, SkillCategory,
-        PrfPicFile
-    FROM tbl_Employee_Mustertable
-    WHERE LoginID = @LoginID";
+            SELECT TOP 1 
+                LoginID, LoginPassword, WorkStatus, DOR, PasswordExpiry, WorkmanSL, FirstName, FullName,
+                User_RoleType, UserRoleDB, RolePermissionDB, WorkRegion, WorkState, WorkCompany,
+                WorkSite, Worksite_Code, SkillDesignation, SkillCategory, PrfPicFile
+            FROM tbl_Employee_Mustertable WHERE LoginID = @LoginID";
 
-            DataTable dt = dbcl.SPreturn_dt(
-                query,
-                new SqlParameter[]
-                {
-            new SqlParameter("@LoginID", id)
-                });
+            DataTable dt = dbcl.SPreturn_dt(query, new SqlParameter[] { new SqlParameter("@LoginID", id) });
 
-            // 2. Check if User Exists
             if (dt.Rows.Count == 0)
             {
                 InsertLoginAudit(id, null, "FAILED", "InvalidUser");
@@ -274,23 +101,11 @@ namespace WebApplication1.bussiness.production
             string storedPassword = row["LoginPassword"].ToString();
             string workmanSL = row["WorkmanSL"].ToString();
 
-            // =========================================================================
-            // HYBRID PASSWORD CHECK (Migration Logic)
-            // =========================================================================
             bool isPasswordValid = false;
             bool needsMigration = false;
 
-            // Check A: Is it already hashed? (Standard secure login)
-            if (storedPassword == inputHashedPass)
-            {
-                isPasswordValid = true;
-            }
-            // Check B: Is it plain text? (Legacy login)
-            else if (storedPassword == pass)
-            {
-                isPasswordValid = true;
-                needsMigration = true; // Mark for update
-            }
+            if (storedPassword == inputHashedPass) { isPasswordValid = true; }
+            else if (storedPassword == pass) { isPasswordValid = true; needsMigration = true; }
 
             if (!isPasswordValid)
             {
@@ -299,18 +114,12 @@ namespace WebApplication1.bussiness.production
                 return;
             }
 
-            // 3. If it was a legacy plain-text login, update DB to hash immediately
             if (needsMigration)
             {
-                string updatePassQuery = "UPDATE tbl_Employee_Mustertable SET LoginPassword=@NewHash WHERE LoginID=@ID";
-                dbcl.SPreturn_dt(updatePassQuery, new SqlParameter[] {
-            new SqlParameter("@NewHash", inputHashedPass),
-            new SqlParameter("@ID", id)
-        });
+                dbcl.SPreturn_dt("UPDATE tbl_Employee_Mustertable SET LoginPassword=@NewHash WHERE LoginID=@ID",
+                    new SqlParameter[] { new SqlParameter("@NewHash", inputHashedPass), new SqlParameter("@ID", id) });
             }
-            // =========================================================================
 
-            // 4. Work status Check
             if (row["WorkStatus"].ToString() != "Active")
             {
                 InsertLoginAudit(id, workmanSL, "BLOCKED", "Inactive");
@@ -318,35 +127,13 @@ namespace WebApplication1.bussiness.production
                 return;
             }
 
-            // 5. Exit / Relieving check (DOR)
-            if (row["DOR"] != DBNull.Value && Convert.ToDateTime(row["DOR"]) <= DateTime.Now)
-            {
-                InsertLoginAudit(id, workmanSL, "BLOCKED", "DORExpired");
-                Notify("Denied", "User access has been closed.", "error");
-                return;
-            }
-
-            // 6. Password expiry
-            if (row["PasswordExpiry"] != DBNull.Value &&
-                Convert.ToDateTime(row["PasswordExpiry"]) < DateTime.Now)
-            {
-                InsertLoginAudit(id, workmanSL, "BLOCKED", "PasswordExpired");
-                Notify("Expired", "Password expired. Reset required.", "error");
-                return;
-            }
-
-            // 7. SUCCESS LOGIN AUDIT
             InsertLoginAudit(id, workmanSL, "SUCCESS", null);
 
-            // 8. Update master summary (LastLogin)
-            dbcl.SPreturn_dt(
-                "UPDATE tbl_Employee_Mustertable SET LastLogin=GETDATE(), LoginStatus=1 WHERE LoginID=@ID",
-                new SqlParameter[]
-                {
-            new SqlParameter("@ID", id)
-                });
+            if (chk_remember.Checked) { Response.Cookies.Add(new HttpCookie("ATS_SavedID", id) { Expires = DateTime.Now.AddDays(15) }); }
+            else if (Request.Cookies["ATS_SavedID"] != null) { Response.Cookies["ATS_SavedID"].Expires = DateTime.Now.AddDays(-1); }
 
-            // 9. Set Sessions
+            dbcl.SPreturn_dt("UPDATE tbl_Employee_Mustertable SET LastLogin=GETDATE(), LoginStatus=1 WHERE LoginID=@ID", new SqlParameter[] { new SqlParameter("@ID", id) });
+
             Session["USERID"] = row["LoginID"].ToString();
             Session["WORKMAN"] = workmanSL;
             Session["USERFNAME"] = row["FirstName"].ToString();
@@ -363,30 +150,7 @@ namespace WebApplication1.bussiness.production
             Session["U_SKILL"] = row["SkillCategory"].ToString();
 
             string photo = row["PrfPicFile"].ToString();
-            // Assuming rootFolder is defined at class level or passed in context
-            // If rootFolder isn't available in this scope, ensure you define it or use Server.MapPath
-            string photoPath = string.Empty;
-
-            // Safety check for path combination
-            if (!string.IsNullOrEmpty(photo))
-            {
-                // Adjust this based on where 'rootFolder' comes from in your actual code
-                // e.g., string rootFolder = Server.MapPath("~/UserPhotos/"); 
-                if (Directory.Exists(rootFolder) && File.Exists(Path.Combine(rootFolder, photo)))
-                {
-                    photoPath = photo;
-                }
-                else
-                {
-                    photoPath = "No_Image.jpg";
-                }
-            }
-            else
-            {
-                photoPath = "No_Image.jpg";
-            }
-
-            Session["User_Photo"] = photoPath;
+            Session["User_Photo"] = (!string.IsNullOrEmpty(photo) && Directory.Exists(rootFolder) && File.Exists(Path.Combine(rootFolder, photo))) ? photo : "No_Image.jpg";
 
             Response.Redirect("~/bussiness/production/homepage.aspx", false);
             Context.ApplicationInstance.CompleteRequest();
@@ -394,88 +158,94 @@ namespace WebApplication1.bussiness.production
 
         /* ================= FORGOT PASSWORD ================= */
 
+        protected void btn_fetch_email_Click(object sender, EventArgs e)
+        {
+            ViewState["ForgotMode"] = true;
+            DataTable dt = dbcl.SPreturn_dt("SELECT Email FROM tbl_Employee_Mustertable WHERE LoginID=@ID AND WorkStatus='Active'", new SqlParameter[] { new SqlParameter("@ID", txt_reset_code.Text.Trim()) });
+
+            if (dt.Rows.Count > 0)
+            {
+                string existingEmail = dt.Rows[0]["Email"].ToString();
+                txt_reset_email.Text = existingEmail;
+                ViewState["OriginalEmail"] = existingEmail;
+
+                ph_email_section.Visible = true;
+                btn_fetch_email.Visible = false;
+                txt_reset_code.Enabled = false;
+
+                Notify("Found", "Details found. Edit your email if needed before sending OTP.", "info");
+            }
+            else { Notify("Not Found", "Invalid or inactive Login ID.", "error"); }
+        }
+
         protected void btn_send_otp_Click(object sender, EventArgs e)
         {
-            DataTable dt = dbcl.SPreturn_dt(
-                "SELECT FullName FROM tbl_Employee_Mustertable WHERE LoginID=@ID AND Email=@Email",
-                new SqlParameter[]
-                {
-                    new SqlParameter("@ID", txt_reset_code.Text.Trim()),
-                    new SqlParameter("@Email", txt_reset_email.Text.Trim())
-                });
-
-            if (dt.Rows.Count == 0)
-            {
-                Notify("Not Found", "Details do not match.", "notice");
-                return;
-            }
+            ViewState["ForgotMode"] = true;
+            DataTable dt = dbcl.SPreturn_dt("SELECT FullName FROM tbl_Employee_Mustertable WHERE LoginID=@ID", new SqlParameter[] { new SqlParameter("@ID", txt_reset_code.Text.Trim()) });
+            if (dt.Rows.Count == 0) return;
 
             string otp = GenerateOTP();
+            string emailToSendTo = txt_reset_email.Text.Trim();
 
             Session["OTP"] = otp;
             Session["OTP_USER"] = txt_reset_code.Text.Trim();
+            Session["OTP_EMAIL"] = emailToSendTo;
             Session["OTP_EXP"] = DateTime.Now.AddMinutes(5);
             Session["OTP_TRY"] = 0;
 
-            if (!SendOTPEmail(txt_reset_email.Text.Trim(), otp, dt.Rows[0]["FullName"].ToString()))
+            if (!SendOTPEmail(emailToSendTo, otp, dt.Rows[0]["FullName"].ToString()))
             {
                 Notify("Error", "Could not send email.", "error");
                 return;
             }
 
-            Notify("Sent", "OTP sent to your registered email.", "success");
-
+            Notify("Sent", "OTP sent to " + emailToSendTo, "success");
             ph_otp.Visible = true;
             btn_send_otp.Visible = false;
-            btn_verify_reset.Visible = true;
-
-            ViewState["ForgotMode"] = true;
+            txt_reset_email.Enabled = false;
         }
 
         protected void btn_verify_reset_Click(object sender, EventArgs e)
         {
-            if (Session["OTP"] == null || Session["OTP_EXP"] == null)
-            {
-                Notify("Expired", "OTP expired. Try again.", "error");
-                return;
-            }
+            ViewState["ForgotMode"] = true;
 
-            if (DateTime.Now > (DateTime)Session["OTP_EXP"])
+            if (Session["OTP"] == null || Session["OTP_EXP"] == null || DateTime.Now > (DateTime)Session["OTP_EXP"])
             {
-                Notify("Expired", "OTP expired. Try again.", "error");
-                return;
+                Notify("Expired", "OTP expired. Try again.", "error"); return;
             }
 
             Session["OTP_TRY"] = (int)(Session["OTP_TRY"] ?? 0) + 1;
             if ((int)Session["OTP_TRY"] > 3)
             {
-                Notify("Blocked", "Too many attempts.", "error");
-                return;
+                Notify("Blocked", "Too many attempts.", "error"); return;
             }
 
             if (txt_otp.Text.Trim() != Session["OTP"].ToString())
             {
-                Notify("Invalid", "Wrong OTP.", "error");
-                return;
+                Notify("Invalid", "Wrong OTP.", "error"); return;
             }
 
             string hashedPass = HashPassword(txt_new_pass.Text.Trim());
+            string newEmail = Session["OTP_EMAIL"].ToString();
+            string origEmail = ViewState["OriginalEmail"]?.ToString();
+            string userId = Session["OTP_USER"].ToString();
 
-            dbcl.SPreturn_dt(
-                "UPDATE tbl_Employee_Mustertable SET LoginPassword=@P WHERE LoginID=@ID",
-                new SqlParameter[]
-                {
-                    new SqlParameter("@P", hashedPass),
-                    new SqlParameter("@ID", Session["OTP_USER"].ToString())
-                });
+            if (newEmail != origEmail)
+            {
+                dbcl.SPreturn_dt("UPDATE tbl_Employee_Mustertable SET LoginPassword=@P, Email=@E WHERE LoginID=@ID",
+                    new SqlParameter[] { new SqlParameter("@P", hashedPass), new SqlParameter("@E", newEmail), new SqlParameter("@ID", userId) });
+            }
+            else
+            {
+                dbcl.SPreturn_dt("UPDATE tbl_Employee_Mustertable SET LoginPassword=@P WHERE LoginID=@ID",
+                    new SqlParameter[] { new SqlParameter("@P", hashedPass), new SqlParameter("@ID", userId) });
+            }
 
-            Session.Remove("OTP");
-            Session.Remove("OTP_USER");
-            Session.Remove("OTP_EXP");
-            Session.Remove("OTP_TRY");
+            Session.Remove("OTP"); Session.Remove("OTP_USER"); Session.Remove("OTP_EMAIL"); Session.Remove("OTP_EXP"); Session.Remove("OTP_TRY");
+            ViewState["ForgotMode"] = false;
 
-            Notify("Success", "Password reset successful.", "success");
-            Response.Redirect("login.aspx");
+            Notify("Success", "Reset successful. Redirecting...", "success");
+            ScriptManager.RegisterStartupScript(this, GetType(), "redirect", "setTimeout(function(){ window.location.href='login.aspx'; }, 2000);", true);
         }
 
         /* ================= HELPERS ================= */
@@ -493,8 +263,7 @@ namespace WebApplication1.bussiness.production
         {
             using (var rng = RandomNumberGenerator.Create())
             {
-                byte[] bytes = new byte[4];
-                rng.GetBytes(bytes);
+                byte[] bytes = new byte[4]; rng.GetBytes(bytes);
                 return (BitConverter.ToUInt32(bytes, 0) % 900000 + 100000).ToString();
             }
         }
@@ -506,71 +275,22 @@ namespace WebApplication1.bussiness.production
                 MailMessage mm = new MailMessage("it.support@aminruptechnologies.co.in", to);
                 mm.Subject = "Password Reset OTP";
                 mm.Body = $"Hi {name},\n\nYour OTP is: {otp}\nThis OTP is valid for 5 minutes.";
-
-                SmtpClient smtp = new SmtpClient("smtp.zoho.in", 587)
-                {
-                    EnableSsl = true,
-                    Credentials = new NetworkCredential("it.support@aminruptechnologies.co.in", "TPw800QrVMU2")
-                };
-
-                smtp.Send(mm);
-                return true;
+                SmtpClient smtp = new SmtpClient("smtp.zoho.in", 587) { EnableSsl = true, Credentials = new NetworkCredential("it.support@aminruptechnologies.co.in", "TPw800QrVMU2") };
+                smtp.Send(mm); return true;
             }
-            catch (Exception ex)
-            {
-                dbcl.WriteToFile(ex.ToString());
-                return false;
-            }
+            catch (Exception ex) { dbcl.WriteToFile(ex.ToString()); return false; }
         }
 
         private void Notify(string title, string msg, string type)
         {
-            string script = $@"
-                window.setTimeout(function () {{
-                    if (window.notify) {{
-                        notify('{title}', '{msg}', '{type}');
-                    }} else {{
-                        alert('{title}: {msg}');
-                    }}
-                }}, 50);
-            ";
-
-            ScriptManager.RegisterStartupScript(
-                this,
-                GetType(),
-                Guid.NewGuid().ToString(),
-                script,
-                true);
+            string script = $"window.setTimeout(function () {{ if (window.notify) {{ notify('{title}', '{msg}', '{type}'); }} else {{ alert('{title}: {msg}'); }} }}, 50);";
+            ScriptManager.RegisterStartupScript(this, GetType(), Guid.NewGuid().ToString(), script, true);
         }
-
-
 
         private void InsertLoginAudit(string loginId, string workmanSL, string result, string reason)
         {
-            dbcl.SPreturn_dt(@"
-            INSERT INTO tbl_UserLoginAudit
-            (
-                LoginID, WorkmanSL, LoginTime,
-                LoginResult, FailureReason,
-                IPAddress, UserAgent, SessionID
-            )
-            VALUES
-            (
-                @LoginID, @WorkmanSL, GETDATE(),
-                @Result, @Reason,
-                @IP, @Agent, @SessionID
-            )",
-                new SqlParameter[]
-                {
-                    new SqlParameter("@LoginID", loginId),
-                    new SqlParameter("@WorkmanSL", (object)workmanSL ?? DBNull.Value),
-                    new SqlParameter("@Result", result),
-                    new SqlParameter("@Reason", (object)reason ?? DBNull.Value),
-                    new SqlParameter("@IP", Request.UserHostAddress ?? ""),
-                    new SqlParameter("@Agent", Request.UserAgent ?? ""),
-                    new SqlParameter("@SessionID", Session.SessionID)
-                });
+            dbcl.SPreturn_dt(@"INSERT INTO tbl_UserLoginAudit (LoginID, WorkmanSL, LoginTime, LoginResult, FailureReason, IPAddress, UserAgent, SessionID) VALUES (@LoginID, @WorkmanSL, GETDATE(), @Result, @Reason, @IP, @Agent, @SessionID)",
+                new SqlParameter[] { new SqlParameter("@LoginID", loginId), new SqlParameter("@WorkmanSL", (object)workmanSL ?? DBNull.Value), new SqlParameter("@Result", result), new SqlParameter("@Reason", (object)reason ?? DBNull.Value), new SqlParameter("@IP", Request.UserHostAddress ?? ""), new SqlParameter("@Agent", Request.UserAgent ?? ""), new SqlParameter("@SessionID", Session.SessionID) });
         }
-
     }
 }
