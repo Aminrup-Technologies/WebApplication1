@@ -2,32 +2,32 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <style>
-        /* Modern UI/UX Enhancements */
+        /* Core Card Styling */
         .modern-card {
             background: #ffffff;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             border: 1px solid rgba(0,0,0,0.08);
             margin-bottom: 25px;
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
-            height: 100%; /* Changed from 90% so cards match row heights */
+            height: 100%; /* Equal height for cards in the same row */
         }
 
             .modern-card:hover {
-                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+                transform: translateY(-2px);
             }
 
         .modern-card-header {
             background: #fcfcfc;
             border-bottom: 1px solid #f0f0f0;
-            padding: 15px 20px;
+            padding: 12px 20px;
             border-radius: 12px 12px 0 0;
             font-weight: 700;
             color: #2c3e50;
-            font-size: 16px;
+            font-size: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -41,18 +41,14 @@
         .modern-card-footer {
             background: #fafafa;
             border-top: 1px solid #f0f0f0;
-            padding: 15px 20px;
+            padding: 12px 20px;
             border-radius: 0 0 12px 12px;
             text-align: right;
         }
 
-        .profile-avatar {
-            border: 4px solid #f8f9fa;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 50%;
+        /* Lists & Typography */
+        .text-theme {
+            color: #2c3e50;
         }
 
         .info-list {
@@ -62,32 +58,75 @@
         }
 
             .info-list li {
-                padding: 10px 0;
+                display: flex; /* Aligns icons perfectly with text */
+                align-items: flex-start;
+                padding: 8px 0;
                 border-bottom: 1px dashed #eee;
                 font-size: 14px;
-                color: #555;
+                color: #444;
+                text-align: left !important; /* Force left alignment */
             }
+
+                .info-list li i {
+                    margin-top: 3px;
+                    color: #3498db;
+                    width: 22px;
+                    text-align: center;
+                    margin-right: 10px;
+                    font-size: 15px;
+                }
 
                 .info-list li:last-child {
                     border-bottom: none;
                 }
 
-            .info-list i {
-                color: #3498db;
-                width: 20px;
-                text-align: center;
-                margin-right: 8px;
-            }
+        /* ID Card Specifics */
+        .profile-avatar {
+            border: 4px solid #f8f9fa;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 130px;
+            height: 130px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
 
+        .qr-img {
+            width: 110px;
+            height: 110px;
+            border-radius: 8px;
+        }
+
+        .data-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #7f8c8d;
+            margin-bottom: 2px;
+        }
+
+        .data-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .desktop-divider {
+            border-left: 1px dashed #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Badges (Attendance) */
         .stat-badge {
             display: inline-block;
-            padding: 6px 12px;
+            padding: 5px 10px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
-            margin: 4px 2px;
+            margin: 3px 2px;
             color: #fff;
-            text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
         }
 
         .bg-p {
@@ -97,7 +136,6 @@
         .bg-hd {
             background-color: #f1c40f;
             color: #333;
-            text-shadow: none;
         }
 
         .bg-nhp {
@@ -125,89 +163,62 @@
         }
 
         .big-stat {
-            font-size: 48px;
+            font-size: 42px;
             font-weight: 800;
             line-height: 1;
         }
 
         .big-stat-label {
-            font-size: 14px;
+            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: #7f8c8d;
             font-weight: 600;
         }
 
-        .modal-header.bg-info {
-            background-color: #3498db !important;
-        }
-
-        .text-theme {
-            color: #2c3e50;
-        }
-
-        /* =========================================
-           RESPONSIVE ID CARD (Mobile Stack)
-           ========================================= */
-        .id-card-body {
-            text-align: left;
-        }
-
-        .qr-img {
-            width: 130px;
-            height: 130px;
-            border-radius: 8px;
-        }
-
-        .qr-divider {
-            border-left: 1px dashed #eee;
-        }
-
-        /* Target Mobile Screens (Phones) */
+        /* Mobile Breakpoints */
         @media (max-width: 767px) {
             .modern-card {
-                height: auto; /* FIX: Allows the box to expand downwards to wrap the QR code */
-            }
-
-            .id-card-body {
-                text-align: center !important;
+                height: auto;
+                margin-bottom: 15px;
             }
 
             .profile-avatar {
-                width: 120px;
-                height: 120px;
-            }
-
-            .info-list li {
-                display: block;
-                text-align: center;
-                padding: 8px 0;
-            }
-
-            .info-list i {
-                margin-right: 4px;
-            }
-
-            .qr-divider {
-                border-left: none;
-                border-top: 1px dashed #eee;
-                padding-top: 20px;
-                margin-top: 20px !important;
-            }
-
-            .qr-img {
                 width: 100px;
                 height: 100px;
+                margin-bottom: 10px;
             }
 
-            .id-card-body h2 {
-                font-size: 20px;
+            /* Swap vertical divider for horizontal on mobile */
+            .desktop-divider {
+                border-left: none;
+                border-top: 1px dashed #e0e0e0;
+                padding-top: 15px;
+                margin-top: 15px;
+                padding-bottom: 10px; /* Prevents text from hitting bottom edge */
             }
 
-            .id-card-body h5 {
-                font-size: 14px;
+            .mobile-center {
+                text-align: center;
+            }
+
+            .mobile-data-box {
+                text-align: left;
             }
         }
+
+        .qr-img {
+            width: 110px;
+            height: 110px;
+            border-radius: 8px;
+            cursor: pointer; /* Makes it look clickable */
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+            .qr-img:hover {
+                transform: scale(1.05); /* Slight zoom on hover */
+                box-shadow: 0 6px 15px rgba(0,0,0,0.15) !important;
+            }
     </style>
 </asp:Content>
 
@@ -218,50 +229,61 @@
             <div class="col-md-12 col-sm-12">
                 <div class="modern-card">
                     <div class="modern-card-header">
-                        <span><i class="fa fa-id-badge"></i>Digital ID Card :
+                        <span><i class="fa fa-id-badge text-primary"></i>Digital ID Card :
                             <asp:Label ID="lbl_id" runat="server" Text="N/A" ForeColor="#3498db"></asp:Label></span>
                         <asp:Button ID="btn_mngprofile" runat="server" Text="Manage Profile" CausesValidation="false" class="btn btn-outline-primary btn-sm m-0" PostBackUrl="~/bussiness/production/manage_profile.aspx" />
                     </div>
-                    <div class="modern-card-body id-card-body">
-                        <div class="row align-items-center">
+                    <div class="modern-card-body">
+                        <div class="row align-items-stretch">
 
-                            <div class="col-md-3 col-sm-12 text-center mb-3 mb-md-0">
-                                <img id="ProfilePic_3" runat="server" src="...." alt="ProfilePhoto" class="profile-avatar mb-2">
-                            </div>
-
-                            <div class="col-md-6 col-sm-12">
-                                <h2 class="text-theme mb-1" style="font-weight: 700;">
+                            <div class="col-md-3 col-sm-12 text-center mobile-center align-self-center">
+                                <img id="ProfilePic_3" runat="server" src="...." alt="ProfilePhoto" class="profile-avatar">
+                                <h2 class="text-theme mb-0 mt-2" style="font-weight: 700; font-size: 18px;">
                                     <asp:Label ID="lbl_workmansl" runat="server" Text="N/A" ForeColor="#3498db"></asp:Label>
                                     - 
                                     <asp:Label ID="lbl_username" runat="server" Text="N/A"></asp:Label>
                                 </h2>
-                                <h5 class="text-muted mb-3">
+                                <h5 class="text-muted mb-0" style="font-size: 14px;">
                                     <asp:Label ID="lbl_desg" runat="server" Text=""></asp:Label>
                                     <asp:Label ID="lbl_skillcat" runat="server" Text="" Visible="false"></asp:Label>
                                 </h5>
+                            </div>
 
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <ul class="info-list">
-                                            <li><i class="fa fa-building"></i><strong>Company:</strong>
-                                                <asp:Label ID="lbl_wrkcopmany" runat="server"></asp:Label></li>
-                                            <li><i class="fa fa-map-marker"></i><strong>Location:</strong>
-                                                <asp:Label ID="lbl_region" runat="server"></asp:Label>,
-                                                <asp:Label ID="lbl_state" runat="server" Text="N/A"></asp:Label></li>
-                                            <li><i class="fa fa-industry"></i><strong>Site:</strong>
-                                                <asp:Label ID="lbl_wrksite" runat="server"></asp:Label></li>
-                                            <li><i class="fa fa-calendar"></i><strong>Date of Joining:</strong>
-                                                <asp:Label ID="lbl_doj" runat="server" Text="N/A"></asp:Label></li>
-                                            <li><i class="fa fa-clock-o"></i><strong>Work Tenure:</strong>
-                                                <asp:Label ID="lbl_workage" runat="server"></asp:Label></li>
-                                        </ul>
+                            <div class="col-md-6 col-sm-12 mt-3 mt-md-0 align-self-center mobile-data-box">
+                                <div class="row" style="background: #f8f9fa; border-radius: 8px; padding: 15px 10px; margin: 0; border: 1px solid #f0f0f0;">
+                                    <div class="col-6 col-md-6 mb-3">
+                                        <div class="data-label"><i class="fa fa-building"></i>Company</div>
+                                        <div class="data-value">
+                                            <asp:Label ID="lbl_wrkcopmany" runat="server"></asp:Label></div>
                                     </div>
+                                    <div class="col-6 col-md-6 mb-3">
+                                        <div class="data-label"><i class="fa fa-map-marker"></i>Location</div>
+                                        <div class="data-value">
+                                            <asp:Label ID="lbl_region" runat="server"></asp:Label>,
+                                            <asp:Label ID="lbl_state" runat="server" Text="N/A"></asp:Label></div>
+                                    </div>
+                                    <div class="col-6 col-md-6 mb-2 mb-md-0">
+                                        <div class="data-label"><i class="fa fa-industry"></i>Site</div>
+                                        <div class="data-value">
+                                            <asp:Label ID="lbl_wrksite" runat="server"></asp:Label></div>
+                                    </div>
+                                    <div class="col-6 col-md-6 mb-2 mb-md-0">
+                                        <div class="data-label"><i class="fa fa-calendar"></i>Date of Joining</div>
+                                        <div class="data-value">
+                                            <asp:Label ID="lbl_doj" runat="server" Text="N/A"></asp:Label></div>
+                                    </div>
+                                </div>
+                                <div class="mt-2 px-2">
+                                    <span class="text-muted small"><i class="fa fa-clock-o"></i>Work Tenure:</span>
+                                    <strong class="text-dark" style="font-size: 13px;">
+                                        <asp:Label ID="lbl_workage" runat="server"></asp:Label></strong>
                                 </div>
                             </div>
 
-                            <div class="col-md-3 col-sm-12 text-center mt-3 mt-md-0 qr-divider">
-                                <img id="img_qrcode" runat="server" src="" alt="QR Code" class="img-thumbnail shadow-sm mb-2 qr-img" />
-                                <div class="small font-weight-bold text-muted"><i class="fa fa-qrcode"></i>Scan to Verify</div>
+                            <div class="col-md-3 col-sm-12 desktop-divider">
+                                <img id="img_qrcode" runat="server" src="" alt="QR Code" class="img-thumbnail shadow-sm mb-1 qr-img" onclick="showEnlargedQR(this.src);" title="Click to enlarge" />
+                                <div class="small font-weight-bold text-muted" style="font-size: 11px;"><i class="fa fa-qrcode"></i>Scan to Verify</div>
+                                <div class="text-primary mt-1" style="font-size: 10px; cursor: pointer;" onclick="showEnlargedQR(document.getElementById('<%= img_qrcode.ClientID %>').src);"><i class="fa fa-search-plus"></i>Click to Enlarge</div>
                             </div>
 
                         </div>
@@ -272,13 +294,13 @@
             <div class="col-md-6 col-sm-12">
                 <div class="modern-card">
                     <div class="modern-card-header">
-                        <span><i class="fa fa-calendar-check-o"></i>Attendance:
+                        <span><i class="fa fa-calendar-check-o text-success"></i>Attendance:
                             <asp:Label ID="lbl_calmonth" runat="server" Text="0"></asp:Label>
                             <asp:Label ID="lbl_calyear" runat="server" Text="0"></asp:Label></span>
                     </div>
-                    <div class="modern-card-body">
+                    <div class="modern-card-body d-flex flex-column justify-content-center">
                         <div class="row text-center mb-4">
-                            <div class="col-md-6 border-right">
+                            <div class="col-6 border-right">
                                 <div class="big-stat text-success">
                                     <asp:Label ID="lbl_totalpresent" runat="server" Text="0"></asp:Label>
                                     <span style="font-size: 20px; color: #bdc3c7;">/
@@ -286,11 +308,11 @@
                                 </div>
                                 <div class="big-stat-label">Days Approved</div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-6">
                                 <div class="big-stat text-info">
                                     <asp:Label ID="lbl_dayswrkd" runat="server" Text="0"></asp:Label>
                                 </div>
-                                <div class="big-stat-label">Actual Days Worked</div>
+                                <div class="big-stat-label">Actual Days</div>
                             </div>
                         </div>
 
@@ -313,9 +335,9 @@
                                 <asp:Label ID="lbl_pendingcount" runat="server" Text="0"></asp:Label></span>
                         </div>
 
-                        <div class="text-center p-2 rounded" style="background: #fdf5e6; border: 1px solid #f8e1b5;">
+                        <div class="text-center p-2 rounded" style="background: #fffcf5; border: 1px solid #f8e1b5;">
                             <span class="text-muted"><i class="fa fa-clock-o"></i>Total Overtime:</span>
-                            <strong style="color: #d35400; font-size: 18px;">
+                            <strong style="color: #e67e22; font-size: 16px;">
                                 <asp:Label ID="lbl_totalot" runat="server" Text="32"></asp:Label>
                                 Hours</strong>
                         </div>
@@ -330,35 +352,43 @@
             <div class="col-md-6 col-sm-12">
                 <div class="modern-card">
                     <div class="modern-card-header">
-                        <span><i class="fa fa-ticket"></i>Gatepass & Clearances</span>
-                        <span class="badge badge-secondary">
+                        <span><i class="fa fa-ticket text-info"></i>Gatepass & Clearances</span>
+                        <span class="badge badge-secondary" style="font-size: 13px;">
                             <asp:Label ID="lbl_gpno" runat="server" Text="0"></asp:Label></span>
                     </div>
-                    <div class="modern-card-body">
-                        <div class="row align-items-center mb-3">
-                            <div class="col-md-5 text-center">
+                    <div class="modern-card-body d-flex align-items-center">
+                        <div class="row w-100 align-items-center">
+                            <div class="col-sm-5 text-center mb-3 mb-sm-0">
                                 <div class="big-stat text-success">
                                     <asp:Label ID="lbl_gpexpdays" runat="server" Text="0"></asp:Label>
                                 </div>
                                 <div class="big-stat-label">Days Left</div>
                             </div>
-                            <div class="col-md-7">
+                            <div class="col-sm-7">
                                 <ul class="info-list">
-                                    <li><i class="fa fa-calendar-times-o"></i><strong>GP Expiry:</strong>
-                                        <asp:Label ID="lbl_gpvalidity" runat="server" Text="0" ForeColor="#2ecc71" Font-Bold="true"></asp:Label></li>
-                                    <li>
-                                        <i class="fa fa-shield"></i><strong>Safety No:</strong>
-                                        <asp:Label ID="lbl_rfidno" runat="server" Text="32" ForeColor="#2ecc71" Font-Bold="true"></asp:Label><br />
-                                        <small class="text-muted pl-4">Expiry:
-                                            <asp:Label ID="lbl_rfidvalidity" runat="server" Text="0" ForeColor="#2ecc71" Font-Bold="true"></asp:Label>
-                                            (<asp:Label ID="lbl_rfiddays" runat="server" ForeColor="#2ecc71" Text="0"></asp:Label>
-                                            Days)</small>
+                                    <li><i class="fa fa-calendar-times-o"></i>
+                                        <div><strong>GP Expiry:</strong>
+                                            <asp:Label ID="lbl_gpvalidity" runat="server" Text="0" ForeColor="#2ecc71" Font-Bold="true"></asp:Label></div>
                                     </li>
                                     <li>
-                                        <i class="fa fa-check-circle"></i><strong>PV Expiry:</strong>
-                                        <asp:Label ID="lbl_pvvalidity" runat="server" Text="0" ForeColor="#2ecc71" Font-Bold="true"></asp:Label><br />
-                                        <small class="text-muted pl-4">(<asp:Label ID="lbl_pvdays" runat="server" ForeColor="#2ecc71" Text="0"></asp:Label>
-                                            Days Left)</small>
+                                        <i class="fa fa-shield"></i>
+                                        <div>
+                                            <strong>Safety No:</strong>
+                                            <asp:Label ID="lbl_rfidno" runat="server" Text="32" ForeColor="#2ecc71" Font-Bold="true"></asp:Label><br />
+                                            <span class="text-muted" style="font-size: 12px;">Exp:
+                                                <asp:Label ID="lbl_rfidvalidity" runat="server" Text="0" Font-Bold="true"></asp:Label>
+                                                (<asp:Label ID="lbl_rfiddays" runat="server" Text="0"></asp:Label>
+                                                Days)</span>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <i class="fa fa-check-circle"></i>
+                                        <div>
+                                            <strong>PV Expiry:</strong>
+                                            <asp:Label ID="lbl_pvvalidity" runat="server" Text="0" ForeColor="#2ecc71" Font-Bold="true"></asp:Label><br />
+                                            <span class="text-muted" style="font-size: 12px;">(<asp:Label ID="lbl_pvdays" runat="server" Text="0"></asp:Label>
+                                                Days Left)</span>
+                                        </div>
                                     </li>
                                 </ul>
                             </div>
@@ -375,25 +405,31 @@
             <div class="col-md-6 col-sm-12">
                 <div class="modern-card">
                     <div class="modern-card-header">
-                        <span><i class="fa fa-bank"></i>Salary Bank Account</span>
+                        <span><i class="fa fa-bank text-secondary"></i>Salary Bank Account</span>
                     </div>
-                    <div class="modern-card-body">
-                        <div class="row align-items-center">
-                            <div class="col-md-4 text-center">
-                                <img src="../../erp_images/bank.jpg" alt="Bank" class="img-fluid rounded border p-1" style="max-width: 100px;">
-                                <h5 class="mt-2 text-theme" style="font-weight: bold;">
+                    <div class="modern-card-body d-flex align-items-center">
+                        <div class="row w-100 align-items-center">
+                            <div class="col-sm-4 text-center mb-3 mb-sm-0">
+                                <img src="../../erp_images/bank.jpg" alt="Bank" class="img-fluid rounded border p-2" style="max-width: 90px; background: #f8f9fa;">
+                                <h5 class="mt-2 text-theme mb-0" style="font-weight: bold; font-size: 15px;">
                                     <asp:Label ID="lbl_bankname" runat="server" Text="0"></asp:Label></h5>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-sm-8">
                                 <ul class="info-list">
-                                    <li><i class="fa fa-credit-card"></i><strong>Account No:</strong>
-                                        <asp:Label ID="lbl_accno" runat="server" Text="0" ForeColor="#2980b9" Font-Bold="true"></asp:Label></li>
-                                    <li><i class="fa fa-code"></i><strong>IFSC Code:</strong>
-                                        <asp:Label ID="lbl_ifsc" runat="server" Text="0" ForeColor="#3498db" Font-Bold="true"></asp:Label></li>
-                                    <li><i class="fa fa-map-marker"></i><strong>Branch:</strong>
-                                        <asp:Label ID="lbl_branch" runat="server" Text="N/A" Font-Bold="true"></asp:Label></li>
+                                    <li><i class="fa fa-credit-card"></i>
+                                        <div><strong>Account No:</strong>
+                                            <asp:Label ID="lbl_accno" runat="server" Text="0" ForeColor="#2980b9" Font-Bold="true"></asp:Label></div>
+                                    </li>
+                                    <li><i class="fa fa-code"></i>
+                                        <div><strong>IFSC Code:</strong>
+                                            <asp:Label ID="lbl_ifsc" runat="server" Text="0" ForeColor="#3498db" Font-Bold="true"></asp:Label></div>
+                                    </li>
+                                    <li><i class="fa fa-map-marker"></i>
+                                        <div><strong>Branch:</strong>
+                                            <asp:Label ID="lbl_branch" runat="server" Text="N/A" Font-Bold="true"></asp:Label></div>
+                                    </li>
                                 </ul>
-                                <div class="mt-3 text-muted" style="font-size: 12px; background: #f9f9f9; padding: 8px; border-radius: 4px;">
+                                <div class="mt-3 text-muted" style="font-size: 12px; background: #f9f9f9; padding: 8px; border-radius: 4px; border: 1px solid #eee;">
                                     <i class="fa fa-info-circle"></i>
                                     <asp:Label ID="lbl_bankupdtinfo" runat="server" Text="N/A"></asp:Label>
                                 </div>
@@ -411,35 +447,27 @@
             <div class="col-md-6 col-sm-12">
                 <div class="modern-card">
                     <div class="modern-card-header">
-                        <span><i class="fa fa-heartbeat"></i>Employee Benefits (Last Month)</span>
+                        <span><i class="fa fa-heartbeat text-danger"></i>Employee Benefits (Last Month)</span>
                     </div>
-                    <div class="modern-card-body">
-                        <div class="row align-items-center">
-                            <div class="col-md-4 text-center">
-                                <img src="../../erp_images/piggy.png" alt="Benefits" class="img-fluid" style="max-width: 120px; opacity: 0.9;">
+                    <div class="modern-card-body d-flex align-items-center">
+                        <div class="row w-100 align-items-center">
+                            <div class="col-sm-4 text-center mb-3 mb-sm-0">
+                                <img src="../../erp_images/piggy.png" alt="Benefits" class="img-fluid" style="max-width: 100px; opacity: 0.9;">
                             </div>
-                            <div class="col-md-8">
-                                <div class="p-3 mb-3 rounded" style="background: #f1f8ff; border-left: 4px solid #3498db;">
-                                    <h5 style="font-weight: 700; color: #2c3e50; margin-top: 0;">EPFO Contribution</h5>
-                                    <div>
-                                        <strong>EPFO No:</strong>
-                                        <asp:Label ID="lbl_pfno" runat="server" Text="0" ForeColor="#3498db" Font-Bold="true"></asp:Label>
-                                    </div>
-                                    <div>
-                                        <strong>Last Cont.:</strong> ₹
-                                        <asp:Label ID="lbl_lastpfpay" runat="server" Text="0.00" ForeColor="#2c3e50" Font-Bold="true"></asp:Label>
-                                    </div>
+                            <div class="col-sm-8">
+                                <div class="p-3 mb-3 rounded shadow-sm" style="background: #f1f8ff; border-left: 4px solid #3498db;">
+                                    <h6 style="font-weight: 700; color: #2c3e50; margin-top: 0; margin-bottom: 8px;"><i class="fa fa-shield text-primary"></i>EPFO Contribution</h6>
+                                    <div style="font-size: 13px;"><strong>EPFO No:</strong>
+                                        <asp:Label ID="lbl_pfno" runat="server" Text="0" ForeColor="#3498db" Font-Bold="true"></asp:Label></div>
+                                    <div style="font-size: 13px;"><strong>Last Cont.:</strong> ₹
+                                        <asp:Label ID="lbl_lastpfpay" runat="server" Text="0.00" ForeColor="#2c3e50" Font-Bold="true"></asp:Label></div>
                                 </div>
-                                <div class="p-3 rounded" style="background: #fff5f5; border-left: 4px solid #e74c3c;">
-                                    <h5 style="font-weight: 700; color: #2c3e50; margin-top: 0;">ESIC Contribution</h5>
-                                    <div>
-                                        <strong>ESIC No:</strong>
-                                        <asp:Label ID="lbl_esicno" runat="server" Text="N/A" ForeColor="#e74c3c" Font-Bold="true"></asp:Label>
-                                    </div>
-                                    <div>
-                                        <strong>Last Cont.:</strong> ₹
-                                        <asp:Label ID="lbl_lastesicpay" runat="server" Text="0.00" ForeColor="#2c3e50" Font-Bold="true"></asp:Label>
-                                    </div>
+                                <div class="p-3 rounded shadow-sm" style="background: #fff5f5; border-left: 4px solid #e74c3c;">
+                                    <h6 style="font-weight: 700; color: #2c3e50; margin-top: 0; margin-bottom: 8px;"><i class="fa fa-plus-square text-danger"></i>ESIC Contribution</h6>
+                                    <div style="font-size: 13px;"><strong>ESIC No:</strong>
+                                        <asp:Label ID="lbl_esicno" runat="server" Text="N/A" ForeColor="#e74c3c" Font-Bold="true"></asp:Label></div>
+                                    <div style="font-size: 13px;"><strong>Last Cont.:</strong> ₹
+                                        <asp:Label ID="lbl_lastesicpay" runat="server" Text="0.00" ForeColor="#2c3e50" Font-Bold="true"></asp:Label></div>
                                 </div>
                             </div>
                         </div>
@@ -486,8 +514,7 @@
                             <div class="col-md-12">
                                 <div class="form-group row align-items-center mb-2">
                                     <div class="col-sm-5">
-                                        <label class="m-0">Enter Bank Name :</label>
-                                    </div>
+                                        <label class="m-0">Enter Bank Name :</label></div>
                                     <div class="col-sm-7">
                                         <asp:TextBox ID="txt_bankname" runat="server" class="form-control form-control-sm rounded" ReadOnly="true"></asp:TextBox>
                                         <asp:RequiredFieldValidator ID="RFV1" runat="server" ValidationGroup="BANK" Display="Dynamic" ForeColor="Red" ControlToValidate="txt_bankname" ErrorMessage="**"></asp:RequiredFieldValidator>
@@ -495,8 +522,7 @@
                                 </div>
                                 <div class="form-group row align-items-center mb-2">
                                     <div class="col-sm-5">
-                                        <label class="m-0">Enter Account Number :</label>
-                                    </div>
+                                        <label class="m-0">Enter Account Number :</label></div>
                                     <div class="col-sm-7">
                                         <asp:TextBox ID="txt_accno" runat="server" class="form-control form-control-sm rounded" ReadOnly="true"></asp:TextBox>
                                         <asp:RequiredFieldValidator ID="RFV2" runat="server" ValidationGroup="BANK" Display="Dynamic" ForeColor="Red" ErrorMessage="**" ControlToValidate="txt_accno"></asp:RequiredFieldValidator>
@@ -504,8 +530,7 @@
                                 </div>
                                 <div class="form-group row align-items-center mb-2" id="dup_acnorow1" runat="server" visible="false">
                                     <div class="col-sm-5">
-                                        <label class="m-0">Re-Enter Account Number :</label>
-                                    </div>
+                                        <label class="m-0">Re-Enter Account Number :</label></div>
                                     <div class="col-sm-7" id="dup_acnorow2" runat="server">
                                         <asp:TextBox ID="txt_cnfaccno" runat="server" class="form-control form-control-sm rounded" ReadOnly="true"></asp:TextBox>
                                         <asp:RequiredFieldValidator ID="RFV3" runat="server" ValidationGroup="BANK" ErrorMessage="**" ControlToValidate="txt_cnfaccno" Display="Dynamic"></asp:RequiredFieldValidator>
@@ -514,8 +539,7 @@
                                 </div>
                                 <div class="form-group row align-items-center mb-2">
                                     <div class="col-sm-5">
-                                        <label class="m-0">Enter IFSC Code :</label>
-                                    </div>
+                                        <label class="m-0">Enter IFSC Code :</label></div>
                                     <div class="col-sm-7">
                                         <asp:TextBox ID="txt_ifsc" runat="server" class="form-control form-control-sm rounded" ReadOnly="true"></asp:TextBox>
                                         <asp:RequiredFieldValidator ID="RFV4" runat="server" ValidationGroup="BANK" Display="Dynamic" ForeColor="Red" ErrorMessage="**" ControlToValidate="txt_ifsc"></asp:RequiredFieldValidator>
@@ -523,8 +547,7 @@
                                 </div>
                                 <div class="form-group row align-items-center mb-0">
                                     <div class="col-sm-5">
-                                        <label class="m-0">Enter Branch Name :</label>
-                                    </div>
+                                        <label class="m-0">Enter Branch Name :</label></div>
                                     <div class="col-sm-7">
                                         <asp:TextBox ID="txt_branchname" runat="server" class="form-control form-control-sm rounded" ReadOnly="true"></asp:TextBox>
                                     </div>
@@ -554,16 +577,14 @@
                             <div class="col-md-12">
                                 <div class="form-group row align-items-center mb-2">
                                     <div class="col-sm-5">
-                                        <label class="m-0">Gatepass No :</label>
-                                    </div>
+                                        <label class="m-0">Gatepass No :</label></div>
                                     <div class="col-sm-7">
                                         <asp:Label ID="lbl_oldgpno" runat="server" Text="N/A" CssClass="form-control form-control-sm rounded bg-light border-0"></asp:Label>
                                     </div>
                                 </div>
                                 <div class="form-group row align-items-center mb-2" id="nwgprow1" runat="server" visible="false">
                                     <div class="col-sm-5">
-                                        <label class="m-0 text-primary font-weight-bold">New Gatepass No :</label>
-                                    </div>
+                                        <label class="m-0 text-primary font-weight-bold">New Gatepass No :</label></div>
                                     <div class="col-sm-7" id="nwgprow2" runat="server">
                                         <asp:TextBox ID="txt_nwgpno" runat="server" CssClass="form-control form-control-sm rounded border-primary"></asp:TextBox>
                                         <asp:RequiredFieldValidator ID="RequiredFieldValidator4" ValidationGroup="GPDATA" ControlToValidate="txt_nwgpno" runat="server" ErrorMessage="Required" ForeColor="Red" Display="Dynamic" SetFocusOnError="true" InitialValue=""></asp:RequiredFieldValidator>
@@ -572,16 +593,14 @@
 
                                 <div class="form-group row align-items-center mb-2">
                                     <div class="col-sm-5">
-                                        <label class="m-0">Gatepass Validity :</label>
-                                    </div>
+                                        <label class="m-0">Gatepass Validity :</label></div>
                                     <div class="col-sm-7">
                                         <asp:Label ID="lbl_oldgpvalidity" runat="server" Text="N/A" CssClass="form-control form-control-sm rounded bg-light border-0"></asp:Label>
                                     </div>
                                 </div>
                                 <div class="form-group row align-items-center mb-2" id="nwgpvalrow1" runat="server" visible="false">
                                     <div class="col-sm-5">
-                                        <label class="m-0 text-primary font-weight-bold">New GP Validity :</label>
-                                    </div>
+                                        <label class="m-0 text-primary font-weight-bold">New GP Validity :</label></div>
                                     <div class="col-sm-7" id="nwgpvalrow2" runat="server">
                                         <asp:TextBox ID="txt_nwgpvalidity" runat="server" CssClass="form-control form-control-sm rounded border-primary date" type="date" name="date"></asp:TextBox>
                                         <asp:RequiredFieldValidator ID="RequiredFieldValidator3" ValidationGroup="GPDATA" ControlToValidate="txt_nwgpvalidity" runat="server" ErrorMessage="Required" ForeColor="Red" Display="Dynamic" SetFocusOnError="true" InitialValue=""></asp:RequiredFieldValidator>
@@ -590,16 +609,14 @@
 
                                 <div class="form-group row align-items-center mb-2">
                                     <div class="col-sm-5">
-                                        <label class="m-0">Safety No :</label>
-                                    </div>
+                                        <label class="m-0">Safety No :</label></div>
                                     <div class="col-sm-7">
                                         <asp:Label ID="lbl_oldsftyno" runat="server" Text="N/A" CssClass="form-control form-control-sm rounded bg-light border-0"></asp:Label>
                                     </div>
                                 </div>
                                 <div class="form-group row align-items-center mb-2" id="nwsftyrow1" runat="server" visible="false">
                                     <div class="col-sm-5">
-                                        <label class="m-0 text-primary font-weight-bold">New Safety No :</label>
-                                    </div>
+                                        <label class="m-0 text-primary font-weight-bold">New Safety No :</label></div>
                                     <div class="col-sm-7" id="nwsftyrow2" runat="server">
                                         <asp:TextBox ID="txt_nwsftyno" runat="server" CssClass="form-control form-control-sm rounded border-primary" ReadOnly="true"></asp:TextBox>
                                         <asp:RequiredFieldValidator ID="RequiredFieldValidator1" ValidationGroup="GPDATA" ControlToValidate="txt_nwsftyno" runat="server" ErrorMessage="Required" ForeColor="Red" Display="Dynamic" SetFocusOnError="true" InitialValue="" Enabled="false"></asp:RequiredFieldValidator>
@@ -608,16 +625,14 @@
 
                                 <div class="form-group row align-items-center mb-2">
                                     <div class="col-sm-5">
-                                        <label class="m-0">Safety Validity :</label>
-                                    </div>
+                                        <label class="m-0">Safety Validity :</label></div>
                                     <div class="col-sm-7">
                                         <asp:Label ID="lbl_oldsftyval" runat="server" Text="N/A" CssClass="form-control form-control-sm rounded bg-light border-0"></asp:Label>
                                     </div>
                                 </div>
                                 <div class="form-group row align-items-center mb-2" id="nwrfidrow1" runat="server" visible="false">
                                     <div class="col-sm-5">
-                                        <label class="m-0 text-primary font-weight-bold">New Safety Validity :</label>
-                                    </div>
+                                        <label class="m-0 text-primary font-weight-bold">New Safety Validity :</label></div>
                                     <div class="col-sm-7" id="nwrfidrow2" runat="server">
                                         <asp:TextBox ID="txt_nwsftyvalidity" runat="server" CssClass="form-control form-control-sm rounded border-primary date" type="date" name="date"></asp:TextBox>
                                         <asp:RequiredFieldValidator ID="RequiredFieldValidator2" ValidationGroup="GPDATA" ControlToValidate="txt_nwsftyvalidity" runat="server" ErrorMessage="Required" ForeColor="Red" Display="Dynamic" SetFocusOnError="true" InitialValue=""></asp:RequiredFieldValidator>
@@ -626,16 +641,14 @@
 
                                 <div class="form-group row align-items-center mb-2">
                                     <div class="col-sm-5">
-                                        <label class="m-0">PV Validity :</label>
-                                    </div>
+                                        <label class="m-0">PV Validity :</label></div>
                                     <div class="col-sm-7">
                                         <asp:Label ID="lbl_oldpvvalidity" runat="server" Text="N/A" CssClass="form-control form-control-sm rounded bg-light border-0"></asp:Label>
                                     </div>
                                 </div>
                                 <div class="form-group row align-items-center mb-0" id="nwpvrow1" runat="server" visible="false">
                                     <div class="col-sm-5">
-                                        <label class="m-0 text-primary font-weight-bold">New PV Validity :</label>
-                                    </div>
+                                        <label class="m-0 text-primary font-weight-bold">New PV Validity :</label></div>
                                     <div class="col-sm-7" id="nwpvrow2" runat="server">
                                         <asp:TextBox ID="txt_nwpvvalidity" runat="server" CssClass="form-control form-control-sm rounded border-primary date" type="date" name="date"></asp:TextBox>
                                         <asp:RequiredFieldValidator ID="RequiredFieldValidator5" ValidationGroup="GPDATA" ControlToValidate="txt_nwpvvalidity" runat="server" ErrorMessage="Required" ForeColor="Red" Display="Dynamic" SetFocusOnError="true" InitialValue=""></asp:RequiredFieldValidator>
@@ -653,6 +666,7 @@
                 </div>
             </div>
         </div>
+
         <div class="modal fade bs-pass-modal-lg" id="myModal3" data-backdrop="static">
             <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content border-0">
@@ -775,16 +789,13 @@
 
                         <div class="row align-items-center mb-2">
                             <div class="col-sm-5 text-right">
-                                <label class="m-0 text-muted">Current Mobile No:</label>
-                            </div>
+                                <label class="m-0 text-muted">Current Mobile No:</label></div>
                             <div class="col-sm-7">
-                                <asp:Label ID="lbl_oldmobileno" runat="server" Text="N/A" CssClass="font-weight-bold text-dark"></asp:Label>
-                            </div>
+                                <asp:Label ID="lbl_oldmobileno" runat="server" Text="N/A" CssClass="font-weight-bold text-dark"></asp:Label></div>
                         </div>
                         <div class="row align-items-center mb-3" id="InputMob1" runat="server" visible="false">
                             <div class="col-sm-5 text-right">
-                                <label class="m-0 text-primary font-weight-bold">New Mobile No:</label>
-                            </div>
+                                <label class="m-0 text-primary font-weight-bold">New Mobile No:</label></div>
                             <div class="col-sm-7" id="InputMob2" runat="server">
                                 <asp:TextBox ID="txt_nwmobileno" runat="server" CssClass="form-control form-control-sm border-primary" placeholder="10 digit number"></asp:TextBox>
                                 <asp:RequiredFieldValidator ID="MobileFieldValidator" runat="server" ValidationGroup="ContData" ErrorMessage="Required" ControlToValidate="txt_nwmobileno" Display="Dynamic" ForeColor="Red"></asp:RequiredFieldValidator>
@@ -794,16 +805,13 @@
 
                         <div class="row align-items-center mb-2">
                             <div class="col-sm-5 text-right">
-                                <label class="m-0 text-muted">Current Email:</label>
-                            </div>
+                                <label class="m-0 text-muted">Current Email:</label></div>
                             <div class="col-sm-7">
-                                <asp:Label ID="lbl_oldemailadd" runat="server" Text="N/A" CssClass="font-weight-bold text-dark"></asp:Label>
-                            </div>
+                                <asp:Label ID="lbl_oldemailadd" runat="server" Text="N/A" CssClass="font-weight-bold text-dark"></asp:Label></div>
                         </div>
                         <div class="row align-items-center mb-3" id="InputEmail1" runat="server" visible="false">
                             <div class="col-sm-5 text-right">
-                                <label class="m-0 text-primary font-weight-bold">New Email:</label>
-                            </div>
+                                <label class="m-0 text-primary font-weight-bold">New Email:</label></div>
                             <div class="col-sm-7" id="InputEmail2" runat="server">
                                 <asp:TextBox ID="txt_nwemailadd" runat="server" CssClass="form-control form-control-sm border-primary" AutoCompleteType="Disabled" placeholder="name@domain.com"></asp:TextBox>
                                 <asp:RequiredFieldValidator ID="EmailFieldValidator" runat="server" ControlToValidate="txt_nwemailadd" ErrorMessage="Required" Display="Dynamic" ForeColor="Red" ValidationGroup="ContData"></asp:RequiredFieldValidator>
@@ -838,6 +846,7 @@
                 </div>
             </div>
         </div>
+
         <div class="modal fade" id="myModal5" data-backdrop="static">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0">
@@ -859,32 +868,78 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="qrModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content border-0 shadow-lg">
+                    <div class="modal-header bg-white border-0 pb-0">
+                        <button type="button" class="close text-dark" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body text-center pt-0 pb-4">
+                        <h5 class="font-weight-bold text-theme mb-3">Live Employee QR</h5>
+                        <img id="enlarged_qr_img" src="" alt="Enlarged QR Code" class="img-fluid rounded" style="max-width: 220px; width: 100%; border: 1px solid #eee; padding: 10px; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05);" />
+                        <p class="text-muted small mt-3 mb-0">Scan this code to verify identity and live GPS coordinates.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script type="text/javascript">
+        // Function to open the QR Modal
+        function showEnlargedQR(imgSrc) {
+            if (imgSrc) {
+                $('#enlarged_qr_img').attr('src', imgSrc);
+                $('#qrModal').modal('show');
+            }
+        }
+
+        // ==========================================
+        // FETCH GPS & UPDATE QR CODE
+        // ==========================================
+        $(document).ready(function () {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var lat = position.coords.latitude.toFixed(6);
+                    var lon = position.coords.longitude.toFixed(6);
+
+                    $.ajax({
+                        type: "POST",
+                        url: "homepage_v2.aspx/GetLocationQR",
+                        data: JSON.stringify({ latitude: lat, longitude: lon }),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            if (response.d) {
+                                var newQrSrc = "data:image/png;base64," + response.d;
+
+                                // Update the card's QR code
+                                $("[id$=img_qrcode]").attr("src", newQrSrc);
+                                $("[id$=img_qrcode]").css("border", "2px solid #2ecc71"); // Green border indicates GPS success
+
+                                // Sync the modal's QR code just in case they click it fast
+                                $('#enlarged_qr_img').attr("src", newQrSrc);
+                            }
+                        }
+                    });
+                }, function (error) {
+                    console.log("GPS Location denied or unavailable. Fallback to basic QR.");
+                }, { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 });
+            }
+        });
+
+        // Existing Modals
         function ShowPopup(title, body) {
             $("#MyPopup .modal-title").html(title);
             $("#MyPopup .modal-body").html(body);
             $("#MyPopup").modal("show");
         }
-
-        function ShowPopup1() {
-            $("#myModal").modal("show");
-        }
-
-        function ShowPopup2() {
-            $("#myModal2").modal("show");
-        }
-
-        function ShowPasswordModal() {
-            $("#myModal3").modal("show");
-        }
-
-        function ShowContactModal() {
-            $("#myModal4").modal("show");
-        }
-        function ShowDocModal() {
-            $("#myModal5").modal("show");
-        }
+        function ShowPopup1() { $("#myModal").modal("show"); }
+        function ShowPopup2() { $("#myModal2").modal("show"); }
+        function ShowPasswordModal() { $("#myModal3").modal("show"); }
+        function ShowContactModal() { $("#myModal4").modal("show"); }
+        function ShowDocModal() { $("#myModal5").modal("show"); }
     </script>
 </asp:Content>

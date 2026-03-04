@@ -14,6 +14,7 @@ using System.Net.Mail;
 using System.Net;
 using Microsoft.AspNet.SignalR;
 using QRCoder;
+using System.Web.Services;
 
 namespace WebApplication1.bussiness.production
 {
@@ -162,9 +163,9 @@ namespace WebApplication1.bussiness.production
             {
                 string query = "select * from tbl_Employee_Mustertable where WorkmanSL=@WorkmanSL and LoginID=@LoginID";
                 SqlParameter[] pram = {
-            new SqlParameter("@WorkmanSL", Session["WORKMAN"]?.ToString() ?? ""),
-            new SqlParameter("@LoginID", Session["USERID"]?.ToString() ?? ""),
-        };
+                    new SqlParameter("@WorkmanSL", Session["WORKMAN"]?.ToString() ?? ""),
+                    new SqlParameter("@LoginID", Session["USERID"]?.ToString() ?? ""),
+                };
 
                 dt = dbcl.SPreturn_dt(query, pram);
 
@@ -220,29 +221,6 @@ namespace WebApplication1.bussiness.production
                             lbl_workage.Text = "N/A";
                             lbl_doj.Text = "-";
                         }
-
-                        // ==========================================
-                        // SECURE LOCAL QR CODE GENERATION
-                        // ==========================================
-                        string qrData = $"ID: {UserID}\n" +
-                                        $"Name: {User_FullName}\n" +
-                                        $"Designation: {User_Desg}\n" +
-                                        $"Company: {Company}\n" +
-                                        $"Location: {Region}, {state}";
-
-                        // 1. Initialize the QR Code Generator
-                        QRCodeGenerator qrGenerator = new QRCodeGenerator();
-
-                        // 2. Create the QR Code data (ECCLevel.Q provides good error correction)
-                        QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrData, QRCodeGenerator.ECCLevel.Q);
-
-                        // 3. Generate a Base64 string representation of the QR code image
-                        Base64QRCode qrCode = new Base64QRCode(qrCodeData);
-                        string qrCodeImageAsBase64 = qrCode.GetGraphic(5); // '5' determines the pixel size
-
-                        // 4. Bind the Base64 image directly to the HTML image tag
-                        img_qrcode.Src = "data:image/png;base64," + qrCodeImageAsBase64;
-                        // ==========================================
 
                         string mobile = row["MobileNo"].ToString();
                         lbl_oldmobileno.Text = string.IsNullOrEmpty(mobile) ? "N/A" : mobile;
@@ -436,6 +414,34 @@ namespace WebApplication1.bussiness.production
                             btn_sv_contactdata.Enabled = true;
                             btn_cancel1.Enabled = true;
                         }
+
+                        // ==========================================
+                        // SECURE LOCAL QR CODE GENERATION (Base ID Card)
+                        // ==========================================
+                        string bloodGroup = row["BloodGroup"].ToString();
+                        string liveTimestamp = DateTime.Now.ToString("dd-MMM-yyyy hh:mm tt");
+
+                        // 1. Build the base string and save it to the Session for the WebMethod to use later
+                        string baseQrData = $"Name: {User_FullName}\n" +
+                                            $"Emp No: {Workman}\n" +
+                                            $"Designation: {User_Desg}\n" +
+                                            $"Blood Group: {(string.IsNullOrEmpty(bloodGroup) ? "N/A" : bloodGroup)}\n" +
+                                            $"Contact: {(string.IsNullOrEmpty(mobile) ? "N/A" : mobile)}\n" +
+                                            $"Location: {Company} ({User_Worksite})\n" +
+                                            $"Gate Pass: {(string.IsNullOrEmpty(gpno) ? "N/A" : gpno)}\n" +
+                                            $"Safety Pass: {(string.IsNullOrEmpty(rfidno) ? "N/A" : rfidno)}\n";
+
+                        Session["BaseQRData"] = baseQrData; // Save for AJAX call
+
+                        // 2. Generate the initial QR code (Without GPS yet)
+                        string initialQrData = baseQrData + $"Generated: {liveTimestamp}";
+
+                        QRCodeGenerator qrGenerator = new QRCodeGenerator();
+                        QRCodeData qrCodeData = qrGenerator.CreateQrCode(initialQrData, QRCodeGenerator.ECCLevel.Q);
+                        Base64QRCode qrCode = new Base64QRCode(qrCodeData);
+
+                        img_qrcode.Src = "data:image/png;base64," + qrCode.GetGraphic(4);
+                        // ==========================================
                     }
                     else
                     {
@@ -451,6 +457,35 @@ namespace WebApplication1.bussiness.production
             {
                 dbcl.DisconnectDb();
             }
+        }
+
+        [WebMethod(EnableSession = true)]
+        public static string GetLocationQR(string latitude, string longitude)
+        {
+            // 1. Check if the session data exists
+            if (HttpContext.Current.Session["BaseQRData"] == null)
+            {
+                return "";
+            }
+
+            // 2. Retrieve the base employee data
+            string baseData = HttpContext.Current.Session["BaseQRData"].ToString();
+
+            // 3. Create a fresh timestamp
+            string liveTimestamp = DateTime.Now.ToString("dd-MMM-yyyy hh:mm tt");
+
+            // 4. Append the GPS coordinates and the new timestamp
+            string finalQrData = baseData +
+                                 $"GPS: {latitude}, {longitude}\n" +
+                                 $"Generated: {liveTimestamp}";
+
+            // 5. Generate the updated QR code
+            QRCoder.QRCodeGenerator qrGenerator = new QRCoder.QRCodeGenerator();
+            QRCoder.QRCodeData qrCodeData = qrGenerator.CreateQrCode(finalQrData, QRCoder.QRCodeGenerator.ECCLevel.Q);
+            QRCoder.Base64QRCode qrCode = new QRCoder.Base64QRCode(qrCodeData);
+
+            // 6. Return the Base64 image string back to the browser
+            return qrCode.GetGraphic(4);
         }
 
         private bool IsContactExpired(DataRow row)
