@@ -175,6 +175,10 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="QRCoder, Version=1.7.0.0, Culture=neutral, PublicKeyToken=c4ed5b9ae8358a28, processorArchitecture=MSIL">
+      <HintPath>..\packages\QRCoder.1.7.0\lib\net40\QRCoder.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Quartz, Version=3.8.0.0, Culture=neutral, PublicKeyToken=f6b8c98a402cc8a4, processorArchitecture=MSIL">
       <HintPath>..\packages\Quartz.3.8.0\lib\net472\Quartz.dll</HintPath>
       <Private>True</Private>
@@ -283,6 +287,7 @@
     <Content Include="bussiness\production\gen_ninl_f17.aspx" />
     <Content Include="bussiness\production\GrievanceReq_View.aspx" />
     <Content Include="bussiness\production\helpdesk_ticketdetails.aspx" />
+    <Content Include="bussiness\production\homepage_v2.aspx" />
     <Content Include="bussiness\production\images\american-express.png" />
     <Content Include="bussiness\production\images\cropper.jpg" />
     <Content Include="bussiness\production\images\favicon.ico" />
@@ -5503,6 +5508,13 @@
     </Compile>
     <Compile Include="bussiness\production\helpdesk_ticketdetails.aspx.designer.cs">
       <DependentUpon>helpdesk_ticketdetails.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\homepage_v2.aspx.cs">
+      <DependentUpon>homepage_v2.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\homepage_v2.aspx.designer.cs">
+      <DependentUpon>homepage_v2.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\IssueDAL.cs" />
     <Compile Include="bussiness\production\jobapp_controller.aspx.cs">

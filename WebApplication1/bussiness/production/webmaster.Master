@@ -8,7 +8,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <%--    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">--%>
+    
     <link rel="icon" href="../../erp_images/ats_translogo.png" type="image/ico" />
 
     <title>Cloud ERP</title>
@@ -17,7 +17,6 @@
     <link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
     <link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
     <link href="../vendors/iCheck/skins/flat/green.css" rel="stylesheet">
-
     <link href="../vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
     <link href="../vendors/jqvmap/dist/jqvmap.min.css" rel="stylesheet" />
     <link href="../vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
@@ -25,14 +24,12 @@
     <link href="../vendors/pnotify/dist/pnotify.css" rel="stylesheet">
     <link href="../vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
     <link href="../vendors/pnotify/dist/pnotify.nonblock.css" rel="stylesheet">
-
+    <link href="css/loader.css" rel="stylesheet" />
+    <link href="../build/css/custom.css" rel="stylesheet" />
 
     <script src="../../Scripts/jquery-3.6.4.min.js"></script>
     <script src="../../Scripts/jquery.signalR-2.4.3.min.js"></script>
     <script src="/signalr/hubs"></script>
-
-    <link href="css/loader.css" rel="stylesheet" />
-    <link href="../build/css/custom.css" rel="stylesheet" />
 
     <asp:ContentPlaceHolder ID="head" runat="server">
     </asp:ContentPlaceHolder>
@@ -43,14 +40,10 @@
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
         gtag('config', 'UA-197761506-1');
-
-        //function preventBack() { window.history.forward(); }
-        //setTimeout("preventBack()", 0);
-        //window.onunload = function () { null };
     </script>
+
     <script>
       var _paq = window._paq = window._paq || [];
-      /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
       _paq.push(['trackPageView']);
       _paq.push(['enableLinkTracking']);
       (function() {
@@ -61,21 +54,27 @@
         g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
       })();
     </script>
+
     <script src="../../Scripts/jquery-1.7.2.min.js"></script>
+
     <script type="text/javascript">
         var idleTimeout;
         var logoutTime;
+        
+        // Fetch variables from code-behind (which pulls from web.config)
+        var timeoutMinutes = <%= IdleTimeoutMinutes %>;
+        var redirectUrl = '<%= AutoLogoutUrl %>';
 
         function startIdleTimer() {
             idleTimeout = setTimeout(function () {
-                location.href = 'http://atswork.in/';
-            }, 5 * 60 * 1000); // 5 minutes in milliseconds
+                location.href = redirectUrl;
+            }, timeoutMinutes * 60 * 1000); // Converts minutes to milliseconds
 
             // Calculate the logout time
             logoutTime = new Date();
-            logoutTime.setMinutes(logoutTime.getMinutes() + 5); // Adding 5 minutes to the current time
+            logoutTime.setMinutes(logoutTime.getMinutes() + timeoutMinutes);
 
-            // Update the display
+            // Update the display immediately
             updateDisplay();
         }
 
@@ -94,18 +93,23 @@
             var logoutTimeLabel = document.getElementById("lblTime1");
 
             // Display current time
-            currentTimeLabel.innerHTML = dt.toLocaleTimeString();
+            if (currentTimeLabel) {
+                currentTimeLabel.innerHTML = dt.toLocaleTimeString();
+            }
 
             // Calculate time left until auto logout
             var timeLeft = Math.max(0, (logoutTime - dt) / 1000); // Time left in seconds
             var minutesLeft = Math.floor(timeLeft / 60);
             var secondsLeft = Math.floor(timeLeft % 60);
             var timeLeftString = (minutesLeft < 10 ? "0" : "") + minutesLeft + ":" + (secondsLeft < 10 ? "0" : "") + secondsLeft;
-            logoutTimeLabel.innerHTML = timeLeftString;
+            
+            if (logoutTimeLabel) {
+                logoutTimeLabel.innerHTML = timeLeftString;
+            }
 
             // If we've reached 0 minutes and 0 seconds, initiate logout
             if (timeLeft <= 0) {
-                location.href = 'http://atswork.in/';
+                location.href = redirectUrl;
                 return;
             }
         }
@@ -137,20 +141,13 @@
             margin: 0 auto;
         }
 
-        /* =========================================================
-           DESKTOP ONLY (Screens 992px and wider)
-           ========================================================= */
+        /* Desktop Only */
         @media (min-width: 992px) {
-            /* 1. Hide the hamburger toggle completely on desktop */
             #menu_toggle { display: none !important; }
-
-            /* 2. KILL THE FLYOUTS: Completely hide floating menus */
             body.nav-sm .nav.child_menu, 
             body.nav-sm .active-sm {
                 display: none !important; 
             }
-
-            /* 3. Lock main content so it NEVER jumps */
             body.nav-md .container.body .right_col,
             body.nav-sm .container.body .right_col {
                 margin-left: 70px !important; 
@@ -158,8 +155,6 @@
                 padding: 10px 20px !important;
                 z-index: 1;
             }
-
-            /* 4. Make the sidebar float OVER the content when expanded */
             .col-md-3.left_col {
                 position: fixed !important; 
                 z-index: 9999 !important;
@@ -167,36 +162,25 @@
                 overflow-y: auto !important;
                 transition: width 0.2s ease; 
             }
-            
-            /* 5. Fix top navigation padding */
             .nav_menu { width: 100%; margin-bottom: 0; }
-            
-            /* 6. Hide ATS text in narrow mode */
             body.nav-sm .site_title span { display: none !important; }
             body.nav-sm .nav_title { width: 70px !important; }
         }
 
-        /* =========================================================
-           MOBILE ONLY (Screens smaller than 992px)
-           ========================================================= */
+        /* Mobile Only */
         @media (max-width: 991px) {
-            /* Ensure the hamburger toggle is visible so users can tap it */
             #menu_toggle { display: block !important; }
         }
     </style>
 </head>
+
 <body class="nav-sm footer_fixed">
     <div id="loader">
         <img src="../../erp_images/Hourglass.gif" alt="loadergif" />
     </div>
+
     <div style="display: none;" id="content">
         <form id="form1" runat="server">
-            <%-- Page loader removed on 03-07-2023, upon request from users --%>
-            <%--<div id="page-loader">
-            <img src="../../erp_images/Hourglass.gif" alt="loadergif" />
-        </div>--%>
-
-
             <div class="container body">
                 <div class="main_container">
                     <div class="col-md-3 left_col">
@@ -215,7 +199,7 @@
                                 </div>
                                 <div class="profile_info">
                                     Hi,
-                                <asp:Label ID="lbl_loginusername1" runat="server" Text="Login_Name" Font-Bold="true"></asp:Label>
+                                    <asp:Label ID="lbl_loginusername1" runat="server" Text="Login_Name" Font-Bold="true"></asp:Label>
                                 </div>
                             </div>
                             <br />
@@ -227,6 +211,7 @@
                                         <li id="HomePage" runat="server" visible="false"><a><i class="fa fa-home"></i>Home <span class="fa fa-chevron-down"></span></a>
                                             <ul class="nav child_menu">
                                                 <li id="Home1" runat="server" visible="false"><a href="homepage.aspx">Dashboard-1<span class="label label-success pull-right">Click !!</span></a></li>
+                                                <li id="Home2" runat="server" visible="false"><a href="homepage_v2.aspx">Dashboard-2<span class="label label-success pull-right">Click !!</span></a></li>
                                                 <li id="AttendnaceCal" runat="server" visible="false"><a href="vw_emp_attencal.aspx">Attendance<span class="label label-success pull-right">Click !!</span></a></li>
                                             </ul>
                                         </li>
@@ -309,7 +294,6 @@
                                                 <li id="anlys_employees" runat="server" visible="false"><a href="anlys_employees.aspx">Employee Summary</a></li>
                                             </ul>
                                         </li>
-
                                     </ul>
                                 </div>
 
@@ -319,7 +303,6 @@
                                         <li><a href="../../index.html" target="_blank"><i class="fa fa-laptop"></i>Landing Page <span class="label label-success pull-right">Click !!</span></a></li>
                                     </ul>
                                 </div>
-
                             </div>
                             <div class="sidebar-footer hidden-small">
                                 <a data-toggle="tooltip" data-placement="top" title="Settings">
@@ -335,7 +318,7 @@
                                     <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
                                 </a>
                             </div>
-                            </div>
+                        </div>
                     </div>
 
                     <div class="top_nav">
@@ -352,7 +335,6 @@
                                         <div class="dropdown-menu dropdown-usermenu pull-right" aria-labelledby="navbarDropdown">
                                             <a class="dropdown-item" href="manage_profile.aspx">Manage Profile</a>
                                             <a class="dropdown-item" target="_blank" href="https://wa.me/message/IWCQS7KUJRAHA1">Support</a>
-                                            <%--<a class="dropdown-item" href="#"><i class="fa fa-sign-out pull-right"></i>Log Out</a>--%>
                                             <button type="button" class="dropdown-item btn btn-primary btn-sm" id="btn_Logout" data-toggle="modal" data-target="#MyModal_Logout">Logout</button>
                                         </div>
                                     </li>
@@ -360,11 +342,13 @@
                             </nav>
                         </div>
                     </div>
-                    </div>
+
+                </div>
+                
                 <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server"></asp:ContentPlaceHolder>
+            
             </div>
 
-            <%--- Logout Modal --%>
             <div class="modal fade" id="MyModal_Logout" data-backdrop="static">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -393,17 +377,15 @@
                     </div>
                 </div>
             </div>
-            <%--- Logout Modal -------- END --%>
-
             <br />
             <footer>
                 <div class="text-center" id="iprow" runat="server" visible="false">
                     Login from IP :
-                <asp:Label ID="lbl_IPAddress" runat="server" Text="N/A" Visible="false"></asp:Label>
+                    <asp:Label ID="lbl_IPAddress" runat="server" Text="N/A" Visible="false"></asp:Label>
                 </div>
                 <div class="text-right small">
                     Autologout >
-                <asp:Label ID="lblTime1" runat="server" Text="N/A" Font-Bold="true" ForeColor="IndianRed" Visible="true"></asp:Label>
+                    <asp:Label ID="lblTime1" runat="server" Text="N/A" Font-Bold="true" ForeColor="IndianRed" Visible="true"></asp:Label>
                     || Time :
                     <asp:Label ID="lblTime" runat="server" Text="N/A" Font-Bold="true" ForeColor="Black" Visible="true"></asp:Label>
                     || © 2021-2025 <span style="font-weight: bold; color: darkred;">ATS,JSR</span>
@@ -411,15 +393,8 @@
                 </div>
                 <div class="clearfix"></div>
             </footer>
-            <script type="text/javascript">
-                //document.addEventListener("DOMContentLoaded", function () {
-                //    // Simulate a delay of 2 seconds (2000 milliseconds)
-                //    setTimeout(function () {
-                //        document.getElementById('content').style.display = 'block';
-                //        document.getElementById('loader').style.display = 'none';
-                //    }, 1000); // Change 2000 to the desired delay time in milliseconds
-                //});
 
+            <script type="text/javascript">
                 document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById('content').style.display = 'block';
                     document.getElementById('loader').style.display = 'none';
@@ -427,42 +402,29 @@
             </script>
 
             <script src="../vendors/jquery/dist/jquery.min.js"></script>
-
             <script src="../vendors/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
             <script src="../vendors/fastclick/lib/fastclick.js"></script>
-
             <script src="../vendors/nprogress/nprogress.js"></script>
-
             <script src="../vendors/Chart.js/dist/Chart.min.js"></script>
-
             <script src="../vendors/gauge.js/dist/gauge.min.js"></script>
-
             <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
             <script src="../vendors/iCheck/icheck.min.js"></script>
-
             <script src="../vendors/skycons/skycons.js"></script>
-
             <script src="../vendors/Flot/jquery.flot.js"></script>
             <script src="../vendors/Flot/jquery.flot.pie.js"></script>
             <script src="../vendors/Flot/jquery.flot.time.js"></script>
             <script src="../vendors/Flot/jquery.flot.stack.js"></script>
             <script src="../vendors/Flot/jquery.flot.resize.js"></script>
-
             <script src="../vendors/flot.orderbars/js/jquery.flot.orderBars.js"></script>
             <script src="../vendors/flot-spline/js/jquery.flot.spline.min.js"></script>
             <script src="../vendors/flot.curvedlines/curvedLines.js"></script>
-
             <script src="../vendors/DateJS/build/date.js"></script>
             <script src="../vendors/moment/min/moment.min.js"></script>
             <script src="../vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
-
             <script src="../build/js/custom.js"></script>
-
             <script src="../vendors/pnotify/dist/pnotify.js"></script>
             <script src="../vendors/pnotify/dist/pnotify.buttons.js"></script>
             <script src="../vendors/pnotify/dist/pnotify.nonblock.js"></script>
-
             <script src="../vendors/jQuery-Smart-Wizard/js/jquery.smartWizard.js"></script>
 
             <script type="text/javascript">
@@ -470,21 +432,16 @@
                     var $body = $('body');
                     var $sidebar = $('.left_col');
 
-                    // Helper function to check if the user is on a Desktop
                     function isDesktop() {
                         return $(window).width() >= 992;
                     }
 
-                    // 1. Initial Load setup
                     if (isDesktop()) {
-                        // Force Narrow Mode on Desktop
                         $body.removeClass('nav-md').addClass('nav-sm');
                     } else {
-                        // Ensure mobile loads correctly
                         $body.removeClass('nav-sm').addClass('nav-md');
                     }
 
-                    // 2. Temporarily expand the sidebar when hovered (ONLY ON DESKTOP)
                     $sidebar.hover(
                         function() {
                             if (isDesktop()) {
@@ -494,14 +451,12 @@
                         function() {
                             if (isDesktop()) {
                                 $body.removeClass('nav-md').addClass('nav-sm');
-                                // Close any open accordions
                                 $('.child_menu').slideUp(200);
                                 $('ul.side-menu li').removeClass('active');
                             }
                         }
                     );
 
-                    // 3. Handle screen resizing (e.g., rotating a tablet)
                     $(window).resize(function() {
                         if (isDesktop()) {
                             $body.removeClass('nav-md').addClass('nav-sm');

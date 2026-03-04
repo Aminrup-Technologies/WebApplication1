@@ -152,7 +152,7 @@ namespace WebApplication1.bussiness.production
             string photo = row["PrfPicFile"].ToString();
             Session["User_Photo"] = (!string.IsNullOrEmpty(photo) && Directory.Exists(rootFolder) && File.Exists(Path.Combine(rootFolder, photo))) ? photo : "No_Image.jpg";
 
-            Response.Redirect("~/bussiness/production/homepage.aspx", false);
+            Response.Redirect("~/bussiness/production/homepage_v2.aspx", false);
             Context.ApplicationInstance.CompleteRequest();
         }
 

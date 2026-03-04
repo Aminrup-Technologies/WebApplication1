@@ -76,6 +76,15 @@ namespace WebApplication1.gentelella_master.production {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl Home1;
         
         /// <summary>
+        /// Home2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Home2;
+        
+        /// <summary>
         /// AttendnaceCal control.
         /// </summary>
         /// <remarks>
