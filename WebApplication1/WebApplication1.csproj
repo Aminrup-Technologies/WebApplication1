@@ -264,10 +264,12 @@
     <Content Include="bussiness\production\BlankTabs.aspx" />
     <Content Include="bussiness\production\blank_page.aspx" />
     <Content Include="bussiness\production\bulk_employeeupdate.aspx" />
+    <Content Include="bussiness\production\create_jobid_v2.aspx" />
     <Content Include="bussiness\production\create_supplymemo.aspx" />
     <Content Include="bussiness\production\csm_tbtform.aspx" />
     <Content Include="bussiness\production\css\loader.css" />
     <Content Include="bussiness\production\css\Site.css" />
+    <Content Include="bussiness\production\db_controller.aspx" />
     <Content Include="bussiness\production\deta_employeemaster.aspx" />
     <Content Include="bussiness\production\deta_mustering.aspx" />
     <Content Include="bussiness\production\emp_payroll_wages.aspx" />
@@ -305,6 +307,9 @@
     <Content Include="bussiness\production\jobs_approval.aspx" />
     <Content Include="bussiness\production\jobs_approverdash.aspx" />
     <Content Include="bussiness\production\job_create_summary.aspx" />
+    <Content Include="bussiness\production\job_inpunch_v2.aspx" />
+    <Content Include="bussiness\production\job_outpunch_v2.aspx" />
+    <Content Include="bussiness\production\job_permitupload_v2.aspx" />
     <Content Include="bussiness\production\js\jquery-1.9.1.js" />
     <Content Include="bussiness\production\login.aspx" />
     <Content Include="bussiness\production\magician.aspx" />
@@ -5378,6 +5383,13 @@
       <DependentUpon>bulk_employeeupdate.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\ConsumableDAL.cs" />
+    <Compile Include="bussiness\production\create_jobid_v2.aspx.cs">
+      <DependentUpon>create_jobid_v2.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\create_jobid_v2.aspx.designer.cs">
+      <DependentUpon>create_jobid_v2.aspx</DependentUpon>
+    </Compile>
     <Compile Include="bussiness\production\create_supplymemo.aspx.cs">
       <DependentUpon>create_supplymemo.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -5393,6 +5405,13 @@
       <DependentUpon>csm_tbtform.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\DatabaseHelper.cs" />
+    <Compile Include="bussiness\production\db_controller.aspx.cs">
+      <DependentUpon>db_controller.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\db_controller.aspx.designer.cs">
+      <DependentUpon>db_controller.aspx</DependentUpon>
+    </Compile>
     <Compile Include="bussiness\production\deta_employeemaster.aspx.cs">
       <DependentUpon>deta_employeemaster.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -5520,6 +5539,27 @@
     </Compile>
     <Compile Include="bussiness\production\job_create_summary.aspx.designer.cs">
       <DependentUpon>job_create_summary.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\job_inpunch_v2.aspx.cs">
+      <DependentUpon>job_inpunch_v2.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\job_inpunch_v2.aspx.designer.cs">
+      <DependentUpon>job_inpunch_v2.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\job_outpunch_v2.aspx.cs">
+      <DependentUpon>job_outpunch_v2.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\job_outpunch_v2.aspx.designer.cs">
+      <DependentUpon>job_outpunch_v2.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\job_permitupload_v2.aspx.cs">
+      <DependentUpon>job_permitupload_v2.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\job_permitupload_v2.aspx.designer.cs">
+      <DependentUpon>job_permitupload_v2.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\login.aspx.cs">
       <DependentUpon>login.aspx</DependentUpon>

@@ -13,84 +13,57 @@ namespace WebApplication1.bussiness.production {
     public partial class jobs_and_manpower {
         
         /// <summary>
-        /// async control.
+        /// badge_activejobs control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl async;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl badge_activejobs;
         
         /// <summary>
-        /// lbl_activejobid control.
+        /// badge_permits control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbl_activejobid;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl badge_permits;
         
         /// <summary>
-        /// jobstatusflow control.
+        /// badge_inpunches control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::WebApplication1.bussiness.production.jobstatus_flow jobstatusflow;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl badge_inpunches;
         
         /// <summary>
-        /// lbl_activejobcount control.
+        /// badge_outpunches control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbl_activejobcount;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl badge_outpunches;
         
         /// <summary>
-        /// lbl_prmtupldcount control.
+        /// badge_splyjobs control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbl_prmtupldcount;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl badge_splyjobs;
         
         /// <summary>
-        /// lbl_inpunchcount control.
+        /// badge_lijobs control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbl_inpunchcount;
-        
-        /// <summary>
-        /// lbl_outpndgcount control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbl_outpndgcount;
-        
-        /// <summary>
-        /// lbl_splyjobscount control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbl_splyjobscount;
-        
-        /// <summary>
-        /// lbl_lijobscount control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbl_lijobscount;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl badge_lijobs;
     }
 }
