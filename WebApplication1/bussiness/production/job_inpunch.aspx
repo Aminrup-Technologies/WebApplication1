@@ -17,9 +17,10 @@
 					<div class="x_panel">
 						<div class="x_title">
 							<h2>JOB Manpower In-Punch Page<small>(Manpower Attendance)</small></h2>
-							<ul class="nav navbar-right panel_toolbox">
-								<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-							</ul>
+							&nbsp;
+                            <a href="job_inpunch_v2.aspx"
+                                style="display: inline-block; padding: 6px 12px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 4px; font-weight: bold; text-decoration: none; font-size: 14px;">Switch to NEW Version
+                            </a>
 							<div class="clearfix"></div>
 						</div>
 						<div class="x_content">

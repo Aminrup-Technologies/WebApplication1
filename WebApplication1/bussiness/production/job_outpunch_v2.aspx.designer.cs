@@ -85,6 +85,15 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Label lbl_jobiddate;
         
         /// <summary>
+        /// lbl_wrkordr control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_wrkordr;
+        
+        /// <summary>
         /// lbl_permitno control.
         /// </summary>
         /// <remarks>
@@ -119,15 +128,6 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_jobshift;
-        
-        /// <summary>
-        /// lbl_wrkordr control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbl_wrkordr;
         
         /// <summary>
         /// lbl_inchargename control.

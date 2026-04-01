@@ -15,9 +15,8 @@ namespace WebApplication1.gentelella_master.production
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
         CountChecker CC = new CountChecker();
 
-        // Properties exposed to the front-end for the auto-logout script
-        protected int IdleTimeoutMinutes { get; set; } = 5; // Default fallback
-        protected string AutoLogoutUrl { get; set; } = "http://atswork.in/"; // Default fallback
+        protected int IdleTimeoutMinutes { get; set; } = 10; // Default fallback
+        protected string AutoLogoutUrl { get; set; } = "https://atswork.in/"; // Default fallback
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -53,7 +52,6 @@ namespace WebApplication1.gentelella_master.production
 
         private void LoadConfigurations()
         {
-            // Fetch Timeout Minutes
             string configTimeout = ConfigurationManager.AppSettings["AutoLogoutTimeoutMinutes"];
             int timeout;
             if (!string.IsNullOrEmpty(configTimeout) && int.TryParse(configTimeout, out timeout))
@@ -61,7 +59,6 @@ namespace WebApplication1.gentelella_master.production
                 IdleTimeoutMinutes = timeout;
             }
 
-            // Fetch Redirect URL
             string configUrl = ConfigurationManager.AppSettings["AutoLogoutRedirectUrl"];
             if (!string.IsNullOrEmpty(configUrl))
             {
@@ -173,34 +170,56 @@ namespace WebApplication1.gentelella_master.production
 
         protected void btn_lgout_Click(object sender, EventArgs e)
         {
-            dbcl.WriteToFile("User :" + lbl_loginusername1.Text.ToString() + " Singout Successfully");
+            // 1. Write to log
+            dbcl.WriteToFile("User :" + lbl_loginusername1.Text + " Signout Successfully");
+
+            // 2. Execute DB updates BEFORE destroying the session using strongly-typed keys!
+            if (Session[SessionKeys.WorkmanSL] != null && Session[SessionKeys.UserID] != null)
+            {
+                dbcl.UPDT_EmpMuster_LogoutInfo(Session[SessionKeys.WorkmanSL].ToString(), Session[SessionKeys.UserID].ToString());
+            }
+
+            // 3. Finalize logout (This will clear sessions and redirect)
             LogoutUser();
-            dbcl.UPDT_EmpMuster_LogoutInfo(Session["WORKMAN"].ToString(), Session["USERID"].ToString());
-            Session.Abandon();
-            Response.Redirect("~/login.aspx", false);
         }
 
         protected void LogoutUser()
         {
-            dbcl.SPreturn_dt(
-                @"UPDATE tbl_UserLoginAudit
-                  SET LogoutTime = GETDATE()
-                  WHERE SessionID=@SID AND LogoutTime IS NULL",
-                new SqlParameter[]
-                {
-            new SqlParameter("@SID", Session.SessionID)
-                });
+            try
+            {
+                // Update User Audit Table
+                dbcl.SPreturn_dt(
+                    @"UPDATE tbl_UserLoginAudit
+                      SET LogoutTime = GETDATE()
+                      WHERE SessionID=@SID AND LogoutTime IS NULL",
+                    new SqlParameter[]
+                    {
+                        new SqlParameter("@SID", Session.SessionID)
+                    });
 
-            dbcl.SPreturn_dt(
-                "UPDATE tbl_Employee_Mustertable SET LastLogout=GETDATE(), LoginStatus=0 WHERE LoginID=@ID",
-                new SqlParameter[]
+                // Update Muster Table Logout Status using strongly-typed key!
+                if (Session[SessionKeys.UserID] != null)
                 {
-                    new SqlParameter("@ID", Session["USERID"].ToString())
-                });
-
-            Session.Clear();
-            Session.Abandon();
-            Response.Redirect("~/login.aspx", false);
+                    dbcl.SPreturn_dt(
+                        "UPDATE tbl_Employee_Mustertable SET LastLogout=GETDATE(), LoginStatus=0 WHERE LoginID=@ID",
+                        new SqlParameter[]
+                        {
+                            new SqlParameter("@ID", Session[SessionKeys.UserID].ToString())
+                        });
+                }
+            }
+            catch (Exception ex)
+            {
+                // If a DB error occurs during logout, we still want to ensure the user is logged out below
+                dbcl.WriteToFile("Logout DB Error: " + ex.Message);
+            }
+            finally
+            {
+                // 4. Destroy ALL session keys instantly (No need to clear them 1-by-1)
+                Session.Clear();
+                Session.Abandon();
+                Response.Redirect("~/login.aspx", false);
+            }
         }
     }
 }

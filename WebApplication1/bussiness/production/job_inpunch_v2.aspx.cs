@@ -98,7 +98,7 @@ namespace WebApplication1.bussiness.production
         {
             // Bypass the old CountChecker (CC) class and align perfectly with the Smart Dashboard!
             // We explicitly check for MasterStatusCode='3' and EntryExit='Created'
-            string query = "SELECT CONCAT(JOBID, ' : ', CONVERT(VARCHAR, CreatedDate, 105)) AS DisplayText, JOBID as ValueField FROM tbl_jobs WHERE [CreatedDate] >= DATEADD(DAY, -3, GETDATE()) AND Creator_Workman=@Workman AND JOBID_Status='Active' AND MasterStatusCode='3' AND EntryExit='Created' ORDER BY CreatedDate DESC";
+            string query = "SELECT CONCAT(JOBID, ' : ', CONVERT(VARCHAR, CreatedDate, 105)) AS DisplayText, JOBID as ValueField FROM tbl_jobs WHERE [CreatedDate] >= DATEADD(DAY, -3, GETDATE()) AND Creator_Workman=@Workman AND JOBID_Status='Active' AND MasterStatusCode='3' AND EntryExit IN ('Created', 'Entry') ORDER BY CreatedDate DESC";
 
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
@@ -136,7 +136,11 @@ namespace WebApplication1.bussiness.production
         private void TriggerJobSelection(string jobid)
         {
             Bind_JOBIDDetails(jobid);
-            BindExistingWorkers(jobid); // NEW: Load already punched in workers
+            BindExistingWorkers(jobid);
+
+            // FIX: Wipe the staging grid clean so previous scans don't bleed into the newly selected JOB
+            AddDefaultFirstRecord();
+
             JOBIDDetails_Row.Visible = true;
             WorkmanInput_Row.Visible = true;
             txt_empworkman.Focus();
@@ -335,20 +339,23 @@ namespace WebApplication1.bussiness.production
 
             if (gpdays < 0)
             {
-                lbl_gpdays.Text = gpdays.ToString();
-                lbl_gpdays.ForeColor = System.Drawing.Color.Red;
-                btn_submit.Visible = false;
+                // Expired Status
+                lbl_gpdays.Text = $"Expired ({Math.Abs(gpdays)} days ago)";
+                lbl_gpdays.CssClass = "badge bg-red"; // Use Bootstrap badge class
 
-                // Restore the update functionality UI
+                btn_submit.Visible = false;
                 btnShowPopup2.Visible = true;
+
                 txt_nwgpno.Text = gpno;
                 txt_nwsftyno.Text = sftyno;
                 ShowNotification("Expired", "Gatepass is expired. Please update it.", "error");
             }
             else
             {
-                lbl_gpdays.Text = gpdays.ToString();
-                lbl_gpdays.ForeColor = System.Drawing.Color.Green;
+                // Active Status
+                lbl_gpdays.Text = $"Active ({gpdays} days left)";
+                lbl_gpdays.CssClass = "badge bg-green"; // Use Bootstrap badge class
+
                 btn_submit.Visible = true;
                 btnShowPopup2.Visible = false;
             }

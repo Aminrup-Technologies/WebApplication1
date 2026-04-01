@@ -29,18 +29,21 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null)
+                if (Session[SessionKeys.UserID] == null || Session[SessionKeys.RolePermissionDB] == null || Session[SessionKeys.UserRoleDB] == null || Session[SessionKeys.UserName] == null || Session[SessionKeys.WorkmanSL] == null)
                 {
                     Response.Redirect("~/login.aspx", false);
                 }
                 else
                 {
                     //Bind the Security Question DDL
-                    string CmdString1 = "select Security_Questions, QNo from tlb_security_questions where Category = '1' order by Id ";
-                    BindSecurityQ1(CmdString1);
+                    //string CmdString1 = "select Security_Questions, QNo from tlb_security_questions where Category = '1' order by Id ";
+                    //BindSecurityQ1(CmdString1);
 
-                    string CmdString2 = "select Security_Questions, QNo from tlb_security_questions where Category = '2' order by Id ";
-                    BindSecurityQ2(CmdString2);
+                    //string CmdString2 = "select Security_Questions, QNo from tlb_security_questions where Category = '2' order by Id ";
+                    //BindSecurityQ2(CmdString2);
+
+                    // Bind Security Questions (Instantly pulled from Server RAM)
+                    BindSecurityQuestions();
 
                     ProfilePic_3.Src = "../../erp_images/ProfilePhoto/" + Session["User_Photo"].ToString() + "";
                     // Perform the login action here, such as prompting the user for credentials and validating them
@@ -64,9 +67,442 @@ namespace WebApplication1.bussiness.production
             }
         }
 
+        // ==========================================
+        // PNOTIFY HELPER METHOD
+        // ==========================================
+        private void ShowNotification(string title, string message, string type)
+        {
+            // 'type' options: 'success', 'error', 'info', 'notice'
+            string script = $@"
+                setTimeout(function() {{
+                    new PNotify({{
+                        title: '{title}',
+                        text: '{message}',
+                        type: '{type}',
+                        styling: 'bootstrap3'
+                    }});
+                }}, 200);"; // Slight delay ensures the UI is fully ready before popping up
+
+            // Generate a unique key so multiple notifications can show at once if needed
+            string uniqueKey = "PNotify_" + Guid.NewGuid().ToString("N");
+
+            ClientScript.RegisterStartupScript(this.GetType(), uniqueKey, script, true);
+        }
+
+        // ==========================================
+        // APPLICATION CACHING FOR STATIC DATA
+        // ==========================================
+
+        // A static lock object to ensure thread safety for 500+ concurrent users
+        private static readonly object _cacheLock = new object();
+
+        private DataTable GetSecurityQuestionsFromCache(string category)
+        {
+            string cacheKey = "SecurityQuestions_Cat_" + category;
+
+            // 1. Try to grab the data from the Server's RAM
+            DataTable dt = HttpContext.Current.Cache[cacheKey] as DataTable;
+
+            // 2. If it's missing (Server restarted, or cache expired)
+            if (dt == null)
+            {
+                // 3. Thread Lock: If 500 users hit this exact line at the same time, 
+                // only ONE user is allowed inside this lock. The others wait.
+                lock (_cacheLock)
+                {
+                    // Double-check: Make sure another user didn't JUST build the cache while we were waiting
+                    dt = HttpContext.Current.Cache[cacheKey] as DataTable;
+
+                    if (dt == null)
+                    {
+                        // 4. We are the first user! Fetch from the Database.
+                        string query = "SELECT Security_Questions, QNo FROM tlb_security_questions WHERE Category = @Category ORDER BY Id";
+                        dt = new DataTable();
+
+                        string connectionString = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
+                        using (SqlConnection conn = new SqlConnection(connectionString))
+                        {
+                            using (SqlCommand cmd = new SqlCommand(query, conn))
+                            {
+                                cmd.Parameters.AddWithValue("@Category", category);
+                                using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                                {
+                                    da.Fill(dt);
+                                }
+                            }
+                        }
+
+                        // 5. Save to Server RAM for 24 Hours
+                        HttpContext.Current.Cache.Insert(
+                            cacheKey,
+                            dt,
+                            null,
+                            DateTime.Now.AddHours(24),
+                            System.Web.Caching.Cache.NoSlidingExpiration
+                        );
+                    }
+                }
+            }
+            return dt;
+        }
+
+        private void BindSecurityQuestions()
+        {
+            // Bind Q1 from Cache
+            DDL_SQ1.DataSource = GetSecurityQuestionsFromCache("1");
+            DDL_SQ1.DataTextField = "Security_Questions";
+            DDL_SQ1.DataValueField = "QNo";
+            DDL_SQ1.DataBind();
+            DDL_SQ1.Items.Insert(0, "Please Select Option");
+
+            // Bind Q2 from Cache
+            DDL_SQ2.DataSource = GetSecurityQuestionsFromCache("2");
+            DDL_SQ2.DataTextField = "Security_Questions";
+            DDL_SQ2.DataValueField = "QNo";
+            DDL_SQ2.DataBind();
+            DDL_SQ2.Items.Insert(0, "Please Select Option");
+        }
+
         private void PageDataLoader()
         {
-            LoadLoginDetails();
+            // We now do 1 master call instead of 4 separate DB connections!
+            LoadAllHomepageData();
+        }
+
+        private void LoadAllHomepageData()
+        {
+            //string workmanSL = Session["WORKMAN"]?.ToString() ?? "";
+            //string loginID = Session["USERID"]?.ToString() ?? "";
+
+            string workmanSL = Session[SessionKeys.WorkmanSL]?.ToString() ?? "";
+            string loginID = Session[SessionKeys.UserID]?.ToString() ?? "";
+
+            // Calculate previous month accurately (handles Jan -> Dec rollover)
+            DateTime lastMonthDate = DateTime.Now.AddMonths(-1);
+            int year = lastMonthDate.Year;
+            int lastMonth = lastMonthDate.Month;
+
+            DataSet ds = new DataSet();
+            string connectionString = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
+
+            try
+            {
+                // 1. OPEN SINGLE CONNECTION
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand("GetEmployeeHomepageData", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@WorkmanSL", workmanSL);
+                        cmd.Parameters.AddWithValue("@LoginID", loginID);
+                        cmd.Parameters.AddWithValue("@SalaryYear", year);
+                        cmd.Parameters.AddWithValue("@SalaryMonth", lastMonth);
+
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            // This grabs all 3 tables at once!
+                            da.Fill(ds);
+                        }
+                    }
+                } // Connection closes automatically here
+
+                // 2. DISTRIBUTE DATA TO UI
+                if (ds.Tables.Count >= 3)
+                {
+                    ProcessEmployeeData(ds.Tables[0]);
+                    ProcessDocumentStatus(ds.Tables[1]);
+                    ProcessDeductions(ds.Tables[2]);
+
+                    // Update loginstatus and Last Login Information
+                    //dbcl.UPDT_EmpMuster_LoginInfo(workmanSL, loginID);
+                }
+
+                // 3. Keep Attendance separate as it uses external Payroll class logic
+                AttendanceDataBinder();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                string title = "Error :";
+                string body = "Failed to load dashboard data.";
+                ClientScript.RegisterStartupScript(this.GetType(), "PopupErr", $"ShowPopup('{title}', '{body}');", true);
+            }
+        }
+
+        // ==========================================
+        // UI BINDING METHODS (No DB connections here!)
+        // ==========================================
+
+        private void ProcessEmployeeData(DataTable dtProfile)
+        {
+            if (dtProfile.Rows.Count > 0)
+            {
+                DataRow row = dtProfile.Rows[0];
+                string WorkStatus = row["WorkStatus"].ToString();
+
+                if (WorkStatus == "Active")
+                {
+                    // Cache password globally for the Change Password modal
+                    UserPass = row["LoginPassword"].ToString();
+
+                    string UserID = row["LoginID"].ToString();
+                    lbl_id.Text = UserID;
+                    txt_atsloginid.Text = UserID;
+
+                    string Workman = row["WorkmanSL"].ToString();
+                    lbl_workmansl.Text = Workman;
+                    txt_atsworkmenno.Text = Workman;
+
+                    string Region = row["WorkRegion"].ToString();
+                    lbl_region.Text = Region;
+
+                    string Company = row["WorkCompany"].ToString();
+                    lbl_wrkcopmany.Text = Company;
+
+                    string state = row["WorkState"].ToString();
+                    Session["USTATE"] = state;
+                    lbl_state.Text = state;
+
+                    string User_FullName = row["FullName"].ToString();
+                    string User_Worksite = row["WorkSite"].ToString();
+                    lbl_wrksite.Text = User_Worksite;
+
+                    string User_Skill = row["SkillCategory"].ToString();
+                    Session["SKIL"] = User_Skill;
+                    lbl_skillcat.Text = User_Skill;
+
+                    string User_Desg = row["SkillDesignation"].ToString();
+                    Session["DESG"] = User_Desg;
+                    lbl_desg.Text = User_Desg;
+
+                    string doj = row["DOJ"].ToString();
+                    if (!string.IsNullOrEmpty(doj))
+                    {
+                        DateTime oDate = Convert.ToDateTime(doj);
+                        lbl_workage.Text = CalculateYourWorkAge(oDate);
+                        lbl_doj.Text = DateBinder(doj);
+                    }
+                    else
+                    {
+                        lbl_workage.Text = "N/A";
+                        lbl_doj.Text = "-";
+                    }
+
+                    string mobile = row["MobileNo"].ToString();
+                    lbl_oldmobileno.Text = string.IsNullOrEmpty(mobile) ? "N/A" : mobile;
+
+                    string gpno = row["GatePassNo"].ToString();
+                    lbl_gpno.Text = gpno;
+                    lbl_oldgpno.Text = gpno;
+                    txt_nwgpno.Text = gpno;
+
+                    string gpval = row["GatePassExpiry"].ToString();
+                    if (!string.IsNullOrEmpty(gpval))
+                    {
+                        Int32 gpdays = 0;
+                        FindDaysLeft(gpval, ref gpdays);
+                        if (gpdays < 14)
+                        {
+                            lbl_gpexpdays.ForeColor = Color.OrangeRed;
+                            lbl_gpvalidity.ForeColor = Color.OrangeRed;
+                            lbl_gpno.ForeColor = Color.OrangeRed;
+                            lbl_oldgpno.ForeColor = Color.OrangeRed;
+
+                            ClientScript.RegisterStartupScript(this.GetType(), "Popup1", "ShowPopup('Notifications :', 'Kindly update your Gatepass Data, Your Gatepass has expired...!!!');", true);
+                        }
+                        lbl_gpexpdays.Text = gpdays.ToString();
+                        string gpvaldt = DateBinder(gpval);
+                        lbl_gpvalidity.Text = gpvaldt;
+                        lbl_oldgpvalidity.Text = gpvaldt;
+                        txt_nwgpvalidity.Text = gpvaldt;
+                    }
+                    else
+                    {
+                        lbl_gpexpdays.Text = "N/A";
+                        lbl_gpvalidity.Text = "-";
+                    }
+
+                    string rfidno = row["SafetyPassNo"].ToString();
+                    lbl_rfidno.Text = rfidno;
+                    lbl_oldsftyno.Text = rfidno;
+                    txt_nwsftyno.Text = rfidno;
+
+                    string rfidval = row["SafetyPassExpiry"].ToString();
+                    if (!string.IsNullOrEmpty(rfidval))
+                    {
+                        string rfidvaldt = DateBinder(rfidval);
+                        lbl_rfidvalidity.Text = rfidvaldt;
+                        lbl_oldsftyval.Text = rfidvaldt;
+                        txt_nwsftyvalidity.Text = rfidvaldt;
+
+                        Int32 rfiddays = 0;
+                        FindDaysLeft(rfidval, ref rfiddays);
+                        lbl_rfiddays.Text = rfiddays.ToString();
+                        if (rfiddays < 14)
+                        {
+                            lbl_rfidno.ForeColor = Color.OrangeRed;
+                            lbl_rfidvalidity.ForeColor = Color.OrangeRed;
+                            lbl_rfiddays.ForeColor = Color.OrangeRed;
+                        }
+                    }
+                    else
+                    {
+                        lbl_rfiddays.Text = "N/A";
+                        lbl_rfidvalidity.Text = "-";
+                    }
+
+                    string pvvalidity = row["PVExpiry"].ToString();
+                    if (!string.IsNullOrEmpty(pvvalidity))
+                    {
+                        string pvvaldt = DateBinder(pvvalidity);
+                        lbl_pvvalidity.Text = pvvaldt;
+                        lbl_oldpvvalidity.Text = pvvaldt;
+                        txt_nwpvvalidity.Text = pvvaldt;
+
+                        Int32 pvdays = 0;
+                        FindDaysLeft(pvvalidity, ref pvdays);
+                        lbl_pvdays.Text = pvdays.ToString();
+                        if (pvdays < 14)
+                        {
+                            lbl_pvvalidity.ForeColor = Color.OrangeRed;
+                            lbl_pvdays.ForeColor = Color.OrangeRed;
+                        }
+                    }
+                    else
+                    {
+                        lbl_pvdays.Text = "N/A";
+                        lbl_pvvalidity.Text = "-";
+                    }
+
+                    // --- Password Expiry Check ---
+                    string PasswordExpiry = row["PasswordExpiry"].ToString();
+                    if (!string.IsNullOrEmpty(PasswordExpiry))
+                    {
+                        Int32 psexpdays = 0;
+                        FindDaysLeft(PasswordExpiry, ref psexpdays);
+
+                        string PN_PasswordExpiry_script = $@"<script type='text/javascript'>
+                            new PNotify({{ title: 'Regular Notice', text: 'Your login password will expire in {psexpdays} days.', type: 'info', styling: 'bootstrap3' }});
+                        </script>";
+                        ClientScript.RegisterStartupScript(this.GetType(), "ShowExpiryNotification", PN_PasswordExpiry_script, false);
+
+                        if (psexpdays <= 15)
+                        {
+                            Response.Redirect("emp_pwdchange.aspx", false);
+                            return;
+                        }
+                    }
+
+                    // --- Banking Details ---
+                    string bankname = row["Payment_Bank"].ToString();
+                    lbl_bankname.Text = bankname; txt_bankname.Text = bankname;
+
+                    string bankacc = row["Payment_Account"].ToString();
+                    lbl_accno.Text = bankacc; txt_accno.Text = bankacc; txt_cnfaccno.Text = bankacc;
+
+                    string bankifsc = row["Payment_IFSC"].ToString();
+                    lbl_ifsc.Text = bankifsc; txt_ifsc.Text = bankifsc;
+
+                    string branch = row["BankBranch"].ToString();
+                    lbl_branch.Text = branch; txt_branchname.Text = branch;
+
+                    lbl_bankupdtinfo.Text = $"Last updated on {row["BankUpdatedOn"]} by {row["BankUpdatedByName"]}.";
+                    lbl_pfno.Text = row["UANNo"].ToString();
+                    lbl_esicno.Text = row["ESICNo"].ToString();
+
+                    // --- QR CODE GENERATION ---
+                    string bloodGroup = row["BloodGroup"].ToString();
+                    string liveTimestamp = DateTime.Now.ToString("dd-MMM-yyyy hh:mm tt");
+
+                    string baseQrData = $"Name: {User_FullName}\nEmp No: {Workman}\nDesignation: {User_Desg}\nBlood Group: {(string.IsNullOrEmpty(bloodGroup) ? "N/A" : bloodGroup)}\nContact: {(string.IsNullOrEmpty(mobile) ? "N/A" : mobile)}\nLocation: {Company} ({User_Worksite})\nGate Pass: {(string.IsNullOrEmpty(gpno) ? "N/A" : gpno)}\nSafety Pass: {(string.IsNullOrEmpty(rfidno) ? "N/A" : rfidno)}\n";
+                    Session["BaseQRData"] = baseQrData;
+
+                    QRCoder.QRCodeGenerator qrGenerator = new QRCoder.QRCodeGenerator();
+                    QRCoder.QRCodeData qrCodeData = qrGenerator.CreateQrCode(baseQrData + $"Generated: {liveTimestamp}", QRCoder.QRCodeGenerator.ECCLevel.Q);
+                    QRCoder.Base64QRCode qrCode = new QRCoder.Base64QRCode(qrCodeData);
+                    img_qrcode.Src = "data:image/png;base64," + qrCode.GetGraphic(4);
+
+                    // --- Contact Verification Logic ---
+                    string email = row["Email"].ToString();
+                    lbl_oldemailadd.Text = string.IsNullOrEmpty(email) ? "N/A" : email;
+                    txt_nwmobileno.Text = ""; txt_nwemailadd.Text = "";
+
+                    bool hasData = !string.IsNullOrEmpty(email) || !string.IsNullOrEmpty(mobile);
+                    if (IsContactExpired(row))
+                    {
+                        btn_cancel1.Enabled = false;
+                        btn_sv_contactdata.Enabled = true;
+                        btn_cancel_contactdata.Enabled = hasData;
+
+                        ClientScript.RegisterStartupScript(this.GetType(), "ShowContactModal", "$('#myModal4').modal('show');", true);
+                    }
+                    else
+                    {
+                        btn_cancel_contactdata.Enabled = true;
+                        btn_sv_contactdata.Enabled = true;
+                        btn_cancel1.Enabled = true;
+                    }
+                }
+                else
+                {
+                    //ClientScript.RegisterStartupScript(typeof(Page), "AlertMessage1", "<script>alert('User ID is InActive');</script>");
+                    ShowNotification("Access Denied", "Your User ID is currently marked as InActive.", "error");
+                }
+            }
+        }
+
+        private void ProcessDocumentStatus(DataTable dtDocs)
+        {
+            if (dtDocs.Rows.Count > 0)
+            {
+                DataRow reader = dtDocs.Rows[0];
+
+                bool aadhaarStatus = reader["AadhaarYesNo"] != DBNull.Value && Convert.ToInt32(reader["AadhaarYesNo"]) == 1;
+                bool bankStatus = reader["BankYesNo"] != DBNull.Value && Convert.ToInt32(reader["BankYesNo"]) == 1;
+                bool panStatus = reader["PanYesNo"] != DBNull.Value && Convert.ToInt32(reader["PanYesNo"]) == 1;
+                bool isBypassed = reader["IsBypassed"] != DBNull.Value && Convert.ToInt32(reader["IsBypassed"]) == 1;
+                bool noticeAccepted = reader["NoticeAccepted"] != DBNull.Value && Convert.ToInt32(reader["NoticeAccepted"]) == 1;
+                DateTime? skipDate = reader["SkipDate"] != DBNull.Value ? Convert.ToDateTime(reader["SkipDate"]) : (DateTime?)null;
+
+                if (isBypassed) return;
+
+                bool allDocsUploaded = aadhaarStatus && panStatus && bankStatus;
+
+                if (!allDocsUploaded)
+                {
+                    Response.Redirect("usertoggle.aspx", false);
+                    Context.ApplicationInstance.CompleteRequest();
+                    return;
+                }
+
+                if (!noticeAccepted)
+                {
+                    if (skipDate.HasValue && skipDate.Value > DateTime.Now)
+                    {
+                        Response.Redirect("usertoggle.aspx", false);
+                        Context.ApplicationInstance.CompleteRequest();
+                        return;
+                    }
+                    else
+                    {
+                        ClientScript.RegisterStartupScript(this.GetType(), "ShowDocModal", "ShowDocModal();", true);
+                    }
+                }
+            }
+        }
+
+        private void ProcessDeductions(DataTable dtDeductions)
+        {
+            if (dtDeductions.Rows.Count > 0)
+            {
+                lbl_lastpfpay.Text = dtDeductions.Rows[0]["PFPay"].ToString();
+                lbl_lastesicpay.Text = dtDeductions.Rows[0]["ESICPay"].ToString();
+            }
+        }
+
+        private void PageDataLoader_OLD()
+        {
+            //LoadLoginDetails();
             EmployeeDataLoader();
             EmployeeDocStatusLoader();
             AttendanceDataBinder();
@@ -173,11 +609,16 @@ namespace WebApplication1.bussiness.production
                 {
                     DataRow row = dt.Rows[0];
                     string WorkStatus = row["WorkStatus"].ToString();
-
                     if (WorkStatus == "Active")
                     {
+                        UserPass = row["LoginPassword"].ToString();
                         string UserID = row["LoginID"].ToString();
                         lbl_id.Text = UserID;
+                        txt_atsloginid.Text = UserID;
+
+                        string Workman = row["WorkmanSL"].ToString();
+                        lbl_workmansl.Text = Workman;
+                        txt_atsworkmenno.Text = Workman;
 
                         string Region = row["WorkRegion"].ToString();
                         lbl_region.Text = Region;
@@ -188,9 +629,6 @@ namespace WebApplication1.bussiness.production
                         string state = row["WorkState"].ToString();
                         Session["USTATE"] = state;
                         lbl_state.Text = state;
-
-                        string Workman = row["WorkmanSL"].ToString();
-                        lbl_workmansl.Text = Workman;
 
                         string User_FirstName = row["FirstName"].ToString();
                         string User_FullName = row["FullName"].ToString();
@@ -681,27 +1119,32 @@ namespace WebApplication1.bussiness.production
         private Boolean UpdateBankDetails()
         {
             Boolean flag = false;
+            string connectionString = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
+
             try
             {
-                dbcl.Sqlconnection();
-                dbcl.ConnectDb();
-                SqlCommand cmd = new SqlCommand();
-                cmd.Connection = dbcl.Conn;
-                string CmdString = "UPDATE tbl_Employee_Mustertable set Payment_Bank=@Payment_Bank, Payment_Account=@Payment_Account, Payment_IFSC=@Payment_IFSC, BankBranch=@BankBranch, BankUpdatedOn=@BankUpdatedOn, BankUpdatedByName=@BankUpdatedByName , BankUpdatedByWrk=@BankUpdatedByWrk where WorkmanSL=@WorkmanSL and LoginID=@LoginID";
-                cmd.CommandText = CmdString;
-                cmd.CommandType = CommandType.Text;
-                cmd.Parameters.AddWithValue("@WorkmanSL", Session["WORKMAN"].ToString());
-                cmd.Parameters.AddWithValue("@LoginID", Session["USERID"].ToString());
-                cmd.Parameters.AddWithValue("@Payment_Bank", txt_bankname.Text.ToString());
-                cmd.Parameters.AddWithValue("@Payment_Account", txt_accno.Text.ToString());
-                cmd.Parameters.AddWithValue("@Payment_IFSC", txt_ifsc.Text.ToString());
-                cmd.Parameters.AddWithValue("@BankBranch", txt_branchname.Text.ToString());
-                cmd.Parameters.AddWithValue("@BankUpdatedOn", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt"));
-                cmd.Parameters.AddWithValue("@BankUpdatedByName", Session["USERNAME"].ToString());
-                cmd.Parameters.AddWithValue("@BankUpdatedByWrk", Session["WORKMAN"].ToString());
-                cmd.ExecuteNonQuery();
-                cmd.Dispose();
-                flag = true;
+                // Using block guarantees connection closes even on failure
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    string CmdString = "UPDATE tbl_Employee_Mustertable set Payment_Bank=@Payment_Bank, Payment_Account=@Payment_Account, Payment_IFSC=@Payment_IFSC, BankBranch=@BankBranch, BankUpdatedOn=@BankUpdatedOn, BankUpdatedByName=@BankUpdatedByName, BankUpdatedByWrk=@BankUpdatedByWrk where WorkmanSL=@WorkmanSL and LoginID=@LoginID";
+
+                    using (SqlCommand cmd = new SqlCommand(CmdString, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@WorkmanSL", Session["WORKMAN"].ToString());
+                        cmd.Parameters.AddWithValue("@LoginID", Session["USERID"].ToString());
+                        cmd.Parameters.AddWithValue("@Payment_Bank", txt_bankname.Text.Trim());
+                        cmd.Parameters.AddWithValue("@Payment_Account", txt_accno.Text.Trim());
+                        cmd.Parameters.AddWithValue("@Payment_IFSC", txt_ifsc.Text.Trim());
+                        cmd.Parameters.AddWithValue("@BankBranch", txt_branchname.Text.Trim());
+                        cmd.Parameters.AddWithValue("@BankUpdatedOn", DateTime.Now);
+                        cmd.Parameters.AddWithValue("@BankUpdatedByName", Session["USERNAME"].ToString());
+                        cmd.Parameters.AddWithValue("@BankUpdatedByWrk", Session["WORKMAN"].ToString());
+
+                        conn.Open();
+                        cmd.ExecuteNonQuery();
+                        flag = true;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -786,51 +1229,56 @@ namespace WebApplication1.bussiness.production
 
         private void ReflectNewGPData()
         {
-            string nwgpno = txt_nwgpno.Text.ToString();
-            string nwgpval = txt_nwgpvalidity.Text.ToString();
+            string nwgpno = txt_nwgpno.Text.Trim();
+            string nwgpval = txt_nwgpvalidity.Text.Trim();
+            string nwsftyno = txt_nwsftyno.Text.Trim();
+            string nwsftyval = txt_nwsftyvalidity.Text.Trim();
+            string nepvval = txt_nwpvvalidity.Text.Trim();
 
-            string nwsftyno = txt_nwsftyno.Text.ToString();
-            string nwsftyval = txt_nwsftyvalidity.Text.ToString();
-
-            string nepvval = txt_nwpvvalidity.Text.ToString();
+            string connectionString = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
 
             try
             {
-                dbcl.Sqlconnection();
-                dbcl.ConnectDb();
-                SqlCommand cmd = new SqlCommand();
-                cmd.Connection = dbcl.Conn;
-                string CmdString = "UPDATE tbl_Employee_Mustertable set GatePassNo=@GatePassNo, GatePassExpiry=@GatePassExpiry, SafetyPassNo=@SafetyPassNo, SafetyPassExpiry=@SafetyPassExpiry, PVExpiry=@PVExpiry, GP_ModifierWrk=@GP_ModifierWrk, GP_ModifierName=@GP_ModifierName, GP_ModifiedDate=@GP_ModifiedDate, GP_UpdateApproval=@GP_UpdateApproval where WorkmanSL=@WorkmanSL and LoginID=@LoginID";
-                cmd.CommandText = CmdString;
-                cmd.CommandType = CommandType.Text;
-                cmd.Parameters.AddWithValue("@WorkmanSL", Session["WORKMAN"].ToString());
-                cmd.Parameters.AddWithValue("@LoginID", Session["USERID"].ToString());
-                cmd.Parameters.AddWithValue("@GatePassNo", nwgpno);
-                cmd.Parameters.AddWithValue("@GatePassExpiry", nwgpval);
-                cmd.Parameters.AddWithValue("@SafetyPassNo", nwsftyno);
-                cmd.Parameters.AddWithValue("@SafetyPassExpiry", nwsftyval);
-                cmd.Parameters.AddWithValue("@PVExpiry", nepvval);
-                cmd.Parameters.AddWithValue("@GP_ModifierWrk", Session["WORKMAN"].ToString());
-                cmd.Parameters.AddWithValue("@GP_ModifierName", Session["USERNAME"].ToString());
-                cmd.Parameters.AddWithValue("@GP_ModifiedDate", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt"));
-                cmd.Parameters.AddWithValue("@GP_UpdateApproval", "Pending");
-                cmd.ExecuteNonQuery();
-                cmd.Dispose();
+                // Using block automatically handles closing and disposing the connection
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    string CmdString = "UPDATE tbl_Employee_Mustertable SET GatePassNo=@GatePassNo, GatePassExpiry=@GatePassExpiry, SafetyPassNo=@SafetyPassNo, SafetyPassExpiry=@SafetyPassExpiry, PVExpiry=@PVExpiry, GP_ModifierWrk=@GP_ModifierWrk, GP_ModifierName=@GP_ModifierName, GP_ModifiedDate=@GP_ModifiedDate, GP_UpdateApproval=@GP_UpdateApproval WHERE WorkmanSL=@WorkmanSL AND LoginID=@LoginID";
 
-                EmployeeDataLoader();
+                    using (SqlCommand cmd = new SqlCommand(CmdString, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@WorkmanSL", Session["WORKMAN"].ToString());
+                        cmd.Parameters.AddWithValue("@LoginID", Session["USERID"].ToString());
+                        cmd.Parameters.AddWithValue("@GatePassNo", nwgpno);
+                        cmd.Parameters.AddWithValue("@GatePassExpiry", nwgpval);
+                        cmd.Parameters.AddWithValue("@SafetyPassNo", nwsftyno);
+                        cmd.Parameters.AddWithValue("@SafetyPassExpiry", nwsftyval);
+                        cmd.Parameters.AddWithValue("@PVExpiry", nepvval);
+                        cmd.Parameters.AddWithValue("@GP_ModifierWrk", Session["WORKMAN"].ToString());
+                        cmd.Parameters.AddWithValue("@GP_ModifierName", Session["USERNAME"].ToString());
+                        cmd.Parameters.AddWithValue("@GP_ModifiedDate", DateTime.Now); // Safe native date
+                        cmd.Parameters.AddWithValue("@GP_UpdateApproval", "Pending");
 
-                string title = "Notifications :";
-                string body = "Data saved Successfully";
-                ClientScript.RegisterStartupScript(this.GetType(), "Popup2", "ShowPopup('" + title + "', '" + body + "');", true);
+                        conn.Open();
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                // Reload the dashboard to show the newly saved changes using our master data loader
+                LoadAllHomepageData();
+
+                //string title = "Notifications :";
+                //string body = "Data saved Successfully";
+                //ClientScript.RegisterStartupScript(this.GetType(), "Popup2", $"ShowPopup('{title}', '{body}');", true);
+                ShowNotification("Success", "Gatepass data updated successfully!", "success");
             }
             catch (Exception ex)
             {
                 lblMessage.ForeColor = System.Drawing.Color.Red;
-                lblMessage.Text = "Error: " + ex.Message.ToString();
+                lblMessage.Text = "Error: " + ex.Message;
 
                 string title = "Notifications :";
-                string body = ex.Message.ToString();
-                ClientScript.RegisterStartupScript(this.GetType(), "Popup3", "ShowPopup('" + title + "', '" + body + "');", true);
+                string body = ex.Message;
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup3", $"ShowPopup('{title}', '{body}');", true);
             }
         }
 
@@ -955,6 +1403,7 @@ namespace WebApplication1.bussiness.production
             DDL_SQ2.Items.Insert(0, "Please Select Option");
             dbcl.DisconnectDb();
         }
+
         protected void btn_svpass_Click(object sender, EventArgs e)
         {
             if (UpdateLoginCredentials() == true)
@@ -979,32 +1428,38 @@ namespace WebApplication1.bussiness.production
 
             ClientScript.RegisterStartupScript(this.GetType(), "alert8", "ShowPasswordModal();", true);
         }
+
         private Boolean UpdateLoginCredentials()
         {
             Boolean flag = false;
+            string connectionString = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
+
             try
             {
-                dbcl.Sqlconnection();
-                dbcl.ConnectDb();
-                SqlCommand cmd = new SqlCommand();
-                cmd.Connection = dbcl.Conn;
-                string CmdString = "UPDATE tbl_Employee_Mustertable set LoginPassword=@LoginPassword, SQ1=@SQ1, SQAns1=@SQAns1, SQ2=@SQ2, SQAns2=@SQAns2, Pass_UpdateDate=@Pass_UpdateDate , PassUpdatedByName=@PassUpdatedByName, PassUpdatedByWrk=@PassUpdatedByWrk, PasswordExpiry=@PasswordExpiry where WorkmanSL=@WorkmanSL and LoginID=@LoginID";
-                cmd.CommandText = CmdString;
-                cmd.CommandType = CommandType.Text;
-                cmd.Parameters.AddWithValue("@WorkmanSL", txt_atsworkmenno.Text.ToString());
-                cmd.Parameters.AddWithValue("@LoginID", txt_atsloginid.Text.ToString());
-                cmd.Parameters.AddWithValue("@LoginPassword", txt_newpass2.Text.Trim().ToString());
-                cmd.Parameters.AddWithValue("@SQ1", DDL_SQ1.SelectedValue.ToString());
-                cmd.Parameters.AddWithValue("@SQAns1", txt_SQAns1.Text.ToString());
-                cmd.Parameters.AddWithValue("@SQ2", DDL_SQ2.SelectedValue.ToString());
-                cmd.Parameters.AddWithValue("@SQAns2", txt_SQAns2.Text.ToString());
-                cmd.Parameters.AddWithValue("@Pass_UpdateDate", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt"));
-                cmd.Parameters.AddWithValue("@PassUpdatedByName", Session["USERNAME"].ToString());
-                cmd.Parameters.AddWithValue("@PassUpdatedByWrk", Session["WORKMAN"].ToString());
-                cmd.Parameters.AddWithValue("@PasswordExpiry", DateTime.Today.AddDays(180));
-                cmd.ExecuteNonQuery();
-                cmd.Dispose();
-                flag = true;
+                // Using block automatically handles closing and disposing the connection
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    string CmdString = "UPDATE tbl_Employee_Mustertable SET LoginPassword=@LoginPassword, SQ1=@SQ1, SQAns1=@SQAns1, SQ2=@SQ2, SQAns2=@SQAns2, Pass_UpdateDate=@Pass_UpdateDate , PassUpdatedByName=@PassUpdatedByName, PassUpdatedByWrk=@PassUpdatedByWrk, PasswordExpiry=@PasswordExpiry WHERE WorkmanSL=@WorkmanSL AND LoginID=@LoginID";
+
+                    using (SqlCommand cmd = new SqlCommand(CmdString, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@WorkmanSL", txt_atsworkmenno.Text.Trim());
+                        cmd.Parameters.AddWithValue("@LoginID", txt_atsloginid.Text.Trim());
+                        cmd.Parameters.AddWithValue("@LoginPassword", txt_newpass2.Text.Trim());
+                        cmd.Parameters.AddWithValue("@SQ1", DDL_SQ1.SelectedValue);
+                        cmd.Parameters.AddWithValue("@SQAns1", txt_SQAns1.Text.Trim());
+                        cmd.Parameters.AddWithValue("@SQ2", DDL_SQ2.SelectedValue);
+                        cmd.Parameters.AddWithValue("@SQAns2", txt_SQAns2.Text.Trim());
+                        cmd.Parameters.AddWithValue("@Pass_UpdateDate", DateTime.Now); // Safe native date
+                        cmd.Parameters.AddWithValue("@PassUpdatedByName", Session["USERNAME"].ToString());
+                        cmd.Parameters.AddWithValue("@PassUpdatedByWrk", Session["WORKMAN"].ToString());
+                        cmd.Parameters.AddWithValue("@PasswordExpiry", DateTime.Today.AddDays(180));
+
+                        conn.Open();
+                        cmd.ExecuteNonQuery();
+                        flag = true;
+                    }
+                }
 
                 lbl_msgpass.ForeColor = System.Drawing.Color.Green;
                 lbl_msgpass.Text = "Login Credentials Updated Successfully....!!";
@@ -1016,8 +1471,9 @@ namespace WebApplication1.bussiness.production
             {
                 flag = false;
                 lbl_msgpass.ForeColor = System.Drawing.Color.Red;
-                lbl_msgpass.Text = "Error: " + ex.Message.ToString();
+                lbl_msgpass.Text = "Error: " + ex.Message;
             }
+
             return flag;
         }
 
@@ -1238,8 +1694,12 @@ namespace WebApplication1.bussiness.production
             else
             {
                 string userEnteredOTP = TextBoxEnteredOTP.Text;
-                string generatedOTP = Session["GeneratedOTP"] as string;
-                string recipientEmail = Session["RecipientEmail"] as string;
+                //string generatedOTP = Session["GeneratedOTP"] as string;
+                //string recipientEmail = Session["RecipientEmail"] as string;
+
+                // Retrieving data
+                string generatedOTP = Session[SessionKeys.GeneratedOTP] as string;
+                string recipientEmail = Session[SessionKeys.RecipientEmail] as string;
 
                 if (userEnteredOTP == generatedOTP && recipientEmail == txt_nwemailadd.Text)
                 {
@@ -1250,9 +1710,10 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-                    string title = "Notifications :";
-                    string body = "Invalid OTP or Email Address....! Re-try....!";
-                    ClientScript.RegisterStartupScript(this.GetType(), "Popup8", "ShowPopup('" + title + "', '" + body + "');", true);
+                    //string title = "Notifications :";
+                    //string body = "Invalid OTP or Email Address....! Re-try....!";
+                    //ClientScript.RegisterStartupScript(this.GetType(), "Popup8", "ShowPopup('" + title + "', '" + body + "');", true);
+                    ShowNotification("Verification Failed", "Invalid OTP or Email Address. Please try again.", "error");
 
                     ClientScript.RegisterStartupScript(this.GetType(), "alert7", "ShowContactModal();", true);
                 }
@@ -1327,8 +1788,16 @@ namespace WebApplication1.bussiness.production
                 lbl_mailermsg.Text = "Enter valid email address";
             }
 
-            Session["GeneratedOTP"] = otp;
-            Session["RecipientEmail"] = email;
+            //Session["GeneratedOTP"] = otp;
+            //Session["RecipientEmail"] = email;
+
+            // Saving data
+            Session[SessionKeys.GeneratedOTP] = otp;
+            Session[SessionKeys.RecipientEmail] = email;
+
+            // Retrieving data
+            string generatedOTP = Session[SessionKeys.GeneratedOTP] as string;
+            string recipientEmail = Session[SessionKeys.RecipientEmail] as string;
 
             btn_cancel_contactdata.Enabled = false;
 

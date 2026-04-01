@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+======================================================================================
+File_Name: create_jobid_v2_aspx_cs
+When: March 30, 2026
+Why: To fix ADO.NET parameter type mismatches ensuring seamless integration with the revised UAT database schema and preventing implicit SQL conversion overhead.
+What: Updated AddWithValue parameters in Insert_JOBData() to use strong native data types (int for FileCount, DateTime for CreatedDate) mapping precisely to the SP_InsertInto_JOBSTable SQL signature.
+======================================================================================
+*/
+
+using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Web.UI;
@@ -24,6 +33,9 @@ namespace WebApplication1.bussiness.production
         // New V2 Matrix Flags
         private string WO_ContractNature { get { return ViewState["WO_ContractNature"] as string ?? ""; } set { ViewState["WO_ContractNature"] = value; } }
         private string WO_BillingNature { get { return ViewState["WO_BillingNature"] as string ?? ""; } set { ViewState["WO_BillingNature"] = value; } }
+        private bool WO_ReqCSM { get { return ViewState["WO_ReqCSM"] != null && (bool)ViewState["WO_ReqCSM"]; } set { ViewState["WO_ReqCSM"] = value; } }
+        private bool WO_AutoTitle { get { return ViewState["WO_AutoTitle"] != null && (bool)ViewState["WO_AutoTitle"]; } set { ViewState["WO_AutoTitle"] = value; } }
+        private string WO_MasterStatusCode { get { return ViewState["WO_MasterStatusCode"] as string ?? "1"; } set { ViewState["WO_MasterStatusCode"] = value; } }
 
         private static readonly object jobInsertLock = new object();
 
@@ -48,10 +60,45 @@ namespace WebApplication1.bussiness.production
                 Bind_BillingType(Session["REGION"].ToString());
                 Bind_AttendnaceCode();
 
-                lbl_jobdate.Text = DateTime.Now.ToString("dd-MMM-yyyy");
+                // --- NEW: Dynamic Date Picker Constraints ---
+                int backdateLimit = GetUserBackdateLimit(Session["WORKMAN"].ToString());
+
+                txt_jobdate.Text = DateTime.Now.ToString("yyyy-MM-dd"); // Default to Today
+                txt_jobdate.Attributes["max"] = DateTime.Now.ToString("yyyy-MM-dd"); // Block future dates
+                txt_jobdate.Attributes["min"] = DateTime.Now.AddDays(-backdateLimit).ToString("yyyy-MM-dd"); // Block unauthorized backdating
+
                 lbl_jobday.Text = DateTime.Today.DayOfWeek.ToString();
+                CheckExistingJobsForDate(txt_jobdate.Text);
                 DDL_AttenCode.SelectedValue = (DateTime.Today.DayOfWeek == DayOfWeek.Sunday) ? "OD" : "P";
             }
+        }
+
+        private int GetUserBackdateLimit(string workmanID)
+        {
+            int limit = 2; // Global Default: 2 days back allowed
+
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+
+                // NEW: Check AND IsActive = 1 so deactivated exceptions are completely ignored
+                string qry = "SELECT ISNULL(Max_Backdate_Days, 2) FROM tlb_Backdate_Exceptions WHERE Employee_Workman = @Workman AND IsActive = 1";
+                using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@Workman", workmanID);
+                    object res = cmd.ExecuteScalar();
+                    int dbLimit;
+                    if (res != null && int.TryParse(res.ToString(), out dbLimit))
+                    {
+                        limit = dbLimit;
+                    }
+                }
+            }
+            catch { /* Keep the default 2-day limit if error occurs */ }
+            finally { dbcl.DisconnectDb(); }
+
+            return limit;
         }
 
         private void ShowNotification(string title, string message, string type)
@@ -63,6 +110,35 @@ namespace WebApplication1.bussiness.production
         // =================================================================================
         // DB CONTROLLER LOGIC 
         // =================================================================================
+
+        protected void txt_jobdate_TextChanged(object sender, EventArgs e)
+        {
+            DateTime selectedDate;
+            if (DateTime.TryParse(txt_jobdate.Text, out selectedDate))
+            {
+                lbl_jobday.Text = selectedDate.DayOfWeek.ToString();
+                EvaluateAttendanceCode();
+                CheckExistingJobsForDate(txt_jobdate.Text);
+
+                // Update auto-generated title dynamically ONLY if the DB Matrix allows it
+                if (WO_AutoTitle)
+                {
+                    string prefix = string.IsNullOrEmpty(DB_WOType) ? "ARC" : DB_WOType;
+                    txt_jobtitle.Text = $"{prefix} attendance for ({selectedDate.ToString("dd-MM-yyyy")})";
+                }
+            }
+        }
+
+        protected void DDL_BillingType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // As per V2 Rules: Billing jobs ALWAYS require manual entry.
+            // We ensure the field remains clear and ready for manual input when they switch Billing Types.
+            if (WO_BillingNature == "Billing")
+            {
+                txt_jobtitle.Text = "";
+                txt_jobtitle.Attributes.Add("placeholder", "Enter specific JOB Title details manually...");
+            }
+        }
 
         protected void DDL_Region_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -77,26 +153,29 @@ namespace WebApplication1.bussiness.production
 
             try
             {
-                // 1. Check Region Safety Flags
+                // 1. Check Region Safety Flags from tlb_work_state_region
                 string flagQuery = "SELECT Req_GPS_Tagging FROM tlb_work_state_region WHERE Work_Region_Code = @RegionCode";
                 SqlParameter[] flagParams = { new SqlParameter("@RegionCode", region) };
                 DataTable dtFlags = dbcl.SPreturn_dt(flagQuery, flagParams);
 
                 if (dtFlags.Rows.Count > 0 && dtFlags.Rows[0]["Req_GPS_Tagging"].ToString() == "Yes")
                 {
+                    // Show the UI indicator and fire the JavaScript Geolocation API
                     div_gps_status.Visible = true;
-                    // Trigger browser GPS API via JS
                     ScriptManager.RegisterStartupScript(this, GetType(), "GPS", "requestGPSLocation();", true);
                 }
                 else
                 {
+                    // Hide the indicator and clear out any old coordinates
                     div_gps_status.Visible = false;
+                    hf_latitude.Value = "";
+                    hf_longitude.Value = "";
                 }
-
-                // 2. Bind the Digital Document Checklist
-                Bind_RequiredDocuments(region);
             }
-            catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
+            catch (Exception ex)
+            {
+                ShowNotification("Error", "Region Check Failed: " + ex.Message, "error");
+            }
         }
 
         private void Bind_RequiredDocuments(string regionCode)
@@ -136,6 +215,13 @@ namespace WebApplication1.bussiness.production
             else { div_documents.Visible = false; }
         }
 
+        /*
+        ======================================================================================
+        Method: DDL_Workorder_SelectedIndexChanged
+        When: March 30, 2026
+        Why: Added Matrix_Match_ID to the SQL query to detect silent LEFT JOIN failures. Includes logic to alert the UI and log the missing Rule Matrix mapping for administrators.
+        ======================================================================================
+        */
         protected void DDL_Workorder_SelectedIndexChanged(object sender, EventArgs e)
         {
             string workorderDBID = DDL_Workorder.SelectedValue;
@@ -143,7 +229,23 @@ namespace WebApplication1.bussiness.production
 
             try
             {
-                string query = "select WO_Type, Work_Region_Code, Company_Code, Dept_DBCode, Contract_Nature, Billing_Nature from tlb_WO_Data where DB_Code=@DB_Code";
+                // Join WO_Data with the Rule Matrix. 
+                // We select m.Id AS Matrix_Match_ID to actively detect if the LEFT JOIN succeeded.
+                string query = @"
+                SELECT 
+                    w.WO_Type, w.Work_Region_Code, w.Company_Code, w.Dept_DBCode, 
+                    w.Contract_Nature, w.Billing_Nature, w.Execution_Type,
+                    ISNULL(m.Req_PermitNo, 1) AS Req_PermitNo,
+                    ISNULL(m.Req_CSM_Docs, 1) AS Req_CSM_Docs,
+                    ISNULL(m.Req_Attendance, 1) AS Req_Attendance,
+                    ISNULL(m.Auto_Generate_Title, 0) AS Auto_Generate_Title,
+                    ISNULL(m.Default_MasterStatusCode, '1') AS Default_MasterStatusCode,
+                    m.Id AS Matrix_Match_ID
+                FROM tlb_WO_Data w
+                LEFT JOIN tlb_WO_Rule_Matrix m 
+                    ON w.Billing_Nature = m.Billing_Nature AND w.Execution_Type = m.Execution_Type
+                WHERE w.DB_Code = @DB_Code";
+
                 SqlParameter[] pram = { new SqlParameter("@DB_Code", workorderDBID) };
                 dt = dbcl.SPreturn_dt(query, pram);
 
@@ -154,35 +256,221 @@ namespace WebApplication1.bussiness.production
                     DB_WOCompnayCode = dt.Rows[0]["Company_Code"].ToString();
                     DB_WODeptDBCode = dt.Rows[0]["Dept_DBCode"].ToString();
 
-                    // Fetch Matrix
-                    WO_ContractNature = dt.Rows[0]["Contract_Nature"].ToString();
-                    WO_BillingNature = dt.Rows[0]["Billing_Nature"].ToString();
+                    string contractNature = dt.Rows[0]["Contract_Nature"].ToString();
+                    string billingNature = dt.Rows[0]["Billing_Nature"].ToString();
+                    string executionType = dt.Rows[0]["Execution_Type"].ToString();
+                    WO_MasterStatusCode = dt.Rows[0]["Default_MasterStatusCode"].ToString();
 
-                    // Update Badges
+                    // =====================================================================
+                    // V2 MAPPING DETECTION & LOGGING
+                    // =====================================================================
+                    if (dt.Rows[0]["Matrix_Match_ID"] == DBNull.Value)
+                    {
+                        // The LEFT JOIN Failed! Point it out to the user on screen...
+                        ShowNotification("Rule Mapping Missing!", $"No Rule Matrix defined for [{billingNature}] + [{executionType}]. Strict default rules applied.", "error");
+
+                        // ...and log it permanently for the Admin to fix.
+                        LogSystemIssue("Missing Rule Matrix", $"WO_DBCode: {workorderDBID} | Failed mapping for Billing_Nature: '{billingNature}' and Execution_Type: '{executionType}'.");
+                    }
+                    // =====================================================================
+
+                    // 1. Handle "Non-Billing" Dropdown Restriction
+                    ListItem nonBillingItem = DDL_BillingType.Items.FindByText("Non-Billing");
+
+                    if (nonBillingItem != null)
+                    {
+                        nonBillingItem.Enabled = true;
+
+                        // If it is strictly ARC and Billing, disable the Non-Billing option
+                        if (contractNature == "ARC" && billingNature == "Billing")
+                        {
+                            nonBillingItem.Enabled = false;
+                        }
+                    }
+
+                    // Setup Badges
                     div_wo_badges.Visible = true;
-                    lbl_ContractNature.Text = WO_ContractNature;
-                    lbl_BillingNature.Text = WO_BillingNature;
+                    lbl_ContractNature.Text = contractNature;
+                    lbl_BillingNature.Text = billingNature;
 
-                    // Matrix Rule: Hide Billing dropdown & permits for Non-Billing jobs
-                    if (WO_BillingNature == "Non-Billing")
+                    bool reqPermit = Convert.ToBoolean(dt.Rows[0]["Req_PermitNo"]);
+                    bool reqCSM = Convert.ToBoolean(dt.Rows[0]["Req_CSM_Docs"]);
+                    WO_ReqCSM = reqCSM;
+                    bool reqAttendance = Convert.ToBoolean(dt.Rows[0]["Req_Attendance"]);
+
+                    // 1. DYNAMIC PERMIT LOGIC
+                    if (reqPermit)
+                    {
+                        txt_permitno.Text = "";
+                        txt_permitno.ReadOnly = false;
+                        RequiredFieldValidator3.Enabled = true;
+                    }
+                    else
+                    {
+                        txt_permitno.Text = "N/A";
+                        txt_permitno.ReadOnly = true;
+                        RequiredFieldValidator3.Enabled = false;
+                    }
+
+                    // 2. DYNAMIC CSM DOCS LOGIC
+                    if (reqCSM)
+                    {
+                        div_documents.Visible = true;
+                        Bind_RequiredDocuments(DB_WOWorkRegion);
+                    }
+                    else
+                    {
+                        div_documents.Visible = false;
+                        CBL_Documents.Items.Clear();
+                    }
+
+                    // 3. DYNAMIC ATTENDANCE/SHIFT LOGIC
+                    if (reqAttendance)
+                    {
+                        DDL_AttenCode.Enabled = true;
+                        Bind_AttendnaceCode();
+                        txt_jobshift.Text = "";
+                        txt_jobshift.ReadOnly = false;
+                    }
+                    else
+                    {
+                        DDL_AttenCode.Enabled = false;
+                        DDL_AttenCode.Items.Clear();
+                        DDL_AttenCode.Items.Insert(0, new ListItem("N/A", "NA"));
+                        txt_jobshift.Text = "G";
+                        txt_jobshift.ReadOnly = false;
+                    }
+
+                    // 4. BILLING TYPE DROPDOWN (Safe Evaluation)
+                    if (billingNature == "Non-Billing")
                     {
                         div_BillingType.Visible = false;
                         div_NonBillingAlert.Visible = true;
-                        div_documents.Visible = false; // Non-billing skips docs usually
                         RFV1.Enabled = false;
+                        DDL_BillingType.ClearSelection();
                     }
                     else
                     {
                         div_BillingType.Visible = true;
                         div_NonBillingAlert.Visible = false;
-                        div_documents.Visible = true;
                         RFV1.Enabled = true;
                     }
 
-                    DataChecker(); // Validates Company logic
+                    // Store the flag in ViewState so other events (like Date change) can use it
+                    WO_AutoTitle = Convert.ToBoolean(dt.Rows[0]["Auto_Generate_Title"]);
+                    // =========================================================
+                    // 5. DYNAMIC JOB TITLE LOGIC (DB CONTROLLED)
+                    // =========================================================
+                    if (WO_AutoTitle)
+                    {
+                        DateTime jobDate;
+                        string dateStr = DateTime.TryParse(txt_jobdate.Text, out jobDate) ? jobDate.ToString("dd-MM-yyyy") : txt_jobdate.Text;
+                        string prefix = string.IsNullOrEmpty(DB_WOType) ? "ARC" : DB_WOType;
+
+                        txt_jobtitle.Text = $"{prefix} attendance for ({dateStr})";
+                        txt_jobtitle.Attributes.Remove("placeholder");
+                        txt_jobtitle.ReadOnly = true; // Lock it so users don't mess up the auto-format
+                    }
+                    else
+                    {
+                        // Admin Matrix mandates manual entry for this WO type
+                        txt_jobtitle.Text = "";
+                        txt_jobtitle.Attributes.Add("placeholder", "Enter specific JOB Title details manually...");
+                        txt_jobtitle.ReadOnly = false;
+                    }
+                    // =========================================================
+
+                    DataChecker();
+                    EvaluateAttendanceCode();
                 }
             }
-            catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
+            catch (Exception ex)
+            {
+                ShowNotification("Error", ex.Message, "error");
+            }
+        }
+
+        private void EvaluateAttendanceCode()
+        {
+            if (DDL_AttenCode.Enabled == false && DDL_AttenCode.Items.FindByValue("NA") != null)
+            {
+                return;
+            }
+
+            string companyCode = txt_company.Text;
+            if (string.IsNullOrEmpty(companyCode)) return;
+
+            DateTime jobDate;
+            if (!DateTime.TryParse(txt_jobdate.Text, out jobDate)) return;
+
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+
+                string query = "SELECT Day_Type FROM tlb_Company_Calendar WHERE Company_Code=@Comp AND Cal_Date=@Date";
+                string dayType = "";
+
+                using (SqlCommand cmd = new SqlCommand(query, dbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@Comp", companyCode);
+                    cmd.Parameters.AddWithValue("@Date", jobDate.ToString("yyyy-MM-dd"));
+
+                    object result = cmd.ExecuteScalar();
+                    dayType = result != null ? result.ToString() : "";
+                }
+
+                Bind_AttendnaceCode();
+
+                System.Collections.Generic.List<string> allowedCodes = new System.Collections.Generic.List<string>();
+                string defaultSelection = "P";
+
+                if (dayType == "FL")
+                {
+                    allowedCodes.AddRange(new string[] { "FL", "FP" });
+                    defaultSelection = "FL";
+                }
+                else if (dayType == "NH")
+                {
+                    allowedCodes.AddRange(new string[] { "NH", "HP" });
+                    defaultSelection = "NH";
+                }
+                else if (dayType == "OD" || jobDate.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    allowedCodes.AddRange(new string[] { "OD", "P" });
+                    defaultSelection = "OD";
+                }
+                else
+                {
+                    allowedCodes.AddRange(new string[] { "P", "HD", "Ab" });
+                    defaultSelection = "P";
+                }
+
+                for (int i = DDL_AttenCode.Items.Count - 1; i >= 0; i--)
+                {
+                    if (!allowedCodes.Contains(DDL_AttenCode.Items[i].Value))
+                    {
+                        DDL_AttenCode.Items.RemoveAt(i);
+                    }
+                }
+
+                if (DDL_AttenCode.Items.FindByValue(defaultSelection) != null)
+                {
+                    DDL_AttenCode.SelectedValue = defaultSelection;
+                }
+
+                DDL_AttenCode.Enabled = true;
+                DDL_AttenCode.ToolTip = "Options have been filtered based on the Master Company Calendar.";
+
+            }
+            catch (Exception ex)
+            {
+                ShowNotification("Calendar Error", ex.Message, "error");
+            }
+            finally
+            {
+                dbcl.DisconnectDb();
+            }
         }
 
         public static string EncodeJobID(string plainText)
@@ -198,22 +486,26 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_submit_Click(object sender, EventArgs e)
         {
+            string[] words = txt_jobtitle.Text.Trim().Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            if (words.Length <= 3)
+            {
+                ShowNotification("Validation Error", "JOB Title must contain more than 3 words to provide sufficient detail.", "error");
+                return;
+            }
+
             string generatedJobId = Insert_JOBData();
 
             if (!string.IsNullOrEmpty(generatedJobId))
             {
-                // Mask the JOBID before sending it in the URL
                 string maskedJobId = EncodeJobID(generatedJobId);
 
-                // SMART ROUTING: Determine the next step based on the DB Controller
-                if (WO_BillingNature == "Non-Billing")
+                // V2 DYNAMIC ROUTING
+                if (WO_MasterStatusCode == "3")
                 {
-                    // MasterStatusCode 3 -> Redirect directly to In-Punch
                     Response.Redirect($"job_inpunch_v2.aspx?jobid={maskedJobId}", false);
                 }
                 else
                 {
-                    // MasterStatusCode 1 -> Redirect to Permit Upload
                     Response.Redirect($"job_permitupload_v2.aspx?jobid={maskedJobId}", false);
                 }
             }
@@ -231,13 +523,13 @@ namespace WebApplication1.bussiness.production
 
                 try
                 {
-                    // 1. EXECUTE EXISTING SP TO CREATE THE RECORD SAFELY
                     dbcl.Sqlconnection();
                     dbcl.ConnectDb();
                     SqlCommand cmd = new SqlCommand("SP_InsertInto_JOBSTable", dbcl.Conn);
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@CreatedDate", lbl_jobdate.Text);
+                    // ADO.NET FIX: Pass as a native DateTime object so SQL properly maps it to DATE type
+                    cmd.Parameters.AddWithValue("@CreatedDate", Convert.ToDateTime(txt_jobdate.Text).Date);
                     cmd.Parameters.AddWithValue("@Creator_Name", Session["USERNAME"].ToString());
                     cmd.Parameters.AddWithValue("@Creator_Workman", Session["WORKMAN"].ToString());
                     cmd.Parameters.AddWithValue("@Creator_Region", Session["REGION"].ToString());
@@ -261,33 +553,60 @@ namespace WebApplication1.bussiness.production
                     cmd.Parameters.AddWithValue("@JOB_PermitNo", txt_permitno.Text);
                     cmd.Parameters.AddWithValue("@Incharge_Approval", "Pending");
                     cmd.Parameters.AddWithValue("@EntryExit", "Created");
-                    cmd.Parameters.AddWithValue("@BillingType", WO_BillingNature == "Non-Billing" ? "Non-Billing" : DDL_BillingType.SelectedItem.Text);
+                    cmd.Parameters.AddWithValue("@BillingType", WO_BillingNature == "Non-Billing" ? "Non-Billing" : (DDL_BillingType.SelectedItem != null ? DDL_BillingType.SelectedItem.Text : ""));
                     cmd.Parameters.AddWithValue("@BillingCode", WO_BillingNature == "Non-Billing" ? "NB" : DDL_BillingType.SelectedValue);
                     cmd.Parameters.AddWithValue("@AttendanceCode", DDL_AttenCode.SelectedValue);
 
-                    // Master Status Code Logic
-                    if (WO_BillingNature == "Non-Billing")
+                    //// Master Status Code Logic
+                    //if (WO_BillingNature == "Non-Billing")
+                    //{
+                    //    cmd.Parameters.AddWithValue("@JOB_Status", "Permit Uploaded");
+                    //    cmd.Parameters.AddWithValue("@FinalUpldStatus", "Yes");
+                    //    cmd.Parameters.AddWithValue("@PermitUpload", "N/A");
+
+                    //    // ADO.NET FIX: Pass as integer 0 to match INT schema requirement
+                    //    cmd.Parameters.AddWithValue("@FileCount", 0);
+                    //    cmd.Parameters.AddWithValue("@MasterStatusCode", "3");
+                    //    cmd.Parameters.AddWithValue("@CSM_Documents", WO_ReqCSM ? "Yes" : "No");
+                    //}
+                    //else
+                    //{
+                    //    cmd.Parameters.AddWithValue("@JOB_Status", "Created");
+                    //    cmd.Parameters.AddWithValue("@FinalUpldStatus", "No");
+                    //    cmd.Parameters.AddWithValue("@PermitUpload", "No");
+
+                    //    // ADO.NET FIX: Pass as integer 0 to match INT schema requirement
+                    //    cmd.Parameters.AddWithValue("@FileCount", 0);
+                    //    cmd.Parameters.AddWithValue("@MasterStatusCode", "1");
+                    //    cmd.Parameters.AddWithValue("@CSM_Documents", WO_ReqCSM ? "Yes" : "No");
+                    //}
+
+                    // =========================================================
+                    // V2 DYNAMIC DB INSERT LOGIC 
+                    // (Driven entirely by the Matrix, no hardcoded "If Non-Billing")
+                    // =========================================================
+                    cmd.Parameters.AddWithValue("@MasterStatusCode", WO_MasterStatusCode);
+                    cmd.Parameters.AddWithValue("@FileCount", 0);
+                    cmd.Parameters.AddWithValue("@CSM_Documents", WO_ReqCSM ? "Yes" : "No");
+
+                    if (WO_MasterStatusCode == "3")
                     {
+                        // Direct to In-Punch Configuration
                         cmd.Parameters.AddWithValue("@JOB_Status", "Permit Uploaded");
                         cmd.Parameters.AddWithValue("@FinalUpldStatus", "Yes");
                         cmd.Parameters.AddWithValue("@PermitUpload", "N/A");
-                        cmd.Parameters.AddWithValue("@FileCount", "0");
-                        cmd.Parameters.AddWithValue("@MasterStatusCode", "3");
-                        cmd.Parameters.AddWithValue("@CSM_Documents", "No");
                     }
                     else
                     {
+                        // Standard Permit Upload Configuration
                         cmd.Parameters.AddWithValue("@JOB_Status", "Created");
                         cmd.Parameters.AddWithValue("@FinalUpldStatus", "No");
                         cmd.Parameters.AddWithValue("@PermitUpload", "No");
-                        cmd.Parameters.AddWithValue("@FileCount", "0");
-                        cmd.Parameters.AddWithValue("@MasterStatusCode", "1");
-                        cmd.Parameters.AddWithValue("@CSM_Documents", "Yes");
                     }
 
                     cmd.ExecuteNonQuery();
 
-                    // 2. RUN UPDATE FOR NEW V2 COLUMNS (To avoid modifying your original SP)
+                    // 2. RUN UPDATE FOR NEW V2 COLUMNS 
                     string selectedDocs = GetSelectedDocuments();
                     string lat = hf_latitude.Value;
                     string lon = hf_longitude.Value;
@@ -303,7 +622,7 @@ namespace WebApplication1.bussiness.production
                     }
 
                     dbcl.DisconnectDb();
-                    return JOBID; // Return ID for routing
+                    return JOBID;
                 }
                 catch (Exception ex)
                 {
@@ -355,11 +674,35 @@ namespace WebApplication1.bussiness.production
             ExecuteAndBindDDL(query, DDL_Region, "Work_Region_Name", "Work_Region_Code", null);
         }
 
-        private void Bind_BillingType(string regionCode)
+        public void Bind_BillingType(string regionCode)
         {
-            string query = "SELECT DISTINCT b.BilingType, b.BillingCode FROM tlb_WorkRegion_BillingMapping m JOIN tlb_JOB_BillingType b ON m.BillingTypeId = b.Id WHERE m.Work_Region_Code = @RegionCode AND m.IsActive = 1;";
-            SqlParameter[] parameters = { new SqlParameter("@RegionCode", regionCode) };
-            ExecuteAndBindDDL(query, DDL_BillingType, "BilingType", "BillingCode", parameters);
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+
+                string query = @"
+            SELECT bt.BilingType, bt.BilingType AS DropdownValue 
+            FROM tlb_JOB_BillingType bt 
+            INNER JOIN tlb_WorkRegion_BillingMapping map ON bt.Id = map.BillingTypeId 
+            WHERE map.Work_Region_Code = @Region AND map.IsActive = 1
+            ORDER BY bt.Id";
+
+                using (SqlCommand cmd = new SqlCommand(query, dbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@Region", regionCode);
+                    using (SqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        DDL_BillingType.DataSource = rdr;
+                        DDL_BillingType.DataTextField = "BilingType";
+                        DDL_BillingType.DataValueField = "DropdownValue";
+                        DDL_BillingType.DataBind();
+                    }
+                    DDL_BillingType.Items.Insert(0, new ListItem("-- Select JOB Type --", ""));
+                }
+            }
+            catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
+            finally { dbcl.DisconnectDb(); }
         }
 
         private void Bind_AttendnaceCode()
@@ -374,8 +717,8 @@ namespace WebApplication1.bussiness.production
             if (string.IsNullOrEmpty(regionCode)) return;
 
             string query = Session["USERTYPE"].ToString() == "Site Staff"
-                ? "select WO_Number, DB_Code from tlb_WO_Data where Work_Region_Code=@RegionCode and WO_Type='ARC' and WO_Status='Active' order by Id"
-                : "select WO_Number, DB_Code from tlb_WO_Data where Work_Region_Code=@RegionCode and WO_Status='Active' order by WO_Type";
+                ? "SELECT WO_Number, DB_Code FROM tlb_WO_Data WHERE Work_Region_Code=@RegionCode AND WO_Type='ARC' AND WO_Status='Active' AND JOBID_Menu='Yes' ORDER BY Id"
+                : "SELECT WO_Number, DB_Code FROM tlb_WO_Data WHERE Work_Region_Code=@RegionCode AND WO_Status='Active' AND JOBID_Menu='Yes' ORDER BY WO_Type";
 
             SqlParameter[] parameters = { new SqlParameter("@RegionCode", regionCode) };
             ExecuteAndBindDDL(query, DDL_Workorder, "WO_Number", "DB_Code", parameters);
@@ -420,19 +763,22 @@ namespace WebApplication1.bussiness.production
             if (Session["REGION"].ToString() == DB_WOWorkRegion)
             {
                 txt_workregion.Text = Session["REGION"].ToString();
+
                 if (Session["COMPANY_CODE"].ToString() == DB_WOCompnayCode)
                 {
                     txt_company.Text = Session["COMPANY_CODE"].ToString();
                     BindWorkSites(DDL_Region.SelectedValue);
-                    txt_permitno.Text = (WO_ContractNature != "ARC") ? "N/A" : "";
-                    txt_permitno.ReadOnly = (WO_ContractNature != "ARC");
                 }
-                else { txt_company.Text = DB_WOCompnayCode; }
+                else
+                {
+                    txt_company.Text = DB_WOCompnayCode;
+                    BindWorkSites(DDL_Region.SelectedValue);
+                }
             }
             else
             {
-                BindWorkSites(DDL_Region.SelectedValue);
                 txt_workregion.Text = DB_WOWorkRegion;
+                BindWorkSites(DDL_Region.SelectedValue);
             }
         }
 
@@ -453,30 +799,126 @@ namespace WebApplication1.bussiness.production
                     DB_WKSDeptDBCode = dt.Rows[0]["Dept_DBCode"].ToString();
                     txt_dept.Text = DB_WKSDept;
 
-                    // Bind Approver
                     string appQuery = "select Employee_Name, Employee_Workman from tlb_atsworksiteIncharges where DB_Code=@DBCode and Status='Active' order by Id";
                     ExecuteAndBindDDL(appQuery, DDL_Approver, "Employee_Name", "Employee_Workman", new SqlParameter[] { new SqlParameter("@DBCode", worksite_DBCode) });
 
-                    if (WO_ContractNature == "ARC") BindDepLoc(DB_WKSDeptDBCode, DB_WKSDept);
+                    if (WO_ContractNature == "ARC")
+                    {
+                        BindDepLoc(DB_WKSDeptDBCode, DB_WKSDept);
+                    }
                     else
                     {
                         BindDepLoc(DB_WKSDeptDBCode, "", DDL_Region.SelectedValue);
-                        txt_jobtitle.Text = $"{DB_WOType} attendance for ({DateTime.Now.Date:dd-MM-yyyy})";
                     }
+
+                    EvaluateAttendanceCode();
                 }
             }
             catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
         }
 
-        protected void btn_dateswap_Click(object sender, EventArgs e)
+        protected void btn_cancel_Click(object sender, EventArgs e) { Response.Redirect("homepage.aspx", false); }
+
+        private void CheckExistingJobsForDate(string selectedDateStr)
         {
-            DateTime dt = (btn_dateswap.Text == "Today") ? DateTime.Now.AddDays(-1) : DateTime.Now;
-            lbl_jobdate.Text = dt.ToString("dd-MMM-yyyy");
-            lbl_jobday.Text = dt.DayOfWeek.ToString();
-            btn_dateswap.Text = (btn_dateswap.Text == "Today") ? "Yesterday" : "Today";
-            DDL_AttenCode.SelectedValue = (dt.DayOfWeek == DayOfWeek.Sunday) ? "OD" : "P";
+            if (string.IsNullOrEmpty(selectedDateStr)) return;
+
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+
+                DateTime date = Convert.ToDateTime(selectedDateStr);
+                string qry = "SELECT JOBID FROM tbl_jobs WHERE Creator_Workman=@Workman AND CAST(CreatedDate AS DATE) = CAST(@Date AS DATE) AND JOBID_Status='Active'";
+
+                using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@Workman", Session["WORKMAN"].ToString());
+                    cmd.Parameters.AddWithValue("@Date", date);
+
+                    using (SqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        System.Collections.Generic.List<string> jobs = new System.Collections.Generic.List<string>();
+                        while (rdr.Read())
+                        {
+                            jobs.Add(rdr["JOBID"].ToString());
+                        }
+
+                        if (jobs.Count > 0)
+                        {
+                            div_existing_jobs.Visible = true;
+                            lbl_existing_jobs_list.Text = string.Join(", ", jobs);
+                        }
+                        else
+                        {
+                            div_existing_jobs.Visible = false;
+                            lbl_existing_jobs_list.Text = "";
+                        }
+                    }
+                }
+            }
+            catch { /* Silently fail UI if string parsing fails */ }
+            finally { dbcl.DisconnectDb(); }
         }
 
-        protected void btn_cancel_Click(object sender, EventArgs e) { Response.Redirect("homepage.aspx", false); }
+        protected void btn_reset_Click(object sender, EventArgs e)
+        {
+            txt_jobdate.Text = DateTime.Now.ToString("yyyy-MM-dd");
+            lbl_jobday.Text = DateTime.Today.DayOfWeek.ToString();
+            div_existing_jobs.Visible = false;
+            lbl_existing_jobs_list.Text = "";
+
+            DDL_Workorder.ClearSelection();
+            DDL_BillingType.ClearSelection();
+            DDL_Worksite.ClearSelection();
+            DDL_Approver.ClearSelection();
+            DDL_Location.ClearSelection();
+
+            Bind_AttendnaceCode();
+            DDL_AttenCode.SelectedValue = (DateTime.Today.DayOfWeek == DayOfWeek.Sunday) ? "OD" : "P";
+            DDL_AttenCode.Enabled = true;
+
+            txt_permitno.Text = "";
+            txt_jobshift.Text = "";
+            txt_jobtitle.Text = "";
+            txt_permitno.ReadOnly = false;
+            txt_jobshift.ReadOnly = false;
+            txt_jobtitle.Attributes.Remove("placeholder");
+
+            div_gps_status.Visible = false;
+            div_wo_badges.Visible = false;
+            div_documents.Visible = false;
+            div_NonBillingAlert.Visible = false;
+            div_BillingType.Visible = true;
+
+            hf_latitude.Value = "";
+            hf_longitude.Value = "";
+            CBL_Documents.Items.Clear();
+
+            string resetScript = "document.getElementById('permitCount').innerHTML = '0 / 100'; document.getElementById('charCount').innerHTML = '0 / 200';";
+            ScriptManager.RegisterStartupScript(this, GetType(), "resetCounters", resetScript, true);
+
+            CheckExistingJobsForDate(txt_jobdate.Text);
+        }
+
+        private void LogSystemIssue(string logType, string logMessage)
+        {
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+                string qry = "INSERT INTO tlb_System_Logs (Log_Type, Log_Message, Triggered_By_Workman, Page_Name) VALUES (@Type, @Msg, @Workman, @Page)";
+                using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@Type", logType);
+                    cmd.Parameters.AddWithValue("@Msg", logMessage);
+                    cmd.Parameters.AddWithValue("@Workman", Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "Unknown");
+                    cmd.Parameters.AddWithValue("@Page", "create_jobid_v2.aspx");
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch { /* Fail silently to not disrupt the user's workflow */ }
+            finally { dbcl.DisconnectDb(); }
+        }
     }
 }

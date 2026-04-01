@@ -26,7 +26,6 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-
         private void BindColumnsToGridView()
         {
             string query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'tbl_Employee_Mustertable'";
@@ -45,49 +44,18 @@ namespace WebApplication1.bussiness.production
             GridViewColumns.DataBind();
         }
 
-        //protected void btnMapColumns_Click(object sender, EventArgs e)
-        //{
-        //    List<string> selectedColumns = new List<string>();
-
-        //    // Iterate through GridView rows
-        //    foreach (GridViewRow row in GridViewColumns.Rows)
-        //    {
-        //        CheckBox chkSelect = (CheckBox)row.FindControl("chkSelect");
-        //        if (chkSelect != null && chkSelect.Checked)
-        //        {
-        //            // Get the column name from the second column in the GridView
-        //            string columnName = row.Cells[1].Text; // Assuming the column name is in the second cell
-        //            selectedColumns.Add(columnName);
-        //        }
-        //    }
-
-        //    if (selectedColumns.Count > 0)
-        //    {
-        //        // Store the selected columns in a session or pass them to the next step
-        //        Session["SelectedColumns"] = selectedColumns;
-
-        //        lbl_msg.Text = "Columns selected: " + string.Join(", ", selectedColumns);
-        //        lbl_msg.CssClass = "text-success";
-        //    }
-        //    else
-        //    {
-        //        lbl_msg.Text = "Please select at least one column to proceed.";
-        //        lbl_msg.CssClass = "text-danger";
-        //    }
-        //}
-
         protected void btnMapColumns_Click(object sender, EventArgs e)
         {
-            Dictionary<string, string> columnMapping = new Dictionary<string, string>(); // Key: DB Column, Value: Excel Column
+            Dictionary<string, string> columnMapping = new Dictionary<string, string>();
 
             foreach (GridViewRow row in GridViewColumnMapping.Rows)
             {
-                string dbColumn = row.Cells[0].Text; // Database column name
+                string dbColumn = row.Cells[0].Text;
                 DropDownList ddlExcelColumns = (DropDownList)row.FindControl("ddlExcelColumns");
 
                 if (ddlExcelColumns != null && !string.IsNullOrEmpty(ddlExcelColumns.SelectedValue))
                 {
-                    columnMapping.Add(dbColumn, ddlExcelColumns.SelectedValue); // Map DB column to Excel column
+                    columnMapping.Add(dbColumn, ddlExcelColumns.SelectedValue);
                 }
             }
 
@@ -104,48 +72,19 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-
-        protected void ReadExcel()
-        {
-            if (FileUploadExcel.HasFile)
-            {
-                string filePath = Server.MapPath("~/Uploads/" + FileUploadExcel.FileName);
-                FileUploadExcel.SaveAs(filePath);
-
-                // Read the Excel file into a DataTable
-                DataTable excelData = ReadExcelFile(filePath);
-
-                // Store the data for mapping
-                Session["ExcelData"] = excelData;
-                BindExcelColumnsToDropdown(excelData);
-
-                lblUploadMessage.Text = "File uploaded and data loaded successfully!";
-                lblUploadMessage.CssClass = "text-success";
-            }
-            else
-            {
-                lblUploadMessage.Text = "Please upload an Excel file.";
-                lblUploadMessage.CssClass = "text-danger";
-            }
-        }
-
         private DataTable ReadExcelFile(string filePath)
         {
             DataTable dt = new DataTable();
 
             using (ExcelPackage package = new ExcelPackage(new FileInfo(filePath)))
             {
-                // Check if the workbook contains worksheets
                 if (package.Workbook.Worksheets.Count == 0)
                 {
                     throw new Exception("The uploaded Excel file contains no worksheets.");
                 }
 
-                // Access the first worksheet
-                //ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
                 ExcelWorksheet worksheet = package.Workbook.Worksheets["Sheet1"];
 
-                // Check if the worksheet has valid data
                 if (worksheet.Dimension == null)
                 {
                     throw new Exception("The worksheet is empty.");
@@ -154,14 +93,12 @@ namespace WebApplication1.bussiness.production
                 int colCount = worksheet.Dimension.End.Column;
                 int rowCount = worksheet.Dimension.End.Row;
 
-                // Add columns to DataTable
                 for (int col = 1; col <= colCount; col++)
                 {
-                    dt.Columns.Add(worksheet.Cells[1, col].Text); // Assuming the first row contains column names
+                    dt.Columns.Add(worksheet.Cells[1, col].Text);
                 }
 
-                // Add rows to DataTable
-                for (int row = 2; row <= rowCount; row++) // Start from the second row
+                for (int row = 2; row <= rowCount; row++)
                 {
                     DataRow dr = dt.NewRow();
                     for (int col = 1; col <= colCount; col++)
@@ -175,13 +112,10 @@ namespace WebApplication1.bussiness.production
             return dt;
         }
 
-
-
         private void BindExcelColumnsToDropdown(DataTable excelData)
         {
             List<string> excelColumns = excelData.Columns.Cast<DataColumn>().Select(col => col.ColumnName).ToList();
 
-            // Bind to dropdown in the mapping GridView
             foreach (GridViewRow row in GridViewColumnMapping.Rows)
             {
                 DropDownList ddlExcelColumns = (DropDownList)row.FindControl("ddlExcelColumns");
@@ -189,14 +123,13 @@ namespace WebApplication1.bussiness.production
                 {
                     ddlExcelColumns.DataSource = excelColumns;
                     ddlExcelColumns.DataBind();
-                    ddlExcelColumns.Items.Insert(0, new ListItem("Select", "")); // Add default option
+                    ddlExcelColumns.Items.Insert(0, new ListItem("Select", ""));
                 }
             }
         }
 
         protected void BindMappingGrid(List<string> selectedColumns, List<string> excelColumns)
         {
-            // Create a DataTable for mapping
             DataTable dtMapping = new DataTable();
             dtMapping.Columns.Add("DatabaseColumn");
 
@@ -210,7 +143,6 @@ namespace WebApplication1.bussiness.production
             GridViewColumnMapping.DataSource = dtMapping;
             GridViewColumnMapping.DataBind();
 
-            // Populate the dropdown for Excel columns
             foreach (GridViewRow row in GridViewColumnMapping.Rows)
             {
                 DropDownList ddlExcelColumns = (DropDownList)row.FindControl("ddlExcelColumns");
@@ -226,7 +158,6 @@ namespace WebApplication1.bussiness.production
         {
             if (dt != null && dt.Rows.Count > 0)
             {
-                // Bind the data to the GridView
                 GridViewColumnMapping.DataSource = dt;
                 GridViewColumnMapping.DataBind();
             }
@@ -237,78 +168,6 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-
-
-
-        protected void GridViewColumnMapping_RowDataBound(object sender, GridViewRowEventArgs e)
-        {
-            // Ensure you're only processing data rows
-            if (e.Row.RowType == DataControlRowType.DataRow)
-            {
-                // Find the DropDownList in the current row
-                DropDownList ddlExcelColumn = (DropDownList)e.Row.FindControl("DropDownListExcelColumn");
-
-                if (ddlExcelColumn != null)
-                {
-                    // Assuming 'filePath' is the path to the Excel file
-                    string filePath = "~\\erp_images\\EmpUpdate\\Uan_Esic.xlsx";
-
-                    using (var package = new ExcelPackage(new FileInfo(filePath)))
-                    {
-                        ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
-                        int colCount = worksheet.Dimension.End.Column; // Total number of columns
-                        ddlExcelColumn.Items.Clear(); // Clear previous items
-
-                        // Add column headers to the DropDownList
-                        for (int col = 1; col <= colCount; col++)
-                        {
-                            string header = worksheet.Cells[1, col].Text;
-                            ddlExcelColumn.Items.Add(new ListItem(header, header));
-                        }
-                    }
-                }
-            }
-        }
-
-
-        protected void PerformBulkUpdate(Dictionary<string, string> columnMappings, DataTable excelData)
-        {
-            string constr = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
-            using (SqlConnection con = new SqlConnection(constr))
-            {
-                con.Open();
-
-                foreach (DataRow row in excelData.Rows)
-                {
-                    string updateQuery = "UPDATE tbl_Employee_Mustertable SET ";
-
-                    // Dynamically build SET clause
-                    foreach (var mapping in columnMappings)
-                    {
-                        string dbColumn = mapping.Key;
-                        string excelColumn = mapping.Value;
-                        updateQuery += $"{dbColumn} = @{dbColumn}, ";
-                    }
-
-                    // Remove trailing comma and add WHERE clause
-                    updateQuery = updateQuery.TrimEnd(',', ' ') + " WHERE Workman = @Workman";
-
-                    using (SqlCommand cmd = new SqlCommand(updateQuery, con))
-                    {
-                        // Add parameters dynamically
-                        foreach (var mapping in columnMappings)
-                        {
-                            cmd.Parameters.AddWithValue($"@{mapping.Key}", row[mapping.Value]);
-                        }
-                        cmd.Parameters.AddWithValue("@Workman", row["Workman"]);
-
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-            }
-        }
-
-
         protected void btnUploadExcel_Click(object sender, EventArgs e)
         {
             if (FileUploadExcel.HasFile)
@@ -316,10 +175,7 @@ namespace WebApplication1.bussiness.production
                 string filePath = Server.MapPath("~/erp_images/EmpUpdate/" + FileUploadExcel.FileName);
                 FileUploadExcel.SaveAs(filePath);
 
-                // Read the Excel file into a DataTable
                 DataTable excelData = ReadExcelFile(filePath);
-
-                // Store the data for mapping
                 Session["ExcelData"] = excelData;
                 BindExcelColumnsToDropdown(excelData);
                 BindMappingGrid(excelData);
@@ -338,34 +194,28 @@ namespace WebApplication1.bussiness.production
         {
             List<string> selectedColumns = new List<string>();
 
-            // Iterate through GridView rows to get selected columns
             foreach (GridViewRow row in GridViewColumns.Rows)
             {
                 CheckBox chkSelect = (CheckBox)row.FindControl("chkSelect");
                 if (chkSelect != null && chkSelect.Checked)
                 {
-                    // Get the column name from the second column in the GridView
-                    string columnName = row.Cells[1].Text; // Assuming the column name is in the second cell
+                    string columnName = row.Cells[1].Text;
                     selectedColumns.Add(columnName);
                 }
             }
 
             if (selectedColumns.Count > 0)
             {
-                // Check if the Excel file is uploaded
                 if (FileUploadExcel.HasFile)
                 {
                     string filePath = Server.MapPath("~/erp_images/EmpUpdate/" + FileUploadExcel.FileName);
                     FileUploadExcel.SaveAs(filePath);
 
-                    // Read the Excel file into a DataTable
                     DataTable excelData = ReadExcelFile(filePath);
 
-                    // Store the data and selected columns in session
                     Session["ExcelData"] = excelData;
                     Session["SelectedColumns"] = selectedColumns;
 
-                    // Bind the GridView and Dropdowns for mapping
                     BindMappingGrid(selectedColumns, excelData.Columns.Cast<DataColumn>().Select(c => c.ColumnName).ToList());
 
                     lbl_msg.Text = "File uploaded and columns mapped successfully!";
@@ -384,158 +234,134 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-        //protected void btnUpdateDatabase_Click(object sender, EventArgs e)
-        //{
-        //    DataTable excelData = Session["ExcelData"] as DataTable;
-        //    Dictionary<string, string> columnMapping = Session["ColumnMapping"] as Dictionary<string, string>;
+        // --- PREVIEW LOGIC ---
+        protected void btnPreviewChanges_Click(object sender, EventArgs e)
+        {
+            DataTable excelData = Session["ExcelData"] as DataTable;
+            Dictionary<string, string> columnMapping = Session["ColumnMapping"] as Dictionary<string, string>;
 
-        //    if (excelData != null && columnMapping != null)
-        //    {
-        //        // Check if WorkmanSL exists in the DataTable
-        //        if (!excelData.Columns.Contains("WorkmanSL"))
-        //        {
-        //            lbl_msg2.Text = "WorkmanSL column not found in the uploaded Excel file.";
-        //            lbl_msg2.CssClass = "text-danger";
-        //            return;
-        //        }
+            if (excelData == null || columnMapping == null || columnMapping.Count == 0)
+            {
+                lbl_msg2.Text = "Mapping or Excel data is missing. Please Check Mapping first.";
+                lbl_msg2.CssClass = "text-danger";
+                return;
+            }
 
-        //        // Open database connection once before starting the loop
-        //        dbcl.Sqlconnection();
-        //        dbcl.ConnectDb();
+            if (!excelData.Columns.Contains("WorkmanSL"))
+            {
+                lbl_msg2.Text = "WorkmanSL column not found in the uploaded Excel file. It is required for updates.";
+                lbl_msg2.CssClass = "text-danger";
+                return;
+            }
 
-        //        foreach (DataRow row in excelData.Rows)
-        //        {
-        //            // Build dynamic SQL query
-        //            string setClause = string.Join(", ", columnMapping.Select(map => $"{map.Key} = @{map.Key}"));
-        //            string condition = "WorkmanSL = @WorkmanSL"; // Adjust condition based on your table
+            // Create a preview datatable
+            DataTable dtPreview = new DataTable();
+            dtPreview.Columns.Add("WorkmanSL");
+            dtPreview.Columns.Add("Column_Changed");
+            dtPreview.Columns.Add("Current_DB_Value");
+            dtPreview.Columns.Add("New_Excel_Value");
+            dtPreview.Columns.Add("Preview_Status");
 
-        //            string query = $"UPDATE tbl_Employee_Mustertable SET {setClause} WHERE {condition}";
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
 
-        //            using (SqlCommand cmd = new SqlCommand(query, dbcl.Conn))
-        //            {
-        //                // Add parameters for each column mapping
-        //                foreach (var map in columnMapping)
-        //                {
-        //                    cmd.Parameters.AddWithValue($"@{map.Key}", row[map.Value]);
-        //                }
+            foreach (DataRow row in excelData.Rows)
+            {
+                string workmanSL = row["WorkmanSL"]?.ToString();
+                if (string.IsNullOrEmpty(workmanSL)) continue;
 
-        //                // Assuming WorkmanSL is unique for each row
-        //                cmd.Parameters.AddWithValue("@WorkmanSL", row["WorkmanSL"]);
+                string selectCols = string.Join(", ", columnMapping.Keys);
+                string selectQuery = $"SELECT {selectCols} FROM tbl_Employee_Mustertable WHERE WorkmanSL = @WorkmanSL";
 
-        //                try
-        //                {
-        //                    cmd.ExecuteNonQuery();
-        //                }
-        //                catch (Exception ex)
-        //                {
-        //                    lbl_msg2.Text = $"Error updating database: {ex.Message}";
-        //                    lbl_msg2.CssClass = "text-danger";
-        //                    return; // Stop further execution if there's an error
-        //                }
-        //            }
-        //        }
+                using (SqlCommand cmd = new SqlCommand(selectQuery, dbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@WorkmanSL", workmanSL);
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            foreach (var map in columnMapping)
+                            {
+                                string dbColName = map.Key;
+                                string excelColName = map.Value;
 
-        //        // Disconnect from the database
-        //        dbcl.DisconnectDb();
+                                // Ignore the Key Column in comparisons to avoid cluttering preview
+                                if (dbColName.Equals("WorkmanSL", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    continue;
+                                }
 
-        //        lbl_msg2.Text = "Database updated successfully!";
-        //        lbl_msg2.CssClass = "text-success";
-        //    }
-        //    else
-        //    {
-        //        lbl_msg2.Text = "Mapping or Excel data is missing.";
-        //        lbl_msg2.CssClass = "text-danger";
-        //    }
-        //}
+                                string currentDbVal = reader[dbColName]?.ToString();
+                                string newExcelVal = row[excelColName]?.ToString();
 
+                                DataRow previewRow = dtPreview.NewRow();
+                                previewRow["WorkmanSL"] = workmanSL;
+                                previewRow["Column_Changed"] = dbColName;
+                                previewRow["Current_DB_Value"] = currentDbVal;
+                                previewRow["New_Excel_Value"] = newExcelVal;
 
-        //protected void btnUpdateDatabase_Click(object sender, EventArgs e)
-        //{
-        //    DataTable excelData = Session["ExcelData"] as DataTable;
-        //    Dictionary<string, string> columnMapping = Session["ColumnMapping"] as Dictionary<string, string>;
+                                if (currentDbVal != newExcelVal)
+                                {
+                                    previewRow["Preview_Status"] = "Will Update";
+                                }
+                                else
+                                {
+                                    previewRow["Preview_Status"] = "No Change";
+                                }
+                                dtPreview.Rows.Add(previewRow);
+                            }
+                        }
+                        else
+                        {
+                            DataRow previewRow = dtPreview.NewRow();
+                            previewRow["WorkmanSL"] = workmanSL;
+                            previewRow["Column_Changed"] = "ALL";
+                            previewRow["Preview_Status"] = "Error: WorkmanSL Not Found in DB";
+                            dtPreview.Rows.Add(previewRow);
+                        }
+                    }
+                }
+            }
 
-        //    if (excelData != null && columnMapping != null)
-        //    {
-        //        dbcl.Sqlconnection();
-        //        dbcl.ConnectDb();
+            dbcl.DisconnectDb();
 
-        //        foreach (DataRow row in excelData.Rows)
-        //        {
-        //            // Build dynamic SQL query
-        //            string setClause = string.Join(", ", columnMapping.Select(map => $"{map.Key} = @{map.Key}"));
-        //            string condition = "WorkmanSL = @WorkmanSL";
+            GridViewPreview.DataSource = dtPreview;
+            GridViewPreview.DataBind();
+            Session["PreviewData"] = dtPreview;
 
-        //            string query = $"UPDATE tbl_Employee_Mustertable SET {setClause} WHERE {condition}";
+            divSetup.Visible = false;
+            divPreview.Visible = true;
+        }
 
-        //            using (SqlCommand cmd = new SqlCommand(query, dbcl.Conn))
-        //            {
-        //                // Add parameters for each column mapping
-        //                foreach (var map in columnMapping)
-        //                {
-        //                    string databaseColumn = map.Key; // Database column
-        //                    string excelColumn = map.Value; // Corresponding Excel column
+        protected void btnCancel_Click(object sender, EventArgs e)
+        {
+            divSetup.Visible = true;
+            divPreview.Visible = false;
+            lbl_msg3.Text = "";
+        }
 
-        //                    // Assign the correct value from the Excel data
-        //                    if (excelData.Columns.Contains(excelColumn))
-        //                    {
-        //                        cmd.Parameters.AddWithValue($"@{databaseColumn}", row[excelColumn]);
-        //                    }
-        //                    else
-        //                    {
-        //                        lbl_msg2.Text = $"Excel column '{excelColumn}' not found.";
-        //                        lbl_msg2.CssClass = "text-danger";
-        //                        return;
-        //                    }
-        //                }
-
-        //                // Add the condition parameter (e.g., WorkmanSL)
-        //                if (excelData.Columns.Contains("WorkmanSL"))
-        //                {
-        //                    cmd.Parameters.AddWithValue("@WorkmanSL", row["WorkmanSL"]);
-        //                }
-        //                else
-        //                {
-        //                    lbl_msg2.Text = "WorkmanSL column not found in the uploaded Excel file.";
-        //                    lbl_msg2.CssClass = "text-danger";
-        //                    return;
-        //                }
-
-        //                try
-        //                {
-        //                    cmd.ExecuteNonQuery();
-        //                }
-        //                catch (Exception ex)
-        //                {
-        //                    lbl_msg2.Text = $"Error updating database: {ex.Message}";
-        //                    lbl_msg2.CssClass = "text-danger";
-        //                    return;
-        //                }
-        //            }
-        //        }
-
-        //        dbcl.DisconnectDb();
-
-        //        lbl_msg2.Text = "Database updated successfully!";
-        //        lbl_msg2.CssClass = "text-success";
-        //    }
-        //    else
-        //    {
-        //        lbl_msg2.Text = "Mapping or Excel data is missing.";
-        //        lbl_msg2.CssClass = "text-danger";
-        //    }
-        //}
-
-
-        protected void btnUpdateDatabase_Click(object sender, EventArgs e)
+        // --- EXECUTING THE ACTUAL UPDATE AFTER PREVIEW ---
+        protected void btnConfirmUpdate_Click(object sender, EventArgs e)
         {
             DataTable excelData = Session["ExcelData"] as DataTable;
             Dictionary<string, string> columnMapping = Session["ColumnMapping"] as Dictionary<string, string>;
 
             if (excelData != null && columnMapping != null)
             {
-                // Add a Status column to track the update status
                 if (!excelData.Columns.Contains("Status"))
                     excelData.Columns.Add("Status", typeof(string));
+
+                // Filter out WorkmanSL from the mapping so we don't try to update the primary key
+                var updateMapping = columnMapping
+                    .Where(m => !m.Key.Equals("WorkmanSL", StringComparison.OrdinalIgnoreCase))
+                    .ToDictionary(m => m.Key, m => m.Value);
+
+                if (updateMapping.Count == 0)
+                {
+                    lbl_msg3.Text = "No valid columns mapped for update (WorkmanSL cannot be updated).";
+                    lbl_msg3.CssClass = "text-danger";
+                    return;
+                }
 
                 dbcl.Sqlconnection();
                 dbcl.ConnectDb();
@@ -544,86 +370,82 @@ namespace WebApplication1.bussiness.production
                 {
                     try
                     {
-                        // Build dynamic SQL query
-                        string setClause = string.Join(", ", columnMapping.Select(map => $"{map.Key} = @{map.Key}"));
+                        string setClause = string.Join(", ", updateMapping.Select(map => $"{map.Key} = @{map.Key}"));
                         string condition = "WorkmanSL = @WorkmanSL";
 
                         string query = $"UPDATE tbl_Employee_Mustertable SET {setClause} WHERE {condition}";
                         List<string> logDetails = new List<string> { $"SQL Query: {query}" };
+                        List<string> empUpdateDetails = new List<string>();
 
                         using (SqlCommand cmd = new SqlCommand(query, dbcl.Conn))
                         {
-                            // Add parameters for each column mapping
-                            foreach (var map in columnMapping)
+                            // Add parameters only for the filtered columns
+                            foreach (var map in updateMapping)
                             {
-                                string databaseColumn = map.Key; // Database column
-                                string excelColumn = map.Value; // Corresponding Excel column
+                                string databaseColumn = map.Key;
+                                string excelColumn = map.Value;
 
                                 if (excelData.Columns.Contains(excelColumn))
                                 {
                                     object value = row[excelColumn];
                                     cmd.Parameters.AddWithValue($"@{databaseColumn}", value);
                                     logDetails.Add($"{databaseColumn} = {value}");
+                                    empUpdateDetails.Add($"[{databaseColumn}]='{value}'");
                                 }
                                 else
                                 {
-                                    LogError($"Excel column '{excelColumn}' not found."); // Log error if column missing
+                                    LogError($"Excel column '{excelColumn}' not found.");
                                     return;
                                 }
                             }
 
-                            // Add the condition parameter (e.g., WorkmanSL)
+                            object workmanSL = null;
                             if (excelData.Columns.Contains("WorkmanSL"))
                             {
-                                object workmanSL = row["WorkmanSL"];
+                                workmanSL = row["WorkmanSL"];
                                 cmd.Parameters.AddWithValue("@WorkmanSL", workmanSL);
                                 logDetails.Add($"WorkmanSL = {workmanSL}");
                             }
                             else
                             {
-
                                 LogError("WorkmanSL column not found in the uploaded Excel file.");
                                 row["Status"] = "Error: WorkmanSL column not found";
                                 continue;
-                                //return;
                             }
 
-                            // Execute query and check rows affected
                             int rowsAffected = cmd.ExecuteNonQuery();
                             if (rowsAffected > 0)
                             {
                                 row["Status"] = "Success: Row updated successfully";
+                                string updateString = string.Join(", ", empUpdateDetails);
+                                LogAudit(workmanSL.ToString(), "BULK_UPDATE", $"Updated Values: {updateString}");
                             }
                             else
                             {
                                 row["Status"] = "Error: No rows updated, WorkmanSL not found.";
                             }
 
-                            // Log the query and parameters
                             LogQuery(string.Join(Environment.NewLine, logDetails));
                         }
-
                     }
                     catch (Exception ex)
                     {
                         row["Status"] = $"Error: {ex.Message}";
                         LogError($"Error executing query: {ex.Message}");
-                        return;
                     }
                 }
 
                 dbcl.DisconnectDb();
-
-                // Export the updated DataTable to Excel
                 ExportToExcel(excelData);
 
-                lbl_msg2.Text = "Database updated successfully!";
-                lbl_msg2.CssClass = "text-success";
+                lbl_msg3.Text = "Database updated successfully! Results downloaded.";
+                lbl_msg3.CssClass = "text-success font-weight-bold";
+                btnConfirmUpdate.Enabled = false;
             }
             else
             {
-                lbl_msg2.Text = "Mapping or Excel data is missing.";
-                lbl_msg2.CssClass = "text-danger";
+                lbl_msg3.Text = "Session expired or data missing. Please start over.";
+                lbl_msg3.CssClass = "text-danger";
             }
         }
 
@@ -650,19 +472,39 @@ namespace WebApplication1.bussiness.production
             }
         }
 
+        private void LogAudit(string emp, string type, string details)
+        {
+            try
+            {
+                string logPath = Server.MapPath("~/bussiness/production/Logs/EmployeeEdits/");
+                if (!Directory.Exists(logPath)) Directory.CreateDirectory(logPath);
 
-        // Logging methods
+                string userName = Session["USERNAME"] != null ? Session["USERNAME"].ToString() : "System";
+
+                string line = string.Format("{0:yyyy-MM-dd HH:mm:ss} | {1} | {2} | By: {3}{4}", DateTime.Now, type, details, userName, Environment.NewLine);
+                File.AppendAllText(Path.Combine(logPath, "EmpLog_" + emp + ".txt"), line);
+            }
+            catch { }
+        }
+
         private void LogQuery(string message)
         {
-            string logFilePath = Server.MapPath("~/bussiness/production/Logs/QueryLog.txt");
-            File.AppendAllText(logFilePath, $"{DateTime.Now}: {message}{Environment.NewLine}");
+            try
+            {
+                string logFilePath = Server.MapPath("~/bussiness/production/Logs/QueryLog.txt");
+                File.AppendAllText(logFilePath, $"{DateTime.Now}: {message}{Environment.NewLine}");
+            }
+            catch { }
         }
 
         private void LogError(string message)
         {
-            string logFilePath = Server.MapPath("~/bussiness/production/Logs/ErrorLog.txt");
-            File.AppendAllText(logFilePath, $"{DateTime.Now}: {message}{Environment.NewLine}");
+            try
+            {
+                string logFilePath = Server.MapPath("~/bussiness/production/Logs/ErrorLog.txt");
+                File.AppendAllText(logFilePath, $"{DateTime.Now}: {message}{Environment.NewLine}");
+            }
+            catch { }
         }
-
     }
 }

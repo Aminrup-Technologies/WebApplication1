@@ -10,150 +10,132 @@
 namespace WebApplication1.bussiness.production {
     
     
-    public partial class bulk_employeeupdate {
+    public partial class manage_jobid_v2 {
         
         /// <summary>
-        /// divSetup control.
+        /// ScriptManager1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divSetup;
+        protected global::System.Web.UI.ScriptManager ScriptManager1;
         
         /// <summary>
-        /// GridViewColumns control.
+        /// UpdatePanel1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView GridViewColumns;
+        protected global::System.Web.UI.UpdatePanel UpdatePanel1;
         
         /// <summary>
-        /// lbl_msg control.
+        /// lbl_month control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbl_msg;
+        protected global::System.Web.UI.WebControls.Label lbl_month;
         
         /// <summary>
-        /// FileUploadExcel control.
+        /// lbl_monthcode control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.FileUpload FileUploadExcel;
+        protected global::System.Web.UI.WebControls.Label lbl_monthcode;
         
         /// <summary>
-        /// btnUploadExcel control.
+        /// lbl_year control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnUploadExcel;
+        protected global::System.Web.UI.WebControls.Label lbl_year;
         
         /// <summary>
-        /// lblUploadMessage control.
+        /// btn_prevmonth control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblUploadMessage;
+        protected global::System.Web.UI.WebControls.LinkButton btn_prevmonth;
         
         /// <summary>
-        /// btnMapColumnsAndUpload control.
+        /// btn_currentdata control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnMapColumnsAndUpload;
+        protected global::System.Web.UI.WebControls.LinkButton btn_currentdata;
         
         /// <summary>
-        /// GridViewColumnMapping control.
+        /// btn_nextmonth control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView GridViewColumnMapping;
+        protected global::System.Web.UI.WebControls.LinkButton btn_nextmonth;
         
         /// <summary>
-        /// lbl_msg2 control.
+        /// DDL_JobStatus control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbl_msg2;
+        protected global::System.Web.UI.WebControls.DropDownList DDL_JobStatus;
         
         /// <summary>
-        /// btnMapColumns control.
+        /// DDL_BillingType control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnMapColumns;
+        protected global::System.Web.UI.WebControls.DropDownList DDL_BillingType;
         
         /// <summary>
-        /// btnPreviewChanges control.
+        /// txt_quicksearch control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnPreviewChanges;
+        protected global::System.Web.UI.WebControls.TextBox txt_quicksearch;
         
         /// <summary>
-        /// divPreview control.
+        /// btn_reset control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divPreview;
+        protected global::System.Web.UI.WebControls.LinkButton btn_reset;
         
         /// <summary>
-        /// GridViewPreview control.
+        /// btn_submit control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView GridViewPreview;
+        protected global::System.Web.UI.WebControls.LinkButton btn_submit;
         
         /// <summary>
-        /// lbl_msg3 control.
+        /// GridView1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbl_msg3;
-        
-        /// <summary>
-        /// btnCancel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnCancel;
-        
-        /// <summary>
-        /// btnConfirmUpdate control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnConfirmUpdate;
+        protected global::System.Web.UI.WebControls.GridView GridView1;
     }
 }

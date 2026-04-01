@@ -35,14 +35,14 @@
     </asp:ContentPlaceHolder>
 
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=UA-197761506-1"></script>
-    <script>
+    <script type="text/javascript">
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
         gtag('config', 'UA-197761506-1');
     </script>
 
-    <script>
+    <script type="text/javascript">
       var _paq = window._paq = window._paq || [];
       _paq.push(['trackPageView']);
       _paq.push(['enableLinkTracking']);
@@ -116,10 +116,8 @@
 
         $(document).ready(function () {
             startIdleTimer();
-
             // Update display every second
             setInterval(updateDisplay, 1000);
-
             // Event listeners for user activity
             document.addEventListener("mousemove", handleUserActivity);
             document.addEventListener("keypress", handleUserActivity);

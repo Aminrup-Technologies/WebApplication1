@@ -2,9 +2,20 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <style type="text/css">
-        .top-label { font-weight: 600; margin-bottom: 5px; color: #333; }
-        .req-star { color: red; }
-        .doc-list label { margin-left: 5px; font-weight: normal; }
+        .top-label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .req-star {
+            color: red;
+        }
+
+        .doc-list label {
+            margin-left: 5px;
+            font-weight: normal;
+        }
     </style>
 </asp:Content>
 
@@ -14,39 +25,64 @@
             <div class="row">
                 <div class="col-md-12 col-sm-12">
                     <div class="x_panel">
-                        <div class="x_title">
-                            <h2>Step 1: Create JOB ID <small>Smart Workflow</small></h2>
+                        <div class="x_title" style="display: flex; justify-content: space-between; align-items: center;">
+                            <h2 style="margin: 0;">Step 1: Create JOB ID <small>Smart Workflow</small></h2>
+    
+                            <a href="create_jobid.aspx" 
+                               style="display: inline-block; padding: 6px 12px; cursor: pointer; background-color: #6c757d; color: white; border: none; border-radius: 4px; font-weight: bold; text-decoration: none; font-size: 14px;">
+                                Switch to OLD Version
+                            </a>
+    
                             <div class="clearfix"></div>
                         </div>
 
                         <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
                         <asp:UpdatePanel ID="UpdatePanel1" runat="server">
                             <ContentTemplate>
-                                <div class="x_content bg-light p-2 mb-3" style="border-radius: 5px;">
+                                <%--<div class="x_content bg-light p-2 mb-3" style="border-radius: 5px;">
                                     <div class="row" id="Div1" runat="server" visible="true">
                                         <div class="col-md-6 col-sm-12 text-center" style="vertical-align: middle;">
                                             <asp:Button ID="btn_dateswap" runat="server" Text="Today" CssClass="btn btn-success btn-sm" OnClick="btn_dateswap_Click" CausesValidation="false" />
                                         </div>
                                         <div class="col-md-6 col-sm-12 text-center" style="vertical-align: middle; font-size: 16px;">
                                             <span style="font-weight: bold; color: darkblue;">Date: </span>
-                                            <asp:Label ID="lbl_jobdate" runat="server" Text="" ForeColor="Blue" Font-Bold="true"></asp:Label> | 
+                                            <asp:Label ID="lbl_jobdate" runat="server" Text="" ForeColor="Blue" Font-Bold="true"></asp:Label>
+                                            | 
                                             <span style="font-weight: bold; color: darkblue;">Day: </span>
                                             <asp:Label ID="lbl_jobday" runat="server" Text="" ForeColor="Blue" Font-Bold="true"></asp:Label>
+                                        </div>
+                                    </div>
+                                </div>--%>
+
+                                <div class="x_content bg-light p-2 mb-3" style="border-radius: 5px;">
+                                    <div class="row" id="Div1" runat="server" visible="true">
+                                        <div class="col-md-12 text-center" style="vertical-align: middle; font-size: 16px;">
+                                            <span style="font-weight: bold; color: darkblue;">Select JOB Date: </span>
+                                            <asp:TextBox ID="txt_jobdate" runat="server" TextMode="Date" CssClass="form-control form-control-sm d-inline-block" Style="width: auto; font-weight: bold;" AutoPostBack="true" OnTextChanged="txt_jobdate_TextChanged"></asp:TextBox>
+                                            <span style="font-weight: bold; color: darkblue; margin-left: 15px;">Day: </span>
+                                            <asp:Label ID="lbl_jobday" runat="server" Text="" ForeColor="Blue" Font-Bold="true"></asp:Label>
+
+                                            <div id="div_existing_jobs" runat="server" visible="false" class="mt-2">
+                                                <span class="text-danger font-weight-bold" style="font-size: 13px;">
+                                                    <i class="fa fa-exclamation-triangle"></i>Warning: You already have Active JOB(s) for this date: 
+                                                    <asp:Label ID="lbl_existing_jobs_list" runat="server" CssClass="badge bg-red"></asp:Label>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="x_content">
                                     <div id="jobid_creation" runat="server" visible="true">
-                                        
+
                                         <div class="row">
                                             <div class="col-md-3 col-sm-6 col-xs-12 form-group">
                                                 <label class="top-label">Work Region <span class="req-star">*</span></label>
                                                 <asp:DropDownList ID="DDL_Region" runat="server" CssClass="form-control form-control-sm rounded" AutoPostBack="true" OnSelectedIndexChanged="DDL_Region_SelectedIndexChanged"></asp:DropDownList>
                                                 <asp:RequiredFieldValidator ID="RequiredFieldValidator7" ValidationGroup="Submit" runat="server" CssClass="text-danger" Display="Dynamic" ErrorMessage="Required" ControlToValidate="DDL_Region" InitialValue="Please Select Option"></asp:RequiredFieldValidator>
-                                                
+
                                                 <div id="div_gps_status" runat="server" visible="false" class="mt-1 small">
-                                                    <span id="gps_indicator" class="text-warning"><i class="fa fa-spinner fa-spin"></i> Acquiring GPS...</span>
+                                                    <span id="gps_indicator" class="text-warning"><i class="fa fa-spinner fa-spin"></i>Acquiring GPS...</span>
                                                 </div>
                                                 <asp:HiddenField ID="hf_latitude" runat="server" />
                                                 <asp:HiddenField ID="hf_longitude" runat="server" />
@@ -56,13 +92,31 @@
                                                 <label class="top-label">Work Order <span class="req-star">*</span></label>
                                                 <asp:DropDownList ID="DDL_Workorder" runat="server" CssClass="form-control form-control-sm rounded" AutoPostBack="true" OnSelectedIndexChanged="DDL_Workorder_SelectedIndexChanged"></asp:DropDownList>
                                                 <asp:RequiredFieldValidator ID="RequiredFieldValidator6" ValidationGroup="Submit" runat="server" CssClass="text-danger" Display="Dynamic" ErrorMessage="Required" ControlToValidate="DDL_Workorder" InitialValue="Please Select Option"></asp:RequiredFieldValidator>
-                                                
+
                                                 <div class="mt-1" id="div_wo_badges" runat="server" visible="false">
                                                     <asp:Label ID="lbl_ContractNature" runat="server" CssClass="badge bg-blue"></asp:Label>
                                                     <asp:Label ID="lbl_BillingNature" runat="server" CssClass="badge bg-green"></asp:Label>
                                                 </div>
                                             </div>
 
+                                            <div class="col-md-3 col-sm-6 col-xs-12 form-group" id="div_BillingType" runat="server">
+                                            <label class="top-label">JOB Type (Billing) <span class="req-star">*</span></label>
+                                            <asp:DropDownList ID="DDL_BillingType" runat="server" CssClass="form-control form-control-sm rounded" AutoPostBack="true" OnSelectedIndexChanged="DDL_BillingType_SelectedIndexChanged"></asp:DropDownList>
+                                            <asp:RequiredFieldValidator ID="RFV1" ValidationGroup="Submit" runat="server" CssClass="text-danger" Display="Dynamic" ErrorMessage="Required" ControlToValidate="DDL_BillingType" InitialValue="Please Select Option"></asp:RequiredFieldValidator>
+                                            </div>
+
+                                            <div class="col-md-6 col-sm-12 col-xs-12 form-group" id="div_NonBillingAlert" runat="server" visible="false">
+                                                <div class="alert alert-info" style="padding: 6px; margin-bottom: 0;">
+                                                    <i class="fa fa-info-circle"></i><strong>Non-Billing Job:</strong> Permit upload will be bypassed.
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 col-sm-6 col-xs-12 form-group">
+                                                <label class="top-label">Attendance Code <span class="req-star">*</span></label>
+                                                <asp:DropDownList ID="DDL_AttenCode" runat="server" CssClass="form-control form-control-sm rounded"></asp:DropDownList>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-2">
                                             <div class="col-md-3 col-sm-6 col-xs-12 form-group">
                                                 <label class="top-label">Work-Site <span class="req-star">*</span></label>
                                                 <asp:DropDownList ID="DDL_Worksite" runat="server" CssClass="form-control form-control-sm rounded" AutoPostBack="true" OnSelectedIndexChanged="DDL_Worksite_SelectedIndexChanged"></asp:DropDownList>
@@ -74,25 +128,6 @@
                                                 <asp:DropDownList ID="DDL_Approver" runat="server" CssClass="form-control form-control-sm rounded"></asp:DropDownList>
                                                 <asp:RequiredFieldValidator ID="RequiredFieldValidator8" ValidationGroup="Submit" runat="server" CssClass="text-danger" Display="Dynamic" ErrorMessage="Required" ControlToValidate="DDL_Approver" InitialValue="Please Select Option"></asp:RequiredFieldValidator>
                                             </div>
-                                        </div>
-
-                                        <div class="row mt-2">
-                                            <div class="col-md-3 col-sm-6 col-xs-12 form-group" id="div_BillingType" runat="server">
-                                                <label class="top-label">JOB Type (Billing) <span class="req-star">*</span></label>
-                                                <asp:DropDownList ID="DDL_BillingType" runat="server" CssClass="form-control form-control-sm rounded"></asp:DropDownList>
-                                                <asp:RequiredFieldValidator ID="RFV1" ValidationGroup="Submit" runat="server" CssClass="text-danger" Display="Dynamic" ErrorMessage="Required" ControlToValidate="DDL_BillingType" InitialValue="Please Select Option"></asp:RequiredFieldValidator>
-                                            </div>
-
-                                            <div class="col-md-6 col-sm-12 col-xs-12 form-group" id="div_NonBillingAlert" runat="server" visible="false">
-                                                <div class="alert alert-info" style="padding: 6px; margin-bottom: 0;">
-                                                    <i class="fa fa-info-circle"></i> <strong>Non-Billing Job:</strong> Permit upload will be bypassed.
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-3 col-sm-6 col-xs-12 form-group">
-                                                <label class="top-label">Attendance Code <span class="req-star">*</span></label>
-                                                <asp:DropDownList ID="DDL_AttenCode" runat="server" CssClass="form-control form-control-sm rounded"></asp:DropDownList>
-                                            </div>
 
                                             <div class="col-md-3 col-sm-6 col-xs-12 form-group">
                                                 <label class="top-label">Location <span class="req-star">*</span></label>
@@ -103,8 +138,21 @@
                                         <div class="row mt-2">
                                             <div class="col-md-3 col-sm-6 col-xs-12 form-group">
                                                 <label class="top-label">Work Permit No <span class="req-star">*</span></label>
-                                                <asp:TextBox ID="txt_permitno" runat="server" MaxLength="100" CssClass="form-control form-control-sm rounded"></asp:TextBox>
-                                                <asp:RequiredFieldValidator ID="RequiredFieldValidator3" ValidationGroup="Submit" runat="server" CssClass="text-danger" Display="Dynamic" ErrorMessage="Required" ControlToValidate="txt_permitno"></asp:RequiredFieldValidator>
+                                                <asp:TextBox
+                                                    ID="txt_permitno" runat="server"
+                                                    MaxLength="100" CssClass="form-control form-control-sm rounded"
+                                                    onkeypress="return validatePermitNo(event);" onkeyup="updatePermitCount();">
+                                                </asp:TextBox>
+                                                <small id="permitCount" class="text-muted">0 / 100</small>
+                                                <asp:RequiredFieldValidator
+                                                    ID="RequiredFieldValidator3"
+                                                    ValidationGroup="Submit"
+                                                    runat="server"
+                                                    CssClass="text-danger"
+                                                    Display="Dynamic"
+                                                    ErrorMessage="Required"
+                                                    ControlToValidate="txt_permitno">
+                                                </asp:RequiredFieldValidator>
                                             </div>
 
                                             <div class="col-md-3 col-sm-6 col-xs-12 form-group">
@@ -115,17 +163,34 @@
 
                                             <div class="col-md-6 col-sm-12 col-xs-12 form-group">
                                                 <label class="top-label">JOB Title <span class="req-star">*</span></label>
-                                                <asp:TextBox ID="txt_jobtitle" runat="server" CssClass="form-control form-control-sm rounded" TextMode="MultiLine" Rows="2"></asp:TextBox>
-                                                <asp:RequiredFieldValidator ID="RequiredFieldValidator5" ValidationGroup="Submit" runat="server" CssClass="text-danger" Display="Dynamic" ErrorMessage="Required" ControlToValidate="txt_jobtitle"></asp:RequiredFieldValidator>
+
+                                                <asp:TextBox
+                                                    ID="txt_jobtitle"
+                                                    runat="server"
+                                                    CssClass="form-control form-control-sm rounded"
+                                                    MaxLength="200"
+                                                    onkeypress="return validateJobTitle(event);"
+                                                    onkeyup="updateCharCount();"></asp:TextBox>
+
+                                                <small id="charCount" class="text-muted">0 / 200</small>
+                                                <asp:CustomValidator ID="cv_jobtitle_words" runat="server" ControlToValidate="txt_jobtitle" ValidationGroup="Submit" CssClass="text-danger" Display="Dynamic" ErrorMessage="Must be > 3 words" ClientValidationFunction="validateWordCount"></asp:CustomValidator>
+                                                <asp:RequiredFieldValidator
+                                                    ID="RequiredFieldValidator5"
+                                                    ValidationGroup="Submit"
+                                                    runat="server"
+                                                    CssClass="text-danger"
+                                                    Display="Dynamic"
+                                                    ErrorMessage="Required"
+                                                    ControlToValidate="txt_jobtitle"></asp:RequiredFieldValidator>
                                             </div>
                                         </div>
 
                                         <div class="row mt-2" id="div_documents" runat="server" visible="false">
                                             <div class="col-md-12">
                                                 <div class="ln_solid"></div>
-                                                <label class="top-label text-primary"><i class="fa fa-file-text-o"></i> Required Digital Documents</label>
+                                                <label class="top-label text-primary"><i class="fa fa-file-text-o"></i>Required Digital Documents</label>
                                                 <p class="text-muted small">Mandatory documents are locked. Select any additional requirements.</p>
-                                                
+
                                                 <div class="well well-sm doc-list" style="background-color: #f9f9f9;">
                                                     <asp:CheckBoxList ID="CBL_Documents" runat="server" RepeatColumns="3" RepeatDirection="Horizontal" CssClass="table table-borderless table-condensed"></asp:CheckBoxList>
                                                 </div>
@@ -143,6 +208,7 @@
                                         <div class="row">
                                             <div class="col-md-12 text-center">
                                                 <asp:Button ID="btn_cancel" runat="server" Text="Cancel" CssClass="btn btn-danger btn-sm" OnClick="btn_cancel_Click" CausesValidation="false" />
+                                                <asp:Button ID="btn_reset" runat="server" Text="Reset Form" CssClass="btn btn-warning btn-sm" OnClick="btn_reset_Click" CausesValidation="false" />
                                                 <asp:Button ID="btn_submit" runat="server" Text="Create JOB & Continue" ValidationGroup="Submit" CssClass="btn btn-success btn-sm" OnClick="btn_submit_Click" />
                                             </div>
                                         </div>
@@ -163,10 +229,65 @@
             new PNotify({
                 title: title,
                 text: text,
-                type: type, 
+                type: type,
                 styling: 'bootstrap3',
                 delay: 4000
             });
+        }
+
+        function validateWordCount(sender, args) {
+            var val = args.Value.trim();
+            // Replace multiple spaces with a single space
+            val = val.replace(/\s+/g, ' ');
+            var wordCount = val === "" ? 0 : val.split(' ').length;
+
+            if (wordCount <= 3) {
+                args.IsValid = false;
+            } else {
+                args.IsValid = true;
+            }
+        }
+
+        function validateJobTitle(e) {
+            var key = e.keyCode || e.which;
+            // block Enter key
+            if (key === 13)
+                return false;
+            var char = String.fromCharCode(key);
+            var regex = /^[a-zA-Z0-9 .,\-()&\/]*$/;
+            if (!regex.test(char))
+                return false;
+            return true;
+        }
+
+        function validatePermitNo(e) {
+            var key = e.keyCode || e.which;
+            var char = String.fromCharCode(key);
+
+            // allow control keys
+            if (key === 8 || key === 46 || key === 37 || key === 39)
+                return true;
+
+            // allow letters, numbers, comma, slash
+            var regex = /^[a-zA-Z0-9,\/]*$/;
+
+            if (!regex.test(char))
+                return false;
+
+            return true;
+        }
+
+        function updatePermitCount() {
+            var textbox = document.getElementById('<%= txt_permitno.ClientID %>');
+            var count = textbox.value.length;
+
+            document.getElementById("permitCount").innerHTML = count + " / 100";
+        }
+
+        function updateCharCount() {
+            var textbox = document.getElementById('<%= txt_jobtitle.ClientID %>');
+            var count = textbox.value.length;
+            document.getElementById("charCount").innerHTML = count + " / 200";
         }
 
         // HTML5 Geolocation API
@@ -176,17 +297,17 @@
                     // Populate hidden fields
                     document.getElementById('<%= hf_latitude.ClientID %>').value = position.coords.latitude;
                     document.getElementById('<%= hf_longitude.ClientID %>').value = position.coords.longitude;
-                    
+
                     // Update UI to show success
                     let indicator = document.getElementById('gps_indicator');
-                    if(indicator) {
+                    if (indicator) {
                         indicator.innerHTML = "<i class='fa fa-check text-success'></i> GPS Captured";
                         indicator.className = "text-success";
                     }
                 }, function (error) {
                     showPNotify('GPS Error', 'Please enable location services for this region.', 'error');
                     let indicator = document.getElementById('gps_indicator');
-                    if(indicator) {
+                    if (indicator) {
                         indicator.innerHTML = "<i class='fa fa-times text-danger'></i> Location Denied";
                         indicator.className = "text-danger";
                     }

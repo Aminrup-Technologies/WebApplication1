@@ -22,7 +22,10 @@
                 <div class="col-md-12 col-sm-12">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Step 2: Permit Attachment <small>Smart Workflow</small></h2>
+                            <h2>Step 2: Permit Attachment <small>Smart Workflow</small></h2> &nbsp;
+                            <a href="job_permitupload.aspx"
+                                style="display: inline-block; padding: 6px 12px; cursor: pointer; background-color: #6c757d; color: white; border: none; border-radius: 4px; font-weight: bold; text-decoration: none; font-size: 14px;">Switch to OLD Version
+                            </a>
                             <div class="clearfix"></div>
                         </div>
 

@@ -224,7 +224,7 @@
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="right_col" role="main">
-        <div class="row">
+        <div class="row" EnableViewState="false">
 
             <div class="col-md-12 col-sm-12">
                 <div class="modern-card">

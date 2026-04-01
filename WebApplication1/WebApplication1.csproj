@@ -309,6 +309,7 @@
     <Content Include="bussiness\production\images\visa.png" />
     <Content Include="bussiness\production\jobapp_controller.aspx" />
     <Content Include="bussiness\production\jobstatus_flow.ascx" />
+    <Content Include="bussiness\production\jobs_and_manpower_v2.aspx" />
     <Content Include="bussiness\production\jobs_approval.aspx" />
     <Content Include="bussiness\production\jobs_approverdash.aspx" />
     <Content Include="bussiness\production\job_create_summary.aspx" />
@@ -318,6 +319,7 @@
     <Content Include="bussiness\production\js\jquery-1.9.1.js" />
     <Content Include="bussiness\production\login.aspx" />
     <Content Include="bussiness\production\magician.aspx" />
+    <Content Include="bussiness\production\manage_jobid_v2.aspx" />
     <Content Include="bussiness\production\manage_profile.aspx" />
     <Content Include="bussiness\production\manage_rolls.aspx" />
     <Content Include="bussiness\production\manage_rollsaccess.aspx" />
@@ -5531,6 +5533,13 @@
     <Compile Include="bussiness\production\jobstatus_flow.ascx.designer.cs">
       <DependentUpon>jobstatus_flow.ascx</DependentUpon>
     </Compile>
+    <Compile Include="bussiness\production\jobs_and_manpower_v2.aspx.cs">
+      <DependentUpon>jobs_and_manpower_v2.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\jobs_and_manpower_v2.aspx.designer.cs">
+      <DependentUpon>jobs_and_manpower_v2.aspx</DependentUpon>
+    </Compile>
     <Compile Include="bussiness\production\jobs_approval.aspx.cs">
       <DependentUpon>jobs_approval.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -5587,6 +5596,13 @@
     </Compile>
     <Compile Include="bussiness\production\magician.aspx.designer.cs">
       <DependentUpon>magician.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\manage_jobid_v2.aspx.cs">
+      <DependentUpon>manage_jobid_v2.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\manage_jobid_v2.aspx.designer.cs">
+      <DependentUpon>manage_jobid_v2.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\manage_profile.aspx.cs">
       <DependentUpon>manage_profile.aspx</DependentUpon>
@@ -5689,6 +5705,7 @@
       <DependentUpon>testing.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\SecurityDAL.cs" />
+    <Compile Include="bussiness\production\SessionKeys.cs" />
     <Compile Include="bussiness\production\Startup.cs" />
     <Compile Include="bussiness\production\str\strdshbrd.aspx.cs">
       <DependentUpon>strdshbrd.aspx</DependentUpon>
