@@ -214,6 +214,7 @@
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
     </Reference>
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
@@ -308,6 +309,7 @@
     <Content Include="bussiness\production\images\user.png" />
     <Content Include="bussiness\production\images\visa.png" />
     <Content Include="bussiness\production\jobapp_controller.aspx" />
+    <Content Include="bussiness\production\JobOverview.aspx" />
     <Content Include="bussiness\production\jobstatus_flow.ascx" />
     <Content Include="bussiness\production\jobs_and_manpower_v2.aspx" />
     <Content Include="bussiness\production\jobs_approval.aspx" />
@@ -331,6 +333,7 @@
     <Content Include="bussiness\production\pyrl_generate_f29.aspx" />
     <Content Include="bussiness\production\pyrl_managedashbrd.aspx" />
     <Content Include="bussiness\production\pyrl_upldadvc.aspx" />
+    <Content Include="bussiness\production\RolesOverview.aspx" />
     <Content Include="bussiness\production\rpts\A4.css" />
     <Content Include="bussiness\production\rpts\rpt_CombinedF16.aspx" />
     <Content Include="bussiness\production\rpts\supplymemo.aspx" />
@@ -339,6 +342,7 @@
     <Content Include="bussiness\production\usertoggle.aspx" />
     <Content Include="bussiness\production\viewupdate_empmustertabledata_v2.aspx" />
     <Content Include="bussiness\production\view_emp_mastertbldata_v2.aspx" />
+    <Content Include="bussiness\production\ViolationsOverview.aspx" />
     <Content Include="bussiness\production\vw_emp_attencal.aspx" />
     <Content Include="bussiness\production\vw_inchsupmem.aspx" />
     <Content Include="bussiness\production\vw_lineitemjobs.aspx" />
@@ -5526,6 +5530,13 @@
     <Compile Include="bussiness\production\jobapp_controller.aspx.designer.cs">
       <DependentUpon>jobapp_controller.aspx</DependentUpon>
     </Compile>
+    <Compile Include="bussiness\production\JobOverview.aspx.cs">
+      <DependentUpon>JobOverview.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\JobOverview.aspx.designer.cs">
+      <DependentUpon>JobOverview.aspx</DependentUpon>
+    </Compile>
     <Compile Include="bussiness\production\jobstatus_flow.ascx.cs">
       <DependentUpon>jobstatus_flow.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -5683,6 +5694,13 @@
     <Compile Include="bussiness\production\pyrl_upldadvc.aspx.designer.cs">
       <DependentUpon>pyrl_upldadvc.aspx</DependentUpon>
     </Compile>
+    <Compile Include="bussiness\production\RolesOverview.aspx.cs">
+      <DependentUpon>RolesOverview.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\RolesOverview.aspx.designer.cs">
+      <DependentUpon>RolesOverview.aspx</DependentUpon>
+    </Compile>
     <Compile Include="bussiness\production\rpts\rpt_CombinedF16.aspx.cs">
       <DependentUpon>rpt_CombinedF16.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -5735,6 +5753,13 @@
     </Compile>
     <Compile Include="bussiness\production\view_emp_mastertbldata_v2.aspx.designer.cs">
       <DependentUpon>view_emp_mastertbldata_v2.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\ViolationsOverview.aspx.cs">
+      <DependentUpon>ViolationsOverview.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\ViolationsOverview.aspx.designer.cs">
+      <DependentUpon>ViolationsOverview.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\vw_emp_attencal.aspx.cs">
       <DependentUpon>vw_emp_attencal.aspx</DependentUpon>

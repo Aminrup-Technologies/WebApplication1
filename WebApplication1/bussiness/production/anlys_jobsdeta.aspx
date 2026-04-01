@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="anlys_jobsdeta.aspx.cs" Inherits="WebApplication1.bussiness.production.anlys_jobsdeta" %>
+
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -69,6 +70,39 @@
                             </div>
                             <i class="fa fa-edit"></i>Daily Summary
 
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6" id="Div5" runat="server" visible="true">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Over Complaince</h2>
+                        <ul class="nav navbar-right panel_toolbox">
+                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                            </li>
+                        </ul>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <a class="btn btn-app" href="RolesOverview.aspx" id="A3" runat="server" visible="true">
+                            <div id="Div6" class="badge bg-green" runat="server">
+                                <asp:Label ID="Label4" runat="server" Text="Ok" Visible="true"></asp:Label>
+                            </div>
+                            <i class="fa fa-edit"></i>Roles
+                        </a>
+                        <a class="btn btn-app" href="JobOverview.aspx" id="A4" runat="server" visible="true">
+                            <div id="Div7" class="badge bg-warning" runat="server">
+                                <asp:Label ID="Label5" runat="server" Text="WIP" Visible="true"></asp:Label>
+                            </div>
+                            <i class="fa fa-edit"></i>JOB's
+                        </a>
+                        <a class="btn btn-app" href="ViolationsOverview.aspx" id="A5" runat="server" visible="true">
+                            <div id="Div8" class="badge bg-warning" runat="server">
+                                <asp:Label ID="Label6" runat="server" Text="WIP" Visible="true"></asp:Label>
+                            </div>
+                            <i class="fa fa-edit"></i>Violations
                         </a>
                     </div>
                 </div>
