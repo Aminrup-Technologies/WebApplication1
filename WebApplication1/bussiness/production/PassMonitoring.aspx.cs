@@ -10,23 +10,15 @@ using Newtonsoft.Json.Linq;
 
 namespace WebApplication1.bussiness.production
 {
-    public partial class ViolationsOverview : System.Web.UI.Page
+    public partial class PassMonitoring : System.Web.UI.Page
     {
-        // ==========================================
-        // CONFIGURATION VARIABLES
-        // ==========================================
         private static readonly string SupersetBaseUrl = "https://reports.aminruptechnologies.co.in";
-
-        // TODO: Replace with the same Embedded ID you put in the frontend script
-        private static readonly string EmbeddedId = "ab1b802a-4bda-4b4d-84e8-792484030cdb";
-
-        // TODO: Provide the Superset username and password of an account that has access to view this dashboard
+        private static readonly string EmbeddedId = "f2a0df6f-a0c6-4303-9943-3adcbc5db664";
         private static readonly string ServiceUsername = "magician";
         private static readonly string ServicePassword = "M@g1k_25";
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Enforce TLS 1.2
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         }
 
@@ -39,7 +31,6 @@ namespace WebApplication1.bussiness.production
             }
             catch (Exception ex)
             {
-                // CRITICAL FIX: Unwrap the AggregateException to get the REAL error message
                 string realError = ex.GetBaseException().Message;
                 return JsonConvert.SerializeObject(new { error = realError });
             }
@@ -49,7 +40,6 @@ namespace WebApplication1.bussiness.production
         {
             using (HttpClient client = new HttpClient())
             {
-                // STEP 1: Get the standard access token
                 var loginPayload = new
                 {
                     username = ServiceUsername,
@@ -58,7 +48,6 @@ namespace WebApplication1.bussiness.production
                 };
 
                 var loginContent = new StringContent(JsonConvert.SerializeObject(loginPayload), Encoding.UTF8, "application/json");
-
                 var loginResponse = await client.PostAsync($"{SupersetBaseUrl}/api/v1/security/login", loginContent).ConfigureAwait(false);
 
                 if (!loginResponse.IsSuccessStatusCode)
@@ -66,11 +55,8 @@ namespace WebApplication1.bussiness.production
                     var errorBody = await loginResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     throw new Exception($"Superset Login API Failed: {loginResponse.StatusCode} | Details: {errorBody}");
                 }
-
                 var loginResult = await loginResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var accessToken = JObject.Parse(loginResult)["access_token"].ToString();
-
-                // STEP 2: Request the Guest Token specific to this dashboard
                 var guestTokenPayload = new
                 {
                     user = new
@@ -87,11 +73,9 @@ namespace WebApplication1.bussiness.production
                 };
 
                 var guestContent = new StringContent(JsonConvert.SerializeObject(guestTokenPayload), Encoding.UTF8, "application/json");
-
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
                 var guestResponse = await client.PostAsync($"{SupersetBaseUrl}/api/v1/security/guest_token/", guestContent).ConfigureAwait(false);
-
                 if (!guestResponse.IsSuccessStatusCode)
                 {
                     var errorBody = await guestResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -100,7 +84,6 @@ namespace WebApplication1.bussiness.production
 
                 var guestResult = await guestResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var guestToken = JObject.Parse(guestResult)["token"].ToString();
-
                 return guestToken;
             }
         }

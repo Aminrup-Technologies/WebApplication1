@@ -271,6 +271,7 @@
     <Content Include="bussiness\production\bulk_employeeupdate.aspx" />
     <Content Include="bussiness\production\create_jobid_v2.aspx" />
     <Content Include="bussiness\production\create_supplymemo.aspx" />
+    <Content Include="bussiness\production\CSMDocShiftOverview.aspx" />
     <Content Include="bussiness\production\csm_tbtform.aspx" />
     <Content Include="bussiness\production\css\loader.css" />
     <Content Include="bussiness\production\css\Site.css" />
@@ -326,6 +327,7 @@
     <Content Include="bussiness\production\manage_rolls.aspx" />
     <Content Include="bussiness\production\manage_rollsaccess.aspx" />
     <Content Include="bussiness\production\overview.aspx" />
+    <Content Include="bussiness\production\PassMonitoring.aspx" />
     <Content Include="bussiness\production\payroll_controller.aspx" />
     <Content Include="bussiness\production\pyrl_approvedeductions.aspx" />
     <Content Include="bussiness\production\pyrl_deductionlist.aspx" />
@@ -5408,6 +5410,13 @@
     <Compile Include="bussiness\production\create_supplymemo.aspx.designer.cs">
       <DependentUpon>create_supplymemo.aspx</DependentUpon>
     </Compile>
+    <Compile Include="bussiness\production\CSMDocShiftOverview.aspx.cs">
+      <DependentUpon>CSMDocShiftOverview.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\CSMDocShiftOverview.aspx.designer.cs">
+      <DependentUpon>CSMDocShiftOverview.aspx</DependentUpon>
+    </Compile>
     <Compile Include="bussiness\production\csm_tbtform.aspx.cs">
       <DependentUpon>csm_tbtform.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -5643,6 +5652,13 @@
     </Compile>
     <Compile Include="bussiness\production\overview.aspx.designer.cs">
       <DependentUpon>overview.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\PassMonitoring.aspx.cs">
+      <DependentUpon>PassMonitoring.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\PassMonitoring.aspx.designer.cs">
+      <DependentUpon>PassMonitoring.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\payroll_controller.aspx.cs">
       <DependentUpon>payroll_controller.aspx</DependentUpon>

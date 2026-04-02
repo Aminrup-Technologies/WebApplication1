@@ -78,7 +78,7 @@
             <div class="col-md-6" id="Div5" runat="server" visible="true">
                 <div class="x_panel">
                     <div class="x_title">
-                        <h2>Over Complaince</h2>
+                        <h2>Overall Complaince</h2>
                         <ul class="nav navbar-right panel_toolbox">
                             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                             </li>
@@ -93,16 +93,28 @@
                             <i class="fa fa-edit"></i>Roles
                         </a>
                         <a class="btn btn-app" href="JobOverview.aspx" id="A4" runat="server" visible="true">
-                            <div id="Div7" class="badge bg-warning" runat="server">
-                                <asp:Label ID="Label5" runat="server" Text="WIP" Visible="true"></asp:Label>
+                            <div id="Div7" class="badge bg-green" runat="server">
+                                <asp:Label ID="Label5" runat="server" Text="Ok" Visible="true"></asp:Label>
                             </div>
                             <i class="fa fa-edit"></i>JOB's
                         </a>
                         <a class="btn btn-app" href="ViolationsOverview.aspx" id="A5" runat="server" visible="true">
-                            <div id="Div8" class="badge bg-warning" runat="server">
-                                <asp:Label ID="Label6" runat="server" Text="WIP" Visible="true"></asp:Label>
+                            <div id="Div8" class="badge bg-green" runat="server">
+                                <asp:Label ID="Label6" runat="server" Text="Ok" Visible="true"></asp:Label>
                             </div>
                             <i class="fa fa-edit"></i>Violations
+                        </a>
+                        <a class="btn btn-app" href="CSMDocShiftOverview.aspx" id="A6" runat="server" visible="true">
+                            <div id="Div9" class="badge bg-green" runat="server">
+                                <asp:Label ID="Label7" runat="server" Text="Ok" Visible="true"></asp:Label>
+                            </div>
+                            <i class="fa fa-edit"></i>CSM & Shift
+                        </a>
+                        <a class="btn btn-app" href="PassMonitoring.aspx" id="A7" runat="server" visible="true">
+                            <div id="Div10" class="badge bg-green" runat="server">
+                                <asp:Label ID="Label8" runat="server" Text="Ok" Visible="true"></asp:Label>
+                            </div>
+                            <i class="fa fa-edit"></i>Passes
                         </a>
                     </div>
                 </div>
