@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="anlys_jobsdeta.aspx.cs" Inherits="WebApplication1.bussiness.production.anlys_jobsdeta" %>
+﻿<%@ Page Title="Dashboards Home" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="anlys_jobsdeta.aspx.cs" Inherits="WebApplication1.bussiness.production.anlys_jobsdeta" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
@@ -115,6 +115,40 @@
                                 <asp:Label ID="Label8" runat="server" Text="Ok" Visible="true"></asp:Label>
                             </div>
                             <i class="fa fa-edit"></i>Passes
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-6" id="Div11" runat="server" visible="true">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Finance Dashbaords</h2>
+                        <ul class="nav navbar-right panel_toolbox">
+                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                            </li>
+                        </ul>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <a class="btn btn-app" href="PayrollSummary.aspx" id="A8" runat="server" visible="true">
+                            <div id="Div12" class="badge bg-green" runat="server">
+                                <asp:Label ID="Label9" runat="server" Text="Ok" Visible="true"></asp:Label>
+                            </div>
+                            <i class="fa fa-edit"></i>Payroll
+                        </a>
+                        <a class="btn btn-app" href="LiveJOB_pnl.aspx" id="A9" runat="server" visible="true">
+                            <div id="Div13" class="badge bg-green" runat="server">
+                                <asp:Label ID="Label10" runat="server" Text="Ok" Visible="true"></asp:Label>
+                            </div>
+                            <i class="fa fa-edit"></i>JOB's P&L
+                        </a>
+                        <a class="btn btn-app" href="Live_overall_pnl.aspx" id="A10" runat="server" visible="true">
+                            <div id="Div14" class="badge bg-green" runat="server">
+                                <asp:Label ID="Label11" runat="server" Text="Ok" Visible="true"></asp:Label>
+                            </div>
+                            <i class="fa fa-edit"></i>Comp P&L
                         </a>
                     </div>
                 </div>

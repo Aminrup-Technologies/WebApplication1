@@ -1,5 +1,4 @@
-﻿<%@ Page Title="Passes Monitoring" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="PassMonitoring.aspx.cs" Inherits="WebApplication1.bussiness.production.PassMonitoring" %>
-
+﻿<%@ Page Title="Payroll Summary" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="PayrollSummary.aspx.cs" Inherits="WebApplication1.bussiness.production.PayrollSummary" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <script src="https://unpkg.com/@superset-ui/embedded-sdk"></script>
 
@@ -136,14 +135,14 @@
         }
         
         // TODO: Paste the Embedded ID you generated in the Superset Admin UI here
-        const myEmbeddedId = "f2a0df6f-a0c6-4303-9943-3adcbc5db664"; 
+        const myEmbeddedId = "d4a3719c-a6f4-404e-ad3a-a48d1055921a"; 
         
         const supersetDomain = "https://reports.aminruptechnologies.co.in";
 
         async function fetchGuestTokenFromBackend() {
             try {
                 // Call the C# WebMethod in RolesOverview.aspx.cs
-                const response = await fetch('PassMonitoring.aspx/FetchSupersetGuestToken', {
+                const response = await fetch('PayrollSummary.aspx/FetchSupersetGuestToken', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

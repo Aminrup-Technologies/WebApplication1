@@ -320,6 +320,8 @@
     <Content Include="bussiness\production\job_outpunch_v2.aspx" />
     <Content Include="bussiness\production\job_permitupload_v2.aspx" />
     <Content Include="bussiness\production\js\jquery-1.9.1.js" />
+    <Content Include="bussiness\production\LiveJOB_pnl.aspx" />
+    <Content Include="bussiness\production\Live_overall_pnl.aspx" />
     <Content Include="bussiness\production\login.aspx" />
     <Content Include="bussiness\production\magician.aspx" />
     <Content Include="bussiness\production\manage_jobid_v2.aspx" />
@@ -328,6 +330,7 @@
     <Content Include="bussiness\production\manage_rollsaccess.aspx" />
     <Content Include="bussiness\production\overview.aspx" />
     <Content Include="bussiness\production\PassMonitoring.aspx" />
+    <Content Include="bussiness\production\PayrollSummary.aspx" />
     <Content Include="bussiness\production\payroll_controller.aspx" />
     <Content Include="bussiness\production\pyrl_approvedeductions.aspx" />
     <Content Include="bussiness\production\pyrl_deductionlist.aspx" />
@@ -5602,6 +5605,20 @@
     <Compile Include="bussiness\production\job_permitupload_v2.aspx.designer.cs">
       <DependentUpon>job_permitupload_v2.aspx</DependentUpon>
     </Compile>
+    <Compile Include="bussiness\production\LiveJOB_pnl.aspx.cs">
+      <DependentUpon>LiveJOB_pnl.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\LiveJOB_pnl.aspx.designer.cs">
+      <DependentUpon>LiveJOB_pnl.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\Live_overall_pnl.aspx.cs">
+      <DependentUpon>Live_overall_pnl.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\Live_overall_pnl.aspx.designer.cs">
+      <DependentUpon>Live_overall_pnl.aspx</DependentUpon>
+    </Compile>
     <Compile Include="bussiness\production\login.aspx.cs">
       <DependentUpon>login.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -5659,6 +5676,13 @@
     </Compile>
     <Compile Include="bussiness\production\PassMonitoring.aspx.designer.cs">
       <DependentUpon>PassMonitoring.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\PayrollSummary.aspx.cs">
+      <DependentUpon>PayrollSummary.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\PayrollSummary.aspx.designer.cs">
+      <DependentUpon>PayrollSummary.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\payroll_controller.aspx.cs">
       <DependentUpon>payroll_controller.aspx</DependentUpon>
