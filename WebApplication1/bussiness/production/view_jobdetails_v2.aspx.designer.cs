@@ -10,366 +10,312 @@
 namespace WebApplication1.bussiness.production {
     
     
-    public partial class db_controller {
+    public partial class view_jobdetails_v2 {
         
         /// <summary>
-        /// ScriptManager1 control.
+        /// HF_Msg control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.ScriptManager ScriptManager1;
+        protected global::System.Web.UI.WebControls.HiddenField HF_Msg;
         
         /// <summary>
-        /// upRegion control.
+        /// txt_jobtitle control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.UpdatePanel upRegion;
+        protected global::System.Web.UI.WebControls.TextBox txt_jobtitle;
         
         /// <summary>
-        /// ddl_Regions control.
+        /// txt_jobid control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddl_Regions;
+        protected global::System.Web.UI.WebControls.TextBox txt_jobid;
         
         /// <summary>
-        /// RegionConfigRow control.
+        /// txt_jobdate control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl RegionConfigRow;
+        protected global::System.Web.UI.WebControls.TextBox txt_jobdate;
         
         /// <summary>
-        /// ddl_req_gps control.
+        /// lbl_jobday control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddl_req_gps;
+        protected global::System.Web.UI.WebControls.Label lbl_jobday;
         
         /// <summary>
-        /// cbl_BillingTypes control.
+        /// txt_jobday control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBoxList cbl_BillingTypes;
+        protected global::System.Web.UI.WebControls.TextBox txt_jobday;
         
         /// <summary>
-        /// btn_SaveRegion control.
+        /// txt_jobshift control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btn_SaveRegion;
+        protected global::System.Web.UI.WebControls.TextBox txt_jobshift;
         
         /// <summary>
-        /// upWO control.
+        /// txt_workorderno control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.UpdatePanel upWO;
+        protected global::System.Web.UI.WebControls.TextBox txt_workorderno;
         
         /// <summary>
-        /// ddl_wo_region control.
+        /// txt_permitno control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddl_wo_region;
+        protected global::System.Web.UI.WebControls.TextBox txt_permitno;
         
         /// <summary>
-        /// ddl_wo_company control.
+        /// RegularExpressionValidator1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddl_wo_company;
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator RegularExpressionValidator1;
         
         /// <summary>
-        /// ddl_wo_dept control.
+        /// txt_worksitename control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddl_wo_dept;
+        protected global::System.Web.UI.WebControls.TextBox txt_worksitename;
         
         /// <summary>
-        /// ddl_wo_number control.
+        /// lbl_worksitedbcode control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddl_wo_number;
+        protected global::System.Web.UI.WebControls.Label lbl_worksitedbcode;
         
         /// <summary>
-        /// WOConfigRow control.
+        /// txt_jobdept control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl WOConfigRow;
+        protected global::System.Web.UI.WebControls.TextBox txt_jobdept;
         
         /// <summary>
-        /// ddl_contract_nature control.
+        /// txt_jobloc control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddl_contract_nature;
+        protected global::System.Web.UI.WebControls.TextBox txt_jobloc;
         
         /// <summary>
-        /// ddl_billing_nature control.
+        /// txt_jobsupv control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddl_billing_nature;
+        protected global::System.Web.UI.WebControls.TextBox txt_jobsupv;
         
         /// <summary>
-        /// ddl_execution_type control.
+        /// lbl_creatorwrk control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddl_execution_type;
+        protected global::System.Web.UI.WebControls.Label lbl_creatorwrk;
         
         /// <summary>
-        /// btn_SaveWO control.
+        /// txt_inchargename control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btn_SaveWO;
+        protected global::System.Web.UI.WebControls.TextBox txt_inchargename;
         
         /// <summary>
-        /// gv_WO_Summary control.
+        /// lbl_inchargewrk control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gv_WO_Summary;
+        protected global::System.Web.UI.WebControls.Label lbl_inchargewrk;
         
         /// <summary>
-        /// upMatrix control.
+        /// txt_approverrmrks control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.UpdatePanel upMatrix;
+        protected global::System.Web.UI.WebControls.TextBox txt_approverrmrks;
         
         /// <summary>
-        /// ddl_matrix_billing control.
+        /// btn_update control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddl_matrix_billing;
+        protected global::System.Web.UI.WebControls.Button btn_update;
         
         /// <summary>
-        /// ddl_matrix_execution control.
+        /// btn_cancel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddl_matrix_execution;
+        protected global::System.Web.UI.WebControls.Button btn_cancel;
         
         /// <summary>
-        /// ddl_matrix_routing control.
+        /// btn_back control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddl_matrix_routing;
+        protected global::System.Web.UI.WebControls.Button btn_back;
         
         /// <summary>
-        /// chk_req_permit control.
+        /// lbl_msg control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox chk_req_permit;
+        protected global::System.Web.UI.WebControls.Label lbl_msg;
         
         /// <summary>
-        /// chk_req_csm control.
+        /// btn_share_whatsapp control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox chk_req_csm;
+        protected global::System.Web.UI.WebControls.LinkButton btn_share_whatsapp;
         
         /// <summary>
-        /// chk_req_attendance control.
+        /// lbl_permitdeleteddate control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox chk_req_attendance;
+        protected global::System.Web.UI.WebControls.Label lbl_permitdeleteddate;
         
         /// <summary>
-        /// chk_auto_title control.
+        /// lbl_permitdeletedby control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox chk_auto_title;
+        protected global::System.Web.UI.WebControls.Label lbl_permitdeletedby;
         
         /// <summary>
-        /// btn_SaveMatrix control.
+        /// GridView1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btn_SaveMatrix;
+        protected global::System.Web.UI.WebControls.GridView GridView1;
         
         /// <summary>
-        /// gv_RuleMatrix control.
+        /// GridView2 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gv_RuleMatrix;
+        protected global::System.Web.UI.WebControls.GridView GridView2;
         
         /// <summary>
-        /// upDoc control.
+        /// ResendApp_Div control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.UpdatePanel upDoc;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl ResendApp_Div;
         
         /// <summary>
-        /// ddl_newdoc_category control.
+        /// btn_resendapp control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddl_newdoc_category;
+        protected global::System.Web.UI.WebControls.Button btn_resendapp;
         
         /// <summary>
-        /// txt_newdoc_name control.
+        /// lbl_resenddiv_msg control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txt_newdoc_name;
+        protected global::System.Web.UI.WebControls.Label lbl_resenddiv_msg;
         
         /// <summary>
-        /// btn_AddDoc control.
+        /// attachmanpowerrow control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btn_AddDoc;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl attachmanpowerrow;
         
         /// <summary>
-        /// gv_DocMaster control.
+        /// Label1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gv_DocMaster;
+        protected global::System.Web.UI.WebControls.Label Label1;
         
         /// <summary>
-        /// ddl_cal_company control.
+        /// btn_attachmanpower control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddl_cal_company;
-        
-        /// <summary>
-        /// upBackdate control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.UpdatePanel upBackdate;
-        
-        /// <summary>
-        /// txt_exc_workman control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txt_exc_workman;
-        
-        /// <summary>
-        /// ddl_exc_days control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddl_exc_days;
-        
-        /// <summary>
-        /// txt_exc_remarks control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txt_exc_remarks;
-        
-        /// <summary>
-        /// btn_SaveException control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btn_SaveException;
-        
-        /// <summary>
-        /// gv_BackdateExceptions control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gv_BackdateExceptions;
+        protected global::System.Web.UI.WebControls.Button btn_attachmanpower;
     }
 }

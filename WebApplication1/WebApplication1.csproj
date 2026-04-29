@@ -315,6 +315,7 @@
     <Content Include="bussiness\production\jobs_and_manpower_v2.aspx" />
     <Content Include="bussiness\production\jobs_approval.aspx" />
     <Content Include="bussiness\production\jobs_approverdash.aspx" />
+    <Content Include="bussiness\production\job_360_view.aspx" />
     <Content Include="bussiness\production\job_create_summary.aspx" />
     <Content Include="bussiness\production\job_inpunch_v2.aspx" />
     <Content Include="bussiness\production\job_outpunch_v2.aspx" />
@@ -347,6 +348,7 @@
     <Content Include="bussiness\production\usertoggle.aspx" />
     <Content Include="bussiness\production\viewupdate_empmustertabledata_v2.aspx" />
     <Content Include="bussiness\production\view_emp_mastertbldata_v2.aspx" />
+    <Content Include="bussiness\production\view_jobdetails_v2.aspx" />
     <Content Include="bussiness\production\ViolationsOverview.aspx" />
     <Content Include="bussiness\production\vw_emp_attencal.aspx" />
     <Content Include="bussiness\production\vw_inchsupmem.aspx" />
@@ -5577,6 +5579,13 @@
     <Compile Include="bussiness\production\jobs_approverdash.aspx.designer.cs">
       <DependentUpon>jobs_approverdash.aspx</DependentUpon>
     </Compile>
+    <Compile Include="bussiness\production\job_360_view.aspx.cs">
+      <DependentUpon>job_360_view.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\job_360_view.aspx.designer.cs">
+      <DependentUpon>job_360_view.aspx</DependentUpon>
+    </Compile>
     <Compile Include="bussiness\production\job_create_summary.aspx.cs">
       <DependentUpon>job_create_summary.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -5793,6 +5802,13 @@
     </Compile>
     <Compile Include="bussiness\production\view_emp_mastertbldata_v2.aspx.designer.cs">
       <DependentUpon>view_emp_mastertbldata_v2.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\view_jobdetails_v2.aspx.cs">
+      <DependentUpon>view_jobdetails_v2.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\view_jobdetails_v2.aspx.designer.cs">
+      <DependentUpon>view_jobdetails_v2.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\ViolationsOverview.aspx.cs">
       <DependentUpon>ViolationsOverview.aspx</DependentUpon>

@@ -22,6 +22,15 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl pnl_basicdata;
         
         /// <summary>
+        /// box_WorkCountry control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor box_WorkCountry;
+        
+        /// <summary>
         /// WorkCountry control.
         /// </summary>
         /// <remarks>
@@ -40,6 +49,15 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Label Label17;
         
         /// <summary>
+        /// box_WorkState control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor box_WorkState;
+        
+        /// <summary>
         /// WorkState control.
         /// </summary>
         /// <remarks>
@@ -56,6 +74,15 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lbl_factorsstatus;
+        
+        /// <summary>
+        /// box_WorkRegion control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor box_WorkRegion;
         
         /// <summary>
         /// WorkRegion control.
@@ -85,6 +112,15 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl pnl_company;
         
         /// <summary>
+        /// box_WorkCompany control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor box_WorkCompany;
+        
+        /// <summary>
         /// WorkCompany control.
         /// </summary>
         /// <remarks>
@@ -101,6 +137,15 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label1;
+        
+        /// <summary>
+        /// box_CompanyDept control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor box_CompanyDept;
         
         /// <summary>
         /// CompanyDept control.
@@ -121,6 +166,15 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Label Label2;
         
         /// <summary>
+        /// box_DeptHeads control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor box_DeptHeads;
+        
+        /// <summary>
         /// DeptHeads control.
         /// </summary>
         /// <remarks>
@@ -137,6 +191,15 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label3;
+        
+        /// <summary>
+        /// box_DeptLocations control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor box_DeptLocations;
         
         /// <summary>
         /// DeptLocations control.
@@ -166,6 +229,15 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl pnl_po;
         
         /// <summary>
+        /// box_AddWorkorder control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor box_AddWorkorder;
+        
+        /// <summary>
         /// AddWorkorder control.
         /// </summary>
         /// <remarks>
@@ -182,6 +254,15 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label5;
+        
+        /// <summary>
+        /// box_AddWO_SkillCategory control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor box_AddWO_SkillCategory;
         
         /// <summary>
         /// AddWO_SkillCategory control.
@@ -202,6 +283,15 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Label Label6;
         
         /// <summary>
+        /// box_AddItemNo control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor box_AddItemNo;
+        
+        /// <summary>
         /// AddItemNo control.
         /// </summary>
         /// <remarks>
@@ -220,6 +310,15 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Label Label7;
         
         /// <summary>
+        /// box_AddLineItems control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor box_AddLineItems;
+        
+        /// <summary>
         /// AddLineItems control.
         /// </summary>
         /// <remarks>
@@ -236,6 +335,15 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label8;
+        
+        /// <summary>
+        /// box_UploadLineItems control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor box_UploadLineItems;
         
         /// <summary>
         /// UploadLineItems control.
@@ -265,6 +373,15 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl pnl_payroll;
         
         /// <summary>
+        /// box_PayrollSkills control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor box_PayrollSkills;
+        
+        /// <summary>
         /// PayrollSkills control.
         /// </summary>
         /// <remarks>
@@ -283,6 +400,15 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Label Label10;
         
         /// <summary>
+        /// box_PayrollWages control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor box_PayrollWages;
+        
+        /// <summary>
         /// PayrollWages control.
         /// </summary>
         /// <remarks>
@@ -299,6 +425,15 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label11;
+        
+        /// <summary>
+        /// box_PayrollDesg control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor box_PayrollDesg;
         
         /// <summary>
         /// PayrollDesg control.
@@ -328,6 +463,15 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl pnl_sites;
         
         /// <summary>
+        /// box_Worksites control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor box_Worksites;
+        
+        /// <summary>
         /// Worksites control.
         /// </summary>
         /// <remarks>
@@ -346,6 +490,15 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Label Label13;
         
         /// <summary>
+        /// box_SiteIncharges control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor box_SiteIncharges;
+        
+        /// <summary>
         /// SiteIncharges control.
         /// </summary>
         /// <remarks>
@@ -362,5 +515,41 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Label14;
+        
+        /// <summary>
+        /// pnl_controller control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl pnl_controller;
+        
+        /// <summary>
+        /// box_jobs control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor box_jobs;
+        
+        /// <summary>
+        /// Div2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Div2;
+        
+        /// <summary>
+        /// Label15 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label Label15;
     }
 }

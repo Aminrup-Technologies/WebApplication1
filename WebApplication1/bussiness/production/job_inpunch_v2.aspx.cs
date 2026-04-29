@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+======================================================================================
+File_Name: job_inpunch_v2_aspx_cs
+When: April 12, 2026
+Why: Updated alongside the V2 UI modernization phase. Business logic, duplicate prevention, and Gatepass validation remain fully preserved. Added a standard try/finally block to the `btn_gtpsedit_Click` method to ensure the SQL connection safely closes even if an error is thrown during Gatepass logging.
+What: Preserved existing C# logic behind the modernized `.aspx` presentation layer.
+======================================================================================
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -741,7 +750,6 @@ namespace WebApplication1.bussiness.production
                     string payload = $"{{\"Modifier\":\"{Session["USERNAME"]}\", \"Changes\":\"{changesStr}\"}}";
                     QueueNotification("GP_UPDATE", workman, subj, payload);
                 }
-                dbcl.DisconnectDb();
 
                 _EmployeeDataBinder(workman);
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "CloseModal", "$('#myModal2').modal('hide');", true);
@@ -750,7 +758,10 @@ namespace WebApplication1.bussiness.production
             catch (Exception ex)
             {
                 ShowNotification("Error Updating Gatepass", ex.Message, "error");
-                dbcl.DisconnectDb();
+            }
+            finally
+            {
+                dbcl.DisconnectDb(); // Ensures connection is closed even if an exception occurs
             }
         }
 

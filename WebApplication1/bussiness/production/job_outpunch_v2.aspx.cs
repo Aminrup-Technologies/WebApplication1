@@ -4,6 +4,13 @@ using System.Data.SqlClient;
 using System.Configuration;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Net.Http;
+using System.Net.Mail;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Web.Script.Serialization;
+using System.Text;
+using System.IO;
 
 namespace WebApplication1.bussiness.production
 {
@@ -12,6 +19,9 @@ namespace WebApplication1.bussiness.production
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
         CountChecker CC = new CountChecker();
         DataTable dt = new DataTable();
+
+        // Single static HttpClient for optimal connection pooling
+        private static readonly HttpClient httpClient = new HttpClient();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -27,7 +37,6 @@ namespace WebApplication1.bussiness.production
                 OUTpunchPanel_Row.Visible = true;
                 ActiveJOB_Checker();
 
-                // SMART ROUTING: Check for Masked JOBID in URL
                 if (Request.QueryString["jobid"] != null)
                 {
                     string maskedId = Request.QueryString["jobid"].ToString();
@@ -49,9 +58,6 @@ namespace WebApplication1.bussiness.production
             ScriptManager.RegisterStartupScript(this, this.GetType(), "PNotify", script, true);
         }
 
-        // =================================================================================
-        // URL MASKING UTILITIES
-        // =================================================================================
         public static string DecodeJobID(string maskedData)
         {
             if (string.IsNullOrEmpty(maskedData)) return "";
@@ -65,9 +71,6 @@ namespace WebApplication1.bussiness.production
             return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
         }
 
-        // =================================================================================
-        // INITIALIZATION & BINDING
-        // =================================================================================
         private void Bind_AttendnaceCode()
         {
             string query = "Select Status_Name, Status_Code from tlb_attendancecodes where Approver='Yes' and Status='Present' order by slno";
@@ -86,8 +89,6 @@ namespace WebApplication1.bussiness.production
 
         private void ActiveJOB_Checker()
         {
-            // Bypass the old CountChecker (CC) class and align perfectly with the Smart Dashboard!
-            // We explicitly check for MasterStatusCode='3' and EntryExit='Entry'
             string query = "SELECT CONCAT(JOBID, ' : ', CONVERT(VARCHAR, CreatedDate, 105)) AS DisplayText, JOBID as ValueField FROM tbl_jobs WHERE [CreatedDate] >= DATEADD(DAY, -3, GETDATE()) AND Creator_Workman=@Workman AND JOBID_Status='Active' AND MasterStatusCode='3' AND EntryExit='Entry' ORDER BY CreatedDate DESC";
 
             dbcl.Sqlconnection();
@@ -149,10 +150,7 @@ namespace WebApplication1.bussiness.production
                 string query = "select FinalUpldStatus from tbl_jobs where JOBID=@JOBID and CreatedDate=@CreatedDate and JOBID_Status='Active' and EntryExit='Entry'";
                 SqlParameter[] pram = { new SqlParameter("@JOBID", jobid), new SqlParameter("@CreatedDate", jobdate) };
                 dt = dbcl.SPreturn_dt(query, pram);
-                if (dt.Rows.Count > 0)
-                {
-                    return dt.Rows[0]["FinalUpldStatus"].ToString() == "Yes";
-                }
+                if (dt.Rows.Count > 0) return dt.Rows[0]["FinalUpldStatus"].ToString() == "Yes";
             }
             catch (Exception) { return false; }
             return false;
@@ -177,6 +175,7 @@ namespace WebApplication1.bussiness.production
                     lbl_jobid.Text = dt.Rows[0]["JOBID"].ToString();
                     lbl_jobsite.Text = dt.Rows[0]["JOB_Site"].ToString();
                     lbl_inchargename.Text = dt.Rows[0]["JOB_InchargeName"].ToString();
+                    lbl_inchargewrk.Text = dt.Rows[0]["JOB_InchargeWrk"].ToString(); // Safely keep incharge wrk
                     lbl_jobloc.Text = dt.Rows[0]["JOB_Location"].ToString();
                     lbl_jobshift.Text = dt.Rows[0]["JOB_Shift"].ToString();
                     lbl_permitno.Text = dt.Rows[0]["JOB_PermitNo"].ToString();
@@ -233,29 +232,16 @@ namespace WebApplication1.bussiness.production
             catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
         }
 
-        // =================================================================================
-        // OUT-PUNCH CORE LOGIC
-        // =================================================================================
         private void CheckPendingOUT()
         {
             string ddljobid = DDL_JOBID.SelectedValue;
             string supv = Session["WORKMAN"].ToString();
 
-            if (CC.CheckforPendingOUT(ddljobid, supv) == 0)
-            {
-                ViewState_TableRow.Visible = false;
-                NoPenidngPunch.Visible = true;
+            ViewState_TableRow.Visible = true;
+            Bind_GridView(ddljobid);
 
-                // Update Master Status Code to 4 (Exit)
-                string jobStatus = CC.CheckforPendingPermit(ddljobid, supv) == 0 ? "Blocked" : "Active";
-                UpdateJOBTable1(jobStatus, "Out-Punch Done", "4", "Exit");
-            }
-            else
-            {
-                NoPenidngPunch.Visible = false;
-                ViewState_TableRow.Visible = true;
-                Bind_GridView(ddljobid);
-            }
+            if (CC.CheckforPendingOUT(ddljobid, supv) == 0) NoPenidngPunch.Visible = true;
+            else NoPenidngPunch.Visible = false;
         }
 
         private void UpdateJOBTable1(string jobidstatus, string jobstatus, string mastercode, string entryexitstatus)
@@ -281,7 +267,7 @@ namespace WebApplication1.bussiness.production
 
         private void Bind_GridView(string jobid)
         {
-            string cmdString = "Select * from tbl_attendance where Creator_Workman=@Workman and JOBID=@JOBID and AttendanceStatus='Entry' order by Id";
+            string cmdString = "Select * from tbl_attendance where Creator_Workman=@Workman and JOBID=@JOBID order by Id";
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             using (SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn))
@@ -299,9 +285,9 @@ namespace WebApplication1.bussiness.production
 
         protected void PunchOUT_Click(object sender, EventArgs e)
         {
-            int id = Convert.ToInt32((sender as Button).CommandArgument);
+            // CORRECTED: Explicitly cast to LinkButton to access CommandArgument
+            int id = Convert.ToInt32(((LinkButton)sender).CommandArgument);
 
-            // Hide the grid, show the form
             ViewState_TableRow.Visible = false;
             PunchOutForm_Row.Visible = true;
 
@@ -309,7 +295,7 @@ namespace WebApplication1.bussiness.production
             {
                 dbcl.Sqlconnection();
                 dbcl.ConnectDb();
-                using (SqlCommand cmd = new SqlCommand("Select Id, EmployeeName, EmployeeWrk, WourkHours, Inpunch_Time from tbl_attendance where Id=@Id", dbcl.Conn))
+                using (SqlCommand cmd = new SqlCommand("Select Id, EmployeeName, EmployeeWrk, WourkHours, Inpunch_Time, Outpunch_Time from tbl_attendance where Id=@Id", dbcl.Conn))
                 {
                     cmd.Parameters.AddWithValue("@Id", id);
                     using (SqlDataReader sdr = cmd.ExecuteReader())
@@ -321,14 +307,22 @@ namespace WebApplication1.bussiness.production
                             lbl_empworkman.Text = sdr["EmployeeWrk"].ToString();
                             lbl_workhours.Text = sdr["WourkHours"].ToString();
                             txt_inpunchtime.Text = sdr["Inpunch_Time"].ToString();
+
+                            if (sdr["Outpunch_Time"] != DBNull.Value)
+                            {
+                                DateTime existingOut = Convert.ToDateTime(sdr["Outpunch_Time"]);
+                                txt_date.Text = existingOut.ToString("yyyy-MM-dd");
+                                txt_time.Text = existingOut.ToString("HH:mm");
+                            }
+                            else
+                            {
+                                txt_date.Text = DateTime.Now.ToString("yyyy-MM-dd");
+                                txt_time.Text = DateTime.Now.ToString("HH:mm");
+                            }
                         }
                     }
                 }
                 dbcl.DisconnectDb();
-
-                // Pre-fill current date/time for convenience
-                txt_date.Text = DateTime.Now.ToString("yyyy-MM-dd");
-                txt_time.Text = DateTime.Now.ToString("HH:mm");
             }
             catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
         }
@@ -369,7 +363,6 @@ namespace WebApplication1.bussiness.production
             string intime = txt_inpunchtime.Text;
             DateTime dtout = DateTime.Parse(outtime);
 
-            // Check allowed duration
             if (!CanPunchOutWithin32Hours(intime))
             {
                 ShowNotification("Timeout Error", "Only 24/32 Hour back entry is allowed from IN-Time.", "error");
@@ -425,10 +418,8 @@ namespace WebApplication1.bussiness.production
         {
             DateTime intm = DateTime.Parse(emp_intime);
             DateTime outm = DateTime.Now;
-
             string configDuration = ConfigurationManager.AppSettings["PunchOutDurationMinutes"];
-            int punchOutDurationMinutes = string.IsNullOrEmpty(configDuration) ? 1920 : int.Parse(configDuration); // Default to 32 hours (1920 mins)
-
+            int punchOutDurationMinutes = string.IsNullOrEmpty(configDuration) ? 1920 : int.Parse(configDuration);
             TimeSpan duration = outm - intm;
             return duration.TotalMinutes <= punchOutDurationMinutes;
         }
@@ -437,6 +428,316 @@ namespace WebApplication1.bussiness.production
         {
             PunchOutForm_Row.Visible = false;
             CheckPendingOUT();
+        }
+
+        // =================================================================================
+        // FINALIZATION & NOTIFICATION TRIGGER
+        // =================================================================================
+        protected void btn_FinalizeShift_Click(object sender, EventArgs e)
+        {
+            string ddljobid = DDL_JOBID.SelectedValue;
+            if (string.IsNullOrEmpty(ddljobid)) return;
+
+            string supv = Session["WORKMAN"].ToString();
+
+            // Double check that no one is missing an out-punch before sealing
+            if (CC.CheckforPendingOUT(ddljobid, supv) == 0)
+            {
+                // 1. Update Master Status Code to 4 (Exit)
+                string jobStatus = CC.CheckforPendingPermit(ddljobid, supv) == 0 ? "Blocked" : "Active";
+                UpdateJOBTable1(jobStatus, "Out-Punch Done", "4", "Exit");
+
+                // 2. Fire and Forget Notifications (Does not block the UI)
+                Task.Run(() => TriggerShiftClosureNotifications(ddljobid));
+
+                // 3. Update UI Immediately
+                ShowNotification("Shift Closed", "Shift has been successfully finalized and sent to the Approver.", "success");
+                ViewState_TableRow.Visible = false;
+                NoPenidngPunch.Visible = false;
+                ActiveJOB_Checker();
+            }
+            else
+            {
+                ShowNotification("Warning", "You still have missing OUT-Punches. Please complete them first.", "warning");
+            }
+        }
+
+        // =================================================================================
+        // THE NOTIFICATION ENGINE
+        // =================================================================================
+        private async Task TriggerShiftClosureNotifications(string jobid)
+        {
+            DB_Utility_OH4Y asyncDbcl = new DB_Utility_OH4Y(); // Use isolated connection for background task
+            try
+            {
+                asyncDbcl.Sqlconnection();
+                asyncDbcl.ConnectDb();
+
+                // 1. Fetch Job Information
+                string jobDateStr = "", shift = "", supv = "", wo = "", permit = "", title = "", site = "", inchargeName = "", inchargeWrk = "", dept = "", loc = "";
+                string qryJob = "SELECT CreatedDate, JOB_Shift, Creator_Name, Creator_Workman, WorkOrderNo, JOB_PermitNo, JOB_Title, JOB_Site, JOB_SiteCode, JOB_InchargeName, JOB_InchargeWrk, JOB_Dept, JOB_Location FROM tbl_jobs WHERE JOBID=@JOBID";
+
+                using (SqlCommand cmd = new SqlCommand(qryJob, asyncDbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@JOBID", jobid);
+                    using (SqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.Read())
+                        {
+                            DateTime dtJob = Convert.ToDateTime(rdr["CreatedDate"]);
+                            jobDateStr = dtJob.ToString("dd-MM-yyyy") + " (" + dtJob.DayOfWeek.ToString() + ")";
+                            shift = rdr["JOB_Shift"].ToString();
+                            supv = rdr["Creator_Name"].ToString() + " (" + rdr["Creator_Workman"].ToString() + ")";
+                            wo = rdr["WorkOrderNo"].ToString();
+                            permit = rdr["JOB_PermitNo"].ToString().Trim();
+                            title = rdr["JOB_Title"].ToString().Trim();
+                            site = rdr["JOB_Site"].ToString() + " [" + rdr["JOB_SiteCode"].ToString() + "]";
+                            inchargeName = rdr["JOB_InchargeName"].ToString() + " (" + rdr["JOB_InchargeWrk"].ToString() + ")";
+                            inchargeWrk = rdr["JOB_InchargeWrk"].ToString();
+                            dept = rdr["JOB_Dept"].ToString();
+                            loc = rdr["JOB_Location"].ToString();
+                        }
+                    }
+                }
+
+                // 2. Fetch Contact Information Safely
+                string mobileNo = "", emailAddress = "";
+                using (SqlCommand cmd = new SqlCommand("SELECT MobileNo, Email FROM tbl_Employee_Mustertable WHERE WorkmanSL = @Wrk", asyncDbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@Wrk", inchargeWrk);
+                    using (SqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.Read())
+                        {
+                            mobileNo = rdr["MobileNo"] != DBNull.Value ? rdr["MobileNo"].ToString().Trim() : "";
+                            emailAddress = rdr["Email"] != DBNull.Value ? rdr["Email"].ToString().Trim() : "";
+                        }
+                    }
+                }
+
+                // 3. Build Manpower List (Filters Soft Deletes!)
+                List<string> manpowerItems = new List<string>();
+                using (SqlCommand cmd = new SqlCommand("SELECT EmployeeName, EmployeeWrk, EmpDesignation FROM tbl_attendance WHERE JOBID=@JOBID AND DeleteStatus=0 ORDER BY Id ASC", asyncDbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@JOBID", jobid);
+                    using (SqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        int count = 1;
+                        while (rdr.Read())
+                        {
+                            manpowerItems.Add($"{count}. {rdr["EmployeeName"]} [{rdr["EmployeeWrk"]}] - {rdr["EmpDesignation"]}");
+                            count++;
+                        }
+                    }
+                }
+
+                asyncDbcl.DisconnectDb();
+
+                // 🌟 FIX: WhatsApp STRICTLY forbids newlines (\n) in variables. We must use a comma separator.
+                string waManpowerList = manpowerItems.Count > 0 ? string.Join(",  ", manpowerItems) : "No Manpower Scanned.";
+
+                // 🌟 FIX: Emails DO support newlines via HTML <br/> tags.
+                string emailManpowerList = manpowerItems.Count > 0 ? string.Join("<br/>", manpowerItems) : "No Manpower Scanned.";
+
+                // 4. FIRE APIS
+                if (!string.IsNullOrEmpty(mobileNo) && mobileNo.Length >= 10)
+                {
+                    // Pass the WhatsApp-Safe list (waManpowerList)
+                    await SendWhatsAppMsg91Async(mobileNo, inchargeName, supv, jobid, shift, jobDateStr, title, site, loc, dept, wo, permit, waManpowerList);
+                }
+                else
+                {
+                    LogSystemEvent("ShareAPI", "SKIPPED", $"No valid Mobile Number found for In-Charge {inchargeWrk}");
+                }
+
+                if (!string.IsNullOrEmpty(emailAddress) && emailAddress.Contains("@"))
+                {
+                    // Pass the Email-Safe list (emailManpowerList)
+                    SendEmailAlert(emailAddress, inchargeName, supv, jobid, shift, jobDateStr, title, site, loc, dept, wo, permit, emailManpowerList);
+                }
+                else
+                {
+                    LogSystemEvent("ShareAPI", "SKIPPED", $"No valid Email ID found for In-Charge {inchargeWrk}");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogSystemEvent("Engine", "CRASH", "Critical failure inside Notification Engine.", ex.Message);
+            }
+            finally
+            {
+                if (asyncDbcl.Conn != null && asyncDbcl.Conn.State == ConnectionState.Open) asyncDbcl.DisconnectDb();
+            }
+        }
+
+        private async Task SendWhatsAppMsg91Async(string mobileNo, string inchargeName, string supv, string jobid, string shift, string jobDateStr, string title, string site, string loc, string dept, string wo, string permit, string manpowerList)
+        {
+            try
+            {
+                string authKey = ConfigurationManager.AppSettings["Msg91AuthKey"]?.Trim();
+                string integratedNumber = ConfigurationManager.AppSettings["Msg91IntegratedNumber"]?.Trim();
+
+                if (string.IsNullOrEmpty(authKey) || string.IsNullOrEmpty(integratedNumber))
+                {
+                    LogSystemEvent("WhatsApp", "SKIPPED", "MSG91 AuthKey or IntegratedNumber missing in web.config.");
+                    return;
+                }
+
+                string cleanPhone = mobileNo.Replace("+", "").Replace(" ", "").Trim();
+                if (!cleanPhone.StartsWith("91")) cleanPhone = "91" + cleanPhone;
+
+                string url = "https://api.msg91.com/api/v5/whatsapp/whatsapp-outbound-message/bulk/";
+
+                var payload = new
+                {
+                    integrated_number = integratedNumber,
+                    content_type = "template",
+                    payload = new
+                    {
+                        messaging_product = "whatsapp",
+                        type = "template",
+                        template = new
+                        {
+                            name = "job_daily_details",
+                            language = new { code = "en", policy = "deterministic" },
+                            @namespace = "af05507b_02e4_4d95_8f8c_164ce03fc2df",
+                            to_and_components = new[]
+                            {
+                                new
+                                {
+                                    to = new[] { cleanPhone },
+                                    components = new Dictionary<string, object>
+                                    {
+                                        { "body_1", new { type = "text", value = inchargeName } },
+                                        { "body_2", new { type = "text", value = supv } },
+                                        { "body_3", new { type = "text", value = jobid } },
+                                        { "body_4", new { type = "text", value = shift } },
+                                        { "body_5", new { type = "text", value = jobDateStr } },
+                                        { "body_6", new { type = "text", value = title } },
+                                        { "body_7", new { type = "text", value = site } },
+                                        { "body_8", new { type = "text", value = loc } },
+                                        { "body_9", new { type = "text", value = dept } },
+                                        { "body_10", new { type = "text", value = wo } },
+                                        { "body_11", new { type = "text", value = permit } },
+                                        { "body_12", new { type = "text", value = manpowerList } }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+
+                string jsonPayload = new JavaScriptSerializer().Serialize(payload).Replace("\"@namespace\"", "\"namespace\"");
+                var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+                httpClient.DefaultRequestHeaders.Clear();
+                httpClient.DefaultRequestHeaders.Add("authkey", authKey);
+
+                HttpResponseMessage response = await httpClient.PostAsync(url, content);
+                string result = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    LogSystemEvent("WhatsApp", "SUCCESS", $"Message sent successfully to {cleanPhone}.", result);
+                }
+                else
+                {
+                    LogSystemEvent("WhatsApp", "API_ERROR", $"MSG91 rejected the request for {cleanPhone}.", result);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogSystemEvent("WhatsApp", "CRASH", "Code Exception in SendWhatsAppMsg91Async.", ex.Message);
+            }
+        }
+
+        private void SendEmailAlert(string emailAddress, string inchargeName, string supv, string jobid, string shift, string jobDateStr, string title, string site, string loc, string dept, string wo, string permit, string htmlManpowerList)
+        {
+            try
+            {
+                MailMessage mail = new MailMessage();
+                mail.To.Add(emailAddress);
+                mail.From = new MailAddress("it.support@aminruptechnologies.co.in", "Work-Sure 360");
+                mail.Subject = $"ACTION REQUIRED: Shift Closure Approval for JOB: {jobid}";
+                mail.IsBodyHtml = true;
+
+                string htmlBody = $@"
+                    <div style='font-family: Arial, sans-serif; color: #333;'>
+                        <h2 style='color: #E74C3C;'>Action Required: Shift Closure Pending</h2>
+                        <p>Dear <b>{inchargeName}</b>,</p>
+                        <p>Please be informed that the following job has been completed and OUT-Punched by <b>{supv}</b>. It is now in your queue for Final Approval to generate the Invoice Memo.</p>
+                        
+                        <table style='width: 100%; border-collapse: collapse; margin-top: 15px;'>
+                            <tr><td style='padding: 5px;'><b>JOB ID:</b></td><td>{jobid} ({shift} Shift)</td></tr>
+                            <tr><td style='padding: 5px;'><b>Date:</b></td><td>{jobDateStr}</td></tr>
+                            <tr><td style='padding: 5px;'><b>Job Title:</b></td><td>{title}</td></tr>
+                            <tr><td style='padding: 5px;'><b>Worksite:</b></td><td>{site} | {loc}</td></tr>
+                            <tr><td style='padding: 5px;'><b>Department:</b></td><td>{dept}</td></tr>
+                            <tr><td style='padding: 5px;'><b>WO / Permit:</b></td><td>{wo} | {permit}</td></tr>
+                        </table>
+
+                        <h4 style='margin-top:20px; border-bottom: 1px solid #ddd; padding-bottom: 5px;'>Scanned Manpower</h4>
+                        <p>{htmlManpowerList}</p>
+
+                        <br/><br/>
+                        <a href='https://atswork.co.in/' style='background-color:#1ABB9C; color:#fff; text-decoration:none; padding:10px 20px; border-radius:5px; font-weight:bold; display: inline-block;'>Open ATS Portal to Approve</a>
+                        
+                        <p style='margin-top: 40px; font-size: 11px; color: #888;'>This is an automated message generated by Aminrup Technologies on behalf of ATS. Please do not reply to this email.</p>
+                    </div>";
+
+                mail.Body = htmlBody;
+
+                SmtpClient smtp = new SmtpClient();
+                smtp.Host = "smtp.zoho.in"; // Ensure your SMTP Host is configured here
+                smtp.Port = 587;
+                smtp.UseDefaultCredentials = false;
+                smtp.Credentials = new System.Net.NetworkCredential("it.support@aminruptechnologies.co.in", "TPw800QrVMU2"); // Ensure Credentials are set
+                smtp.EnableSsl = true;
+
+                smtp.Send(mail);
+                System.Diagnostics.Debug.WriteLine($"[LOG - SUCCESS] Email sent successfully to {emailAddress}");
+            }
+            catch (Exception ex)
+            {
+                LogSystemEvent("Email", "CRASH", $"SMTP Failed for {emailAddress}.", ex.Message);
+            }
+        }
+
+        // =================================================================================
+        // DAILY TEXT FILE LOGGER
+        // =================================================================================
+        private void LogSystemEvent(string module, string status, string message, string details = "")
+        {
+            try
+            {
+                // 1. Define the directory: ~/Logs/OutPunch/YYYY-MM-DD/
+                string dateFolder = DateTime.Now.ToString("yyyy-MM-dd");
+                string logDirectory = Server.MapPath($"~/Logs/OutPunch/{dateFolder}/");
+
+                // 2. Create the directory if it doesn't exist
+                if (!Directory.Exists(logDirectory))
+                {
+                    Directory.CreateDirectory(logDirectory);
+                }
+
+                // 3. Define the file name
+                string filePath = Path.Combine(logDirectory, "Notification_Log.txt");
+
+                // 4. Format the log entry
+                string logEntry = $"[{DateTime.Now:HH:mm:ss}] [{module}] [{status}] - {message}";
+                if (!string.IsNullOrEmpty(details))
+                {
+                    logEntry += $" | Details: {details}";
+                }
+                logEntry += Environment.NewLine;
+
+                // 5. Append to the file
+                File.AppendAllText(filePath, logEntry);
+            }
+            catch
+            {
+                // Failsafe: If the server denies write permissions, fail silently so the app doesn't crash
+            }
         }
     }
 }

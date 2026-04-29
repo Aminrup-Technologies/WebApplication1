@@ -3,19 +3,155 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/clockpicker/0.0.7/bootstrap-clockpicker.min.css">
     <style type="text/css">
+        /* Base typography and layout */
         .top-label {
             font-weight: 600;
-            margin-bottom: 5px;
-            color: #333;
+            margin-bottom: 6px;
+            color: #2a3f54;
+            font-size: 13px;
+            letter-spacing: 0.3px;
+            display: inline-block;
         }
 
         .data-label {
-            font-weight: bold;
-            color: #0056b3;
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 14px;
+            display: block;
+            margin-top: 2px;
         }
 
         .req-star {
-            color: red;
+            color: #E74C3C;
+            font-weight: bold;
+            margin-left: 2px;
+        }
+
+        /* Modern Panel Styling */
+        .modern-panel {
+            border: none !important;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.03);
+            background: #ffffff;
+            margin-bottom: 20px;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .modern-title {
+            border-bottom: 1px solid #f0f2f5 !important;
+            padding: 16px 20px !important;
+        }
+
+            .modern-title h2 {
+                font-weight: 600;
+                color: #34495e;
+                font-size: 18px;
+            }
+
+        /* Top Header Button */
+        .modern-header-btn {
+            display: inline-block;
+            background: linear-gradient(145deg, #6c757d, #5a6268);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+            .modern-header-btn:hover {
+                background: linear-gradient(145deg, #5a6268, #4e555b);
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+                text-decoration: none;
+            }
+
+        /* Modern Inputs */
+        .modern-input {
+            border: 1px solid #dce1e5 !important;
+            border-radius: 6px !important;
+            padding: 8px 12px;
+            height: auto !important;
+            font-size: 14px;
+            color: #495057;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+            .modern-input:focus {
+                border-color: #1ABB9C !important;
+                box-shadow: 0 0 0 3px rgba(26, 187, 156, 0.15) !important;
+                outline: none;
+            }
+
+            .modern-input[readonly] {
+                background-color: #f8f9fa !important;
+                cursor: not-allowed;
+            }
+
+        /* Job Details Card */
+        .modern-info-card {
+            background-color: #fcfcfd;
+            border: 1px solid #e9ecef;
+            padding: 0;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            overflow: hidden;
+        }
+
+        /* Action Card (Punch Out Form) */
+        .modern-action-card {
+            background-color: #fffdf5;
+            border: 1px solid #ffeeba;
+            border-left: 5px solid #E74C3C; /* Red for OUT */
+            padding: 20px;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        /* Buttons */
+        .btn-modern {
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+            .btn-modern:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            }
+
+        /* GridView Container (Cleaned up to let Bootstrap handle the table) */
+        .modern-grid-container {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            background: #fff;
+        }
+
+            .modern-grid-container th {
+                background-color: #f8f9fa;
+                color: #34495e;
+                font-weight: 600;
+                border-bottom-width: 1px;
+            }
+
+        /* Clockpicker fix */
+        .clockpicker-popover {
+            z-index: 10000 !important;
+            border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            border: none;
         }
 
         /* Loader CSS */
@@ -25,8 +161,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.4);
+            background: rgba(255,255,255,0.85);
             z-index: 9999;
+            backdrop-filter: blur(2px);
         }
 
         .spinner-container {
@@ -35,12 +172,11 @@
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            color: white;
         }
 
         .loader {
             border: 6px solid #f3f3f3;
-            border-top: 6px solid #d9534f; /* Red for exit */
+            border-top: 6px solid #E74C3C; /* Red to indicate Exit process */
             border-radius: 50%;
             width: 60px;
             height: 60px;
@@ -60,30 +196,53 @@
 
         .loading-text {
             margin-top: 15px;
-            font-size: 18px;
-            font-weight: bold;
+            font-size: 16px;
+            font-weight: 600;
+            color: #2a3f54;
         }
 
-        /* Minor tweak to ensure the clock popover stays above your modals/overlays */
-        .clockpicker-popover {
-            z-index: 10000 !important;
+        /* Custom Radio Button styling */
+        .custom-radio-list td {
+            padding-right: 15px;
         }
+
+        /* Enlarge Touch Targets for Radio Buttons */
+        .custom-radio-list label {
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            color: #34495e;
+            padding: 8px 20px;
+            background-color: #f1f5f9;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+
+        .custom-radio-list input[type="radio"] {
+            display: none; /* Hide the tiny default circle */
+        }
+
+            .custom-radio-list input[type="radio"]:checked + label {
+                background-color: #1ABB9C; /* Green highlight when selected */
+                color: #ffffff;
+                border-color: #1ABB9C;
+                box-shadow: 0 3px 8px rgba(26, 187, 156, 0.3);
+            }
     </style>
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
-
     <div class="right_col" role="main">
         <div class="container">
             <div class="row">
                 <div class="col-md-12 col-sm-12">
-                    <div class="x_panel">
-                        <div class="x_title">
-                            <h2>Step 4: Manpower OUT-Punch <small>Smart Workflow</small></h2>
-                            &nbsp;
-                            <a href="job_outpunch.aspx"
-                                style="display: inline-block; padding: 6px 12px; cursor: pointer; background-color: #6c757d; color: white; border: none; border-radius: 4px; font-weight: bold; text-decoration: none; font-size: 14px;">Switch to OLD Version
+                    <div class="x_panel modern-panel">
+                        <div class="x_title modern-title" style="display: flex; justify-content: space-between; align-items: center;">
+                            <h2 style="margin: 0;">Step 4: Manpower OUT-Punch <small style="color: #1ABB9C; font-weight: 600;">Smart Workflow</small></h2>
+                            <a href="job_outpunch.aspx" class="modern-header-btn">
+                                <i class="fa fa-history" style="margin-right: 5px;"></i>Switch to OLD Version
                             </a>
                             <div class="clearfix"></div>
                         </div>
@@ -92,24 +251,23 @@
                         <asp:UpdatePanel ID="UpdatePanel1" runat="server">
                             <ContentTemplate>
 
-                                <div class="x_content bg-light p-3 mb-3" style="border-radius: 5px; border: 1px solid #ddd;" id="OUTpunchPanel_Row" runat="server" visible="true">
+                                <div class="x_content bg-light p-3 mb-4" style="border-radius: 8px; border: 1px solid #e9ecef;" id="OUTpunchPanel_Row" runat="server" visible="true">
                                     <div class="row">
-                                        <div class="col-md-4 col-sm-12 form-group">
+                                        <div class="col-md-5 col-sm-12 form-group mb-0">
                                             <label class="top-label">Select Active JOB ID <span class="req-star">*</span></label>
-                                            <asp:DropDownList ID="DDL_JOBID" runat="server" CssClass="form-control form-control-sm rounded" AutoPostBack="true" OnSelectedIndexChanged="DDL_JOBID_SelectedIndexChanged"></asp:DropDownList>
-                                            <asp:RequiredFieldValidator ID="RequiredFieldValidator1" ControlToValidate="DDL_JOBID" runat="server" ErrorMessage="Required" CssClass="text-danger" Display="Dynamic" InitialValue="--Select--"></asp:RequiredFieldValidator>
+                                            <asp:DropDownList ID="DDL_JOBID" runat="server" CssClass="form-control modern-input" AutoPostBack="true" OnSelectedIndexChanged="DDL_JOBID_SelectedIndexChanged"></asp:DropDownList>
+                                            <asp:RequiredFieldValidator ID="RequiredFieldValidator1" ControlToValidate="DDL_JOBID" runat="server" ErrorMessage="Required" CssClass="text-danger small" Display="Dynamic" InitialValue="--Select--"></asp:RequiredFieldValidator>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="x_content" id="JOBIDDetails_Row" runat="server" visible="false">
-                                    <div class="row" style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 6px; padding: 0; margin-bottom: 20px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-
-                                        <div class="col-md-12" style="background-color: #e9ecef; border-bottom: 1px solid #dee2e6; padding: 10px 15px;">
-                                            <h5 class="text-primary m-0" style="font-weight: 600;"><i class="fa fa-briefcase mr-2"></i>Active JOB Overview</h5>
+                                    <div class="row modern-info-card">
+                                        <div class="col-md-12" style="background-color: #f8f9fa; border-bottom: 1px solid #e9ecef; padding: 15px 20px;">
+                                            <h5 class="m-0" style="color: #2980b9; font-weight: 600;"><i class="fa fa-briefcase" style="margin-right: 8px;"></i>Active JOB Overview</h5>
                                         </div>
 
-                                        <div class="col-md-12 p-3">
+                                        <div class="col-md-12 p-4">
                                             <div class="row">
                                                 <div class="col-md-3 col-sm-6 mb-3">
                                                     <small class="text-muted text-uppercase font-weight-bold"><i class="fa fa-hashtag"></i>JOB ID</small><br />
@@ -125,22 +283,24 @@
                                                 </div>
                                                 <div class="col-md-3 col-sm-6 mb-3">
                                                     <small class="text-muted text-uppercase font-weight-bold"><i class="fa fa-shield"></i>Permit No</small><br />
-                                                    <asp:Label ID="lbl_permitno" runat="server" CssClass="badge bg-red" Style="font-size: 13px;"></asp:Label>
+                                                    <asp:Label ID="lbl_permitno" runat="server" CssClass="badge bg-red" Style="font-size: 13px; margin-top: 4px; padding: 5px 8px;"></asp:Label>
                                                 </div>
 
                                                 <div class="col-md-3 col-sm-6 mb-2">
                                                     <small class="text-muted text-uppercase font-weight-bold"><i class="fa fa-building-o"></i>Site / Location</small><br />
-                                                    <asp:Label ID="lbl_jobsite" runat="server" CssClass="text-dark font-weight-bold"></asp:Label>
-                                                    <span class="text-muted">|</span>
-                                                    <asp:Label ID="lbl_jobloc" runat="server" CssClass="text-dark"></asp:Label>
+                                                    <span class="data-label" style="display: inline-block;">
+                                                        <asp:Label ID="lbl_jobsite" runat="server"></asp:Label>
+                                                        <span class="text-muted font-weight-normal mx-1">|</span>
+                                                        <asp:Label ID="lbl_jobloc" runat="server" CssClass="font-weight-normal"></asp:Label>
+                                                    </span>
                                                 </div>
                                                 <div class="col-md-3 col-sm-6 mb-2">
                                                     <small class="text-muted text-uppercase font-weight-bold"><i class="fa fa-clock-o"></i>Shift</small><br />
-                                                    <asp:Label ID="lbl_jobshift" runat="server" CssClass="badge bg-green" Style="font-size: 13px;"></asp:Label>
+                                                    <asp:Label ID="lbl_jobshift" runat="server" CssClass="badge bg-green" Style="font-size: 13px; margin-top: 4px; padding: 5px 8px;"></asp:Label>
                                                 </div>
                                                 <div class="col-md-6 col-sm-12 mb-2">
                                                     <small class="text-muted text-uppercase font-weight-bold"><i class="fa fa-user-circle"></i>Site In-Charge</small><br />
-                                                    <asp:Label ID="lbl_inchargename" runat="server" CssClass="text-dark font-weight-bold"></asp:Label>
+                                                    <asp:Label ID="lbl_inchargename" runat="server" CssClass="data-label"></asp:Label>
                                                 </div>
                                             </div>
                                         </div>
@@ -160,77 +320,94 @@
 
                                     <div class="row" id="CSMRow" runat="server" visible="false">
                                         <div class="col-md-12">
-                                            <div class="alert alert-info">
-                                                <i class="fa fa-shield"></i><strong>Safety Compliance:</strong>
-                                                TBT Count:
-                                                <asp:Label ID="lbl_tbtcount" runat="server" CssClass="badge bg-green" Text="0"></asp:Label>
-                                                | 
-                                                SOP Count:
-                                                <asp:Label ID="lbl_sopcount" runat="server" CssClass="badge bg-green" Text="0"></asp:Label>
+                                            <div class="alert alert-info" style="border-radius: 8px; padding: 12px 20px; display: flex; align-items: center;">
+                                                <i class="fa fa-shield" style="font-size: 20px; margin-right: 10px;"></i>
+                                                <div style="flex-grow: 1;">
+                                                    <strong>Safety Compliance:</strong>
+                                                    <span class="ml-2">TBT Count:
+                                                        <asp:Label ID="lbl_tbtcount" runat="server" CssClass="badge bg-green mx-1" Text="0"></asp:Label></span>
+                                                    <span class="text-muted mx-2">|</span>
+                                                    <span>SOP Count:
+                                                        <asp:Label ID="lbl_sopcount" runat="server" CssClass="badge bg-green mx-1" Text="0"></asp:Label></span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="row" id="IncompleteCSM" runat="server" visible="false">
-                                        <div class="col-md-12 text-center p-4">
+                                        <div class="col-md-12 text-center p-5" style="background: #fff5f5; border: 1px dashed #e74c3c; border-radius: 8px; margin-bottom: 20px;">
                                             <i class="fa fa-times-circle text-danger" style="font-size: 50px;"></i>
-                                            <h4 class="text-danger mt-2">Incomplete Safety Documents!</h4>
-                                            <p>You must complete Toolbox Talk (TBT) and SOP Training before punching out workers.</p>
-                                            <a href="csm_tbtform.aspx" class="btn btn-primary btn-sm">Complete TBT</a>
-                                            <a href="csm_soptraining.aspx" class="btn btn-info btn-sm">Complete SOP</a>
+                                            <h4 class="text-danger mt-3" style="font-weight: 600;">Incomplete Safety Documents!</h4>
+                                            <p class="text-muted" style="font-size: 15px;">You must complete Toolbox Talk (TBT) and SOP Training before punching out workers.</p>
+                                            <div class="mt-3">
+                                                <a href="csm_tbtform.aspx" class="btn btn-primary btn-modern"><i class="fa fa-pencil-square-o"></i>Complete TBT</a>
+                                                <a href="csm_soptraining.aspx" class="btn btn-info btn-modern"><i class="fa fa-graduation-cap"></i>Complete SOP</a>
+                                            </div>
                                         </div>
                                     </div>
 
                                     <div class="row mt-3 mb-4" id="PunchOutForm_Row" runat="server" visible="false">
                                         <div class="col-md-12">
-                                            <div style="background-color: #fffdf5; border: 1px solid #ffeeba; border-left: 5px solid #ffc107; padding: 20px; border-radius: 6px; box-shadow: 0 3px 6px rgba(0,0,0,0.08);">
-
-                                                <div class="row border-bottom pb-2 mb-3 align-items-center">
+                                            <div class="modern-action-card">
+                                                <div class="row border-bottom pb-3 mb-4 align-items-center">
                                                     <div class="col-md-12">
-                                                        <h4 class="text-warning m-0" style="font-weight: 700;">
-                                                            <i class="fa fa-sign-out mr-2"></i>Process Exit For: 
+                                                        <h4 class="text-danger m-0" style="font-weight: 700;">
+                                                            <i class="fa fa-sign-out" style="margin-right: 8px;"></i>Process Exit For: 
                                                             <asp:Label ID="txt_empname" runat="server" CssClass="text-dark ml-2"></asp:Label>
                                                         </h4>
                                                     </div>
                                                 </div>
 
                                                 <div class="row align-items-end">
-                                                    <div class="col-md-2 col-sm-6 form-group">
-                                                        <label class="text-muted font-weight-bold mb-1">IN Time</label>
-                                                        <asp:TextBox ID="txt_inpunchtime" runat="server" CssClass="form-control form-control-sm rounded bg-light" ReadOnly="true"></asp:TextBox>
+                                                    <div class="col-lg-2 col-md-4 col-12 form-group mb-3">
+                                                        <label class="text-muted font-weight-bold mb-1" style="font-size: 12px; text-transform: uppercase;">IN Time</label>
+                                                        <asp:TextBox ID="txt_inpunchtime" runat="server" CssClass="form-control modern-input" ReadOnly="true"></asp:TextBox>
                                                     </div>
-                                                    <div class="col-md-2 col-sm-6 form-group">
+
+                                                    <div class="col-lg-2 col-md-4 col-12 form-group mb-3">
                                                         <label class="top-label">OUT Date <span class="req-star">*</span></label>
-                                                        <asp:TextBox ID="txt_date" runat="server" CssClass="form-control form-control-sm rounded" type="date"></asp:TextBox>
+                                                        <asp:TextBox ID="txt_date" runat="server" CssClass="form-control modern-input" type="date"></asp:TextBox>
                                                     </div>
-                                                    <div class="col-md-2 col-sm-6 form-group">
+
+                                                    <div class="col-lg-2 col-md-4 col-12 form-group mb-3">
                                                         <label class="top-label">OUT Time <span class="req-star">*</span></label>
-                                                        <asp:TextBox ID="txt_time" runat="server" CssClass="form-control form-control-sm rounded time-picker-custom" AutoCompleteType="Disabled" placeholder="HH:MM"></asp:TextBox>
+                                                        <asp:TextBox ID="txt_time" runat="server" CssClass="form-control modern-input time-picker-custom" AutoCompleteType="Disabled" placeholder="HH:MM"></asp:TextBox>
                                                     </div>
-                                                    <div class="col-md-2 col-sm-6 form-group text-center">
-                                                        <label class="top-label">Lunch <span class="req-star">*</span></label>
-                                                        <div class="form-control form-control-sm rounded border-0 bg-transparent pt-0">
-                                                            <asp:RadioButtonList ID="RBTN_LunchFactor" runat="server" RepeatDirection="Horizontal" CssClass="table-borderless mx-auto">
-                                                                <asp:ListItem Selected="True" Value="Yes">Yes&nbsp;&nbsp;</asp:ListItem>
+
+                                                    <div class="col-lg-2 col-md-4 col-12 form-group mb-3">
+                                                        <label class="top-label d-block text-center">Lunch <span class="req-star">*</span></label>
+                                                        <div class="form-control modern-input border-0 bg-transparent p-0 text-center" style="box-shadow: none;">
+                                                            <asp:RadioButtonList ID="RBTN_LunchFactor" runat="server" RepeatDirection="Horizontal" CssClass="custom-radio-list mx-auto" Style="display: inline-block;">
+                                                                <asp:ListItem Selected="True" Value="Yes">Yes</asp:ListItem>
                                                                 <asp:ListItem Value="No">No</asp:ListItem>
                                                             </asp:RadioButtonList>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-2 col-sm-6 form-group">
+
+                                                    <div class="col-lg-2 col-md-4 col-12 form-group mb-3">
                                                         <label class="top-label">Attn Code <span class="req-star">*</span></label>
-                                                        <asp:DropDownList ID="DDL_AttenCode" runat="server" CssClass="form-control form-control-sm rounded"></asp:DropDownList>
+                                                        <asp:DropDownList ID="DDL_AttenCode" runat="server" CssClass="form-control modern-input"></asp:DropDownList>
                                                     </div>
-                                                    <div class="col-md-2 col-sm-6 form-group">
-                                                        <label class="top-label">Over Time (Hrs) <span class="req-star">*</span></label>
-                                                        <asp:TextBox ID="txt_ot" runat="server" CssClass="form-control form-control-sm rounded text-center" Text="0" type="number" max="16" min="0"></asp:TextBox>
-                                                        <asp:CustomValidator ID="CustomValidator1" runat="server" ValidationGroup="PunchOUT_Button" ControlToValidate="txt_ot" CssClass="text-danger small" Display="Dynamic" ClientValidationFunction="validateInput"></asp:CustomValidator>
+
+                                                    <div class="col-lg-2 col-md-4 col-12 form-group mb-3">
+                                                        <label class="top-label text-center d-block">Over Time (Hrs) <span class="req-star">*</span></label>
+                                                        <asp:TextBox ID="txt_ot" runat="server" CssClass="form-control modern-input text-center" Text="0" type="number" max="16" min="0" Style="font-weight: bold; color: #E74C3C;"></asp:TextBox>
+                                                        <asp:CustomValidator ID="CustomValidator1" runat="server" ValidationGroup="PunchOUT_Button" ControlToValidate="txt_ot" CssClass="text-danger small d-block text-center mt-1" Display="Dynamic" ClientValidationFunction="validateInput"></asp:CustomValidator>
                                                     </div>
                                                 </div>
 
-                                                <div class="row mt-2">
-                                                    <div class="col-md-12 text-right border-top pt-3">
-                                                        <asp:Button ID="btn_cancel" runat="server" Text="Cancel" CssClass="btn btn-outline-secondary btn-sm mr-2" CausesValidation="false" OnClick="btn_cancel_Click" />
-                                                        <asp:Button ID="btn_punchout" runat="server" Text="Confirm Punch OUT" ValidationGroup="PunchOUT_Button" CssClass="btn btn-danger btn-sm" OnClientClick="showLoader();" OnClick="btn_punchout_Click" />
+                                                <div class="row mt-3">
+                                                    <div class="col-md-12 border-top pt-4 d-flex flex-column flex-sm-row justify-content-sm-end">
+                                                        <asp:Button ID="btn_cancel" runat="server" Text="Cancel"
+                                                            CssClass="btn btn-outline-secondary btn-modern mb-3 mb-sm-0 mr-sm-2"
+                                                            Style="padding: 10px 25px; font-size: 15px;"
+                                                            CausesValidation="false" OnClick="btn_cancel_Click" />
+
+                                                        <asp:Button ID="btn_punchout" runat="server" Text="Confirm Punch OUT"
+                                                            ValidationGroup="PunchOUT_Button"
+                                                            CssClass="btn btn-danger btn-modern"
+                                                            Style="padding: 10px 25px; font-size: 15px; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);"
+                                                            OnClientClick="showLoader();" OnClick="btn_punchout_Click" />
                                                     </div>
                                                 </div>
 
@@ -243,38 +420,74 @@
 
                                     <div class="row mt-4" id="ViewState_TableRow" runat="server" visible="false">
                                         <div class="col-md-12">
-                                            <h5 class="text-primary"><i class="fa fa-users"></i>Workers Currently IN</h5>
-                                            <div class="card-box table-responsive">
-                                                <asp:GridView ID="GridView1" runat="server" Width="100%" CssClass="table table-striped table-bordered table-sm" AutoGenerateColumns="false" EmptyDataText="All workers have been punched out." OnRowDeleting="GridView1_RowDeleting">
+                                            <h5 style="color: #1ABB9C; font-weight: 600; margin-bottom: 15px;"><i class="fa fa-users" style="margin-right: 6px;"></i>Workers Currently IN</h5>
+                                            <div class="modern-grid-container card-box table-responsive">
+                                                <asp:GridView ID="GridView1" runat="server" Width="100%" CssClass="table table-striped table-hover table-sm" AutoGenerateColumns="false" EmptyDataText="All workers have been punched out." OnRowDeleting="GridView1_RowDeleting" GridLines="None">
                                                     <Columns>
-                                                        <asp:TemplateField HeaderText="SL" ItemStyle-Width="5%" ItemStyle-CssClass="text-center">
-                                                            <ItemTemplate><%# Container.DataItemIndex + 1 %></ItemTemplate>
-                                                        </asp:TemplateField>
-                                                        <asp:TemplateField HeaderText="ID" Visible="false">
+                                                        <asp:TemplateField HeaderText="Worker Info" ItemStyle-VerticalAlign="Middle" ItemStyle-Width="35%">
                                                             <ItemTemplate>
-                                                                <asp:Label ID="lbl_Id" runat="server" Text='<%# Bind("Id") %>'></asp:Label>
-                                                            </ItemTemplate>
-                                                        </asp:TemplateField>
-                                                        <asp:TemplateField HeaderText="Workman ID">
-                                                            <ItemTemplate>
-                                                                <asp:Label ID="lbl_EmployeeWrk" runat="server" Text='<%# Bind("EmployeeWrk") %>'></asp:Label>
-                                                            </ItemTemplate>
-                                                        </asp:TemplateField>
-                                                        <asp:TemplateField HeaderText="Name">
-                                                            <ItemTemplate>
-                                                                <asp:Label ID="lbl_EmployeeName" runat="server" Text='<%# Bind("EmployeeName") %>'></asp:Label>
-                                                            </ItemTemplate>
-                                                        </asp:TemplateField>
-                                                        <asp:TemplateField HeaderText="IN Time">
-                                                            <ItemTemplate>
-                                                                <asp:Label ID="lbl_Inpunch_Time" runat="server" Text='<%# Bind("Inpunch_Time") %>'></asp:Label>
+                                                                <asp:Label ID="lbl_Id" runat="server" Text='<%# Bind("Id") %>' Visible="false"></asp:Label>
+                                                                <div style="font-weight: 700; color: #2c3e50; font-size: 14px; margin-bottom: 3px;">
+                                                                    <%# Container.DataItemIndex + 1 %>.
+                                                                    <asp:Label ID="lbl_EmployeeName" runat="server" Text='<%# Bind("EmployeeName") %>'></asp:Label>
+                                                                </div>
+                                                                <div style="font-size: 12px; color: #64748b;">
+                                                                    <span class="badge" style="background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 3px 6px;">
+                                                                        <%# Eval("EmployeeWrk") %>
+                                                                    </span>
+                                                                    <span style="margin: 0 4px; color: #cbd5e1;">|</span>
+                                                                    <span style="font-weight: 500;">
+                                                                        <%# Eval("EmpDesignation") != DBNull.Value ? Eval("EmpDesignation") : "Worker" %>
+                                                                    </span>
+                                                                </div>
                                                             </ItemTemplate>
                                                         </asp:TemplateField>
 
-                                                        <asp:TemplateField HeaderText="Action" ItemStyle-Width="15%" ItemStyle-CssClass="text-center">
+                                                        <asp:TemplateField HeaderText="Time Log" ItemStyle-VerticalAlign="Middle" ItemStyle-Width="35%">
                                                             <ItemTemplate>
-                                                                <asp:Button ID="PunchOUT" runat="server" CssClass="btn btn-sm btn-danger" Text="Punch OUT" CommandArgument='<%# Eval("Id") %>' OnClick="PunchOUT_Click" />
-                                                                <asp:LinkButton ID="btndelete" runat="server" CommandName="Delete" CssClass="btn btn-default btn-sm ml-2" OnClientClick="return confirm('Are you sure you want to delete this record entirely?');" ToolTip="Delete Record"><i class="fa fa-trash text-danger"></i></asp:LinkButton>
+                                                                <div style="margin-bottom: 5px;">
+                                                                    <span class="badge bg-green text-white" style="font-size: 10px; width: 40px; padding: 4px 0; display: inline-block; text-align: center;">IN</span>
+                                                                    <span style="font-size: 13px; font-weight: 600; color: #34495e; margin-left: 5px;">
+                                                                        <%# Eval("Inpunch_Time", "{0:dd-MMM HH:mm}") %>
+                                                                    </span>
+                                                                </div>
+                                                                <div>
+                                                                    <span class='<%# Eval("AttendanceStatus").ToString() == "Exit" ? "badge bg-red text-white" : "badge bg-secondary text-white" %>' style="font-size: 10px; width: 40px; padding: 4px 0; display: inline-block; text-align: center;">OUT</span>
+                                                                    <span style="font-size: 13px; font-weight: 600; margin-left: 5px; color: <%# Eval("AttendanceStatus").ToString() == "Exit" ? "#E74C3C" : "#94a3b8" %>;">
+                                                                        <%# Eval("AttendanceStatus").ToString() == "Exit" ? Eval("Outpunch_Time", "{0:dd-MMM HH:mm}") : "Pending..." %>
+                                                                    </span>
+                                                                </div>
+                                                            </ItemTemplate>
+                                                        </asp:TemplateField>
+
+                                                        <asp:TemplateField HeaderText="Hrs/OT" ItemStyle-CssClass="d-none d-md-table-cell hidden-xs hidden-sm" HeaderStyle-CssClass="d-none d-md-table-cell hidden-xs hidden-sm" ItemStyle-VerticalAlign="Middle" ItemStyle-Width="15%">
+                                                            <ItemTemplate>
+                                                                <div style="font-size: 13px; font-weight: bold; color: #34495e; margin-bottom: 3px;">
+                                                                    Hrs: <%# Eval("AttendanceStatus").ToString() == "Exit" ? Eval("WorkedHours") + "h" : "-" %>
+                                                                </div>
+                                                                <div style="font-size: 13px; font-weight: bold; color: #c0392b;">
+                                                                    OT: <%# Eval("AttendanceStatus").ToString() == "Exit" ? Eval("ProvidedOT") + "h" : "-" %>
+                                                                </div>
+                                                            </ItemTemplate>
+                                                        </asp:TemplateField>
+
+                                                        <asp:TemplateField HeaderText="Action" ItemStyle-VerticalAlign="Middle" ItemStyle-Width="15%">
+                                                            <ItemTemplate>
+                                                                <asp:LinkButton ID="PunchOUT" runat="server"
+                                                                    CssClass='<%# Eval("AttendanceStatus").ToString() == "Exit" ? "btn btn-sm btn-default btn-block m-0" : "btn btn-sm btn-danger btn-block m-0" %>'
+                                                                    Style="font-weight: 600; padding: 5px 0; margin-bottom: 5px !important;"
+                                                                    CommandArgument='<%# Eval("Id") %>'
+                                                                    OnClick="PunchOUT_Click">
+                                                                    <i class='<%# Eval("AttendanceStatus").ToString() == "Exit" ? "fa fa-pencil" : "fa fa-sign-out" %>'></i> 
+                                                                    <%# Eval("AttendanceStatus").ToString() == "Exit" ? "Edit" : "OUT" %>
+                                                                </asp:LinkButton>
+
+                                                                <asp:LinkButton ID="btndelete" runat="server" CommandName="Delete"
+                                                                    CssClass="btn btn-sm btn-default btn-block m-0"
+                                                                    Style="padding: 5px 0;"
+                                                                    OnClientClick="return confirm('Delete this record?');" ToolTip="Delete Record">
+                                                                    <i class="fa fa-trash text-danger"></i>
+                                                                </asp:LinkButton>
                                                             </ItemTemplate>
                                                         </asp:TemplateField>
                                                     </Columns>
@@ -284,10 +497,20 @@
                                     </div>
 
                                     <div class="row" id="NoPenidngPunch" runat="server" visible="false">
-                                        <div class="col-md-12 text-center p-4">
-                                            <i class="fa fa-check-circle text-success" style="font-size: 60px;"></i>
-                                            <h3 class="text-success mt-2">Job Successfully Closed!</h3>
-                                            <p style="font-size: 16px;">All workers have been punched out. This JOB ID is now marked as <strong>Exit</strong> and ready for Memo generation.</p>
+                                        <div class="col-md-12">
+                                            <div class="text-center p-4 shadow" style="background-color: #f0f9f6; border: 2px solid #1ABB9C; border-radius: 8px; margin-top: 20px; position: sticky; bottom: 10px; z-index: 100;">
+                                                <div class="d-flex align-items-center justify-content-center flex-wrap">
+                                                    <i class="fa fa-check-circle text-success mr-3" style="font-size: 30px;"></i>
+                                                    <h4 class="text-success m-0 mr-3" style="font-weight: 700;">All Punches Completed</h4>
+
+                                                    <asp:Button ID="btn_FinalizeShift" runat="server"
+                                                        Text="Submit to Approver & Close Shift"
+                                                        CssClass="btn btn-success m-0 mt-2 mt-sm-0"
+                                                        Style="border-radius: 30px; padding: 10px 30px; font-weight: bold; font-size: 15px; box-shadow: 0 4px 10px rgba(26, 187, 156, 0.3); transition: transform 0.2s;"
+                                                        OnClientClick="showLoader();"
+                                                        OnClick="btn_FinalizeShift_Click" />
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -351,82 +574,82 @@
         // 2. Main Validation Logic
         function validateOutPunch() {
             const outPunchDate = document.getElementById('<%= txt_date.ClientID %>');
-        const outPunchTime = document.getElementById('<%= txt_time.ClientID %>');
+            const outPunchTime = document.getElementById('<%= txt_time.ClientID %>');
 
-        if (!outPunchDate || !outPunchTime) return;
+            if (!outPunchDate || !outPunchTime) return;
 
-        let selectedDate = outPunchDate.value;
-        let selectedTime = outPunchTime.value;
+            let selectedDate = outPunchDate.value;
+            let selectedTime = outPunchTime.value;
 
-        if (!selectedDate || !selectedTime) return;
+            if (!selectedDate || !selectedTime) return;
 
-        let now = new Date();
-        let year = now.getFullYear();
-        let month = String(now.getMonth() + 1).padStart(2, '0');
-        let day = String(now.getDate()).padStart(2, '0');
+            let now = new Date();
+            let year = now.getFullYear();
+            let month = String(now.getMonth() + 1).padStart(2, '0');
+            let day = String(now.getDate()).padStart(2, '0');
 
-        let currentDate = `${year}-${month}-${day}`;
-        let currentHours = now.getHours();
-        let currentMinutes = now.getMinutes();
+            let currentDate = `${year}-${month}-${day}`;
+            let currentHours = now.getHours();
+            let currentMinutes = now.getMinutes();
 
-        if (selectedTime.includes(":")) {
-            let timeParts = selectedTime.split(":");
-            let selectedHours = parseInt(timeParts[0], 10);
-            let selectedMinutes = parseInt(timeParts[1], 10);
+            if (selectedTime.includes(":")) {
+                let timeParts = selectedTime.split(":");
+                let selectedHours = parseInt(timeParts[0], 10);
+                let selectedMinutes = parseInt(timeParts[1], 10);
 
-            if (selectedDate > currentDate) {
-                showPNotify('Warning', 'You cannot punch out for a future date.', 'error');
-                outPunchDate.value = currentDate;
-                return;
-            }
+                if (selectedDate > currentDate) {
+                    showPNotify('Warning', 'You cannot punch out for a future date.', 'error');
+                    outPunchDate.value = currentDate;
+                    return;
+                }
 
-            if (selectedDate === currentDate) {
-                if (selectedHours > currentHours || (selectedHours === currentHours && selectedMinutes > currentMinutes)) {
-                    showPNotify('Warning', 'You cannot punch out beyond the current time.', 'error');
-                    outPunchTime.value = "";
+                if (selectedDate === currentDate) {
+                    if (selectedHours > currentHours || (selectedHours === currentHours && selectedMinutes > currentMinutes)) {
+                        showPNotify('Warning', 'You cannot punch out beyond the current time.', 'error');
+                        outPunchTime.value = "";
+                    }
                 }
             }
         }
-    }
 
-    // 3. Attach listeners cleanly
-    function AttachDateListeners() {
-        InitClockPicker();
-        $('#<%= txt_date.ClientID %>').off('change').on('change', validateOutPunch);
-        $('#<%= txt_time.ClientID %>').off('change').on('change', validateOutPunch);
-    }
-
-    // 4. THE FIX: Dynamic Dependency Loader
-    function BootUpSystem() {
-        // Check if the Master Page has finished loading jQuery
-        if (window.jQuery) {
-            // Check if clockpicker is already loaded to prevent duplicate network calls
-            if (!$.fn.clockpicker) {
-                // Dynamically load the library only AFTER jQuery is ready
-                $.getScript("https://cdnjs.cloudflare.com/ajax/libs/clockpicker/0.0.7/bootstrap-clockpicker.min.js")
-                    .done(function () {
-                        AttachDateListeners();
-                    })
-                    .fail(function () {
-                        console.error("Failed to load ClockPicker script from CDN.");
-                    });
-            } else {
-                AttachDateListeners();
-            }
-        } else {
-            // If jQuery isn't ready, wait 50ms and try again
-            setTimeout(BootUpSystem, 50);
+        // 3. Attach listeners cleanly
+        function AttachDateListeners() {
+            InitClockPicker();
+            $('#<%= txt_date.ClientID %>').off('change').on('change', validateOutPunch);
+            $('#<%= txt_time.ClientID %>').off('change').on('change', validateOutPunch);
         }
-    }
 
-    // 5. UpdatePanel and Page Load Handlers
-    var prm = Sys.WebForms.PageRequestManager.getInstance();
-    prm.add_endRequest(function () {
-        hideLoader();
-        AttachDateListeners(); // Dependencies are already loaded on partial postbacks
-    });
+        // 4. THE FIX: Dynamic Dependency Loader
+        function BootUpSystem() {
+            // Check if the Master Page has finished loading jQuery
+            if (window.jQuery) {
+                // Check if clockpicker is already loaded to prevent duplicate network calls
+                if (!$.fn.clockpicker) {
+                    // Dynamically load the library only AFTER jQuery is ready
+                    $.getScript("https://cdnjs.cloudflare.com/ajax/libs/clockpicker/0.0.7/bootstrap-clockpicker.min.js")
+                        .done(function () {
+                            AttachDateListeners();
+                        })
+                        .fail(function () {
+                            console.error("Failed to load ClockPicker script from CDN.");
+                        });
+                } else {
+                    AttachDateListeners();
+                }
+            } else {
+                // If jQuery isn't ready, wait 50ms and try again
+                setTimeout(BootUpSystem, 50);
+            }
+        }
 
-    // Start the boot sequence
-    document.addEventListener("DOMContentLoaded", BootUpSystem);
+        // 5. UpdatePanel and Page Load Handlers
+        var prm = Sys.WebForms.PageRequestManager.getInstance();
+        prm.add_endRequest(function () {
+            hideLoader();
+            AttachDateListeners(); // Dependencies are already loaded on partial postbacks
+        });
+
+        // Start the boot sequence
+        document.addEventListener("DOMContentLoaded", BootUpSystem);
     </script>
 </asp:Content>

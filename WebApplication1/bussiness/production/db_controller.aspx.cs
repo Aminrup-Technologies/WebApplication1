@@ -84,6 +84,7 @@ namespace WebApplication1.bussiness.production
                 BindDocMasterGrid();
                 BindMatrixGrid();
                 BindBackdateGrid();
+                BindWOSummaryGrid();
             }
             catch (Exception ex)
             {
@@ -95,9 +96,18 @@ namespace WebApplication1.bussiness.production
             }
         }
 
+        // APPLIED BUG FIX: Safely escape messages for UpdatePanel callbacks
+        private void ShowNotification(Control control, string title, string message, string type)
+        {
+            if (string.IsNullOrEmpty(message)) message = "An error occurred.";
+            string safeMessage = message.Replace("'", "\\'").Replace("\"", "\\\"").Replace("\n", "<br/>").Replace("\r", "");
+            string script = $"showPNotify('{title}', '{safeMessage}', '{type}');";
+
+            ScriptManager.RegisterStartupScript(control, control.GetType(), "PNotify", script, true);
+        }
+
         private void BindBackdateGrid()
         {
-            // Added Remarks and IsActive to the SELECT statement
             using (SqlCommand cmd = new SqlCommand("SELECT Employee_Workman, Max_Backdate_Days, Remarks, IsActive FROM tlb_Backdate_Exceptions ORDER BY TimeStamp DESC", dbcl.Conn))
             {
                 using (SqlDataReader rdr = cmd.ExecuteReader())
@@ -119,7 +129,6 @@ namespace WebApplication1.bussiness.production
                 return;
             }
 
-            // NEW: Enforce mandatory Remarks
             if (string.IsNullOrWhiteSpace(txt_exc_remarks.Text))
             {
                 ShowNotification(btn_SaveException, "Warning", "Remarks are required to grant an exception.", "notice");
@@ -131,7 +140,7 @@ namespace WebApplication1.bussiness.production
                 dbcl.Sqlconnection();
                 dbcl.ConnectDb();
 
-                // Upsert Logic: Update if exists (and set to Active), Insert if new
+                // Upsert Logic
                 string upsertQry = @"
             IF EXISTS (SELECT 1 FROM tlb_Backdate_Exceptions WHERE Employee_Workman = @Workman)
                 UPDATE tlb_Backdate_Exceptions SET Max_Backdate_Days = @Days, Remarks = @Remarks, IsActive = 1, TimeStamp = GETDATE() WHERE Employee_Workman = @Workman
@@ -142,12 +151,12 @@ namespace WebApplication1.bussiness.production
                 {
                     cmd.Parameters.AddWithValue("@Workman", txt_exc_workman.Text.Trim());
                     cmd.Parameters.AddWithValue("@Days", ddl_exc_days.SelectedValue);
-                    cmd.Parameters.AddWithValue("@Remarks", txt_exc_remarks.Text.Trim()); // Save Remarks
+                    cmd.Parameters.AddWithValue("@Remarks", txt_exc_remarks.Text.Trim());
                     cmd.ExecuteNonQuery();
                 }
 
                 txt_exc_workman.Text = "";
-                txt_exc_remarks.Text = ""; // Clear form
+                txt_exc_remarks.Text = "";
                 BindBackdateGrid();
                 ShowNotification(btn_SaveException, "Success", "Backdate exception saved and activated.", "success");
             }
@@ -167,12 +176,9 @@ namespace WebApplication1.bussiness.production
             {
                 try
                 {
-                    // Split the argument to get Workman SL and the current status
                     string[] args = e.CommandArgument.ToString().Split('|');
                     string workman = args[0];
                     bool currentStatus = Convert.ToBoolean(args[1]);
-
-                    // Toggle the status (Soft Delete / Reactivate)
                     int newStatus = currentStatus ? 0 : 1;
 
                     dbcl.Sqlconnection();
@@ -215,7 +221,6 @@ namespace WebApplication1.bussiness.production
                 db.Sqlconnection();
                 db.ConnectDb();
 
-                // Check if an event already exists for this date and company
                 string checkQry = "SELECT COUNT(*) FROM tlb_Company_Calendar WHERE Company_Code=@Comp AND Cal_Date=@Date";
                 int count = 0;
                 using (SqlCommand cmdCheck = new SqlCommand(checkQry, db.Conn))
@@ -227,7 +232,6 @@ namespace WebApplication1.bussiness.production
 
                 if (count > 0)
                 {
-                    // Update existing day
                     string updQry = "UPDATE tlb_Company_Calendar SET Day_Type=@Tag WHERE Company_Code=@Comp AND Cal_Date=@Date";
                     using (SqlCommand cmdUpd = new SqlCommand(updQry, db.Conn))
                     {
@@ -239,7 +243,6 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-                    // Insert new day rule
                     string insQry = "INSERT INTO tlb_Company_Calendar (Company_Code, Cal_Date, Day_Type) VALUES (@Comp, @Date, @Tag)";
                     using (SqlCommand cmdIns = new SqlCommand(insQry, db.Conn))
                     {
@@ -291,7 +294,6 @@ namespace WebApplication1.bussiness.production
                             string dateStr = Convert.ToDateTime(rdr["Cal_Date"]).ToString("yyyy-MM-dd");
                             string tag = rdr["Day_Type"].ToString();
 
-                            // Assign colors based on tag logic
                             string title = tag == "FL" ? "Festival Leave" : (tag == "OD" ? "Weekly Off" : "National Holiday");
                             string color = tag == "FL" ? "#e74c3c" : (tag == "OD" ? "#3498db" : "#9b59b6");
 
@@ -319,7 +321,7 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-        [System.Web.Services.WebMethod]
+        [WebMethod]
         public static string DeleteCalendarEvent(string companyCode, string calDate)
         {
             DB_Utility_OH4Y db = new DB_Utility_OH4Y();
@@ -362,7 +364,6 @@ namespace WebApplication1.bussiness.production
 
         private void BindMatrixGrid()
         {
-            // Updated SELECT statement to include Auto_Generate_Title and Default_MasterStatusCode
             string query = @"
                 SELECT 
                     Billing_Nature, 
@@ -404,7 +405,6 @@ namespace WebApplication1.bussiness.production
                 dbcl.Sqlconnection();
                 dbcl.ConnectDb();
 
-                // 1. Load the GPS Toggle from tlb_work_state_region
                 using (SqlCommand cmd = new SqlCommand("SELECT Req_GPS_Tagging FROM tlb_work_state_region WHERE Work_Region_Code=@Region", dbcl.Conn))
                 {
                     cmd.Parameters.AddWithValue("@Region", selectedRegionCode);
@@ -417,7 +417,6 @@ namespace WebApplication1.bussiness.production
                     }
                 }
 
-                // 2. Load ALL Billing Types into the CheckBoxList
                 cbl_BillingTypes.Items.Clear();
                 string btQuery = "SELECT Id, BilingType FROM tlb_JOB_BillingType ORDER BY Id";
                 using (SqlCommand cmdBt = new SqlCommand(btQuery, dbcl.Conn))
@@ -432,7 +431,6 @@ namespace WebApplication1.bussiness.production
                     }
                 }
 
-                // 3. Check off the active Billing Types for this specific Region
                 string mapQuery = "SELECT BillingTypeId FROM tlb_WorkRegion_BillingMapping WHERE Work_Region_Code=@Region AND IsActive=1";
                 using (SqlCommand cmdMap = new SqlCommand(mapQuery, dbcl.Conn))
                 {
@@ -466,7 +464,6 @@ namespace WebApplication1.bussiness.production
                 dbcl.Sqlconnection();
                 dbcl.ConnectDb();
 
-                // 1. Update the GPS Toggle
                 using (SqlCommand cmdUpdate = new SqlCommand("UPDATE tlb_work_state_region SET Req_GPS_Tagging=@GPS WHERE Work_Region_Code=@Region", dbcl.Conn))
                 {
                     cmdUpdate.Parameters.AddWithValue("@GPS", ddl_req_gps.SelectedValue);
@@ -474,7 +471,6 @@ namespace WebApplication1.bussiness.production
                     cmdUpdate.ExecuteNonQuery();
                 }
 
-                // 2. Save the Billing Type mappings
                 foreach (ListItem item in cbl_BillingTypes.Items)
                 {
                     int billingId = int.Parse(item.Value);
@@ -542,8 +538,10 @@ namespace WebApplication1.bussiness.production
                     }
                     ddl_wo_company.Items.Insert(0, new ListItem("-- Select Company --", ""));
                 }
+                BindWOSummaryGrid();
             }
             catch (Exception ex) { ShowNotification(ddl_wo_region, "Error", ex.Message, "error"); }
+            
             finally { dbcl.DisconnectDb(); }
         }
 
@@ -557,6 +555,7 @@ namespace WebApplication1.bussiness.production
             if (string.IsNullOrEmpty(ddl_wo_company.SelectedValue))
             {
                 ddl_wo_dept.Items.Insert(0, new ListItem("-- Select Dept --", ""));
+                BindWOSummaryGrid(); // Keep grid dynamic!
                 return;
             }
 
@@ -564,7 +563,10 @@ namespace WebApplication1.bussiness.production
             {
                 dbcl.Sqlconnection();
                 dbcl.ConnectDb();
-                string qry = "SELECT Department_Name + ' (' + Dept_DBCode + ')' AS DisplayName, Dept_DBCode FROM tlb_WO_Data WHERE WO_Status='Active' AND Work_Region_Code=@Reg AND Company_Code=@Comp ORDER BY DisplayName";
+
+                // ADDED 'DISTINCT' HERE ->
+                string qry = "SELECT DISTINCT Department_Name + ' (' + Dept_DBCode + ')' AS DisplayName, Dept_DBCode FROM tlb_WO_Data WHERE WO_Status='Active' AND Work_Region_Code=@Reg AND Company_Code=@Comp ORDER BY DisplayName";
+
                 using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
                 {
                     cmd.Parameters.AddWithValue("@Reg", ddl_wo_region.SelectedValue);
@@ -579,8 +581,15 @@ namespace WebApplication1.bussiness.production
                     ddl_wo_dept.Items.Insert(0, new ListItem("-- Select Dept --", ""));
                 }
             }
-            catch (Exception ex) { ShowNotification(ddl_wo_company, "Error", ex.Message, "error"); }
-            finally { dbcl.DisconnectDb(); }
+            catch (Exception ex)
+            {
+                ShowNotification(ddl_wo_company, "Error", ex.Message, "error");
+            }
+            finally
+            {
+                dbcl.DisconnectDb();
+                BindWOSummaryGrid(); // Refreshes the summary grid as discussed earlier
+            }
         }
 
         protected void ddl_wo_dept_SelectedIndexChanged(object sender, EventArgs e)
@@ -613,8 +622,10 @@ namespace WebApplication1.bussiness.production
                     }
                     ddl_wo_number.Items.Insert(0, new ListItem("-- Select WO --", ""));
                 }
+                BindWOSummaryGrid();
             }
             catch (Exception ex) { ShowNotification(ddl_wo_dept, "Error", ex.Message, "error"); }
+           
             finally { dbcl.DisconnectDb(); }
         }
 
@@ -631,7 +642,7 @@ namespace WebApplication1.bussiness.production
             {
                 dbcl.Sqlconnection();
                 dbcl.ConnectDb();
-                using (SqlCommand cmd = new SqlCommand("SELECT Contract_Nature, Billing_Nature, Execution_Type FROM tlb_WO_Data WHERE WO_Number=@WO", dbcl.Conn))
+                using (SqlCommand cmd = new SqlCommand("SELECT Contract_Nature, Billing_Nature, Execution_Type FROM tlb_WO_Data WHERE DB_Code=@WO", dbcl.Conn))
                 {
                     cmd.Parameters.AddWithValue("@WO", ddl_wo_number.SelectedValue);
                     using (SqlDataReader rdr = cmd.ExecuteReader())
@@ -644,11 +655,13 @@ namespace WebApplication1.bussiness.production
                         }
                     }
                 }
+                BindWOSummaryGrid();
             }
             catch (Exception ex)
             {
                 ShowNotification(ddl_wo_number, "Error", ex.Message, "error");
             }
+            
             finally
             {
                 dbcl.DisconnectDb();
@@ -661,15 +674,31 @@ namespace WebApplication1.bussiness.production
             {
                 dbcl.Sqlconnection();
                 dbcl.ConnectDb();
-                using (SqlCommand cmd = new SqlCommand("UPDATE tlb_WO_Data SET Contract_Nature=@CN, Billing_Nature=@BN, Execution_Type=@ET WHERE WO_Number=@WO", dbcl.Conn))
+
+                // Changed WHERE WO_Number=@WO to WHERE DB_Code=@WO
+                string updateQry = "UPDATE tlb_WO_Data SET Contract_Nature=@CN, Billing_Nature=@BN, Execution_Type=@ET WHERE DB_Code=@WO";
+
+                using (SqlCommand cmd = new SqlCommand(updateQry, dbcl.Conn))
                 {
                     cmd.Parameters.AddWithValue("@CN", ddl_contract_nature.SelectedValue);
                     cmd.Parameters.AddWithValue("@BN", ddl_billing_nature.SelectedValue);
                     cmd.Parameters.AddWithValue("@ET", ddl_execution_type.SelectedValue);
                     cmd.Parameters.AddWithValue("@WO", ddl_wo_number.SelectedValue);
-                    cmd.ExecuteNonQuery();
+
+                    int rowsAffected = cmd.ExecuteNonQuery(); // Good practice to check if it actually updated
+
+                    if (rowsAffected > 0)
+                    {
+                        ShowNotification(btn_SaveWO, "Success", "Work Order parameters updated.", "success");
+                    }
+                    else
+                    {
+                        ShowNotification(btn_SaveWO, "Warning", "Save failed: Work Order not found in database.", "notice");
+                    }
                 }
-                ShowNotification(btn_SaveWO, "Success", "Work Order parameters updated.", "success");
+
+                // ⚡ REFRESH THE GRID IMMEDIATELY AFTER SAVING
+                BindWOSummaryGrid();
             }
             catch (Exception ex)
             {
@@ -728,7 +757,6 @@ namespace WebApplication1.bussiness.production
                 dbcl.Sqlconnection();
                 dbcl.ConnectDb();
 
-                // 1. Check if this combination already exists
                 string checkQry = "SELECT COUNT(*) FROM tlb_WO_Rule_Matrix WHERE Billing_Nature=@BN AND Execution_Type=@ET";
                 int count = 0;
                 using (SqlCommand cmdCheck = new SqlCommand(checkQry, dbcl.Conn))
@@ -738,13 +766,11 @@ namespace WebApplication1.bussiness.production
                     count = (int)cmdCheck.ExecuteScalar();
                 }
 
-                // 2. Prepare Flag integer values (1 for True, 0 for False)
                 int permit = chk_req_permit.Checked ? 1 : 0;
                 int csm = chk_req_csm.Checked ? 1 : 0;
                 int attendance = chk_req_attendance.Checked ? 1 : 0;
-                int autoTitle = chk_auto_title.Checked ? 1 : 0; // NEW FLAG
+                int autoTitle = chk_auto_title.Checked ? 1 : 0;
 
-                // 3. Perform UPSERT
                 if (count > 0)
                 {
                     string updQry = "UPDATE tlb_WO_Rule_Matrix SET Req_PermitNo=@Permit, Req_CSM_Docs=@CSM, Req_Attendance=@Att, Auto_Generate_Title=@AutoTitle, Default_MasterStatusCode=@RouteCode WHERE Billing_Nature=@BN AND Execution_Type=@ET";
@@ -753,8 +779,8 @@ namespace WebApplication1.bussiness.production
                         cmdUpd.Parameters.AddWithValue("@Permit", permit);
                         cmdUpd.Parameters.AddWithValue("@CSM", csm);
                         cmdUpd.Parameters.AddWithValue("@Att", attendance);
-                        cmdUpd.Parameters.AddWithValue("@AutoTitle", autoTitle); // NEW PARAMETER
-                        cmdUpd.Parameters.AddWithValue("@RouteCode", ddl_matrix_routing.SelectedValue); // NEW
+                        cmdUpd.Parameters.AddWithValue("@AutoTitle", autoTitle);
+                        cmdUpd.Parameters.AddWithValue("@RouteCode", ddl_matrix_routing.SelectedValue);
                         cmdUpd.Parameters.AddWithValue("@BN", ddl_matrix_billing.SelectedValue);
                         cmdUpd.Parameters.AddWithValue("@ET", ddl_matrix_execution.SelectedValue);
                         cmdUpd.ExecuteNonQuery();
@@ -771,15 +797,15 @@ namespace WebApplication1.bussiness.production
                         cmdIns.Parameters.AddWithValue("@Permit", permit);
                         cmdIns.Parameters.AddWithValue("@CSM", csm);
                         cmdIns.Parameters.AddWithValue("@Att", attendance);
-                        cmdIns.Parameters.AddWithValue("@AutoTitle", autoTitle); // NEW PARAMETER
-                        cmdIns.Parameters.AddWithValue("@RouteCode", ddl_matrix_routing.SelectedValue); // NEW
+                        cmdIns.Parameters.AddWithValue("@AutoTitle", autoTitle);
+                        cmdIns.Parameters.AddWithValue("@RouteCode", ddl_matrix_routing.SelectedValue);
                         cmdIns.ExecuteNonQuery();
                     }
                     ShowNotification(btn_SaveMatrix, "Created", "New matrix rule created successfully.", "success");
                 }
 
-                // Refresh the Grid
                 BindMatrixGrid();
+                BindWOSummaryGrid();
             }
             catch (Exception ex)
             {
@@ -791,16 +817,58 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-        // =================================================================================
-        // UTILITIES
-        // =================================================================================
-        private void ShowNotification(Control control, string title, string message, string type)
+        private void BindWOSummaryGrid()
         {
-            // C# exceptions often contain newlines (\n or \r). Escape them so JS doesn't break
-            string safeMessage = message.Replace("'", "\\'").Replace("\n", "\\n").Replace("\r", "");
-            string script = $"showPNotify('{title}', '{safeMessage}', '{type}');";
+            // Ensure connection is open (you can handle this safely in your standard try/catch blocks)
+            bool closeConnection = false;
+            if (dbcl.Conn.State == ConnectionState.Closed)
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+                closeConnection = true;
+            }
 
-            ScriptManager.RegisterStartupScript(control, control.GetType(), "PNotify", script, true);
+            try
+            {
+                string region = ddl_wo_region.SelectedValue;
+                string company = ddl_wo_company.SelectedValue;
+                string dept = ddl_wo_dept.SelectedValue;
+
+                string query = @"
+            SELECT 
+                Company_Name, 
+                Department_Name, 
+                WO_Number, 
+                ISNULL(Contract_Nature, 'UNASSIGNED') AS Contract_Nature, 
+                ISNULL(Billing_Nature, 'UNASSIGNED') AS Billing_Nature, 
+                ISNULL(Execution_Type, 'UNASSIGNED') AS Execution_Type 
+            FROM tlb_WO_Data 
+            WHERE WO_Status = 'Active' ";
+
+                // Dynamically append filters based on what the user has selected so far
+                if (!string.IsNullOrEmpty(region)) query += " AND Work_Region_Code = @Reg";
+                if (!string.IsNullOrEmpty(company)) query += " AND Company_Code = @Comp";
+                if (!string.IsNullOrEmpty(dept)) query += " AND Dept_DBCode = @Dept";
+
+                query += " ORDER BY Company_Name, Department_Name, WO_Number";
+
+                using (SqlCommand cmd = new SqlCommand(query, dbcl.Conn))
+                {
+                    if (!string.IsNullOrEmpty(region)) cmd.Parameters.AddWithValue("@Reg", region);
+                    if (!string.IsNullOrEmpty(company)) cmd.Parameters.AddWithValue("@Comp", company);
+                    if (!string.IsNullOrEmpty(dept)) cmd.Parameters.AddWithValue("@Dept", dept);
+
+                    using (SqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        gv_WO_Summary.DataSource = rdr;
+                        gv_WO_Summary.DataBind();
+                    }
+                }
+            }
+            finally
+            {
+                if (closeConnection) dbcl.DisconnectDb();
+            }
         }
     }
 }

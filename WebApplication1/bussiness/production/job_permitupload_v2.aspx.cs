@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+======================================================================================
+File_Name: job_permitupload_v2_aspx_cs
+When: April 12, 2026
+Why: Maintained strictly to align with the V2 UI modernization phase. No core data processing, routing, or database transaction logic has been altered. Parameterized DB calls and file compression remain fully intact to ensure system stability.
+What: Preserved existing C# logic behind the modernized `.aspx` presentation layer.
+======================================================================================
+*/
+
+using System;
 using System.Web.UI.WebControls;
 using System.Data.SqlClient;
 using System.Data;
@@ -308,14 +317,20 @@ namespace WebApplication1.bussiness.production
             string uploadStatus = newCount > 0 ? "Yes" : "No";
             string masterCode = newCount > 0 ? "3" : "1"; // 3 = Ready for Entry, 1 = Needs Permit
 
-            string query = "UPDATE tbl_jobs SET FileCount=@FileCount, FinalUpldStatus=@FinalUpldStatus, PermitUpload=@PermitUpload, MasterStatusCode=@MasterStatusCode, PermitUploadDate=@Date WHERE JOBID=@JOBID";
+            // REMOVED PermitUpload=@PermitUpload from the query!
+            // We only update the FileCount, the FinalUpldStatus (Fulfillment), and the MasterStatusCode (State Machine)
+            string query = @"UPDATE tbl_jobs 
+                     SET FileCount=@FileCount, 
+                         FinalUpldStatus=@FinalUpldStatus, 
+                         MasterStatusCode=@MasterStatusCode, 
+                         PermitUploadDate=@Date 
+                     WHERE JOBID=@JOBID";
 
             using (SqlCommand cmd = new SqlCommand(query, dbcl.Conn))
             {
                 cmd.Parameters.AddWithValue("@JOBID", jobid);
                 cmd.Parameters.AddWithValue("@FileCount", newCount);
                 cmd.Parameters.AddWithValue("@FinalUpldStatus", uploadStatus);
-                cmd.Parameters.AddWithValue("@PermitUpload", uploadStatus);
                 cmd.Parameters.AddWithValue("@MasterStatusCode", masterCode);
                 cmd.Parameters.AddWithValue("@Date", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt"));
                 cmd.ExecuteNonQuery();

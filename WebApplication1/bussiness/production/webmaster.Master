@@ -209,7 +209,7 @@
                                         <li id="HomePage" runat="server" visible="false"><a><i class="fa fa-home"></i>Home <span class="fa fa-chevron-down"></span></a>
                                             <ul class="nav child_menu">
                                                 <li id="Home1" runat="server" visible="false"><a href="homepage.aspx">Dashboard-1<span class="label label-success pull-right">Click !!</span></a></li>
-                                                <li id="Home2" runat="server" visible="false"><a href="homepage_v2.aspx">Dashboard-2<span class="label label-success pull-right">Click !!</span></a></li>
+                                                <li id="Home2" runat="server" visible="true"><a href="homepage_v2.aspx">Dashboard-2<span class="label label-success pull-right">Click !!</span></a></li>
                                                 <li id="AttendnaceCal" runat="server" visible="false"><a href="vw_emp_attencal.aspx">Attendance<span class="label label-success pull-right">Click !!</span></a></li>
                                             </ul>
                                         </li>
@@ -223,8 +223,8 @@
 
                                         <li id="JOBManpower" runat="server" visible="false"><a><i class="fa fa-edit"></i>JOB & Manpower<span class="fa fa-chevron-down"></span></a>
                                             <ul class="nav child_menu">
-                                                <li id="CreateJOBS" runat="server" visible="false"><a href="jobs_and_manpower.aspx">Create JOBID</a></li>
-                                                <li id="ManageJOBS" runat="server" visible="false"><a href="manage_jobid.aspx">Manage JOBID</a></li>
+                                                <li id="CreateJOBS" runat="server" visible="false"><a href="jobs_and_manpower_v2.aspx">Create JOBID</a></li>
+                                                <li id="ManageJOBS" runat="server" visible="false"><a href="manage_jobid_v2.aspx">Manage JOBID</a></li>
                                                 <li id="JOBApproval" runat="server" visible="false"><a href="jobs_approval.aspx">JOB Approval</a></li>
                                                 <li id="EmpSearch" runat="server" visible="false"><a href="searchemployee.aspx">Employee Search</a></li>
                                             </ul>

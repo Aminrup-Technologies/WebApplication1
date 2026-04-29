@@ -188,6 +188,27 @@
                 </div>
             </div>
 
+            <div class="col-md-6" id="pnl_controller" runat="server" visible="true">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>DB Controllers </h2>
+                        <ul class="nav navbar-right panel_toolbox">
+                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                            </li>
+                        </ul>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <a class="btn btn-app" href="db_controller.aspx" id="box_jobs" runat="server" visible="true">
+                            <div id="Div2" class="badge bg-green" runat="server">
+                                <asp:Label ID="Label15" runat="server" Text="Ok" Visible="true"></asp:Label>
+                            </div>
+                            <i class="fa fa-edit"></i>JOB's
+                        </a>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </asp:Content>

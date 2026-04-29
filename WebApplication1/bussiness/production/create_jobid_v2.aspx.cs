@@ -103,7 +103,16 @@ namespace WebApplication1.bussiness.production
 
         private void ShowNotification(string title, string message, string type)
         {
-            string script = $"showPNotify('{title}', '{message.Replace("'", "\\'")}', '{type}');";
+            // 1. Handle nulls safely
+            if (string.IsNullOrEmpty(message)) message = "An unknown error occurred.";
+
+            // 2. Sanitize the string to prevent JS syntax errors during UpdatePanel postbacks
+            string cleanMessage = message.Replace("'", "\\'")      // Escape single quotes
+                                         .Replace("\"", "\\\"")    // Escape double quotes
+                                         .Replace("\r", "")        // Strip carriage returns
+                                         .Replace("\n", "<br/>");  // Convert newlines to HTML breaks for PNotify
+
+            string script = $"showPNotify('{title}', '{cleanMessage}', '{type}');";
             ScriptManager.RegisterStartupScript(this, this.GetType(), "PNotify", script, true);
         }
 
@@ -557,30 +566,6 @@ namespace WebApplication1.bussiness.production
                     cmd.Parameters.AddWithValue("@BillingCode", WO_BillingNature == "Non-Billing" ? "NB" : DDL_BillingType.SelectedValue);
                     cmd.Parameters.AddWithValue("@AttendanceCode", DDL_AttenCode.SelectedValue);
 
-                    //// Master Status Code Logic
-                    //if (WO_BillingNature == "Non-Billing")
-                    //{
-                    //    cmd.Parameters.AddWithValue("@JOB_Status", "Permit Uploaded");
-                    //    cmd.Parameters.AddWithValue("@FinalUpldStatus", "Yes");
-                    //    cmd.Parameters.AddWithValue("@PermitUpload", "N/A");
-
-                    //    // ADO.NET FIX: Pass as integer 0 to match INT schema requirement
-                    //    cmd.Parameters.AddWithValue("@FileCount", 0);
-                    //    cmd.Parameters.AddWithValue("@MasterStatusCode", "3");
-                    //    cmd.Parameters.AddWithValue("@CSM_Documents", WO_ReqCSM ? "Yes" : "No");
-                    //}
-                    //else
-                    //{
-                    //    cmd.Parameters.AddWithValue("@JOB_Status", "Created");
-                    //    cmd.Parameters.AddWithValue("@FinalUpldStatus", "No");
-                    //    cmd.Parameters.AddWithValue("@PermitUpload", "No");
-
-                    //    // ADO.NET FIX: Pass as integer 0 to match INT schema requirement
-                    //    cmd.Parameters.AddWithValue("@FileCount", 0);
-                    //    cmd.Parameters.AddWithValue("@MasterStatusCode", "1");
-                    //    cmd.Parameters.AddWithValue("@CSM_Documents", WO_ReqCSM ? "Yes" : "No");
-                    //}
-
                     // =========================================================
                     // V2 DYNAMIC DB INSERT LOGIC 
                     // (Driven entirely by the Matrix, no hardcoded "If Non-Billing")
@@ -681,12 +666,13 @@ namespace WebApplication1.bussiness.production
                 dbcl.Sqlconnection();
                 dbcl.ConnectDb();
 
+                // THE FIX: Select bt.BillingCode instead of duplicating the full text
                 string query = @"
-            SELECT bt.BilingType, bt.BilingType AS DropdownValue 
-            FROM tlb_JOB_BillingType bt 
-            INNER JOIN tlb_WorkRegion_BillingMapping map ON bt.Id = map.BillingTypeId 
-            WHERE map.Work_Region_Code = @Region AND map.IsActive = 1
-            ORDER BY bt.Id";
+                SELECT bt.BilingType, bt.BillingCode 
+                FROM tlb_JOB_BillingType bt 
+                INNER JOIN tlb_WorkRegion_BillingMapping map ON bt.Id = map.BillingTypeId 
+                WHERE map.Work_Region_Code = @Region AND map.IsActive = 1
+                ORDER BY bt.Id";
 
                 using (SqlCommand cmd = new SqlCommand(query, dbcl.Conn))
                 {
@@ -695,7 +681,9 @@ namespace WebApplication1.bussiness.production
                     {
                         DDL_BillingType.DataSource = rdr;
                         DDL_BillingType.DataTextField = "BilingType";
-                        DDL_BillingType.DataValueField = "DropdownValue";
+
+                        // THE FIX: Bind the short code (LI, MS, NB) to the value field
+                        DDL_BillingType.DataValueField = "BillingCode";
                         DDL_BillingType.DataBind();
                     }
                     DDL_BillingType.Items.Insert(0, new ListItem("-- Select JOB Type --", ""));

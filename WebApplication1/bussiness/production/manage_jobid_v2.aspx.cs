@@ -11,6 +11,7 @@ namespace WebApplication1.bussiness.production
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
         CountChecker CC = new CountChecker();
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -32,9 +33,17 @@ namespace WebApplication1.bussiness.production
             }
         }
 
+        // APPLIED BUG FIX: Properly escaping newlines and quotes to prevent JS crashes
         private void ShowNotification(string title, string message, string type)
         {
-            string script = $"showPNotify('{title}', '{message.Replace("'", "\\'")}', '{type}');";
+            if (string.IsNullOrEmpty(message)) message = "An unknown error occurred.";
+
+            string cleanMessage = message.Replace("'", "\\'")      // Escape single quotes
+                                         .Replace("\"", "\\\"")    // Escape double quotes
+                                         .Replace("\r", "")        // Strip carriage returns
+                                         .Replace("\n", "<br/>");  // Convert newlines to HTML breaks
+
+            string script = $"showPNotify('{title}', '{cleanMessage}', '{type}');";
             ScriptManager.RegisterStartupScript(this, this.GetType(), "PNotify", script, true);
         }
 
@@ -213,7 +222,7 @@ namespace WebApplication1.bussiness.production
             }
             else if (e.CommandName == "View_Details")
             {
-                Response.Redirect($"view_jobdetails.aspx?JOBID={jobid}&dbid={dbid}&supv={supv}", false);
+                Response.Redirect($"view_jobdetails_v2.aspx?JOBID={jobid}&dbid={dbid}&supv={supv}", false);
             }
             else if (e.CommandName == "DeleteRec") // Safely renamed to prevent native Delete conflicts
             {
@@ -246,6 +255,57 @@ namespace WebApplication1.bussiness.production
         }
 
         protected void JOBID_Delete(string id, string dbcode)
+        {
+            try
+            {
+                // Capture who is performing the delete for the Audit Trail
+                string deletedBy = Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "Unknown";
+
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+
+                // 1. Soft Delete the Main Job (Flag as Deleted & Hide from Views)
+                string qry1 = "UPDATE tbl_jobs SET DeleteStatus = 1, ViewStatus = 0, DeletedOn = GETDATE(), DeletedBy = @DeletedBy WHERE Id=@Id AND JOBID=@JOBID";
+                using (SqlCommand cmd1 = new SqlCommand(qry1, dbcl.Conn))
+                {
+                    cmd1.Parameters.AddWithValue("@Id", id);
+                    cmd1.Parameters.AddWithValue("@JOBID", dbcode);
+                    cmd1.Parameters.AddWithValue("@DeletedBy", deletedBy);
+                    cmd1.ExecuteNonQuery();
+                }
+
+                // 2. Soft Delete all associated Attendance records
+                string qry2 = "UPDATE tbl_attendance SET DeleteStatus = 1, ViewStatus = 0, DeletedOn = GETDATE(), DeletedBy = @DeletedBy WHERE JOBID=@JOBID";
+                using (SqlCommand cmd2 = new SqlCommand(qry2, dbcl.Conn))
+                {
+                    cmd2.Parameters.AddWithValue("@JOBID", dbcode);
+                    cmd2.Parameters.AddWithValue("@DeletedBy", deletedBy);
+                    cmd2.ExecuteNonQuery();
+                }
+
+                // 3. Soft Delete all associated Permit documents
+                string qry3 = "UPDATE tbl_jobspermit SET DeleteStatus = 1, ViewStatus = 0, DeletedOn = GETDATE(), DeletedBy = @DeletedBy WHERE JOBID=@JOBID";
+                using (SqlCommand cmd3 = new SqlCommand(qry3, dbcl.Conn))
+                {
+                    cmd3.Parameters.AddWithValue("@JOBID", dbcode);
+                    cmd3.Parameters.AddWithValue("@DeletedBy", deletedBy);
+                    cmd3.ExecuteNonQuery();
+                }
+
+                ShowNotification("Deleted", "Job and associated records have been removed successfully.", "success");
+                GridBinder(lbl_year.Text, lbl_monthcode.Text); // Refresh UI
+            }
+            catch (Exception ex)
+            {
+                ShowNotification("Delete Failed", ex.Message, "error");
+            }
+            finally
+            {
+                dbcl.DisconnectDb();
+            }
+        }
+
+        protected void JOBID_Delete_OLD(string id, string dbcode)
         {
             try
             {
