@@ -24,6 +24,16 @@ namespace WebApplication1.bussiness.production
             }
         }
 
+        // =================================================================================
+        // ADMIN AUTHORIZATION HELPER
+        // =================================================================================
+        protected bool IsAdmin()
+        {
+            // Validates against standard Administrative Roles across the ATS Platform
+            return Session["USERTYPE"] != null &&
+                   (Session["USERTYPE"].ToString() == "Admin" || Session["USERTYPE"].ToString() == "Office Staff");
+        }
+
         private void ShowNotification(string title, string message, string type)
         {
             if (string.IsNullOrEmpty(message)) message = "An unknown error occurred.";
@@ -82,13 +92,39 @@ namespace WebApplication1.bussiness.production
                             }
 
                             lbl_jobdate.Text = dtCreatedDate.ToString("dd-MMM-yyyy") + backdatedBadge;
-                            lbl_creator.Text = row["Creator_Name"].ToString() + " [" + row["Creator_Workman"].ToString() + "]";
-                            lbl_worksite.Text = row["JOB_Site"].ToString();
-                            lbl_title.Text = row["JOB_Title"].ToString();
-                            lbl_shift.Text = row["JOB_Shift"].ToString();
-                            lbl_wo.Text = row["WorkOrderNo"].ToString();
-                            lbl_filecount.Text = row["FileCount"].ToString();
-                            lbl_jobstatus.Text = row["JOB_Status"].ToString();
+                            lbl_creator.Text = GetSafeString(row, "Creator_Name", "") + " [" + GetSafeString(row, "Creator_Workman", "") + "]";
+                            lbl_worksite.Text = GetSafeString(row, "JOB_Site", "");
+                            lbl_title.Text = GetSafeString(row, "JOB_Title", "");
+                            lbl_shift.Text = GetSafeString(row, "JOB_Shift", "");
+                            lbl_wo.Text = GetSafeString(row, "WorkOrderNo", "");
+                            lbl_filecount.Text = GetSafeString(row, "FileCount", "0");
+                            lbl_jobstatus.Text = GetSafeString(row, "JOB_Status", "");
+
+                            // =========================================================
+                            // EXTENDED ADMIN / FINANCIAL BINDINGS (Now Bulletproof)
+                            // =========================================================
+                            lbl_billingstatus.Text = GetSafeString(row, "Billing_Status", "Pending");
+                            lbl_l1billing.Text = GetSafeString(row, "Level1_BillingCode", "N/A");
+                            lbl_emc.Text = GetSafeString(row, "EMC_Number", "N/A");
+
+                            string lumpSum = GetSafeString(row, "Lumpsum_Amount", "N/A");
+                            lbl_lumpsum.Text = lumpSum == "N/A" ? "N/A" : "₹" + lumpSum;
+
+                            lbl_tbtverifiedby.Text = GetSafeString(row, "TBT_VerifiedBy", "N/A");
+                            lbl_originalpermit.Text = GetSafeString(row, "JOB_PermitNo_Original", "N/A");
+
+                            if (row.Table.Columns.Contains("UnblockedUntil") && row["UnblockedUntil"] != DBNull.Value)
+                            {
+                                DateTime unblockedTime = Convert.ToDateTime(row["UnblockedUntil"]);
+                                if (unblockedTime > DateTime.Now)
+                                    lbl_unblockeduntil.Text = unblockedTime.ToString("dd-MMM-yyyy hh:mm tt") + " <span class='badge bg-green'>Active</span>";
+                                else
+                                    lbl_unblockeduntil.Text = unblockedTime.ToString("dd-MMM-yyyy hh:mm tt") + " <span class='badge bg-red'>Expired</span>";
+                            }
+                            else
+                            {
+                                lbl_unblockeduntil.Text = "N/A";
+                            }
 
                             // 2. BIND ALL GRIDS
                             LoadPermits(jobid);
@@ -111,7 +147,7 @@ namespace WebApplication1.bussiness.production
             }
             catch (Exception ex)
             {
-                ShowNotification("Database Error", ex.Message, "error");
+                ShowNotification("Database Error", "Core Load Failed: " + ex.Message, "error");
             }
             finally
             {
@@ -172,18 +208,224 @@ namespace WebApplication1.bussiness.production
             catch { }
         }
 
+        protected void chk_ShowDeleted_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(txt_jobid.Text))
+            {
+                try
+                {
+                    dbcl.Sqlconnection();
+                    dbcl.ConnectDb();
+                    LoadManpower(txt_jobid.Text.Trim());
+                }
+                catch (Exception ex)
+                {
+                    ShowNotification("Error", "Could not reload manpower: " + ex.Message, "error");
+                }
+                finally
+                {
+                    dbcl.DisconnectDb();
+                }
+            }
+        }
+
         private void LoadManpower(string jobid)
         {
-            string query = "SELECT EmployeeName, EmployeeWrk, EmpDesignation, Inpunch_Time, Outpunch_Time, TimeStamp, LastModified, WorkedHours, Calc_OT, ProvidedOT, AttendanceStatus, AttendanceCode FROM tbl_attendance WHERE JOBID = @JOBID ORDER BY Inpunch_Time ASC";
+            string deleteFilter = chk_ShowDeleted.Checked ? "" : " AND (DeleteStatus = 0 OR DeleteStatus IS NULL)";
+
+            string query = $@"SELECT Id, EmployeeName, EmployeeWrk, EmpDesignation, Inpunch_Time, Outpunch_Time, 
+                                     TimeStamp, LastModified, WorkedHours, Calc_OT, ProvidedOT, 
+                                     AttendanceStatus, AttendanceCode, DeleteStatus 
+                              FROM tbl_attendance 
+                              WHERE JOBID = @JOBID {deleteFilter} 
+                              ORDER BY Inpunch_Time ASC";
+
             using (SqlCommand cmd = new SqlCommand(query, dbcl.Conn))
             {
                 cmd.Parameters.AddWithValue("@JOBID", jobid);
                 using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                 {
-                    DataTable dt = new DataTable(); da.Fill(dt);
-                    gvManpower.DataSource = dt; gvManpower.DataBind();
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+                    gvManpower.DataSource = dt;
+                    gvManpower.DataBind();
                 }
             }
+        }
+
+        protected void gvManpower_RowCommand(object sender, GridViewCommandEventArgs e)
+        {
+            // GAP 4 IMPLEMENTATION: Granular Roster Purging (Soft Delete)
+            if (e.CommandName == "InvalidateWorker")
+            {
+                string workmanWrk = e.CommandArgument.ToString();
+                string jobid = txt_jobid.Text.Trim();
+                string adminUser = Session["USERNAME"] != null ? Session["USERNAME"].ToString() : "ADMIN";
+
+                try
+                {
+                    dbcl.Sqlconnection();
+                    dbcl.ConnectDb();
+
+                    // 1. Invalidate the worker
+                    string updAtt = @"UPDATE tbl_attendance 
+                                      SET DeleteStatus = 1, 
+                                          AttendanceStatus = 'Invalidated', 
+                                          LastModified = GETDATE(), 
+                                          ModifiedByName = @Admin 
+                                      WHERE JOBID = @JOBID AND EmployeeWrk = @Workman";
+
+                    using (SqlCommand cmdAtt = new SqlCommand(updAtt, dbcl.Conn))
+                    {
+                        cmdAtt.Parameters.AddWithValue("@Admin", adminUser);
+                        cmdAtt.Parameters.AddWithValue("@JOBID", jobid);
+                        cmdAtt.Parameters.AddWithValue("@Workman", workmanWrk);
+                        cmdAtt.ExecuteNonQuery();
+                    }
+
+                    // 2. Recalculate Active Manpower Headcount on Master Table
+                    string updJob = @"UPDATE tbl_jobs 
+                                      SET ManpowerCount = (SELECT COUNT(1) FROM tbl_attendance WHERE JOBID = @JOBID AND (DeleteStatus = 0 OR DeleteStatus IS NULL)) 
+                                      WHERE JOBID = @JOBID";
+
+                    using (SqlCommand cmdJob = new SqlCommand(updJob, dbcl.Conn))
+                    {
+                        cmdJob.Parameters.AddWithValue("@JOBID", jobid);
+                        cmdJob.ExecuteNonQuery();
+                    }
+
+                    ShowNotification("Worker Removed", $"Worker {workmanWrk} has been invalidated and removed from the active roster.", "success");
+                    Load360View(jobid); // Full refresh to sync state
+                }
+                catch (Exception ex)
+                {
+                    ShowNotification("Error Invalidating Worker", ex.Message, "error");
+                }
+                finally
+                {
+                    dbcl.DisconnectDb();
+                }
+            }
+            if (e.CommandName == "EditWorker")
+            {
+                string attendanceId = e.CommandArgument.ToString();
+                try
+                {
+                    dbcl.Sqlconnection();
+                    dbcl.ConnectDb();
+                    string qry = "SELECT Id, EmployeeName, EmployeeWrk, Inpunch_Time, Outpunch_Time, ProvidedOT, AttendanceStatus FROM tbl_attendance WHERE Id = @Id";
+                    using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", attendanceId);
+                        using (SqlDataReader rdr = cmd.ExecuteReader())
+                        {
+                            if (rdr.Read())
+                            {
+                                hf_EditWorkerId.Value = rdr["Id"].ToString();
+                                lbl_EditWorkerName.InnerText = $"{rdr["EmployeeName"]} [{rdr["EmployeeWrk"]}]";
+
+                                // Format specifically for HTML5 datetime-local inputs (yyyy-MM-ddTHH:mm)
+                                txt_EditInTime.Text = rdr["Inpunch_Time"] != DBNull.Value ? Convert.ToDateTime(rdr["Inpunch_Time"]).ToString("yyyy-MM-ddTHH:mm") : "";
+                                txt_EditOutTime.Text = rdr["Outpunch_Time"] != DBNull.Value ? Convert.ToDateTime(rdr["Outpunch_Time"]).ToString("yyyy-MM-ddTHH:mm") : "";
+
+                                txt_EditOT.Text = rdr["ProvidedOT"].ToString();
+
+                                if (ddl_EditStatus.Items.FindByValue(rdr["AttendanceStatus"].ToString()) != null)
+                                    ddl_EditStatus.SelectedValue = rdr["AttendanceStatus"].ToString();
+
+                                // Trigger Modal
+                                ScriptManager.RegisterStartupScript(this, this.GetType(), "ShowEdit", "$('#modalEditWorker').modal('show');", true);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
+                finally { dbcl.DisconnectDb(); }
+            }
+        }
+
+        protected void btn_EditCoreDetails_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Pre-fill the textboxes with the current data from the screen
+                txt_EditShift.Text = lbl_shift.Text;
+                txt_EditTitle.Text = lbl_title.Text;
+
+                // Trigger the modal to open via JavaScript
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "ShowCoreEdit", "$('#modalEditCoreDetails').modal('show');", true);
+            }
+            catch (Exception ex)
+            {
+                ShowNotification("Error", "Could not open edit menu: " + ex.Message, "error");
+            }
+        }
+
+        protected void btn_SaveCoreDetails_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+
+                string qry = @"UPDATE tbl_jobs 
+                       SET JOB_Shift = @Shift, 
+                           JOB_Title = @Title, 
+                           UpdatedOn = GETDATE(),
+                           UpdatedBy = @Admin
+                       WHERE JOBID = @JOBID";
+
+                using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@JOBID", txt_jobid.Text);
+                    cmd.Parameters.AddWithValue("@Shift", txt_EditShift.Text.ToUpper());
+                    cmd.Parameters.AddWithValue("@Title", txt_EditTitle.Text);
+                    cmd.Parameters.AddWithValue("@Admin", Session["USERNAME"].ToString());
+
+                    cmd.ExecuteNonQuery();
+                }
+                ShowNotification("Success", "Core JOB details updated.", "success");
+                Load360View(txt_jobid.Text);
+            }
+            catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
+            finally { dbcl.DisconnectDb(); }
+        }
+
+
+        protected void btn_SaveWorkerEdit_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+
+                string qry = @"UPDATE tbl_attendance 
+                       SET Inpunch_Time = @InTime, 
+                           Outpunch_Time = @OutTime, 
+                           ProvidedOT = @OT, 
+                           AttendanceStatus = @Status,
+                           LastModified = GETDATE(),
+                           ModifiedByName = @Admin,
+                           ModifiedByWrk = @AdminWrk
+                       WHERE Id = @Id";
+
+                using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@Id", hf_EditWorkerId.Value);
+                    cmd.Parameters.AddWithValue("@InTime", string.IsNullOrEmpty(txt_EditInTime.Text) ? (object)DBNull.Value : Convert.ToDateTime(txt_EditInTime.Text));
+                    cmd.Parameters.AddWithValue("@OutTime", string.IsNullOrEmpty(txt_EditOutTime.Text) ? (object)DBNull.Value : Convert.ToDateTime(txt_EditOutTime.Text));
+                    cmd.Parameters.AddWithValue("@OT", string.IsNullOrEmpty(txt_EditOT.Text) ? 0 : Convert.ToDecimal(txt_EditOT.Text));
+                    cmd.Parameters.AddWithValue("@Status", ddl_EditStatus.SelectedValue);
+                    cmd.Parameters.AddWithValue("@Admin", Session["USERNAME"].ToString());
+                    cmd.Parameters.AddWithValue("@AdminWrk", Session["WORKMAN"].ToString());
+
+                    cmd.ExecuteNonQuery();
+                }
+                ShowNotification("Worker Updated", "Attendance details updated successfully.", "success");
+                Load360View(txt_jobid.Text); // Refresh the dashboard
+            }
+            catch (Exception ex) { ShowNotification("Update Error", ex.Message, "error"); }
+            finally { dbcl.DisconnectDb(); }
         }
 
         protected void gvPermits_RowCommand(object sender, GridViewCommandEventArgs e)
@@ -221,227 +463,337 @@ namespace WebApplication1.bussiness.production
                 catch (Exception ex) { ShowNotification("Download Error", ex.Message, "error"); }
             }
         }
+        private string GetSafeString(DataRow row, string colName, string defaultVal = "N/A")
+        {
+            try
+            {
+                if (row.Table.Columns.Contains(colName) && row[colName] != DBNull.Value)
+                {
+                    string val = row[colName].ToString().Trim();
+                    return string.IsNullOrEmpty(val) ? defaultVal : val;
+                }
+            }
+            catch { }
+            return defaultVal;
+        }
 
         // =================================================================================
-        // PIPELINE EVALUATION ENGINE
-        // =================================================================================
-        // =================================================================================
-        // PIPELINE EVALUATION ENGINE
+        // DATA-RICH PIPELINE EVALUATION ENGINE (Bulletproofed)
         // =================================================================================
         private void EvaluateSmartLifecycle(DataRow row, string jobid, DateTime dtMasterJobSysCreation)
         {
+            // 1. Reset Stepper Classes First
             step1.Attributes["class"] = "stepper-item"; step2.Attributes["class"] = "stepper-item";
             step3.Attributes["class"] = "stepper-item"; step4.Attributes["class"] = "stepper-item";
             step5.Attributes["class"] = "stepper-item"; step6.Attributes["class"] = "stepper-item";
-            lit_step1_details.Text = lit_step2_details.Text = lit_step3_details.Text = lit_step4_details.Text = lit_step5_details.Text = lit_step6_details.Text = "";
+
+            lit_step1_details.Text = lit_step2_details.Text = lit_step3_details.Text = "";
+            lit_step4_details.Text = lit_step5_details.Text = lit_step6_details.Text = "";
             divBottleneck.Attributes["class"] = "alert alert-warning text-dark font-weight-bold";
 
-            string permitUploadReq = row["PermitUpload"].ToString();
-            string csmReq = row["CSM_Documents"].ToString();
-            string entryExitStatus = row["EntryExit"].ToString();
-            string inchargeApproval = row["Incharge_Approval"].ToString();
-
-            int fileCount = row["FileCount"] != DBNull.Value ? Convert.ToInt32(row["FileCount"]) : 0;
-            int tbtCount = row["TBT_Count"] != DBNull.Value ? Convert.ToInt32(row["TBT_Count"]) : 0;
-            int sopCount = row["SOP_Count"] != DBNull.Value ? Convert.ToInt32(row["SOP_Count"]) : 0;
-
-            string creatorName = row["Creator_Name"].ToString();
-            string inchargeName = row["JOB_InchargeName"].ToString();
-
-            DateTime? dtPermit = ParseDateSafe(row["PermitUploadDate"]);
-            DateTime? dtApproval = ParseDateSafe(row["Incharge_ApprovalDate"]);
-
-            DateTime? dtFirstInPunchLogic = null;
-            DateTime? dtFirstInPunchSys = null;
-            DateTime? dtLastOutPunchUpdated = null;
-            int actualWorkerCount = 0; // Added variable to track true manpower
-
-            // Added COUNT(Id) to explicitly verify if workers exist
-            string attQuery = "SELECT MIN(Inpunch_Time), MIN(TimeStamp), MAX(LastModified), COUNT(Id) FROM tbl_attendance WHERE JOBID=@JOBID";
-            using (SqlCommand cmd = new SqlCommand(attQuery, dbcl.Conn))
+            try
             {
-                cmd.Parameters.AddWithValue("@JOBID", jobid);
-                using (SqlDataReader rdr = cmd.ExecuteReader())
+                // 2. Extract Master Row Data Safely
+                string permitUploadReq = GetSafeString(row, "PermitUpload", "No");
+                string csmReq = GetSafeString(row, "CSM_Documents", "No");
+                string entryExitStatus = GetSafeString(row, "EntryExit", "Created");
+                string inchargeApproval = GetSafeString(row, "Incharge_Approval", "Pending");
+                string finalUpldStatus = GetSafeString(row, "FinalUpldStatus", "No");
+
+                int fileCount = row.Table.Columns.Contains("FileCount") && row["FileCount"] != DBNull.Value ? Convert.ToInt32(row["FileCount"]) : 0;
+                int tbtCount = row.Table.Columns.Contains("TBT_Count") && row["TBT_Count"] != DBNull.Value ? Convert.ToInt32(row["TBT_Count"]) : 0;
+                int sopCount = row.Table.Columns.Contains("SOP_Count") && row["SOP_Count"] != DBNull.Value ? Convert.ToInt32(row["SOP_Count"]) : 0;
+
+                string creatorName = GetSafeString(row, "Creator_Name", "Unknown");
+                string creatorWrk = GetSafeString(row, "Creator_Workman", "Unknown");
+                string inchargeName = GetSafeString(row, "JOB_InchargeName", "Unknown");
+                string inchargeWrk = GetSafeString(row, "JOB_InchargeWrk", "Unknown");
+
+                // 3. Extract Timestamps
+                DateTime? dtPermit = row.Table.Columns.Contains("PermitUploadDate") ? ParseDateSafe(row["PermitUploadDate"]) : null;
+                DateTime? dtApproval = row.Table.Columns.Contains("Incharge_ApprovalDate") ? ParseDateSafe(row["Incharge_ApprovalDate"]) : null;
+
+                DateTime? dtFirstInPunchLogic = null;
+                DateTime? dtFirstInPunchSys = null;
+                DateTime? dtLastOutPunchUpdated = null;
+                int actualWorkerCount = 0;
+                decimal totalOT = 0;
+
+                // 4. Aggregated Attendance Data
+                string attQuery = @"SELECT MIN(Inpunch_Time), MIN(TimeStamp), MAX(LastModified), COUNT(Id), SUM(ISNULL(ProvidedOT,0)) 
+                            FROM tbl_attendance 
+                            WHERE JOBID=@JOBID AND (DeleteStatus = 0 OR DeleteStatus IS NULL)";
+                using (SqlCommand cmd = new SqlCommand(attQuery, dbcl.Conn))
                 {
-                    if (rdr.Read())
+                    cmd.Parameters.AddWithValue("@JOBID", jobid);
+                    using (SqlDataReader rdr = cmd.ExecuteReader())
                     {
-                        dtFirstInPunchLogic = ParseDateSafe(rdr[0]);
-                        dtFirstInPunchSys = ParseDateSafe(rdr[1]);
-                        dtLastOutPunchUpdated = ParseDateSafe(rdr[2]);
-                        actualWorkerCount = rdr[3] != DBNull.Value ? Convert.ToInt32(rdr[3]) : 0;
+                        if (rdr.Read() && rdr[3] != DBNull.Value && Convert.ToInt32(rdr[3]) > 0)
+                        {
+                            dtFirstInPunchLogic = ParseDateSafe(rdr[0]);
+                            dtFirstInPunchSys = ParseDateSafe(rdr[1]);
+                            dtLastOutPunchUpdated = ParseDateSafe(rdr[2]);
+                            actualWorkerCount = Convert.ToInt32(rdr[3]);
+                            totalOT = rdr[4] != DBNull.Value ? Convert.ToDecimal(rdr[4]) : 0;
+                        }
                     }
                 }
-            }
 
-            int currentStep = 1;
+                int currentStep = 1;
 
-            // --- STEP 1: CREATE ---
-            step1.Attributes["class"] = "stepper-item completed";
-            lit_step1_details.Text = $"<div class='step-details'><strong>By:</strong> {creatorName}<br/><strong>System Log:</strong> {FormatDate(dtMasterJobSysCreation)}</div>";
-            currentStep = 2;
+                // --- STEP 1: CREATE ---
+                step1.Attributes["class"] = "stepper-item completed";
+                lit_step1_details.Text = $"<div class='step-details'>" +
+                                         $"<strong>By:</strong> {creatorName} [{creatorWrk}]<br/>" +
+                                         $"<strong>System Log:</strong> {FormatDate(dtMasterJobSysCreation)}<br/>" +
+                                         $"<strong>Type:</strong> {GetSafeString(row, "Workorder_Type")} | {GetSafeString(row, "BillingType")}" +
+                                         $"</div>";
+                currentStep = 2;
 
-            // --- STEP 2: PERMIT UPLOAD ---
-            if (permitUploadReq != "Yes")
-            {
-                step2.Attributes["class"] = "stepper-item skipped";
-                lit_step2_details.Text = "<div class='step-details text-muted'><em>Skipped (Not Req.)</em></div>";
-                currentStep = 3;
-            }
-            else
-            {
-                if (fileCount > 0 || row["FinalUpldStatus"].ToString() == "Yes")
+                // --- STEP 2: PERMIT UPLOAD ---
+                if (permitUploadReq != "Yes" && permitUploadReq != "Bypassed")
                 {
-                    step2.Attributes["class"] = "stepper-item completed";
-                    lit_step2_details.Text = $"<div class='step-details'><strong>Status:</strong> Uploaded<br/><strong>System Log:</strong> {FormatDate(dtPermit)}<br/>{GetTATBadge(dtMasterJobSysCreation, dtPermit)}</div>";
+                    step2.Attributes["class"] = "stepper-item skipped";
+                    lit_step2_details.Text = "<div class='step-details text-muted'><em>Skipped (Not Req.)</em></div>";
                     currentStep = 3;
                 }
                 else
                 {
-                    step2.Attributes["class"] = "stepper-item active";
-                    lbl_bottleneck.Text = $"Awaiting Safety Permit Upload by Creator: {creatorName}";
-                }
-            }
-
-            // --- STEP 3: IN-PUNCH ---
-            if (currentStep == 3)
-            {
-                if (actualWorkerCount > 0)
-                {
-                    // Shift has actual workers in it!
-                    step3.Attributes["class"] = "stepper-item completed";
-                    lit_step3_details.Text = $"<div class='step-details'><strong>Log:</strong> {actualWorkerCount} Workers Scanned<br/><strong>System Log:</strong> {FormatDate(dtFirstInPunchSys)}<br/>{GetTATBadge(dtPermit ?? dtMasterJobSysCreation, dtFirstInPunchSys)}</div>";
-                    currentStep = 4;
-                }
-                else
-                {
-                    step3.Attributes["class"] = "stepper-item active";
-
-                    // SMART CATCH: Supervisor marked it 'Done' but added 0 workers!
-                    if (row["JOB_Status"].ToString() == "In-Punch Done" || entryExitStatus == "Entry")
+                    if (fileCount > 0 || finalUpldStatus == "Yes")
                     {
-                        divBottleneck.Attributes["class"] = "alert alert-danger text-white font-weight-bold";
-                        lbl_bottleneck.Text = "EMPTY SHIFT DETECTED: Supervisor opened the shift but scanned 0 workers. Admin must IN-Punch manpower or Delete the job.";
+                        step2.Attributes["class"] = "stepper-item completed";
+                        string byPassNotice = permitUploadReq == "Bypassed" ? "<span class='text-danger font-weight-bold'>[Bypassed]</span>" : $"<strong>Files:</strong> {fileCount} ({GetSafeString(row, "UploadType", "Doc")})";
+
+                        lit_step2_details.Text = $"<div class='step-details'>" +
+                                                 $"{byPassNotice}<br/>" +
+                                                 $"<strong>System Log:</strong> {FormatDate(dtPermit)}<br/>" +
+                                                 $"{GetTATBadge(dtMasterJobSysCreation, dtPermit, "TAT")}" +
+                                                 $"</div>";
+                        currentStep = 3;
                     }
                     else
                     {
-                        lbl_bottleneck.Text = $"Job is active. Ready for Manpower IN-Punch scanning.";
+                        step2.Attributes["class"] = "stepper-item active";
+                        lbl_bottleneck.Text = $"Awaiting Safety Permit Upload by Creator: {creatorName}";
                     }
                 }
-            }
 
-            // --- STEP 4: SITE DOCS ---
-            if (currentStep == 4)
-            {
-                if (csmReq != "Yes")
+                // --- STEP 3: IN-PUNCH ---
+                if (currentStep == 3)
                 {
-                    step4.Attributes["class"] = "stepper-item skipped";
-                    lit_step4_details.Text = "<div class='step-details text-muted'><em>Skipped (Not Req.)</em></div>";
-                    currentStep = 5;
-                }
-                else
-                {
-                    if (tbtCount > 0 || sopCount > 0)
+                    if (actualWorkerCount > 0)
                     {
-                        step4.Attributes["class"] = "stepper-item completed";
-                        lit_step4_details.Text = $"<div class='step-details'><strong>Status:</strong> Docs Captured<br/><strong>By:</strong> Site Team</div>";
+                        step3.Attributes["class"] = "stepper-item completed";
+
+                        string timeNotice = "";
+                        if (dtFirstInPunchLogic.HasValue && dtFirstInPunchSys.HasValue && (dtFirstInPunchSys.Value - dtFirstInPunchLogic.Value).TotalHours > 12)
+                        {
+                            timeNotice = $"<br/><span class='text-danger' style='font-size:10px;'><i class='fa fa-warning'></i> Backdated Entry</span>";
+                        }
+
+                        lit_step3_details.Text = $"<div class='step-details'>" +
+                                                 $"<strong>Headcount:</strong> {actualWorkerCount} Workers<br/>" +
+                                                 $"<strong>First IN:</strong> {FormatDate(dtFirstInPunchLogic)}{timeNotice}<br/>" +
+                                                 $"{GetTATBadge(dtPermit ?? dtMasterJobSysCreation, dtFirstInPunchSys, "Delay")}" +
+                                                 $"</div>";
+                        currentStep = 4;
+                    }
+                    else
+                    {
+                        step3.Attributes["class"] = "stepper-item active";
+                        if (GetSafeString(row, "JOB_Status") == "In-Punch Done" || entryExitStatus == "Entry")
+                        {
+                            divBottleneck.Attributes["class"] = "alert alert-danger text-white font-weight-bold";
+                            lbl_bottleneck.Text = "EMPTY SHIFT DETECTED: Supervisor opened the shift but scanned 0 workers. Admin must IN-Punch manpower or Cancel the job.";
+                        }
+                        else
+                        {
+                            lbl_bottleneck.Text = $"Job is active. Ready for Manpower IN-Punch scanning.";
+                        }
+                    }
+                }
+
+                // --- STEP 4: SITE DOCS (CSM) ---
+                if (currentStep == 4)
+                {
+                    if (csmReq != "Yes")
+                    {
+                        step4.Attributes["class"] = "stepper-item skipped";
+                        lit_step4_details.Text = "<div class='step-details text-muted'><em>Skipped (Not Req.)</em></div>";
                         currentStep = 5;
                     }
                     else
                     {
-                        step4.Attributes["class"] = "stepper-item active";
-                        lbl_bottleneck.Text = $"Awaiting mandatory Site Documents (TBT / SOP).";
+                        if (tbtCount > 0 || sopCount > 0)
+                        {
+                            step4.Attributes["class"] = "stepper-item completed";
+                            lit_step4_details.Text = $"<div class='step-details'>" +
+                                                     $"<strong>TBT:</strong> {GetSafeString(row, "TBTID")}<br/>" +
+                                                     $"<strong>SOP:</strong> {GetSafeString(row, "SOPID")}<br/>" +
+                                                     $"<strong>Verified:</strong> {GetSafeString(row, "TBT_VerifiedBy")}" +
+                                                     $"</div>";
+                            currentStep = 5;
+                        }
+                        else
+                        {
+                            step4.Attributes["class"] = "stepper-item active";
+                            lbl_bottleneck.Text = $"Awaiting mandatory Site Documents (TBT / SOP).";
+                        }
                     }
                 }
-            }
 
-            // --- STEP 5: OUT-PUNCH ---
-            if (currentStep == 5)
-            {
-                if (entryExitStatus == "Exit" || dtLastOutPunchUpdated.HasValue)
+                // --- STEP 5: OUT-PUNCH ---
+                if (currentStep == 5)
                 {
-                    step5.Attributes["class"] = "stepper-item completed";
-                    DateTime? validOutTime = dtLastOutPunchUpdated ?? dtFirstInPunchSys;
-                    lit_step5_details.Text = $"<div class='step-details'><strong>Log:</strong> Shift Closed<br/><strong>System Log:</strong> {FormatDate(validOutTime)}<br/>{GetTATBadge(dtFirstInPunchSys, validOutTime, "Shift Execution")}</div>";
-                    currentStep = 6;
+                    if (entryExitStatus == "Exit" || dtLastOutPunchUpdated.HasValue)
+                    {
+                        step5.Attributes["class"] = "stepper-item completed";
+                        DateTime? validOutTime = dtLastOutPunchUpdated ?? dtFirstInPunchSys;
+                        lit_step5_details.Text = $"<div class='step-details'>" +
+                                                 $"<strong>System Log:</strong> {FormatDate(validOutTime)}<br/>" +
+                                                 $"<strong>Total OT Logged:</strong> {totalOT} Hrs<br/>" +
+                                                 $"{GetTATBadge(dtFirstInPunchSys, validOutTime, "Shift Duration")}" +
+                                                 $"</div>";
+                        currentStep = 6;
+                    }
+                    else
+                    {
+                        step5.Attributes["class"] = "stepper-item active";
+                        lbl_bottleneck.Text = "Job is actively running. Awaiting Shift Completion and OUT-Punch.";
+                    }
                 }
-                else
-                {
-                    step5.Attributes["class"] = "stepper-item active";
-                    lbl_bottleneck.Text = "Job is actively running. Awaiting Shift Completion and OUT-Punch.";
-                }
-            }
 
-            // --- STEP 6: FINAL APPROVAL ---
-            if (currentStep == 6)
-            {
-                if (inchargeApproval == "Approved")
+                // --- STEP 6: FINAL APPROVAL ---
+                if (currentStep == 6)
                 {
-                    step6.Attributes["class"] = "stepper-item completed";
-                    lit_step6_details.Text = $"<div class='step-details'><strong>By:</strong> {inchargeName}<br/><strong>System Log:</strong> {FormatDate(dtApproval)}<br/>{GetTATBadge(dtLastOutPunchUpdated ?? dtFirstInPunchSys, dtApproval)}</div>";
-                    divBottleneck.Attributes["class"] = "alert alert-success text-dark font-weight-bold";
-                    lbl_bottleneck.Text = "Job Lifecycle Completed and Approved Successfully.";
+                    if (inchargeApproval == "Approved")
+                    {
+                        step6.Attributes["class"] = "stepper-item completed";
+                        lit_step6_details.Text = $"<div class='step-details'>" +
+                                                 $"<strong>By:</strong> {inchargeName} [{inchargeWrk}]<br/>" +
+                                                 $"<strong>Approved On:</strong> {FormatDate(dtApproval)}<br/>" +
+                                                 $"{GetTATBadge(dtLastOutPunchUpdated ?? dtFirstInPunchSys, dtApproval, "Approval TAT")}" +
+                                                 $"</div>";
+                        divBottleneck.Attributes["class"] = "alert alert-success text-dark font-weight-bold";
+                        lbl_bottleneck.Text = $"Job Lifecycle Completed. Ready for Billing (Level 1 Code: {GetSafeString(row, "Level1_BillingCode")}).";
+                    }
+                    else if (inchargeApproval == "Rejected" || inchargeApproval == "Returned")
+                    {
+                        step6.Attributes["class"] = "stepper-item failed";
+                        divBottleneck.Attributes["class"] = "alert alert-danger text-white font-weight-bold";
+                        lbl_bottleneck.Text = $"Job was {inchargeApproval.ToUpper()} by Final Approver: {inchargeName}. Reason: {GetSafeString(row, "Incharge_Remarks")}";
+
+                        lit_step6_details.Text = $"<div class='step-details text-danger'>" +
+                                                 $"<strong>Status:</strong> {inchargeApproval}<br/>" +
+                                                 $"<strong>By:</strong> {inchargeName}" +
+                                                 $"</div>";
+                    }
+                    else
+                    {
+                        step6.Attributes["class"] = "stepper-item active";
+                        lbl_bottleneck.Text = $"Awaiting Final Approval & Verification from: {inchargeName}";
+
+                        lit_step6_details.Text = $"<div class='step-details text-muted'>" +
+                                                 $"<strong>Pending:</strong> {inchargeName}" +
+                                                 $"</div>";
+                    }
                 }
-                else if (inchargeApproval == "Rejected" || inchargeApproval == "Returned")
+
+                // =========================================================
+                // PIPELINE ABORT OVERRIDE (For Deleted/Cancelled Jobs)
+                // =========================================================
+                bool isDeleted = row.Table.Columns.Contains("DeleteStatus") && row["DeleteStatus"] != DBNull.Value && (row["DeleteStatus"].ToString() == "1" || row["DeleteStatus"].ToString().ToLower() == "true");
+                string jobidStatus = GetSafeString(row, "JOBID_Status");
+
+                if (isDeleted || jobidStatus == "Deleted" || jobidStatus == "Cancelled")
                 {
-                    step6.Attributes["class"] = "stepper-item failed";
+                    if (currentStep == 2) step2.Attributes["class"] = "stepper-item failed";
+                    else if (currentStep == 3) step3.Attributes["class"] = "stepper-item failed";
+                    else if (currentStep == 4) step4.Attributes["class"] = "stepper-item failed";
+                    else if (currentStep == 5) step5.Attributes["class"] = "stepper-item failed";
+                    else if (currentStep == 6) step6.Attributes["class"] = "stepper-item failed";
+
                     divBottleneck.Attributes["class"] = "alert alert-danger text-white font-weight-bold";
-                    lbl_bottleneck.Text = $"Job was {inchargeApproval.ToUpper()} by Final Approver: {inchargeName}.";
+                    lbl_bottleneck.Text = $"<i class='fa fa-ban'></i> PIPELINE ABORTED: This JOB was {jobidStatus.ToUpper()} on {FormatDate(ParseDateSafe(GetSafeString(row, "DeleteOn")))} by {GetSafeString(row, "DeletedBy")}.";
                 }
-                else
+                else if (row.Table.Columns.Contains("IsBlocked") && row["IsBlocked"] != DBNull.Value && Convert.ToBoolean(row["IsBlocked"]))
                 {
-                    step6.Attributes["class"] = "stepper-item active";
-                    lbl_bottleneck.Text = $"Awaiting Final Approval & Verification from: {inchargeName}";
+                    divBottleneck.Attributes["class"] = "alert alert-danger text-white font-weight-bold";
+                    lbl_bottleneck.Text = "SYSTEM ALERT: This JOBID has been administratively BLOCKED due to 72-Hour timeout.";
                 }
-            }
 
-            bool isBlocked = row["IsBlocked"] != DBNull.Value && Convert.ToBoolean(row["IsBlocked"]);
-            if (isBlocked)
+                bool isBlocked = row.Table.Columns.Contains("IsBlocked") && row["IsBlocked"] != DBNull.Value && Convert.ToBoolean(row["IsBlocked"]);
+                ActionBarRow.Visible = true;
+                EvaluateActionMatrix(row, currentStep, isBlocked, dtFirstInPunchLogic, ParseDateSafe(row["CreatedDate"]), actualWorkerCount);
+            }
+            catch (Exception ex)
             {
+                // THIS CATCHES THE SILENT CRASH AND PRINTS IT IN THE YELLOW BOX!
                 divBottleneck.Attributes["class"] = "alert alert-danger text-white font-weight-bold";
-                lbl_bottleneck.Text = "SYSTEM ALERT: This JOBID has been administratively BLOCKED.";
+                lbl_bottleneck.Text = "PIPELINE RENDER ERROR: " + ex.Message;
             }
-
-            // TRIGGER ACTION BAR MATRIX
-            ActionBarRow.Visible = true;
-            EvaluateActionMatrix(row, currentStep, isBlocked, dtFirstInPunchLogic, ParseDateSafe(row["CreatedDate"]));
         }
 
-        // =================================================================================
-        // ACTION MATRIX CONTROLLER
-        // =================================================================================
-        private void EvaluateActionMatrix(DataRow row, int pipelineStep, bool isBlocked, DateTime? dtFirstInPunchLogic, DateTime? dtCreatedDate)
+        private void EvaluateActionMatrix(DataRow row, int pipelineStep, bool isBlocked, DateTime? dtFirstInPunchLogic, DateTime? dtCreatedDate, int actualWorkerCount)
         {
             // 1. Hide all buttons initially
             btn_Act_UploadPermit.Visible = false; btn_Act_InPunch.Visible = false; btn_Act_AddDocs.Visible = false;
             btn_Act_OutPunch.Visible = false; btn_Act_Unblock.Visible = false; btn_Act_Resubmit.Visible = false;
             btn_Act_ForceOut.Visible = false; btn_Act_SwapDate.Visible = false; btn_Act_Delete.Visible = false;
 
+            btn_Act_ForcePermitBypass.Visible = false; btn_Act_ResetToCreated.Visible = false;
+            btn_Act_CancelShift.Visible = false; btn_Act_AdminRollback.Visible = false;
+
             string approvalStatus = row["Incharge_Approval"].ToString();
             string entryExitStatus = row["EntryExit"].ToString();
+            string masterCode = row["MasterStatusCode"].ToString();
 
             // Safely parse the DeleteStatus
             bool isDeleted = row["DeleteStatus"] != DBNull.Value &&
                              (row["DeleteStatus"].ToString() == "1" || row["DeleteStatus"].ToString().ToLower() == "true");
 
-            // ----------------------------------------------------------------------
-            // 2. THE NEW GOLDEN RULE: If Approved OR Deleted, NO actions are allowed!
-            // ----------------------------------------------------------------------
-            if (isDeleted || row["JOBID_Status"].ToString() == "Deleted")
+            if (isDeleted || row["JOBID_Status"].ToString() == "Deleted" || row["JOBID_Status"].ToString() == "Cancelled")
             {
                 divBottleneck.Attributes["class"] = "alert alert-danger text-white font-weight-bold";
-                lbl_bottleneck.Text = $"<i class='fa fa-trash'></i> ARCHIVED RECORD: This JOB was DELETED on {FormatDate(ParseDateSafe(row["DeleteOn"]))} by {row["DeletedBy"]}. No further actions allowed.";
-                return; // Immediately halt the matrix!
+                lbl_bottleneck.Text = $"<i class='fa fa-ban'></i> ARCHIVED/VOID RECORD: This JOB was DELETED/CANCELLED on {FormatDate(ParseDateSafe(row["DeleteOn"]))}. No further actions allowed.";
+                return;
             }
 
-            if (approvalStatus == "Approved")
+            // ----------------------------------------------------------------------
+            // ADMIN OVERRIDES (God Mode Gaps)
+            // ----------------------------------------------------------------------
+            if (IsAdmin())
             {
-                return; // Approved jobs are locked.
+                // GAP 1: Force Permit Bypass (Stuck at Step 1/2)
+                if (masterCode == "1")
+                {
+                    btn_Act_ForcePermitBypass.Visible = true;
+                    btn_Act_CancelShift.Visible = true;
+                }
+
+                // GAP 2 & 3: Reset to Created or Cancel Shift (At Step 3, but NO workers IN-Punched)
+                if (masterCode == "3" && actualWorkerCount == 0)
+                {
+                    btn_Act_ResetToCreated.Visible = true;
+                    btn_Act_CancelShift.Visible = true;
+                }
+
+                // Master Approval Rollback
+                if (approvalStatus == "Approved")
+                {
+                    btn_Act_AdminRollback.Visible = true;
+                    return; // Halt standard matrix
+                }
+            }
+            else if (approvalStatus == "Approved")
+            {
+                return; // Normal users see nothing
             }
 
             // 3. UNBLOCK PRIORITY
             if ((isBlocked || row["JOBID_Status"].ToString() == "Blocked") && entryExitStatus != "Exit")
             {
-                btn_Act_Unblock.Visible = true;
+                if (IsAdmin()) btn_Act_Unblock.Visible = true;
                 return;
             }
 
@@ -469,7 +821,7 @@ namespace WebApplication1.bussiness.production
                 lbl_bottleneck.Text = "SYSTEM LOCKOUT: Job is older than 3 days. Standard processing is disabled.";
                 if ((entryExitStatus == "Entry" || entryExitStatus == "Created") && dtFirstInPunchLogic.HasValue)
                 {
-                    btn_Act_ForceOut.Visible = true;
+                    if (IsAdmin()) btn_Act_ForceOut.Visible = true;
                     lbl_bottleneck.Text += " Admin must Force OUT-Punch to close this shift.";
                 }
             }
@@ -517,8 +869,78 @@ namespace WebApplication1.bussiness.production
         }
 
         // =================================================================================
-        // DELETE JOB (Safe Soft-Delete with Total State Flatline)
+        // ADMIN END-TO-END CONTROLS
         // =================================================================================
+
+        // GAP 1: Emergency Compliance Bypass
+        protected void btn_Act_ForcePermitBypass_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                dbcl.Sqlconnection(); dbcl.ConnectDb();
+                string qry = "UPDATE tbl_jobs SET PermitUpload='Bypassed', FinalUpldStatus='Yes', JOB_Status='Permit Bypassed (Emergency)', MasterStatusCode='3', EntryExit='Entry' WHERE JOBID = @JOBID";
+                using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@JOBID", txt_jobid.Text);
+                    cmd.ExecuteNonQuery();
+                }
+                ShowNotification("Bypassed", "Safety Permits have been bypassed. The JOB is unlocked for IN-Punching.", "success");
+                Load360View(txt_jobid.Text);
+            }
+            catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
+            finally { dbcl.DisconnectDb(); }
+        }
+
+        // GAP 2: Granular State Rollback (Step 3 -> Step 1)
+        protected void btn_Act_ResetToCreated_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                dbcl.Sqlconnection(); dbcl.ConnectDb();
+
+                using (SqlCommand cmdDel = new SqlCommand("DELETE FROM tbl_jobspermit WHERE JOBID=@JOBID", dbcl.Conn))
+                {
+                    cmdDel.Parameters.AddWithValue("@JOBID", txt_jobid.Text);
+                    cmdDel.ExecuteNonQuery();
+                }
+
+                string qry = "UPDATE tbl_jobs SET PermitUpload='No', FinalUpldStatus='No', JOB_Status='Created', MasterStatusCode='1', EntryExit='Created', FileCount=0 WHERE JOBID = @JOBID";
+                using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@JOBID", txt_jobid.Text);
+                    cmd.ExecuteNonQuery();
+                }
+                ShowNotification("Reset Successful", "JOB has been rolled back to Step 1 (Created). Permits must be re-uploaded.", "success");
+                Load360View(txt_jobid.Text);
+            }
+            catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
+            finally { dbcl.DisconnectDb(); }
+        }
+
+        // GAP 3: Shift Cancellation / Ghost Jobs
+        protected void btn_Act_CancelShift_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                dbcl.Sqlconnection(); dbcl.ConnectDb();
+                string qry = @"UPDATE tbl_jobs 
+                               SET JOBID_Status='Cancelled', JOB_Status='Voided by Admin', 
+                                   MasterStatusCode='6', EntryExit='Deleted', 
+                                   DeleteStatus=1, DeleteOn=GETDATE(), DeletedBy=@User 
+                               WHERE JOBID = @JOBID";
+                using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@JOBID", txt_jobid.Text);
+                    cmd.Parameters.AddWithValue("@User", Session["USERNAME"].ToString());
+                    cmd.ExecuteNonQuery();
+                }
+                ShowNotification("Shift Voided", "The Ghost Shift has been cancelled and permanently archived.", "success");
+                Load360View(txt_jobid.Text);
+            }
+            catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
+            finally { dbcl.DisconnectDb(); }
+        }
+
         protected void btn_Act_Delete_Click(object sender, EventArgs e)
         {
             try
@@ -561,32 +983,61 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_Act_Resubmit_Click(object sender, EventArgs e)
         {
+            string jobid = txt_jobid.Text.Trim();
+            string adminUser = Session["USERNAME"] != null ? Session["USERNAME"].ToString() : "ADMIN";
+
             try
             {
-                dbcl.Sqlconnection(); dbcl.ConnectDb();
-                //string qry = @"UPDATE tbl_jobs SET Incharge_Approval = 'Pending', Incharge_Remarks = 'Resubmitted by Admin for Correction', EntryExit = 'Entry', JOB_Status = 'In-Punch Done', MasterStatusCode = '3' WHERE JOBID = @JOBID";
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
 
-                string qry = @"UPDATE tbl_jobs 
-                   SET Incharge_Approval = 'Pending', 
-                       Incharge_Remarks = 'Resubmitted by Admin for Correction',
-                       EntryExit = 'Entry',
-                       JOB_Status = 'In-Punch Done', 
-                       MasterStatusCode = '3',
-                       IsBlocked = 0, 
-                       JOBID_Status = 'Active',
-                       BlockedTimestamp = NULL,
-                       UnblockedUntil = DATEADD(HOUR, 24, GETDATE())                  
-                   WHERE JOBID = @JOBID";
-                using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
+                string qryJob = @"UPDATE tbl_jobs 
+                                  SET Incharge_Approval = 'Pending', 
+                                      Incharge_Remarks = CONCAT(ISNULL(Incharge_Remarks,''), ' | ADMIN RESUBMIT: Opened for corrections by ', @AdminUser),
+                                      EntryExit = 'Entry',
+                                      JOB_Status = 'In-Punch Done', 
+                                      MasterStatusCode = '3',
+                                      IsBlocked = 0, 
+                                      JOBID_Status = 'Active',
+                                      BlockedTimestamp = NULL,
+                                      UnblockedUntil = DATEADD(HOUR, 24, GETDATE()),
+                                      UpdatedBy = @AdminUser,
+                                      UpdatedOn = GETDATE()                  
+                                  WHERE JOBID = @JOBID";
+
+                using (SqlCommand cmdJob = new SqlCommand(qryJob, dbcl.Conn))
                 {
-                    cmd.Parameters.AddWithValue("@JOBID", txt_jobid.Text);
-                    cmd.ExecuteNonQuery();
+                    cmdJob.Parameters.AddWithValue("@JOBID", jobid);
+                    cmdJob.Parameters.AddWithValue("@AdminUser", adminUser);
+                    cmdJob.ExecuteNonQuery();
                 }
-                ShowNotification("Resubmitted", "JOB has been rolled back to the Entry phase. The Supervisor can now edit it.", "success");
-                Load360View(txt_jobid.Text);
+
+                string qryAtt = @"UPDATE tbl_attendance 
+                                  SET SiteIncharge_Approval = 'Returned', 
+                                      Approval_Date = NULL,
+                                      AttendanceStatus = 'Absent',
+                                      LastModified = GETDATE(),
+                                      ModifiedByName = @AdminUser
+                                  WHERE JOBID = @JOBID";
+
+                using (SqlCommand cmdAtt = new SqlCommand(qryAtt, dbcl.Conn))
+                {
+                    cmdAtt.Parameters.AddWithValue("@JOBID", jobid);
+                    cmdAtt.Parameters.AddWithValue("@AdminUser", adminUser);
+                    cmdAtt.ExecuteNonQuery();
+                }
+
+                ShowNotification("Resubmitted", "JOB rolled back successfully. Worker attendance statuses have been reset.", "success");
+                Load360View(jobid);
             }
-            catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
-            finally { dbcl.DisconnectDb(); }
+            catch (Exception ex)
+            {
+                ShowNotification("Error", ex.Message, "error");
+            }
+            finally
+            {
+                dbcl.DisconnectDb();
+            }
         }
 
         protected void btn_Act_ForceOut_Click(object sender, EventArgs e)
@@ -595,7 +1046,7 @@ namespace WebApplication1.bussiness.production
             {
                 dbcl.Sqlconnection(); dbcl.ConnectDb();
 
-                string getStuckWorkersQry = "SELECT Id, EmployeeWrk, Inpunch_Time, WourkHours, LunchFactor FROM tbl_attendance WHERE JOBID = @JOBID AND Outpunch_Time IS NULL";
+                string getStuckWorkersQry = "SELECT Id, EmployeeWrk, Inpunch_Time, WourkHours, LunchFactor FROM tbl_attendance WHERE JOBID = @JOBID AND Outpunch_Time IS NULL AND (DeleteStatus = 0 OR DeleteStatus IS NULL)";
                 using (SqlCommand cmdGet = new SqlCommand(getStuckWorkersQry, dbcl.Conn))
                 {
                     cmdGet.Parameters.AddWithValue("@JOBID", txt_jobid.Text);
@@ -653,6 +1104,44 @@ namespace WebApplication1.bussiness.production
             finally { dbcl.DisconnectDb(); }
         }
 
+        protected void btn_Act_AdminRollback_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+
+                string qry = @"UPDATE tbl_jobs 
+                       SET Incharge_Approval = 'Returned', 
+                           Incharge_Remarks = 'ADMIN OVERRIDE: Approval revoked and returned for corrections.',
+                           JOB_Status = 'Out-Punch Done', 
+                           MasterStatusCode = '4',
+                           IsBlocked = 0, 
+                           JOBID_Status = 'Active',
+                           UpdatedOn = GETDATE(),
+                           UpdatedBy = @User
+                       WHERE JOBID = @JOBID";
+
+                using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@JOBID", txt_jobid.Text);
+                    cmd.Parameters.AddWithValue("@User", Session["USERNAME"] != null ? Session["USERNAME"].ToString() : "ADMIN");
+                    cmd.ExecuteNonQuery();
+                }
+
+                ShowNotification("Admin Rollback", "JOB approval has been revoked. It has been successfully rolled back to the Supervisor for corrections.", "success");
+                Load360View(txt_jobid.Text);
+            }
+            catch (Exception ex)
+            {
+                ShowNotification("Rollback Error", ex.Message, "error");
+            }
+            finally
+            {
+                dbcl.DisconnectDb();
+            }
+        }
+
         // =================================================================================
         // DATE HELPERS
         // =================================================================================
@@ -660,7 +1149,7 @@ namespace WebApplication1.bussiness.production
         {
             if (dbValue != null && dbValue != DBNull.Value)
             {
-                DateTime dt; // Declare variable first for C# 5.0 compatibility
+                DateTime dt;
                 if (DateTime.TryParse(dbValue.ToString(), out dt))
                 {
                     return dt;
@@ -670,5 +1159,87 @@ namespace WebApplication1.bussiness.production
         }
         private string FormatDate(DateTime? dt) => dt.HasValue ? dt.Value.ToString("dd-MMM HH:mm") : "N/A";
         private string GetTATBadge(DateTime? start, DateTime? end, string prefix = "TAT") { if (!start.HasValue || !end.HasValue || start.Value > end.Value) return ""; TimeSpan ts = end.Value - start.Value; string tatString = ts.TotalDays >= 1 ? $"{(int)ts.TotalDays}d {ts.Hours}h {ts.Minutes}m" : ts.TotalHours >= 1 ? $"{ts.Hours}h {ts.Minutes}m" : $"{ts.Minutes}m"; return $"<span class='tat-badge'><i class='fa fa-clock-o'></i> {prefix}: {tatString}</span>"; }
+
+        protected void btn_Act_ViewRawData_Click(object sender, EventArgs e)
+        {
+            string jobid = txt_jobid.Text.Trim();
+            if (string.IsNullOrEmpty(jobid)) return;
+
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+
+                // 1. Load tbl_jobs
+                using (SqlCommand cmd = new SqlCommand("SELECT * FROM tbl_jobs WHERE JOBID = @JOBID", dbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@JOBID", jobid);
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        DataTable dtJobs = new DataTable(); da.Fill(dtJobs);
+                        gvRawJobs.DataSource = dtJobs; gvRawJobs.DataBind();
+                    }
+                }
+
+                // 2. Load tbl_attendance
+                using (SqlCommand cmd = new SqlCommand("SELECT * FROM tbl_attendance WHERE JOBID = @JOBID ORDER BY Id ASC", dbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@JOBID", jobid);
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        DataTable dtAtt = new DataTable(); da.Fill(dtAtt);
+                        gvRawAttendance.DataSource = dtAtt; gvRawAttendance.DataBind();
+                    }
+                }
+
+                // 3. Load tbl_jobspermit (Excluding the raw binary data column to prevent memory crashing)
+                string permitQry = @"SELECT Id, JOBID, UploadType, Name, FileType, Extension, TimeStamp, Submitter_Name, 
+                                    Submitter_Wrk, ViewStatus, DeleteStatus, DownloadStatus 
+                             FROM tbl_jobspermit WHERE JOBID = @JOBID ORDER BY Id ASC";
+                using (SqlCommand cmd = new SqlCommand(permitQry, dbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@JOBID", jobid);
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        DataTable dtPerm = new DataTable(); da.Fill(dtPerm);
+                        gvRawPermits.DataSource = dtPerm; gvRawPermits.DataBind();
+                    }
+                }
+
+                // 4. Load tbl_tbt
+                using (SqlCommand cmd = new SqlCommand("SELECT * FROM tbl_tbt WHERE Ref_JOBID = @JOBID ORDER BY Id ASC", dbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@JOBID", jobid);
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        DataTable dtTBT = new DataTable(); da.Fill(dtTBT);
+                        gvRawTBT.DataSource = dtTBT; gvRawTBT.DataBind();
+                    }
+                }
+
+                // 5. Load tbl_sop
+                using (SqlCommand cmd = new SqlCommand("SELECT * FROM tbl_sop WHERE Ref_JOBID = @JOBID ORDER BY Id ASC", dbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@JOBID", jobid);
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        DataTable dtSOP = new DataTable(); da.Fill(dtSOP);
+                        gvRawSOP.DataSource = dtSOP; gvRawSOP.DataBind();
+                    }
+                }
+
+                // Finally, trigger the modal via JavaScript
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "ShowRawData", "$('#modalRawData').modal('show');", true);
+                ShowNotification("Inspector Loaded", "Raw database tables retrieved successfully.", "info");
+            }
+            catch (Exception ex)
+            {
+                ShowNotification("Inspector Error", "Failed to load raw data: " + ex.Message, "error");
+            }
+            finally
+            {
+                dbcl.DisconnectDb();
+            }
+        }
     }
 }

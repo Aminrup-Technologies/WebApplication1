@@ -661,52 +661,72 @@ namespace WebApplication1.bussiness.production
         {
             if (e.Row.RowType == DataControlRowType.DataRow && GridView2.EditIndex == e.Row.RowIndex)
             {
-                if (e.Row.RowType == DataControlRowType.DataRow)
+                // 1. SAFELY BIND ATTENDANCE STATUS
+                var DDL_AttendanceStatus = e.Row.FindControl("DDL_AttendanceStatus") as DropDownList;
+                if (DDL_AttendanceStatus != null)
                 {
-                    var DDL_AttendanceStatus = e.Row.FindControl("DDL_AttendanceStatus") as DropDownList;
-                    if (DDL_AttendanceStatus != null)
+                    var dt1 = new DataTable();
+                    string cnnString1 = System.Configuration.ConfigurationManager.ConnectionStrings["DbConn"].ToString();
+                    using (var con = new SqlConnection(cnnString1))
                     {
-                        var dt1 = new DataTable();
-                        string cnnString1 = System.Configuration.ConfigurationManager.ConnectionStrings["DbConn"].ToString();
-                        using (var con = new SqlConnection(cnnString1))
-                        {
-                            con.Open();
-                            var cmd1 = new SqlCommand("Select DISTINCT Status from tlb_attendancecodes where Approver='Yes'", con);
-                            var da1 = new SqlDataAdapter(cmd1);
-                            da1.Fill(dt1);
-                            con.Close();
-                        }
-
-                        DDL_AttendanceStatus.DataSource = dt1;
-                        DDL_AttendanceStatus.DataTextField = "Status";
-                        DDL_AttendanceStatus.DataValueField = "Status";
-                        DDL_AttendanceStatus.DataBind();
-                        string AttendanceStatus = DataBinder.Eval(e.Row.DataItem, "AttendanceStatus").ToString();
-                        DDL_AttendanceStatus.Items.FindByText(AttendanceStatus).Selected = true;
+                        con.Open();
+                        var cmd1 = new SqlCommand("Select DISTINCT Status from tlb_attendancecodes where Approver='Yes'", con);
+                        var da1 = new SqlDataAdapter(cmd1);
+                        da1.Fill(dt1);
+                        con.Close();
                     }
 
+                    DDL_AttendanceStatus.DataSource = dt1;
+                    DDL_AttendanceStatus.DataTextField = "Status";
+                    DDL_AttendanceStatus.DataValueField = "Status";
+                    DDL_AttendanceStatus.DataBind();
+                    DDL_AttendanceStatus.Items.Insert(0, new ListItem("-- Select --", ""));
 
-
-                    var DDL_AttendanceCode = e.Row.FindControl("DDL_AttendanceCode") as DropDownList;
-                    if (DDL_AttendanceCode != null)
+                    // SAFE SELECTION LOGIC
+                    string attendanceStatus = DataBinder.Eval(e.Row.DataItem, "AttendanceStatus")?.ToString();
+                    if (!string.IsNullOrEmpty(attendanceStatus))
                     {
-                        var dt2 = new DataTable();
-                        string cnnString2 = System.Configuration.ConfigurationManager.ConnectionStrings["DbConn"].ToString();
-                        using (var con = new SqlConnection(cnnString2))
+                        ListItem item = DDL_AttendanceStatus.Items.FindByText(attendanceStatus);
+                        if (item != null)
                         {
-                            con.Open();
-                            var cmd2 = new SqlCommand("Select Status_Name,Status_Code from tlb_attendancecodes where Approver='Yes' order by slno", con);
-                            var da2 = new SqlDataAdapter(cmd2);
-                            da2.Fill(dt2);
-                            con.Close();
+                            DDL_AttendanceStatus.ClearSelection();
+                            item.Selected = true;
                         }
+                    }
+                }
 
-                        DDL_AttendanceCode.DataSource = dt2;
-                        DDL_AttendanceCode.DataTextField = "Status_Name";
-                        DDL_AttendanceCode.DataValueField = "Status_Code";
-                        DDL_AttendanceCode.DataBind();
-                        string AttendanceCode = DataBinder.Eval(e.Row.DataItem, "AttendanceCode").ToString();
-                        DDL_AttendanceCode.Items.FindByValue(AttendanceCode).Selected = true;
+
+                // 2. SAFELY BIND ATTENDANCE CODE
+                var DDL_AttendanceCode = e.Row.FindControl("DDL_AttendanceCode") as DropDownList;
+                if (DDL_AttendanceCode != null)
+                {
+                    var dt2 = new DataTable();
+                    string cnnString2 = System.Configuration.ConfigurationManager.ConnectionStrings["DbConn"].ToString();
+                    using (var con = new SqlConnection(cnnString2))
+                    {
+                        con.Open();
+                        var cmd2 = new SqlCommand("Select Status_Name,Status_Code from tlb_attendancecodes where Approver='Yes' order by slno", con);
+                        var da2 = new SqlDataAdapter(cmd2);
+                        da2.Fill(dt2);
+                        con.Close();
+                    }
+
+                    DDL_AttendanceCode.DataSource = dt2;
+                    DDL_AttendanceCode.DataTextField = "Status_Name";
+                    DDL_AttendanceCode.DataValueField = "Status_Code";
+                    DDL_AttendanceCode.DataBind();
+                    DDL_AttendanceCode.Items.Insert(0, new ListItem("-- Select --", ""));
+
+                    // SAFE SELECTION LOGIC
+                    string attendanceCode = DataBinder.Eval(e.Row.DataItem, "AttendanceCode")?.ToString();
+                    if (!string.IsNullOrEmpty(attendanceCode))
+                    {
+                        ListItem item = DDL_AttendanceCode.Items.FindByValue(attendanceCode);
+                        if (item != null)
+                        {
+                            DDL_AttendanceCode.ClearSelection();
+                            item.Selected = true;
+                        }
                     }
                 }
             }

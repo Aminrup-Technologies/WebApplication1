@@ -94,39 +94,68 @@
             </div>
 
             <div class="row">
-                <div class="card-box col-md-12 col-sm-12 small" style="width: 100%; height:auto; overflow: scroll;">
+                <div class="card-box col-md-12 col-sm-12 small" style="width: 100%; height: auto; overflow: scroll;">
                     <asp:GridView ID="gvPendingApprovalsold" runat="server" AutoGenerateColumns="True" Visible="false" class="table table-striped table-hover table-bordered table-responsive table-sm dt-responsive" AllowPaging="True" PageSize="10"></asp:GridView>
                 </div>
             </div>
 
             <div class="row">
                 <div class="card-box col-md-12 col-sm-12 small" style="width: 100%; height: 450px; overflow: scroll;">
-                    <asp:GridView ID="gvPendingApprovals" runat="server" AutoGenerateColumns="False" Visible="false" class="table table-striped table-hover table-bordered table-responsive table-sm dt-responsive"
-                        AllowPaging="True" PageSize="100" DataKeyNames="Id" OnRowCommand="gvPendingApprovals_RowCommand" OnPageIndexChanging="gvPendingApprovals_PageIndexChanging">
-                        <Columns>
-                            <asp:BoundField DataField="Id" HeaderText="Id" SortExpression="Id" />
-                            <asp:BoundField DataField="JOBID" HeaderText="Job ID" SortExpression="JOBID" />
-                            <asp:BoundField DataField="JOB_Region" HeaderText="Region" SortExpression="JOB_Region" />
-                            <asp:BoundField DataField="JOB_InchargeName" HeaderText="Incharge Name" SortExpression="JOB_InchargeName" />
-                            <asp:BoundField DataField="Incharge_Approval" HeaderText="Approval Status" SortExpression="Incharge_Approval" />
+                    <div class="row">
+                        <div class="card-box col-md-12 col-sm-12 small" style="width: 100%; height: 450px; overflow: scroll;">
+                            <asp:GridView ID="gvPendingApprovals" runat="server" AutoGenerateColumns="False" Visible="false"
+                                class="table table-striped table-hover table-bordered table-responsive table-sm dt-responsive"
+                                AllowPaging="True" PageSize="100" DataKeyNames="Id"
+                                OnRowCommand="gvPendingApprovals_RowCommand" OnPageIndexChanging="gvPendingApprovals_PageIndexChanging">
+                                <Columns>
+                                    <%-- Select Checkbox --%>
+                                    <asp:TemplateField HeaderStyle-Width="30px" ItemStyle-HorizontalAlign="Center">
+                                        <HeaderTemplate>
+                                            <asp:CheckBox ID="chkHeader" runat="server" onclick="toggleSelectAll(this, 'gvPendingApprovals');" />
+                                        </HeaderTemplate>
+                                        <ItemTemplate>
+                                            <asp:CheckBox ID="chkSelect" runat="server" CssClass="rowCheckbox" />
+                                        </ItemTemplate>
+                                    </asp:TemplateField>
 
-                            <asp:TemplateField>
-                                <HeaderTemplate>
-                                    <asp:CheckBox ID="chkHeader" runat="server" onclick="toggleSelectAll(this, 'gvPendingApprovals');" />
-                                </HeaderTemplate>
-                                <ItemTemplate>
-                                    <asp:CheckBox ID="chkSelect" runat="server" CssClass="rowCheckbox" />
-                                </ItemTemplate>
-                            </asp:TemplateField>
+                                    <%-- Core Job Identifiers --%>
+                                    <asp:BoundField DataField="JOBID" HeaderText="Job ID" SortExpression="JOBID" ItemStyle-Font-Bold="true" />
+                                    <asp:BoundField DataField="CreatedDate" HeaderText="Shift Created On" SortExpression="CreatedDate" DataFormatString="{0:dd-MMM-yyyy HH:mm}" />
+                                    <asp:BoundField DataField="WorkOrderNo" HeaderText="Work Order" SortExpression="WorkOrderNo" />
 
-                            <asp:TemplateField>
-                                <ItemTemplate>
-                                    <asp:Button ID="btnUnblock" runat="server" Text="Unblock" CssClass="btn btn-success btn-sm" CommandName="Unblock" CommandArgument='<%# Eval("Id") %>' OnClientClick="return confirm('Are you sure you want to unblock this job?');" />
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                        </Columns>
-                    </asp:GridView>
-                    <asp:Button ID="btnBulkUnblock" runat="server" Text="Bulk Unblock" CssClass="btn btn-danger btn-sm" OnClick="btnBulkUnblock_Click" />
+                                    <%-- Location Context --%>
+                                    <asp:BoundField DataField="JOB_Company" HeaderText="Company" SortExpression="JOB_Company" />
+                                    <asp:BoundField DataField="JOB_Region" HeaderText="Region" SortExpression="JOB_Region" />
+                                    <asp:BoundField DataField="JOB_Location" HeaderText="Location" SortExpression="JOB_Location" />
+
+                                    <%-- Bottleneck Context --%>
+                                    <asp:BoundField DataField="JOB_InchargeName" HeaderText="Approver (In-Charge)" SortExpression="JOB_InchargeName" ItemStyle-Font-Bold="true" />
+                                    <asp:BoundField DataField="ManpowerCount" HeaderText="Manpower" SortExpression="ManpowerCount" ItemStyle-HorizontalAlign="Center" ItemStyle-Font-Bold="true" />
+
+                                    <%-- Visual Status Badge --%>
+                                    <asp:TemplateField HeaderText="Current State" ItemStyle-HorizontalAlign="Center">
+                                        <ItemTemplate>
+                                            <span class="badge badge-danger" style="font-size: 11px; padding: 5px;">Blocked (72h Expired)</span>
+                                        </ItemTemplate>
+                                    </asp:TemplateField>
+
+                                    <%-- Action Button --%>
+                                    <asp:TemplateField ItemStyle-HorizontalAlign="Center">
+                                        <ItemTemplate>
+                                            <asp:Button ID="btnUnblock" runat="server" Text="Unblock (24h)" CssClass="btn btn-success btn-sm"
+                                                CommandName="Unblock" CommandArgument='<%# Eval("Id") %>'
+                                                OnClientClick="return confirm('Are you sure you want to unblock this job and grant the Approver a 24-Hour grace period?');" />
+                                        </ItemTemplate>
+                                    </asp:TemplateField>
+                                </Columns>
+                            </asp:GridView>
+
+                            <br />
+                            <asp:Button ID="Button1" runat="server" Text="Bulk Unblock Selected (24h)" CssClass="btn btn-danger btn-sm"
+                                OnClick="btnBulkUnblock_Click" OnClientClick="return confirm('Are you sure you want to unblock the selected jobs for 24 Hours?');" />
+                        </div>
+                    </div>
+                    <asp:Button ID="btnBulkUnblock" runat="server" Text="Bulk Unblock (24h)" CssClass="btn btn-danger btn-sm" OnClick="btnBulkUnblock_Click" OnClientClick="return confirm('Are you sure you want to unblock selected jobs for 24 Hours?');" />
                 </div>
             </div>
 

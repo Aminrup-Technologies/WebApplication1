@@ -434,7 +434,7 @@ namespace WebApplication1.bussiness.production
             ClientScript.RegisterStartupScript(this.GetType(), "ShowNotification", script, false);
         }
 
-        private void UnblockJob(string Id)
+        private void UnblockJob_OLD(string Id)
         {
             // Ensure a valid Id is passed
             if (string.IsNullOrEmpty(Id))
@@ -472,6 +472,82 @@ namespace WebApplication1.bussiness.production
                                 else
                                 {
                                     ShowNotification($"Job with ID {Id} has been successfully unblocked.", "success");
+                                }
+
+                                // Commit the transaction if everything was successful
+                                transaction.Commit();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            // Rollback the transaction in case of an error
+                            transaction.Rollback();
+                            throw new Exception("An error occurred while unblocking the job.", ex);
+                        }
+                    }
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new Exception("A database error occurred while unblocking the job.", sqlEx);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while unblocking the job.", ex);
+            }
+        }
+
+        private void UnblockJob(string Id)
+        {
+            // Ensure a valid Id is passed
+            if (string.IsNullOrEmpty(Id))
+            {
+                return;
+            }
+
+            try
+            {
+                // Open the SQL connection
+                using (SqlConnection conn = new SqlConnection(connString))
+                {
+                    conn.Open();
+
+                    // Start a transaction to ensure atomic operation
+                    using (SqlTransaction transaction = conn.BeginTransaction())
+                    {
+                        try
+                        {
+                            // ---------------------------------------------------------
+                            // ENHANCEMENT: 
+                            // 1. Set IsBlocked = 0 and BlockedTimestamp = NULL
+                            // 2. Set JOBID_Status = 'Active'
+                            // 3. Set UnblockedUntil = +24 Hours from now (Shield from Background Service)
+                            // ---------------------------------------------------------
+                            string unblockQuery = @"
+                                UPDATE tbl_jobs 
+                                SET IsBlocked = 0, 
+                                    JOBID_Status = 'Active',
+                                    BlockedTimestamp = NULL,
+                                    UnblockedUntil = DATEADD(HOUR, 24, GETDATE())
+                                WHERE Id = @ID";
+
+                            using (SqlCommand cmd = new SqlCommand(unblockQuery, conn, transaction))
+                            {
+                                // Add the ID parameter to the command
+                                cmd.Parameters.AddWithValue("@ID", Id);
+
+                                // Execute the SQL command
+                                int rowsAffected = cmd.ExecuteNonQuery();
+
+                                // Check if any rows were affected
+                                if (rowsAffected == 0)
+                                {
+                                    ShowNotification($"No job found with ID {Id} or the job is not blocked.", "info");
+                                }
+                                else
+                                {
+                                    // Modified Success Message to reflect the 24-hour window
+                                    ShowNotification($"Job with ID {Id} has been successfully unblocked for 24 Hours.", "success");
                                 }
 
                                 // Commit the transaction if everything was successful

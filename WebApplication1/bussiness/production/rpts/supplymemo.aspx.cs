@@ -24,6 +24,7 @@ namespace WebApplication1.bussiness.production.rpts
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
         DataTable dt = new DataTable();
         private static int MemoType = 0;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             jobid = Request.QueryString["JOBID"];
@@ -33,14 +34,24 @@ namespace WebApplication1.bussiness.production.rpts
             dbid = Request.QueryString["dbid"];
             supv = Request.QueryString["supv"];
 
-            //string JOBID = "JOB0051152";
-            Bind_JOBIDDetails(jobid);
-            //Bind_SMJIDDetails(jobid);
-            //Bind_Manpower(jobid);
-            //Bind_ShiftData(jobid);
-            //Bind_LineItemData(jobid);
+            if (!IsPostBack)
+            {
+                if (!string.IsNullOrEmpty(jobid))
+                {
+                    Bind_JOBIDDetails(jobid);
+                }
+            }
         }
 
+        // Helper Method for Safe Null/Empty checks
+        private string GetSafeValue(object obj)
+        {
+            if (obj == null || obj == DBNull.Value || string.IsNullOrWhiteSpace(obj.ToString()))
+            {
+                return "No Data";
+            }
+            return obj.ToString().Trim();
+        }
 
         private void Bind_JOBIDDetails(string jobid)
         {
@@ -57,90 +68,89 @@ namespace WebApplication1.bussiness.production.rpts
                 dt = dbcl.SPreturn_dt(query, pram);
                 if (dt.Rows.Count > 0)
                 {
-                    string smjid = dt.Rows[0]["Level1_BillingCode"].ToString();
+                    string smjid = GetSafeValue(dt.Rows[0]["Level1_BillingCode"]);
                     lbl_smjid1.Text = lbl_smjid2.Text = smjid;
 
-                    string jobdate = dt.Rows[0]["CreatedDate"].ToString();
-                    DateTime dt1 = DateTime.Parse(jobdate);
-                    DayOfWeek dow = dt1.DayOfWeek; //enum
-                    string str = dow.ToString(); //string
-                    string abc2 = DateBinder(jobdate) + " [" + str + "]" + " [" + dt.Rows[0]["JOB_Shift"].ToString() + "]";
-                    lbl_jobdatedetails.Text = abc2.ToString();
+                    string jobdate = dt.Rows[0]["CreatedDate"]?.ToString();
 
-                    lbl_pono.Text = dt.Rows[0]["WorkOrderNo"].ToString();
-                    lbl_jobid.Text = dt.Rows[0]["JOBID"].ToString();
-
-                    //lbl_permitno.Text = dt.Rows[0]["JOB_PermitNo"].ToString();
-
-                    //string permitData = dt.Rows[0]["JOB_PermitNo"].ToString();
-                    //string[] permits = permitData.Split(new char[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
-                    //lbl_permitno.Text = string.Join("<br />", permits);
-
-                    //string permitData = dt.Rows[0]["JOB_PermitNo"].ToString();
-                    //string[] permits = permitData.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
-                    //int itemsPerLine = 3;
-                    //int maxLength = permits.Max(p => p.Trim().Length);
-
-                    //StringBuilder formatted = new StringBuilder();
-
-                    //for (int i = 0; i < permits.Length; i++)
-                    //{
-                    //    string permit = permits[i].Trim().PadRight(maxLength + 4); // Add spacing
-                    //    formatted.Append(permit);
-
-                    //    if ((i + 1) % itemsPerLine == 0)
-                    //        formatted.AppendLine();
-                    //}
-
-                    //// Assign to label
-                    //lbl_permitno.Text = formatted.ToString();
-
-                    string permitData = dt.Rows[0]["JOB_PermitNo"].ToString();
-                    string[] permits = permitData.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
-                    int itemsPerLine = 3;
-                    int maxLength = permits.Max(p => p.Trim().Length);
-
-                    StringBuilder formatted = new StringBuilder();
-
-                    for (int i = 0; i < permits.Length; i++)
+                    // FIXED: Declare variable before TryParse for C# 5.0 compatibility
+                    DateTime dt1;
+                    if (!string.IsNullOrWhiteSpace(jobdate) && DateTime.TryParse(jobdate, out dt1))
                     {
-                        string permit = permits[i].Trim().PadRight(maxLength); // Align all items
-                        formatted.Append(permit);
+                        DayOfWeek dow = dt1.DayOfWeek; //enum
+                        string str = dow.ToString(); //string
+                        string shift = GetSafeValue(dt.Rows[0]["JOB_Shift"]);
 
-                        // Add comma + space after every item except the last
-                        if (i != permits.Length - 1)
-                            formatted.Append(", ");
-
-                        // Wrap to new line after every N items
-                        if ((i + 1) % itemsPerLine == 0)
-                            formatted.AppendLine();
+                        string shiftDisplay = shift != "No Data" ? " [" + shift + "]" : "";
+                        string abc2 = DateBinder(jobdate) + " [" + str + "]" + shiftDisplay;
+                        lbl_jobdatedetails.Text = abc2;
                     }
-                    lbl_permitno.Text = formatted.ToString();
+                    else
+                    {
+                        lbl_jobdatedetails.Text = "No Data";
+                    }
 
+                    lbl_pono.Text = GetSafeValue(dt.Rows[0]["WorkOrderNo"]);
+                    lbl_jobid.Text = GetSafeValue(dt.Rows[0]["JOBID"]);
 
+                    string permitData = GetSafeValue(dt.Rows[0]["JOB_PermitNo"]);
+                    if (permitData != "No Data")
+                    {
+                        string[] permits = permitData.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-                    lbl_jobtitle.Text = dt.Rows[0]["JOB_Title"].ToString();
+                        if (permits.Length > 0)
+                        {
+                            int itemsPerLine = 3;
+                            int maxLength = permits.Max(p => p.Trim().Length);
 
-                    lbl_jobrgn.Text = dt.Rows[0]["JOB_Region"].ToString();
-                    lbl_jobdept.Text = dt.Rows[0]["JOB_Dept"].ToString();
-                    lbl_jobloc.Text = dt.Rows[0]["JOB_Location"].ToString();
-                    lbl_jobsupvname.Text = dt.Rows[0]["Creator_Name"].ToString();
-                    lbl_jobsupvwrk.Text = dt.Rows[0]["Creator_Workman"].ToString();
-                    lbl_siteincharge.Text = dt.Rows[0]["JOB_InchargeName"].ToString();
-                    lbl_inchargewrk.Text = dt.Rows[0]["JOB_InchargeWrk"].ToString();
+                            StringBuilder formatted = new StringBuilder();
 
-                    Bind_SMJIDDetails(smjid);
-                    Bind_Manpower(smjid);
-                    Bind_ShiftData(smjid);
-                    Bind_LineItemData(smjid);
+                            for (int i = 0; i < permits.Length; i++)
+                            {
+                                string permit = permits[i].Trim().PadRight(maxLength); // Align all items
+                                formatted.Append(permit);
+
+                                // Add comma + space after every item except the last
+                                if (i != permits.Length - 1)
+                                    formatted.Append(", ");
+
+                                // Wrap to new line after every N items
+                                if ((i + 1) % itemsPerLine == 0)
+                                    formatted.AppendLine();
+                            }
+                            lbl_permitno.Text = formatted.ToString();
+                        }
+                        else
+                        {
+                            lbl_permitno.Text = "No Data";
+                        }
+                    }
+                    else
+                    {
+                        lbl_permitno.Text = "No Data";
+                    }
+
+                    lbl_jobtitle.Text = GetSafeValue(dt.Rows[0]["JOB_Title"]);
+                    lbl_jobrgn.Text = GetSafeValue(dt.Rows[0]["JOB_Region"]);
+                    lbl_jobdept.Text = GetSafeValue(dt.Rows[0]["JOB_Dept"]);
+                    lbl_jobloc.Text = GetSafeValue(dt.Rows[0]["JOB_Location"]);
+                    lbl_jobsupvname.Text = GetSafeValue(dt.Rows[0]["Creator_Name"]);
+                    lbl_jobsupvwrk.Text = GetSafeValue(dt.Rows[0]["Creator_Workman"]);
+                    lbl_siteincharge.Text = GetSafeValue(dt.Rows[0]["JOB_InchargeName"]);
+                    lbl_inchargewrk.Text = GetSafeValue(dt.Rows[0]["JOB_InchargeWrk"]);
+
+                    if (smjid != "No Data")
+                    {
+                        Bind_SMJIDDetails(smjid);
+                        Bind_Manpower(smjid);
+                        Bind_ShiftData(smjid);
+                        Bind_LineItemData(smjid);
+                    }
                 }
             }
             catch (Exception ex)
             {
-                //lbl_msg.ForeColor = System.Drawing.Color.Red;
-                //lbl_msg.Text = "Error 217 : " + ex.Message.ToString();
+                // Optionally handle/log errors
             }
             finally
             {
@@ -164,33 +174,51 @@ namespace WebApplication1.bussiness.production.rpts
                 dt = dbcl.SPreturn_dt(query, pram);
                 if (dt.Rows.Count > 0)
                 {
-                    string jobdate = dt.Rows[0]["SMJ_Createdate"].ToString();
-                    DateTime dt1 = DateTime.Parse(jobdate);
-                    DayOfWeek dow = dt1.DayOfWeek; //enum
-                    string str = dow.ToString(); //string
-                    string abc2 = DateBinder(jobdate) + " [" + str + "]";
-                    lbl_smjdate.Text = lbl_createdon.Text= abc2.ToString();
+                    string jobdate = dt.Rows[0]["SMJ_Createdate"]?.ToString();
 
-                    lbl_smjcreatorname.Text  = lbl_createdbyname.Text = dt.Rows[0]["CreatorName"].ToString();
-                    lbl_smjcreatorwrk.Text = lbl_createdbyid.Text = dt.Rows[0]["CreatorWorkmen"].ToString();
+                    // FIXED: Declare variable before TryParse for C# 5.0 compatibility
+                    DateTime dt1;
+                    if (!string.IsNullOrWhiteSpace(jobdate) && DateTime.TryParse(jobdate, out dt1))
+                    {
+                        DayOfWeek dow = dt1.DayOfWeek; //enum
+                        string str = dow.ToString(); //string
+                        string abc2 = DateBinder(jobdate) + " [" + str + "]";
+                        lbl_smjdate.Text = lbl_createdon.Text = abc2;
+                    }
+                    else
+                    {
+                        lbl_smjdate.Text = lbl_createdon.Text = "No Data";
+                    }
+
+                    lbl_smjcreatorname.Text = lbl_createdbyname.Text = GetSafeValue(dt.Rows[0]["CreatorName"]);
+                    lbl_smjcreatorwrk.Text = lbl_createdbyid.Text = GetSafeValue(dt.Rows[0]["CreatorWorkmen"]);
 
                     lbl_printedon.Text = DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss");
-                    lbl_printedbyname.Text = Session["USERNAME"].ToString();
-                    lbl_printedbyid.Text = Session["WORKMAN"].ToString();
 
-                    MemoType = Convert.ToInt32(dt.Rows[0]["MemoType"].ToString());
+                    if (Session["USERNAME"] != null)
+                        lbl_printedbyname.Text = GetSafeValue(Session["USERNAME"]);
+                    else
+                        lbl_printedbyname.Text = "No Data";
 
-                    if (MemoType == 0)
+                    if (Session["WORKMAN"] != null)
+                        lbl_printedbyid.Text = GetSafeValue(Session["WORKMAN"]);
+                    else
+                        lbl_printedbyid.Text = "No Data";
+
+                    string memoTypeStr = GetSafeValue(dt.Rows[0]["MemoType"]);
+                    if (memoTypeStr != "No Data" && int.TryParse(memoTypeStr, out MemoType))
                     {
-                        Unified_LIGrid_0.Visible = false;
-                        Unified_LIGrid_2.Visible = false;
+                        if (MemoType == 0)
+                        {
+                            if (Unified_LIGrid_0 != null) Unified_LIGrid_0.Visible = false;
+                            if (Unified_LIGrid_2 != null) Unified_LIGrid_2.Visible = false;
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
-                //lbl_msg.ForeColor = System.Drawing.Color.Red;
-                //lbl_msg.Text = "Error 217 : " + ex.Message.ToString();
+                // Handle Exception
             }
             finally
             {
@@ -198,163 +226,170 @@ namespace WebApplication1.bussiness.production.rpts
                     dbcl.Conn.Close();
             }
         }
+
         private string DateBinder(string date)
         {
-            string newdate = "";
-            DateTime oDate = Convert.ToDateTime(date);
-            string day = "";
-            string month = "";
-            if (oDate.Day < 10)
+            if (string.IsNullOrWhiteSpace(date)) return "No Data";
+
+            // FIXED: Declare variable before TryParse for C# 5.0 compatibility
+            DateTime oDate;
+            if (DateTime.TryParse(date, out oDate))
             {
-                day = "0" + oDate.Day.ToString();
+                string day = oDate.Day < 10 ? "0" + oDate.Day.ToString() : oDate.Day.ToString();
+                string month = oDate.Month < 10 ? "0" + oDate.Month.ToString() : oDate.Month.ToString();
+                return day + "-" + month + "-" + oDate.Year;
             }
-            else
-            {
-                day = oDate.Day.ToString();
-            }
-            if (oDate.Month < 10)
-            {
-                month = "0" + oDate.Month.ToString();
-            }
-            else
-            {
-                month = oDate.Month.ToString();
-            }
-            return newdate = day + "-" + month + "-" + oDate.Year;
+            return "No Data";
         }
 
         private void Bind_Manpower(string jobid)
         {
-            string ddljobid = lbl_jobid.Text.ToString();
-            dbcl.Sqlconnection();
-            dbcl.ConnectDb();
-            string CmdString = "select concat(b.EmployeeName,' [',b.EmployeeWrk,']') as employeename, a.PO_SkillCategory, a.PO_EmpDesignation,b.Inpunch_Time, b.Outpunch_Time, b.safetypassno, a.ShiftCalc from tbl_supplymemojobmanpower a, tbl_attendance b where a.Ref_JOBID = b.JOBID and a.RefDBId = b.id and a.SMJID ='" + jobid + "' order by a.Id";
-            SqlCommand cmd = new SqlCommand(CmdString, dbcl.Conn);
-            SqlDataReader dr = cmd.ExecuteReader();
-            if (dr.HasRows)
+            try
             {
-                ManpowerGrid.DataSource = dr;
-                ManpowerGrid.DataBind();
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+                string CmdString = "select concat(b.EmployeeName,' [',b.EmployeeWrk,']') as employeename, a.PO_SkillCategory, a.PO_EmpDesignation,b.Inpunch_Time, b.Outpunch_Time, b.safetypassno, a.ShiftCalc from tbl_supplymemojobmanpower a, tbl_attendance b where a.Ref_JOBID = b.JOBID and a.RefDBId = b.id and a.SMJID ='" + jobid + "' order by a.Id";
+                SqlCommand cmd = new SqlCommand(CmdString, dbcl.Conn);
+                SqlDataReader dr = cmd.ExecuteReader();
+                if (dr.HasRows)
+                {
+                    ManpowerGrid.DataSource = dr;
+                    ManpowerGrid.DataBind();
+                }
+                else
+                {
+                    DataTable dt4 = new DataTable();
+                    ManpowerGrid.DataSource = dt4;
+                    ManpowerGrid.DataBind();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                DataTable dt4 = new DataTable();
-                ManpowerGrid.DataSource = dt4;
-                ManpowerGrid.DataBind();
+                // Log Error
             }
-            dbcl.Conn.Close();
+            finally
+            {
+                if (dbcl.Conn.State == ConnectionState.Open)
+                    dbcl.Conn.Close();
+            }
         }
 
         private void Bind_ShiftData(string jobid)
         {
-            string ddljobid = lbl_jobid.Text.ToString();
-            dbcl.Sqlconnection();
-            dbcl.ConnectDb();
-            string CmdString = "select Total_HSShiftCount, Total_SShiftCount, Total_SSShiftCount, Total_USShiftCount, Total_ShiftCount FROM tbl_supplymemojobsdetails where SMJID ='" + jobid + "' order by Id";
-            SqlCommand cmd = new SqlCommand(CmdString, dbcl.Conn);
-            SqlDataReader dr = cmd.ExecuteReader();
-            if (dr.HasRows)
+            try
             {
-                ShiftGrid.DataSource = dr;
-                ShiftGrid.DataBind();
-            }
-            else
-            {
-                DataTable dt4 = new DataTable();
-                ShiftGrid.DataSource = dt4;
-                ShiftGrid.DataBind();
-            }
-            dbcl.Conn.Close();
-        }
-
-
-        private void Bind_LineItemData(string jobid)
-        {
-            string ddljobid = lbl_jobid.Text.ToString();
-            dbcl.Sqlconnection();
-            dbcl.ConnectDb();
-            string CmdString = "select ServiceNumber, Service_Description, Order_Quantity, PerUnit_Value, Shift_Skill FROM tbl_SupMem_LineItems_Data where SMJID ='" + jobid + "' order by Id";
-            SqlCommand cmd = new SqlCommand(CmdString, dbcl.Conn);
-            SqlDataReader dr = cmd.ExecuteReader();
-            if (dr.HasRows)
-            {
-                DataTable dt = new DataTable();
-                dt.Load(dr);
-
-                string highSkillValue = string.Empty;
-                string SkillValue = string.Empty;
-                string semiSkillValue = string.Empty;
-                string unSkillValue = string.Empty;
-
-                // Check if there is exactly one row and the value in the 3rd index is "UNIFIED"
-                if (dt.Rows.Count == 1 && dt.Rows[0][4].ToString() == "UNIFIED")
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+                string CmdString = "select Total_HSShiftCount, Total_SShiftCount, Total_SSShiftCount, Total_USShiftCount, Total_ShiftCount FROM tbl_supplymemojobsdetails where SMJID ='" + jobid + "' order by Id";
+                SqlCommand cmd = new SqlCommand(CmdString, dbcl.Conn);
+                SqlDataReader dr = cmd.ExecuteReader();
+                if (dr.HasRows)
                 {
-                    Unified_LIGrid.Visible = true;
-                    LineItems_Grid.DataSource = dt;
-                    LineItems_Grid.DataBind();
-                    LineItems_Grid.Columns[3].Visible = false;
-                }
-                else if (dt.Rows.Count > 1)
-                {
-                    Unified_LIGrid.Visible = false;
-                    ShiftGrid.FooterRow.Visible = true;
-                    Label lblFooterTotalHSShiftCount = (Label)ShiftGrid.FooterRow.FindControl("lbl_Footer_Total_HSShiftCount");
-                    Label lblFooterTotalSShiftCount = (Label)ShiftGrid.FooterRow.FindControl("lbl_Footer_Total_SShiftCount");
-                    Label lblFooterTotalSSShiftCount = (Label)ShiftGrid.FooterRow.FindControl("lbl_Footer_Total_SSShiftCount");
-                    Label lblFooterTotalUSShiftCount = (Label)ShiftGrid.FooterRow.FindControl("lbl_Footer_Total_USShiftCount");
-
-
-                    foreach (DataRow row in dt.Rows)
-                    {
-                        string value = row.Field<string>(4);
-                        // Check values in the 4th index for different conditions
-                        if (value == "HIGHLY-SKILLED")
-                        {
-                            lblFooterTotalHSShiftCount.Text = row.Field<string>(0);
-                        }
-                        else if (value == "SKILLED")
-                        {
-                            lblFooterTotalSShiftCount.Text = row.Field<string>(0);
-                        }
-                        else if (value == "SEMI-SKILLED")
-                        {
-                            lblFooterTotalSSShiftCount.Text = row.Field<string>(0);
-                        }
-                        else if (value == "UN-SKILLED")
-                        {
-                            lblFooterTotalUSShiftCount.Text = row.Field<string>(0);
-                        }
-                        // Add more conditions as needed
-                        else
-                        {
-                            // Default actions if none of the specified conditions are met
-                            // ...
-                        }
-                    }
-
-                    LineItems_Grid.DataSource = dt;
-                    LineItems_Grid.DataBind();
+                    ShiftGrid.DataSource = dr;
+                    ShiftGrid.DataBind();
                 }
                 else
                 {
-                    LineItems_Grid.DataSource = dt;
+                    DataTable dt4 = new DataTable();
+                    ShiftGrid.DataSource = dt4;
+                    ShiftGrid.DataBind();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log Error
+            }
+            finally
+            {
+                if (dbcl.Conn.State == ConnectionState.Open)
+                    dbcl.Conn.Close();
+            }
+        }
+
+        private void Bind_LineItemData(string jobid)
+        {
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+                string CmdString = "select ServiceNumber, Service_Description, Order_Quantity, PerUnit_Value, Shift_Skill FROM tbl_SupMem_LineItems_Data where SMJID ='" + jobid + "' order by Id";
+                SqlCommand cmd = new SqlCommand(CmdString, dbcl.Conn);
+                SqlDataReader dr = cmd.ExecuteReader();
+                if (dr.HasRows)
+                {
+                    DataTable dt = new DataTable();
+                    dt.Load(dr);
+
+                    if (dt.Rows.Count == 1 && dt.Rows[0][4].ToString() == "UNIFIED")
+                    {
+                        if (Unified_LIGrid != null) Unified_LIGrid.Visible = true;
+                        LineItems_Grid.DataSource = dt;
+                        LineItems_Grid.DataBind();
+                        LineItems_Grid.Columns[3].Visible = false;
+                    }
+                    else if (dt.Rows.Count > 1)
+                    {
+                        if (Unified_LIGrid != null) Unified_LIGrid.Visible = false;
+                        ShiftGrid.FooterRow.Visible = true;
+                        Label lblFooterTotalHSShiftCount = (Label)ShiftGrid.FooterRow.FindControl("lbl_Footer_Total_HSShiftCount");
+                        Label lblFooterTotalSShiftCount = (Label)ShiftGrid.FooterRow.FindControl("lbl_Footer_Total_SShiftCount");
+                        Label lblFooterTotalSSShiftCount = (Label)ShiftGrid.FooterRow.FindControl("lbl_Footer_Total_SSShiftCount");
+                        Label lblFooterTotalUSShiftCount = (Label)ShiftGrid.FooterRow.FindControl("lbl_Footer_Total_USShiftCount");
+
+                        foreach (DataRow row in dt.Rows)
+                        {
+                            string value = GetSafeValue(row.Field<string>(4));
+                            string amount = GetSafeValue(row.Field<string>(0));
+
+                            if (value == "HIGHLY-SKILLED")
+                            {
+                                if (lblFooterTotalHSShiftCount != null) lblFooterTotalHSShiftCount.Text = amount;
+                            }
+                            else if (value == "SKILLED")
+                            {
+                                if (lblFooterTotalSShiftCount != null) lblFooterTotalSShiftCount.Text = amount;
+                            }
+                            else if (value == "SEMI-SKILLED")
+                            {
+                                if (lblFooterTotalSSShiftCount != null) lblFooterTotalSSShiftCount.Text = amount;
+                            }
+                            else if (value == "UN-SKILLED")
+                            {
+                                if (lblFooterTotalUSShiftCount != null) lblFooterTotalUSShiftCount.Text = amount;
+                            }
+                        }
+
+                        LineItems_Grid.DataSource = dt;
+                        LineItems_Grid.DataBind();
+                    }
+                    else
+                    {
+                        LineItems_Grid.DataSource = dt;
+                        LineItems_Grid.DataBind();
+                    }
+                }
+                else
+                {
+                    DataTable dt5 = new DataTable();
+                    LineItems_Grid.DataSource = dt5;
                     LineItems_Grid.DataBind();
                 }
             }
-            else
+            catch (Exception ex)
             {
-                DataTable dt5 = new DataTable();
-                LineItems_Grid.DataSource = dt5;
-                LineItems_Grid.DataBind();
+                // Handle Exception
             }
-            dbcl.Conn.Close();
+            finally
+            {
+                if (dbcl.Conn.State == ConnectionState.Open)
+                    dbcl.Conn.Close();
+            }
         }
 
         protected void LineItems_Grid_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)
             {
-                // Check if the row count is exactly 1
                 if (LineItems_Grid.Rows.Count > 0)
                 {
                     if (LineItems_Grid.Rows.Count == 1)
@@ -370,25 +405,19 @@ namespace WebApplication1.bussiness.production.rpts
 
                     }
                 }
-                else
-                {
-
-                }
             }
         }
 
         protected void btn_back_Click(object sender, EventArgs e)
         {
-            //Response.Redirect("../create_supplymemo.aspx?JOBID=" + jobid + "&viewid=1&y=" + yr + "&m=" + mnt + "");
             if (viewid == "1")
             {
                 Response.Redirect($"../create_supplymemo.aspx?JOBID={jobid}&dbid={dbid}&supv={supv}&viewid=1&y={yr}&m={mnt}");
             }
-            else if (viewid =="2")
+            else if (viewid == "2")
             {
                 Response.Redirect($"../create_supplymemo.aspx?JOBID={jobid}&dbid={dbid}&supv={supv}&viewid=2&y={yr}&m={mnt}");
             }
-
         }
     }
 }

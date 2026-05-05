@@ -33,11 +33,11 @@
             padding: 16px 20px !important;
         }
 
-        .modern-title h2 {
-            font-weight: 600;
-            color: #34495e;
-            font-size: 18px;
-        }
+            .modern-title h2 {
+                font-weight: 600;
+                color: #34495e;
+                font-size: 18px;
+            }
 
         /* Top Header Button */
         .modern-header-btn {
@@ -53,13 +53,14 @@
             box-shadow: 0 3px 6px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
         }
-        .modern-header-btn:hover {
-            background: linear-gradient(145deg, #5a6268, #4e555b);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 12px rgba(0,0,0,0.15);
-            text-decoration: none;
-        }
+
+            .modern-header-btn:hover {
+                background: linear-gradient(145deg, #5a6268, #4e555b);
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+                text-decoration: none;
+            }
 
         /* Modern Inputs */
         .modern-input {
@@ -72,11 +73,12 @@
             box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
-        .modern-input:focus {
-            border-color: #1ABB9C !important;
-            box-shadow: 0 0 0 3px rgba(26, 187, 156, 0.15) !important;
-            outline: none;
-        }
+
+            .modern-input:focus {
+                border-color: #1ABB9C !important;
+                box-shadow: 0 0 0 3px rgba(26, 187, 156, 0.15) !important;
+                outline: none;
+            }
 
         /* Date Picker Bar */
         .modern-date-bar {
@@ -98,10 +100,11 @@
             display: flex;
             align-items: center;
         }
-        .modern-alert i {
-            margin-right: 10px;
-            font-size: 18px;
-        }
+
+            .modern-alert i {
+                margin-right: 10px;
+                font-size: 18px;
+            }
 
         /* Document Checkbox List */
         .modern-doc-list {
@@ -110,16 +113,18 @@
             border-radius: 8px;
             padding: 15px;
         }
-        .modern-doc-list label {
-            margin-left: 8px;
-            font-weight: 500;
-            color: #5A738E;
-            cursor: pointer;
-        }
-        .modern-doc-list input[type="checkbox"] {
-            transform: scale(1.1);
-            cursor: pointer;
-        }
+
+            .modern-doc-list label {
+                margin-left: 8px;
+                font-weight: 500;
+                color: #5A738E;
+                cursor: pointer;
+            }
+
+            .modern-doc-list input[type="checkbox"] {
+                transform: scale(1.1);
+                cursor: pointer;
+            }
 
         /* Action Buttons */
         .modern-actions .btn {
@@ -131,11 +136,12 @@
             font-size: 12px;
             transition: all 0.2s ease;
         }
-        .modern-actions .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-        
+
+            .modern-actions .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            }
+
         /* GPS Retry Button */
         .btn-gps-retry {
             padding: 1px 8px;
@@ -146,11 +152,12 @@
             color: #6c757d;
             transition: all 0.2s;
         }
-        .btn-gps-retry:hover {
-            background: #e2e6ea;
-            color: #495057;
-            border-color: #adb5bd;
-        }
+
+            .btn-gps-retry:hover {
+                background: #e2e6ea;
+                color: #495057;
+                border-color: #adb5bd;
+            }
     </style>
 </asp:Content>
 
@@ -161,9 +168,9 @@
                 <div class="col-md-12 col-sm-12">
                     <div class="x_panel modern-panel">
                         <div class="x_title modern-title" style="display: flex; justify-content: space-between; align-items: center;">
-                            <h2 style="margin: 0;">Step 1: Create JOB ID <small style="color:#1ABB9C; font-weight: 600;">Smart Workflow</small></h2>
+                            <h2 style="margin: 0;">Step 1: Create JOB ID <small style="color: #1ABB9C; font-weight: 600;">Smart Workflow</small></h2>
                             <a href="create_jobid.aspx" class="modern-header-btn">
-                                <i class="fa fa-history" style="margin-right: 5px;"></i> Switch to OLD Version
+                                <i class="fa fa-history" style="margin-right: 5px;"></i>Switch to OLD Version
                             </a>
                             <div class="clearfix"></div>
                         </div>
@@ -171,7 +178,7 @@
                         <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
                         <asp:UpdatePanel ID="UpdatePanel1" runat="server">
                             <ContentTemplate>
-                                
+
                                 <div class="x_content">
                                     <div class="modern-date-bar" id="Div1" runat="server" visible="true">
                                         <div class="row">
@@ -183,8 +190,8 @@
 
                                                 <div id="div_existing_jobs" runat="server" visible="false" class="mt-3">
                                                     <div class="alert alert-danger" style="display: inline-block; padding: 8px 15px; margin-bottom: 0; border-radius: 6px;">
-                                                        <i class="fa fa-exclamation-triangle"></i> <strong>Warning:</strong> You already have Active JOB(s) for this date: 
-                                                        <asp:Label ID="lbl_existing_jobs_list" runat="server" CssClass="badge bg-red" style="font-size: 13px;"></asp:Label>
+                                                        <i class="fa fa-exclamation-triangle"></i><strong>Warning:</strong> You already have Active JOB(s) for this date: 
+                                                        <asp:Label ID="lbl_existing_jobs_list" runat="server" CssClass="badge bg-red" Style="font-size: 13px;"></asp:Label>
                                                     </div>
                                                 </div>
                                             </div>
@@ -203,7 +210,7 @@
                                                         <i class="fa fa-spinner fa-spin" style="margin-right: 4px;"></i>Acquiring GPS...
                                                     </span>
                                                     <button type="button" class="btn btn-gps-retry m-0" onclick="requestGPSLocation(true);" title="Retry GPS Connection">
-                                                        <i class="fa fa-refresh"></i> Retry
+                                                        <i class="fa fa-refresh"></i>Retry
                                                     </button>
                                                 </div>
 
@@ -223,9 +230,9 @@
                                             </div>
 
                                             <div class="col-md-3 col-sm-6 col-xs-12 form-group" id="div_BillingType" runat="server">
-                                            <label class="top-label">JOB Type (Billing) <span class="req-star">*</span></label>
-                                            <asp:DropDownList ID="DDL_BillingType" runat="server" CssClass="form-control modern-input" AutoPostBack="true" OnSelectedIndexChanged="DDL_BillingType_SelectedIndexChanged"></asp:DropDownList>
-                                            <asp:RequiredFieldValidator ID="RFV1" ValidationGroup="Submit" runat="server" CssClass="text-danger small" Display="Dynamic" ErrorMessage="Required" ControlToValidate="DDL_BillingType" InitialValue="Please Select Option"></asp:RequiredFieldValidator>
+                                                <label class="top-label">JOB Type (Billing) <span class="req-star">*</span></label>
+                                                <asp:DropDownList ID="DDL_BillingType" runat="server" CssClass="form-control modern-input" AutoPostBack="true" OnSelectedIndexChanged="DDL_BillingType_SelectedIndexChanged"></asp:DropDownList>
+                                                <asp:RequiredFieldValidator ID="RFV1" ValidationGroup="Submit" runat="server" CssClass="text-danger small" Display="Dynamic" ErrorMessage="Required" ControlToValidate="DDL_BillingType" InitialValue="Please Select Option"></asp:RequiredFieldValidator>
                                             </div>
 
                                             <div class="col-md-6 col-sm-12 col-xs-12 form-group" id="div_NonBillingAlert" runat="server" visible="false">
@@ -288,7 +295,7 @@
                                                     MaxLength="200"
                                                     onkeypress="return validateJobTitle(event);"
                                                     onkeyup="updateCharCount();"></asp:TextBox>
-                                                
+
                                                 <div style="display: flex; justify-content: space-between; margin-top: 4px;">
                                                     <div>
                                                         <asp:CustomValidator ID="cv_jobtitle_words" runat="server" ControlToValidate="txt_jobtitle" ValidationGroup="Submit" CssClass="text-danger small" Display="Dynamic" ErrorMessage="Must be > 3 words" ClientValidationFunction="validateWordCount"></asp:CustomValidator>
@@ -322,7 +329,7 @@
                                         <div class="row modern-actions">
                                             <div class="col-md-12 text-center">
                                                 <asp:Button ID="btn_cancel" runat="server" Text="Cancel" CssClass="btn btn-danger" OnClick="btn_cancel_Click" CausesValidation="false" />
-                                                <asp:Button ID="btn_reset" runat="server" Text="Reset Form" CssClass="btn btn-warning" style="color: #fff;" OnClick="btn_reset_Click" CausesValidation="false" />
+                                                <asp:Button ID="btn_reset" runat="server" Text="Reset Form" CssClass="btn btn-warning" Style="color: #fff;" OnClick="btn_reset_Click" CausesValidation="false" />
                                                 <asp:Button ID="btn_submit" runat="server" Text="Create JOB & Continue" ValidationGroup="Submit" CssClass="btn btn-success" OnClick="btn_submit_Click" />
                                             </div>
                                         </div>
@@ -384,21 +391,29 @@
         }
 
         function updatePermitCount() {
-            var textbox = document.getElementById('<%= txt_permitno.ClientID %>');
-            var count = textbox.value.length;
-            document.getElementById("permitCount").innerHTML = count + " / 100";
+            var textbox = document.querySelector('[id$="txt_permitno"]');
+            if (textbox) {
+                var count = textbox.value.length;
+                var counterEl = document.getElementById("permitCount");
+                if (counterEl) counterEl.innerHTML = count + " / 100";
+            }
         }
 
         function updateCharCount() {
-            var textbox = document.getElementById('<%= txt_jobtitle.ClientID %>');
-            var count = textbox.value.length;
-            document.getElementById("charCount").innerHTML = count + " / 200";
+            var textbox = document.querySelector('[id$="txt_jobtitle"]');
+            if (textbox) {
+                var count = textbox.value.length;
+                var counterEl = document.getElementById("charCount");
+                if (counterEl) counterEl.innerHTML = count + " / 200";
+            }
         }
 
         // ENHANCED HTML5 Geolocation API with Retry Logic
         function requestGPSLocation(isRetry = false) {
             let indicator = document.getElementById('gps_indicator');
-            
+            let latField = document.querySelector('.js-lat-field');
+            let lonField = document.querySelector('.js-lon-field');
+        
             // If user clicked retry, visually reset the indicator to processing state
             if (isRetry && indicator) {
                 indicator.innerHTML = "<i class='fa fa-spinner fa-spin' style='margin-right:4px;'></i> Acquiring GPS...";
@@ -407,14 +422,18 @@
 
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (position) {
-                    document.getElementById('<%= hf_latitude.ClientID %>').value = position.coords.latitude;
-                    document.getElementById('<%= hf_longitude.ClientID %>').value = position.coords.longitude;
+                
+                    // Safely assign values only if the fields exist in the DOM
+                    if (latField && lonField) {
+                        latField.value = position.coords.latitude;
+                        lonField.value = position.coords.longitude;
+                    }
 
                     if (indicator) {
                         indicator.innerHTML = "<i class='fa fa-check-circle text-success' style='margin-right:4px;'></i> GPS Captured Successfully";
                         indicator.className = "text-success font-weight-bold";
                     }
-                    
+                
                     // Show a tiny success toast if they explicitly requested a retry
                     if(isRetry) showPNotify('Success', 'GPS connection re-established.', 'success');
 

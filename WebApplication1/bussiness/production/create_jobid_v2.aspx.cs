@@ -1,13 +1,4 @@
-﻿/*
-======================================================================================
-File_Name: create_jobid_v2_aspx_cs
-When: March 30, 2026
-Why: To fix ADO.NET parameter type mismatches ensuring seamless integration with the revised UAT database schema and preventing implicit SQL conversion overhead.
-What: Updated AddWithValue parameters in Insert_JOBData() to use strong native data types (int for FileCount, DateTime for CreatedDate) mapping precisely to the SP_InsertInto_JOBSTable SQL signature.
-======================================================================================
-*/
-
-using System;
+﻿using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Web.UI;
@@ -38,6 +29,8 @@ namespace WebApplication1.bussiness.production
         private string WO_MasterStatusCode { get { return ViewState["WO_MasterStatusCode"] as string ?? "1"; } set { ViewState["WO_MasterStatusCode"] = value; } }
 
         private static readonly object jobInsertLock = new object();
+        // Add this under your other ViewState variables
+        private bool WO_ReqGPS { get { return ViewState["WO_ReqGPS"] != null && (bool)ViewState["WO_ReqGPS"]; } set { ViewState["WO_ReqGPS"] = value; } }
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -49,11 +42,35 @@ namespace WebApplication1.bussiness.production
                     return;
                 }
 
+                //Bind_WorkRegion();
+                //if (DDL_Region.Items.FindByValue(Session["REGION"].ToString()) != null)
+                //{
+                //    DDL_Region.SelectedValue = Session["REGION"].ToString();
+                //    WorkRegion_ControllerCheck(); // V2 Check
+                //}
+
                 Bind_WorkRegion();
                 if (DDL_Region.Items.FindByValue(Session["REGION"].ToString()) != null)
                 {
+                    // 1. Pre-select their home region
                     DDL_Region.SelectedValue = Session["REGION"].ToString();
-                    WorkRegion_ControllerCheck(); // V2 Check
+
+                    // 2. Fire the UI logic (GPS, etc.)
+                    WorkRegion_ControllerCheck();
+
+                    // =========================================================
+                    // V2 SECURITY UPGRADE: Prevent Cross-Region Punching for Staff
+                    // =========================================================
+                    if (Session["USERTYPE"] != null && Session["USERTYPE"].ToString() == "Site Staff")
+                    {
+                        DDL_Region.Enabled = false; // Lock the dropdown visually and functionally
+                        DDL_Region.ToolTip = "Your account is restricted to your designated Home Region.";
+                    }
+                    else
+                    {
+                        DDL_Region.Enabled = true; // Admins and Managers can freely switch regions
+                    }
+                    // =========================================================
                 }
 
                 Workorder_Binder();
@@ -120,11 +137,47 @@ namespace WebApplication1.bussiness.production
         // DB CONTROLLER LOGIC 
         // =================================================================================
 
+        //protected void txt_jobdate_TextChanged(object sender, EventArgs e)
+        //{
+        //    DateTime selectedDate;
+        //    if (DateTime.TryParse(txt_jobdate.Text, out selectedDate))
+        //    {
+        //        lbl_jobday.Text = selectedDate.DayOfWeek.ToString();
+        //        EvaluateAttendanceCode();
+        //        CheckExistingJobsForDate(txt_jobdate.Text);
+
+        //        // Update auto-generated title dynamically ONLY if the DB Matrix allows it
+        //        if (WO_AutoTitle)
+        //        {
+        //            string prefix = string.IsNullOrEmpty(DB_WOType) ? "ARC" : DB_WOType;
+        //            txt_jobtitle.Text = $"{prefix} attendance for ({selectedDate.ToString("dd-MM-yyyy")})";
+        //        }
+        //    }
+        //}
+
         protected void txt_jobdate_TextChanged(object sender, EventArgs e)
         {
             DateTime selectedDate;
             if (DateTime.TryParse(txt_jobdate.Text, out selectedDate))
             {
+                // =========================================================
+                // MOBILE BYPASS FIX: Forcefully check the date limits on postback
+                // =========================================================
+                int backdateLimit = GetUserBackdateLimit(Session["WORKMAN"].ToString());
+                DateTime minAllowedDate = DateTime.Now.Date.AddDays(-backdateLimit);
+                DateTime maxAllowedDate = DateTime.Now.Date;
+
+                if (selectedDate.Date < minAllowedDate || selectedDate.Date > maxAllowedDate)
+                {
+                    // 1. Show the user an error
+                    ShowNotification("Invalid Date Selected", $"Mobile limit reached. You can only select dates between {minAllowedDate.ToString("dd-MMM-yyyy")} and Today.", "error");
+
+                    // 2. Forcefully reset the textbox back to today's date
+                    txt_jobdate.Text = DateTime.Now.ToString("yyyy-MM-dd");
+                    selectedDate = DateTime.Now.Date;
+                }
+                // =========================================================
+
                 lbl_jobday.Text = selectedDate.DayOfWeek.ToString();
                 EvaluateAttendanceCode();
                 CheckExistingJobsForDate(txt_jobdate.Text);
@@ -155,7 +208,7 @@ namespace WebApplication1.bussiness.production
             Workorder_Binder();
         }
 
-        private void WorkRegion_ControllerCheck()
+        private void WorkRegion_ControllerCheck_OLD()
         {
             string region = DDL_Region.SelectedValue;
             if (string.IsNullOrEmpty(region)) return;
@@ -177,6 +230,37 @@ namespace WebApplication1.bussiness.production
                 {
                     // Hide the indicator and clear out any old coordinates
                     div_gps_status.Visible = false;
+                    hf_latitude.Value = "";
+                    hf_longitude.Value = "";
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowNotification("Error", "Region Check Failed: " + ex.Message, "error");
+            }
+        }
+
+        private void WorkRegion_ControllerCheck()
+        {
+            string region = DDL_Region.SelectedValue;
+            if (string.IsNullOrEmpty(region)) return;
+
+            try
+            {
+                string flagQuery = "SELECT Req_GPS_Tagging FROM tlb_work_state_region WHERE Work_Region_Code = @RegionCode";
+                SqlParameter[] flagParams = { new SqlParameter("@RegionCode", region) };
+                DataTable dtFlags = dbcl.SPreturn_dt(flagQuery, flagParams);
+
+                if (dtFlags.Rows.Count > 0 && dtFlags.Rows[0]["Req_GPS_Tagging"].ToString() == "Yes")
+                {
+                    div_gps_status.Visible = true;
+                    WO_ReqGPS = true; // <-- NEW: Lock the requirement in memory
+                    ScriptManager.RegisterStartupScript(this, GetType(), "GPS", "requestGPSLocation();", true);
+                }
+                else
+                {
+                    div_gps_status.Visible = false;
+                    WO_ReqGPS = false; // <-- NEW: Remove the requirement
                     hf_latitude.Value = "";
                     hf_longitude.Value = "";
                 }
@@ -495,6 +579,19 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_submit_Click(object sender, EventArgs e)
         {
+            // =========================================================
+            // BUG FIX: STRICT GPS ENFORCEMENT
+            // =========================================================
+            if (WO_ReqGPS)
+            {
+                if (string.IsNullOrEmpty(hf_latitude.Value) || string.IsNullOrEmpty(hf_longitude.Value))
+                {
+                    ShowNotification("GPS Required", "Location tracking is mandatory for this Region. Please allow location access in your browser and click Retry.", "error");
+                    return; // Stops the submission entirely!
+                }
+            }
+            // =========================================================
+
             string[] words = txt_jobtitle.Text.Trim().Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
             if (words.Length <= 3)
             {
@@ -746,28 +843,58 @@ namespace WebApplication1.bussiness.production
             dbcl.DisconnectDb();
         }
 
+        //protected void DataChecker()
+        //{
+        //    if (Session["REGION"].ToString() == DB_WOWorkRegion)
+        //    {
+        //        txt_workregion.Text = Session["REGION"].ToString();
+
+        //        if (Session["COMPANY_CODE"].ToString() == DB_WOCompnayCode)
+        //        {
+        //            txt_company.Text = Session["COMPANY_CODE"].ToString();
+        //            txt_workregion.Text = DDL_Region.SelectedValue;
+        //            BindWorkSites(DDL_Region.SelectedValue);
+        //        }
+        //        else
+        //        {
+        //            txt_company.Text = DB_WOCompnayCode;
+        //            BindWorkSites(DDL_Region.SelectedValue);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        txt_workregion.Text = DB_WOWorkRegion;
+        //        BindWorkSites(DDL_Region.SelectedValue);
+        //    }
+        //}
+
         protected void DataChecker()
         {
-            if (Session["REGION"].ToString() == DB_WOWorkRegion)
-            {
-                txt_workregion.Text = Session["REGION"].ToString();
+            // 1. Identify the "Active" Region: 
+            // Prioritize the user's dynamic dropdown selection. 
+            // If somehow empty, gracefully fall back to their personal Session Region.
+            string activeRegion = !string.IsNullOrEmpty(DDL_Region.SelectedValue)
+                                  ? DDL_Region.SelectedValue
+                                  : Session["REGION"].ToString();
 
-                if (Session["COMPANY_CODE"].ToString() == DB_WOCompnayCode)
-                {
-                    txt_company.Text = Session["COMPANY_CODE"].ToString();
-                    BindWorkSites(DDL_Region.SelectedValue);
-                }
-                else
-                {
-                    txt_company.Text = DB_WOCompnayCode;
-                    BindWorkSites(DDL_Region.SelectedValue);
-                }
+            // Set the hidden tracking field to the actively selected region
+            txt_workregion.Text = activeRegion;
+
+            // 2. Determine the Company Context:
+            // Respect the session if it matches the Work Order, otherwise map to the WO's strict company.
+            if (Session["COMPANY_CODE"].ToString() == DB_WOCompnayCode)
+            {
+                txt_company.Text = Session["COMPANY_CODE"].ToString();
             }
             else
             {
-                txt_workregion.Text = DB_WOWorkRegion;
-                BindWorkSites(DDL_Region.SelectedValue);
+                txt_company.Text = DB_WOCompnayCode;
             }
+
+            // 3. Dynamic Binding:
+            // Feed the actively selected region into the WorkSite binder. 
+            // This ensures if a user switches regions in the UI, the sites cascade perfectly.
+            BindWorkSites(activeRegion);
         }
 
         protected void DDL_Worksite_SelectedIndexChanged(object sender, EventArgs e)
