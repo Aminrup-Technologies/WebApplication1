@@ -233,7 +233,8 @@
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <div class="right_col" role="main">
         <div class="container">
             <div class="row">
@@ -302,6 +303,14 @@
                                                     <small class="text-muted text-uppercase font-weight-bold"><i class="fa fa-user-circle"></i>Site In-Charge</small><br />
                                                     <asp:Label ID="lbl_inchargename" runat="server" CssClass="data-label"></asp:Label>
                                                 </div>
+
+                                                <div class="col-md-12 mt-3" id="div_saved_map" runat="server" style="display: none;">
+                                                    <small class="text-muted text-uppercase font-weight-bold"><i class="fa fa-map-marker" style="color: #e74c3c;"></i>GPS Location (Created At)</small>
+                                                    <div id="savedMapPreview" style="height: 150px; width: 100%; border-radius: 8px; margin-top: 5px; border: 1px solid #ced4da; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);"></div>
+                                                </div>
+
+                                                <asp:HiddenField ID="hf_db_lat" runat="server" />
+                                                <asp:HiddenField ID="hf_db_lon" runat="server" />
                                             </div>
                                         </div>
 
@@ -366,7 +375,7 @@
 
                                                     <div class="col-lg-2 col-md-4 col-12 form-group mb-3">
                                                         <label class="top-label">OUT Date <span class="req-star">*</span></label>
-                                                        <asp:TextBox ID="txt_date" runat="server" CssClass="form-control modern-input" type="date"></asp:TextBox>
+                                                        <asp:TextBox ID="txt_date" runat="server" CssClass="form-control modern-input" type="date" onkeydown="return false;"></asp:TextBox>
                                                     </div>
 
                                                     <div class="col-lg-2 col-md-4 col-12 form-group mb-3">
@@ -651,5 +660,41 @@
 
         // Start the boot sequence
         document.addEventListener("DOMContentLoaded", BootUpSystem);
+
+        let savedMap = null;
+
+        function renderSavedMap() {
+            // 1. Grab coordinates from the ASP.NET HiddenFields
+            let latField = document.querySelector('input[id$="hf_db_lat"]');
+            let lonField = document.querySelector('input[id$="hf_db_lon"]');
+
+            if (latField && lonField && latField.value && lonField.value) {
+                let lat = parseFloat(latField.value);
+                let lon = parseFloat(lonField.value);
+
+                let mapDiv = document.getElementById('savedMapPreview');
+
+                if (mapDiv) {
+                    // Leaflet Bug Fix: Sometimes map tiles blur if div changes size. 
+                    // Invalidate sizes forces a fresh render.
+                    if (savedMap !== null) {
+                        savedMap.setView([lat, lon], 16);
+                        savedMap.invalidateSize();
+                    } else {
+                        // Initialize Map
+                        savedMap = L.map('savedMapPreview').setView([lat, lon], 16);
+
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '© OpenStreetMap'
+                        }).addTo(savedMap);
+
+                        // Add the Red Pin Marker
+                        L.marker([lat, lon]).addTo(savedMap)
+                         .bindPopup("<b>JOB Creation Location</b><br>Lat: " + lat + "<br>Lon: " + lon)
+                         .openPopup();
+                    }
+                }
+            }
+        }
     </script>
 </asp:Content>

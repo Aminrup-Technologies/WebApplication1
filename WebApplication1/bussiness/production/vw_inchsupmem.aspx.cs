@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Web;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data.SqlClient;
 using System.Data;
@@ -12,9 +9,6 @@ namespace WebApplication1.bussiness.production
 {
     public partial class vw_inchsupmem : System.Web.UI.Page
     {
-        DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
-        CountChecker CC = new CountChecker();
-
         public static string yr = string.Empty;
         public static string mnt = string.Empty;
 
@@ -22,135 +16,82 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                // 1. Security & Session Check
+                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
-                    Response.Redirect("~/login.aspx");
+                    Response.Redirect("~/login.aspx", false);
+                    return;
                 }
-                else
+
+                // 2. Determine Year and Month (from QueryString or Current Date)
+                yr = Request.QueryString["y"];
+                mnt = Request.QueryString["m"];
+
+                int targetYear = DateTime.Now.Year;
+                int targetMonth = DateTime.Now.Month;
+
+                if (!string.IsNullOrEmpty(yr) && !string.IsNullOrEmpty(mnt))
                 {
-                    yr = Request.QueryString["y"];
-                    mnt = Request.QueryString["m"];
-                    if (yr != null && mnt != null)
-                    {
-                        lbl_year.Text = HttpUtility.HtmlEncode(yr);
-                        lbl_monthcode.Text = HttpUtility.HtmlEncode(mnt);
-                        DateTime date = new DateTime(Convert.ToInt32(yr), Convert.ToInt32(mnt), 1);
-                        lbl_month.Text = date.ToString("MMMM");
-
-                        string CmdString2 = "select top 100 Id,CreatedDate, Creator_Workman,Creator_Name, WorkOrderNo, JOBID,IIF(JOB_Status !='Level1MemoCreated',JOBID_Status,Level1_BillingCode) as JOBID_Status,JOBID_Status,JOB_Site, JOB_InchargeName, JOB_Shift,JOB_Title, JOB_PermitNo, JOB_Status, FinalUpldStatus, Incharge_Approval from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_InchargeName='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + yr + "' and MONTH(CreatedDate)='" + mnt + "' and JOBID_Status='Blocked' and EntryExit='Exit' and FinalUpldStatus='Yes' and Incharge_Approval='Approved' and BillingCode='MS' order by CreatedDate desc";
-                        //BindGrid(CmdString2);
-
-                        // Define start and end date range for the specified month and year
-                        DateTime startDate = new DateTime(Convert.ToInt32(yr), Convert.ToInt32(mnt), 1);
-                        DateTime endDate = startDate.AddMonths(1);
-
-                        string cmdString2 = @"
-                            SELECT TOP 100 
-                                Id, CreatedDate, Creator_Workman, Creator_Name, WorkOrderNo, JOBID,
-                                IIF(JOB_Status != 'Level1MemoCreated', JOBID_Status, Level1_BillingCode) AS JOBID_Status,
-                                JOBID_Status, JOB_Site, JOB_InchargeName, JOB_Shift, JOB_Title, JOB_PermitNo,
-                                JOB_Status, FinalUpldStatus, Incharge_Approval
-                            FROM 
-                                tbl_jobs
-                            WHERE 
-                                JOB_InchargeWrk = @Workman
-                                AND JOB_InchargeName = @Username
-                                AND CreatedDate >= @StartDate
-                                AND CreatedDate < @EndDate
-                                AND JOBID_Status = 'Blocked'
-                                AND EntryExit = 'Exit'
-                                AND FinalUpldStatus = 'Yes'
-                                AND Incharge_Approval = 'Approved'
-                                AND BillingCode = 'MS'
-                            ORDER BY 
-                                CreatedDate DESC";
-
-                                                // Define parameters to be passed into the query
-                                                SqlParameter[] parameters = {
-                            new SqlParameter("@Workman", Session["WORKMAN"].ToString()),
-                            new SqlParameter("@Username", Session["USERNAME"].ToString()),
-                            new SqlParameter("@StartDate", startDate),
-                            new SqlParameter("@EndDate", endDate)
-                        };
-
-                        // Call BindGrid with the parameterized query
-                        BindGrid(cmdString2, parameters);
-                    }
-
-                    else
-                    {
-                        DateTime now = DateTime.Now;
-                        lbl_year.Text = DateTime.Now.Year.ToString();
-                        lbl_monthcode.Text = DateTime.Now.Month.ToString();
-                        lbl_month.Text = now.ToString("MMMM");
-
-                        //string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + DateTime.Now.Year.ToString() + "' and JOBID_Status='Blocked' and MONTH(CreatedDate)='" + DateTime.Now.Month.ToString() + "' and JOBID_Status='Blocked' and EntryExit='Exit' and FinalUpldStatus='Yes' and Incharge_Approval='Approved' and BillingCode='MS' order by CreatedDate desc";
-
-                        string CmdString2 = "select top 100 Id,CreatedDate,Creator_Workman,Creator_Name,WorkOrderNo,JOBID,IIF(JOB_Status !='Level1MemoCreated',JOBID_Status,Level1_BillingCode) as JOBID_Status,JOBID_Status,JOB_Site,JOB_InchargeName,JOB_Shift,JOB_Title,JOB_PermitNo,JOB_Status,FinalUpldStatus,Incharge_Approval from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_InchargeName='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + DateTime.Now.Year.ToString() + "' and JOBID_Status='Blocked' and MONTH(CreatedDate)='" + DateTime.Now.Month.ToString() + "' and JOBID_Status='Blocked' and EntryExit='Exit' and FinalUpldStatus='Yes' and Incharge_Approval='Approved' and BillingCode='MS' order by CreatedDate desc";
-                        //BindGrid(CmdString2);
-
-                        // Define start and end date for the current year and month
-                        DateTime startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-                        DateTime endDate = startDate.AddMonths(1);
-
-                        string cmdString2 = @"
-                            SELECT TOP 100 
-                                Id, CreatedDate, Creator_Workman, Creator_Name, WorkOrderNo, JOBID,
-                                IIF(JOB_Status != 'Level1MemoCreated', JOBID_Status, Level1_BillingCode) AS JOBID_Status,
-                                JOBID_Status, JOB_Site, JOB_InchargeName, JOB_Shift, JOB_Title, JOB_PermitNo,
-                                JOB_Status, FinalUpldStatus, Incharge_Approval
-                            FROM 
-                                tbl_jobs
-                            WHERE 
-                                JOB_InchargeWrk = @Workman
-                                AND JOB_InchargeName = @Username
-                                AND CreatedDate >= @StartDate
-                                AND CreatedDate < @EndDate
-                                AND JOBID_Status = 'Blocked'
-                                AND EntryExit = 'Exit'
-                                AND FinalUpldStatus = 'Yes'
-                                AND Incharge_Approval = 'Approved'
-                                AND BillingCode = 'MS'
-                            ORDER BY 
-                                CreatedDate DESC";
-
-                                                // Define parameters to pass to the query
-                                                SqlParameter[] parameters = {
-                            new SqlParameter("@Workman", Session["WORKMAN"].ToString()),
-                            new SqlParameter("@Username", Session["USERNAME"].ToString()),
-                            new SqlParameter("@StartDate", startDate),
-                            new SqlParameter("@EndDate", endDate)
-                        };
-
-                        // Call BindGrid with the parameterized query and parameters
-                        BindGrid(cmdString2, parameters);
-                    }
+                    int.TryParse(yr, out targetYear);
+                    int.TryParse(mnt, out targetMonth);
                 }
+
+                // 3. Load the Data
+                LoadData(targetYear, targetMonth);
             }
         }
 
-        private void BindGrid(string cmdString)
+        // ==========================================
+        // UNIFIED DATA LOADER
+        // ==========================================
+        private void LoadData(int year, int month)
         {
-            dbcl.Sqlconnection();
-            dbcl.ConnectDb();
-            SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
-            SqlDataAdapter ad = new SqlDataAdapter(cmd);
-            DataSet ds = new DataSet();
-            ad.Fill(ds);
-            GridView1.DataSource = ds;
-            GridView1.DataBind();
-            dbcl.Conn.Close();
+            // Set UI Labels
+            DateTime startDate = new DateTime(year, month, 1);
+            DateTime endDate = startDate.AddMonths(1);
+
+            lbl_year.Text = year.ToString();
+            lbl_monthcode.Text = month.ToString("00"); // Keeps format consistent (e.g., "05")
+            lbl_month.Text = startDate.ToString("MMMM");
+
+            // Parameterized Query (JOB_InchargeName filter removed)
+            string query = @"
+                SELECT TOP 100 
+                    Id, CreatedDate, Creator_Workman, Creator_Name, WorkOrderNo, JOBID,
+                    IIF(JOB_Status != 'Level1MemoCreated', JOBID_Status, Level1_BillingCode) AS JOBID_Status,
+                    JOBID_Status as Orig_JOBID_Status, JOB_Site, JOB_InchargeName, JOB_Shift, JOB_Title, JOB_PermitNo,
+                    JOB_Status, FinalUpldStatus, Incharge_Approval
+                FROM tbl_jobs
+                WHERE JOB_InchargeWrk = @Workman
+                  AND CreatedDate >= @StartDate
+                  AND CreatedDate < @EndDate
+                  AND JOBID_Status = 'Blocked'
+                  AND EntryExit = 'Exit'
+                  AND FinalUpldStatus = 'Yes'
+                  AND Incharge_Approval = 'Approved'
+                  AND BillingCode = 'MS'
+                ORDER BY CreatedDate DESC";
+
+            // @Username parameter removed
+            SqlParameter[] parameters = {
+                new SqlParameter("@Workman", Session["WORKMAN"].ToString()),
+                new SqlParameter("@StartDate", startDate),
+                new SqlParameter("@EndDate", endDate)
+            };
+
+            BindGridSafe(query, parameters);
         }
 
-
-        private void BindGrid(string cmdString, SqlParameter[] parameters)
+        // ==========================================
+        // SECURE GRID BINDER
+        // ==========================================
+        private void BindGridSafe(string cmdString, SqlParameter[] parameters)
         {
             string constr = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
             using (SqlConnection con = new SqlConnection(constr))
             {
-                using (SqlCommand cmd = new SqlCommand(cmdString, con)) // Set the connection for cmd
+                using (SqlCommand cmd = new SqlCommand(cmdString, con))
                 {
-                    // Attach parameters to the command, if provided
                     if (parameters != null)
                     {
                         cmd.Parameters.AddRange(parameters);
@@ -158,9 +99,7 @@ namespace WebApplication1.bussiness.production
 
                     try
                     {
-                        // Open connection
                         con.Open();
-
                         using (SqlDataAdapter ad = new SqlDataAdapter(cmd))
                         {
                             DataSet ds = new DataSet();
@@ -171,165 +110,125 @@ namespace WebApplication1.bussiness.production
                     }
                     catch (Exception ex)
                     {
-                        // Log or handle the error as needed
+                        // Log or handle the error safely
                         string title = "Error loading data";
-                        string message = ex.Message;
+                        string message = ex.Message.Replace("'", "\\'"); // Escape quotes for JS
                         ClientScript.RegisterStartupScript(this.GetType(), "Popup", $"ShowPopup('{title}', '{message}');", true);
                     }
                 }
             }
         }
 
+        // ==========================================
+        // EFFICIENT ROW DATA BOUND (O(1) per row)
+        // ==========================================
+        protected void GridView1_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            // Only execute for Data Rows (ignores Headers/Footers)
+            if (e.Row.RowType == DataControlRowType.DataRow)
+            {
+                Label lbl_JOBID_Status = (Label)e.Row.FindControl("lbl_JOBID_Status");
+                Label lbl_JOB_InchargeName = (Label)e.Row.FindControl("lbl_JOB_InchargeName");
+                Label lbl_Incharge_Approval = (Label)e.Row.FindControl("lbl_Incharge_Approval");
+                Label lbl_JOB_PermitNo = (Label)e.Row.FindControl("lbl_JOB_PermitNo");
+                Label lbl_FinalUpldStatus = (Label)e.Row.FindControl("lbl_FinalUpldStatus");
+                Button btn_smemo = (Button)e.Row.FindControl("btn_createsupmemo");
 
+                if (lbl_JOBID_Status != null && lbl_Incharge_Approval != null && lbl_FinalUpldStatus != null && btn_smemo != null)
+                {
+                    string jobidstatus = lbl_JOBID_Status.Text;
+                    string approvalstatus = lbl_Incharge_Approval.Text;
+                    string upldstatus = lbl_FinalUpldStatus.Text;
 
+                    if (jobidstatus == "Blocked" && approvalstatus == "Approved" && upldstatus == "Yes")
+                    {
+                        lbl_JOB_InchargeName.ForeColor = System.Drawing.Color.Green;
+                        lbl_JOB_PermitNo.ForeColor = System.Drawing.Color.Green;
+                        btn_smemo.Enabled = true;
+                    }
+                    else if (jobidstatus != "Blocked" && approvalstatus == "Approved" && upldstatus == "Yes")
+                    {
+                        btn_smemo.Enabled = true;
+                        btn_smemo.Text = jobidstatus;
+                        btn_smemo.CssClass = "btn btn-sm btn-success";
+                    }
+                    else
+                    {
+                        lbl_JOB_InchargeName.ForeColor = System.Drawing.Color.Red;
+                        lbl_JOB_PermitNo.ForeColor = System.Drawing.Color.Red;
+                        btn_smemo.Enabled = false;
+                    }
+                }
+            }
+        }
+
+        // ==========================================
+        // ROW COMMAND HANDLER
+        // ==========================================
+        protected void GridView1_RowCommand(object sender, GridViewCommandEventArgs e)
+        {
+            if (e.CommandName == "View_Details" || e.CommandName == "CSUPMEM")
+            {
+                int rowIndex = Convert.ToInt32(e.CommandArgument);
+                GridViewRow row = GridView1.Rows[rowIndex];
+
+                string dbid = (row.FindControl("lbl_Id") as Label).Text;
+                string jobid = (row.FindControl("lbl_JOBID") as Label).Text;
+                string supv = (row.FindControl("lbl_Creator_Workman") as Label).Text;
+
+                if (e.CommandName == "View_Details")
+                {
+                    Response.Redirect($"view_jobdetails.aspx?JOBID={jobid}&dbid={dbid}&supv={supv}", false);
+                }
+                else if (e.CommandName == "CSUPMEM")
+                {
+                    Response.Redirect($"create_supplymemo.aspx?JOBID={jobid}&dbid={dbid}&supv={supv}&viewid=1&y={lbl_year.Text}&m={lbl_monthcode.Text}", false);
+                }
+            }
+        }
+
+        // ==========================================
+        // NAVIGATION BUTTONS
+        // ==========================================
         protected void btn_prevmonth_Click(object sender, EventArgs e)
         {
-            Int32 year = Convert.ToInt32(lbl_year.Text.ToString());
-            Int32 month = Convert.ToInt32(lbl_monthcode.Text.ToString());
+            int year = Convert.ToInt32(lbl_year.Text);
+            int month = Convert.ToInt32(lbl_monthcode.Text);
 
-            if (month == 01 || month == 1)
+            if (month == 1)
             {
                 month = 12;
-                year = year - 1;
+                year -= 1;
             }
             else
             {
-                month = month - 1;
+                month -= 1;
             }
 
-            string Year = Convert.ToString(year);
-            string Month = "";
-            if (month <= 9)
-            {
-                Month = "0" + month.ToString();
-            }
-            else
-            {
-                Month = month.ToString();
-            }
-
-            GridBinder(Year, Month);
+            LoadData(year, month);
         }
 
         protected void btn_currentdata_Click(object sender, EventArgs e)
         {
-
-            string Year = DateTime.Now.Year.ToString();
-            string Month = DateTime.Now.Month.ToString();
-
-            GridBinder(Year, Month);
+            LoadData(DateTime.Now.Year, DateTime.Now.Month);
         }
 
         protected void btn_nextmonth_Click(object sender, EventArgs e)
         {
-            Int32 year = Convert.ToInt32(lbl_year.Text.ToString());
-            Int32 month = Convert.ToInt32(lbl_monthcode.Text.ToString());
+            int year = Convert.ToInt32(lbl_year.Text);
+            int month = Convert.ToInt32(lbl_monthcode.Text);
 
             if (month == 12)
             {
                 month = 1;
-                year = year + 1;
+                year += 1;
             }
             else
             {
-                month = month + 1;
+                month += 1;
             }
 
-            string Year = Convert.ToString(year);
-            string Month = "";
-            if (month <= 9)
-            {
-                Month = "0" + month.ToString();
-            }
-            else
-            {
-                Month = month.ToString();
-            }
-
-            GridBinder(Year, Month);
-        }
-
-        private void GridBinder(string Year, string Month)
-        {
-            string Monthname = "";
-            dbcl.FindMonthName(Month, ref Monthname);
-            lbl_month.Text = Monthname;
-            lbl_year.Text = Year;
-            lbl_monthcode.Text = Month;
-
-            string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_InchargeName='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOBID_Status='Blocked' and EntryExit='Exit' and FinalUpldStatus='Yes' and Incharge_Approval='Approved' and BillingCode='MS' order by CreatedDate desc";
-            BindGrid(CmdString2);
-        }
-
-        protected void GridView1_RowDataBound(object sender, GridViewRowEventArgs e)
-        {
-            for (int i = 0; i <= GridView1.Rows.Count - 1; i++)
-            {
-                Label lbl_JOBID_Status = (Label)GridView1.Rows[i].FindControl("lbl_JOBID_Status");              //----------------- Active / Blocked
-                Label lbl_JOB_InchargeName = (Label)GridView1.Rows[i].FindControl("lbl_JOB_InchargeName");
-                Label lbl_Incharge_Approval = (Label)GridView1.Rows[i].FindControl("lbl_Incharge_Approval");    //------------ Approved / Blocked
-
-                Label lbl_JOB_PermitNo = (Label)GridView1.Rows[i].FindControl("lbl_JOB_PermitNo");
-                Label lbl_FinalUpldStatus = (Label)GridView1.Rows[i].FindControl("lbl_FinalUpldStatus");        //------------ Yes / No
-
-                Button btn_smemo = (Button)GridView1.Rows[i].FindControl("btn_createsupmemo");
-
-                string jobidstatus = lbl_JOBID_Status.Text.ToString();
-                string approvalstatus = lbl_Incharge_Approval.Text.ToString();
-                string upldstatus = lbl_FinalUpldStatus.Text.ToString();
-
-                if (jobidstatus == "Blocked" && approvalstatus == "Approved" && upldstatus == "Yes")
-                {
-                    lbl_JOB_InchargeName.ForeColor = System.Drawing.Color.Green;
-                    lbl_JOB_PermitNo.ForeColor = System.Drawing.Color.Green;
-                    btn_smemo.Enabled = true;
-                }
-                else if (jobidstatus != "Blocked" && approvalstatus == "Approved" && upldstatus == "Yes")
-                {
-                    btn_smemo.Enabled = true;
-                    btn_smemo.Text = jobidstatus;
-                    btn_smemo.CssClass = "btn btn-sm btn-success";
-                }
-                else
-                {
-                    lbl_JOB_InchargeName.ForeColor = System.Drawing.Color.Red;
-                    lbl_JOB_PermitNo.ForeColor = System.Drawing.Color.Red;
-                    btn_smemo.Enabled = false;
-                }
-            }
-        }
-
-        protected void GridView1_RowCommand(object sender, GridViewCommandEventArgs e)
-        {
-            //string jobid = Convert.ToString(e.CommandArgument);
-
-            //Determine the RowIndex of the Row whose Button was clicked.
-            int rowIndex = Convert.ToInt32(e.CommandArgument);
-
-            //Reference the GridView Row.
-            GridViewRow row = GridView1.Rows[rowIndex];
-
-            //Fetch value of Name.
-            string dbid = (row.FindControl("lbl_Id") as Label).Text;
-            string jobid = (row.FindControl("lbl_JOBID") as Label).Text;
-            string supv = (row.FindControl("lbl_Creator_Workman") as Label).Text;
-            string jobidstatus = (row.FindControl("lbl_JOBID_Status") as Label).Text;
-
-            if (e.CommandName == "View_Details")
-            {
-                Response.Redirect("view_jobdetails.aspx?JOBID=" + jobid + "&dbid=" + dbid + "&supv=" + supv);
-            }
-            else if (e.CommandName == "CSUPMEM")
-            {
-                //Response.Redirect("create_supplymemo.aspx?JOBID=" + jobid + "&viewid=1&y="+lbl_year.Text.ToString()+"&m="+lbl_monthcode.Text.ToString()+"");
-                Response.Redirect("create_supplymemo.aspx?JOBID=" + jobid
-                 + "&dbid=" + dbid
-                 + "&supv=" + supv
-                 + "&viewid=1"
-                 + "&y=" + lbl_year.Text.ToString()
-                 + "&m=" + lbl_monthcode.Text.ToString());
-
-            }
+            LoadData(year, month);
         }
     }
 }

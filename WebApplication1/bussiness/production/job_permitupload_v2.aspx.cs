@@ -271,12 +271,23 @@ namespace WebApplication1.bussiness.production
                 InsertIntoDB(Server_FileName, FileType, ext, bytes);
                 Bind_JOBIDDetails(jobid);
 
+                // =======================================================
+                // NEW: TXT FILE LOGGING (PERMIT UPLOADED)
+                // =======================================================
+                string logMsg = $"- File Name   : {Server_FileName}\n" +
+                                $"- Upload Type : {DDL_UploadType.SelectedValue}\n" +
+                                $"- File Ext    : {ext}";
+                JobWorkflowLogger.LogAction(jobid, "2. PERMIT UPLOAD (File Added)", Session["WORKMAN"].ToString(), logMsg);
+                // =======================================================
+
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "CloseModal", "closeUploadModal();", true);
                 ShowNotification("Success", "Permit file uploaded successfully!", "success");
             }
             catch (Exception ex)
             {
                 ShowNotification("Upload Failed", ex.Message, "error");
+                // Optional: Log the error
+                JobWorkflowLogger.LogAction(lbl_jobid.Text, "PERMIT UPLOAD ERROR", Session["WORKMAN"].ToString(), $"Failed to upload. Exception: {ex.Message}");
             }
         }
 
@@ -365,6 +376,13 @@ namespace WebApplication1.bussiness.production
                 if (File.Exists(fullPath)) File.Delete(fullPath);
 
                 Bind_JOBIDDetails(jobid);
+
+                // =======================================================
+                // NEW: TXT FILE LOGGING (PERMIT DELETED)
+                // =======================================================
+                JobWorkflowLogger.LogAction(jobid, "2. PERMIT UPLOAD (File Removed)", Session["WORKMAN"].ToString(), $"- Deleted File: {fileName}");
+                // =======================================================
+
                 ShowNotification("Deleted", "Attachment deleted successfully.", "success");
             }
             catch (Exception ex)
@@ -403,6 +421,12 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_inpunch_Click(object sender, EventArgs e)
         {
+            // =======================================================
+            // NEW: TXT FILE LOGGING (PROCEED TO NEXT STEP)
+            // =======================================================
+            JobWorkflowLogger.LogAction(lbl_jobid.Text, "2. PERMIT PHASE COMPLETED", Session["WORKMAN"].ToString(), "All required permits uploaded. Routing to IN-Punch configuration.");
+            // =======================================================
+
             // SMART ROUTING: Mask the JOBID before passing it to Step 3
             string maskedJobId = EncodeJobID(lbl_jobid.Text);
             Response.Redirect($"job_inpunch_v2.aspx?jobid={maskedJobId}", false);

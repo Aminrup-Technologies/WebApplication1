@@ -411,6 +411,12 @@
                                     <td>
                                         <asp:Label ID="lbl_unblockeduntil" runat="server"></asp:Label></td>
                                 </tr>
+                                <tr>
+                                    <th>GPS Location (Creation)</th>
+                                    <td>
+                                        <asp:Label ID="lbl_gps" runat="server"></asp:Label>
+                                    </td>
+                                </tr>
                             </table>
                         </div>
                     </div>

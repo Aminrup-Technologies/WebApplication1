@@ -41,11 +41,11 @@
             padding: 16px 20px !important;
         }
 
-        .modern-title h2 {
-            font-weight: 600;
-            color: #34495e;
-            font-size: 18px;
-        }
+            .modern-title h2 {
+                font-weight: 600;
+                color: #34495e;
+                font-size: 18px;
+            }
 
         /* Top Header Button */
         .modern-header-btn {
@@ -61,13 +61,14 @@
             box-shadow: 0 3px 6px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
         }
-        .modern-header-btn:hover {
-            background: linear-gradient(145deg, #5a6268, #4e555b);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 12px rgba(0,0,0,0.15);
-            text-decoration: none;
-        }
+
+            .modern-header-btn:hover {
+                background: linear-gradient(145deg, #5a6268, #4e555b);
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+                text-decoration: none;
+            }
 
         /* Modern Inputs */
         .modern-input {
@@ -80,11 +81,12 @@
             box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
-        .modern-input:focus {
-            border-color: #1ABB9C !important;
-            box-shadow: 0 0 0 3px rgba(26, 187, 156, 0.15) !important;
-            outline: none;
-        }
+
+            .modern-input:focus {
+                border-color: #1ABB9C !important;
+                box-shadow: 0 0 0 3px rgba(26, 187, 156, 0.15) !important;
+                outline: none;
+            }
 
         /* Scanner Specific Styles */
         .modern-scan-box {
@@ -95,6 +97,7 @@
             box-shadow: 0 4px 6px rgba(26, 187, 156, 0.05);
             margin-bottom: 20px;
         }
+
         .scanner-input {
             border: 2px solid #1ABB9C !important;
             font-size: 16px;
@@ -103,9 +106,10 @@
             letter-spacing: 1px;
             padding: 10px;
         }
-        .scanner-input:focus {
-            box-shadow: 0 0 0 4px rgba(26, 187, 156, 0.2) !important;
-        }
+
+            .scanner-input:focus {
+                box-shadow: 0 0 0 4px rgba(26, 187, 156, 0.2) !important;
+            }
 
         /* Employee Success Card */
         .modern-success-card {
@@ -134,10 +138,11 @@
             font-size: 13px;
             transition: all 0.2s ease;
         }
-        .btn-modern:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
+
+            .btn-modern:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            }
 
         /* GridView Container */
         .modern-grid-container {
@@ -147,39 +152,54 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
             background: #fff;
         }
-        .modern-grid-container th {
-            background-color: #f8f9fa;
-            color: #34495e;
-            font-weight: 600;
-            border-bottom-width: 1px;
-        }
+
+            .modern-grid-container th {
+                background-color: #f8f9fa;
+                color: #34495e;
+                font-weight: 600;
+                border-bottom-width: 1px;
+            }
 
         /* Loader Overlay */
         #loadingOverlay {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(255,255,255,0.85);
             z-index: 9999;
             backdrop-filter: blur(2px);
         }
+
         .spinner-container {
             position: absolute;
-            top: 50%; left: 50%;
+            top: 50%;
+            left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
         }
+
         .loader {
             border: 6px solid #f3f3f3;
             border-top: 6px solid #1ABB9C; /* Gentelella Green */
             border-radius: 50%;
-            width: 60px; height: 60px;
+            width: 60px;
+            height: 60px;
             animation: spin 1s linear infinite;
             margin: auto;
         }
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
+
         .loading-text {
             margin-top: 15px;
             font-size: 16px;
@@ -190,16 +210,19 @@
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <div class="right_col" role="main">
         <div class="container">
             <div class="row">
                 <div class="col-md-12 col-sm-12">
                     <div class="x_panel modern-panel">
                         <div class="x_title modern-title" style="display: flex; justify-content: space-between; align-items: center;">
-                            <h2 style="margin: 0;">Step 3: Manpower IN-Punch <small style="color:#1ABB9C; font-weight: 600;">Smart Scanner</small></h2>
-                            <a href="job_inpunch.aspx" class="modern-header-btn">
-                                <i class="fa fa-history" style="margin-right: 5px;"></i> Switch to OLD Version
-                            </a>
+                            <h2 style="margin: 0;">Step 3: Manpower IN-Punch <small style="color: #1ABB9C; font-weight: 600;">Smart Scanner</small></h2>
+                            <button type="button" class="modern-header-btn" data-toggle="modal" data-target="#switchVersionModal" style="cursor: pointer;">
+                                <i class="fa fa-history" style="margin-right: 5px;"></i>Switch to OLD Version
+                           
+                            </button>
                             <div class="clearfix"></div>
                         </div>
 
@@ -226,24 +249,24 @@
                                         <div class="col-md-12 p-4">
                                             <div class="row">
                                                 <div class="col-md-3 col-sm-6 mb-3">
-                                                    <small class="text-muted text-uppercase font-weight-bold"><i class="fa fa-hashtag"></i> JOB ID</small><br />
+                                                    <small class="text-muted text-uppercase font-weight-bold"><i class="fa fa-hashtag"></i>JOB ID</small><br />
                                                     <asp:Label ID="lbl_jobid" runat="server" CssClass="data-label" Style="font-size: 16px;"></asp:Label>
                                                 </div>
                                                 <div class="col-md-3 col-sm-6 mb-3">
-                                                    <small class="text-muted text-uppercase font-weight-bold"><i class="fa fa-calendar"></i> Date</small><br />
+                                                    <small class="text-muted text-uppercase font-weight-bold"><i class="fa fa-calendar"></i>Date</small><br />
                                                     <asp:Label ID="lbl_jobiddate" runat="server" CssClass="data-label" Style="font-size: 15px;"></asp:Label>
                                                 </div>
                                                 <div class="col-md-3 col-sm-6 mb-3">
-                                                    <small class="text-muted text-uppercase font-weight-bold"><i class="fa fa-file-text-o"></i> Work Order</small><br />
+                                                    <small class="text-muted text-uppercase font-weight-bold"><i class="fa fa-file-text-o"></i>Work Order</small><br />
                                                     <asp:Label ID="lbl_wrkordr" runat="server" CssClass="data-label" Style="font-size: 15px;"></asp:Label>
                                                 </div>
                                                 <div class="col-md-3 col-sm-6 mb-3">
-                                                    <small class="text-muted text-uppercase font-weight-bold"><i class="fa fa-shield"></i> Permit No</small><br />
+                                                    <small class="text-muted text-uppercase font-weight-bold"><i class="fa fa-shield"></i>Permit No</small><br />
                                                     <asp:Label ID="lbl_permitno" runat="server" CssClass="badge bg-red" Style="font-size: 13px; margin-top: 4px; padding: 5px 8px;"></asp:Label>
                                                 </div>
 
                                                 <div class="col-md-3 col-sm-6 mb-2">
-                                                    <small class="text-muted text-uppercase font-weight-bold"><i class="fa fa-building-o"></i> Site / Location</small><br />
+                                                    <small class="text-muted text-uppercase font-weight-bold"><i class="fa fa-building-o"></i>Site / Location</small><br />
                                                     <span class="data-label" style="display: inline-block;">
                                                         <asp:Label ID="lbl_jobsite" runat="server"></asp:Label>
                                                         <span class="text-muted font-weight-normal mx-1">|</span>
@@ -251,13 +274,20 @@
                                                     </span>
                                                 </div>
                                                 <div class="col-md-3 col-sm-6 mb-2">
-                                                    <small class="text-muted text-uppercase font-weight-bold"><i class="fa fa-clock-o"></i> Shift</small><br />
+                                                    <small class="text-muted text-uppercase font-weight-bold"><i class="fa fa-clock-o"></i>Shift</small><br />
                                                     <asp:Label ID="lbl_jobshift" runat="server" CssClass="badge bg-green" Style="font-size: 13px; margin-top: 4px; padding: 5px 8px;"></asp:Label>
                                                 </div>
                                                 <div class="col-md-6 col-sm-12 mb-2">
-                                                    <small class="text-muted text-uppercase font-weight-bold"><i class="fa fa-user-circle"></i> Site In-Charge</small><br />
+                                                    <small class="text-muted text-uppercase font-weight-bold"><i class="fa fa-user-circle"></i>Site In-Charge</small><br />
                                                     <asp:Label ID="lbl_inchargename" runat="server" CssClass="data-label"></asp:Label>
                                                 </div>
+                                                <div class="col-md-12 mt-3" id="div_saved_map" runat="server" style="display: none;">
+                                                    <small class="text-muted text-uppercase font-weight-bold"><i class="fa fa-map-marker" style="color: #e74c3c;"></i>GPS Location (Created At)</small>
+                                                    <div id="savedMapPreview" style="height: 150px; width: 100%; border-radius: 8px; margin-top: 5px; border: 1px solid #ced4da; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);"></div>
+                                                </div>
+
+                                                <asp:HiddenField ID="hf_db_lat" runat="server" />
+                                                <asp:HiddenField ID="hf_db_lon" runat="server" />
                                             </div>
                                         </div>
 
@@ -279,9 +309,9 @@
                                             <span style="color: #1ABB9C; font-weight: 600; font-size: 15px;"><i class="fa fa-clock-o" style="margin-right: 6px;"></i>Set IN-Punch Time for Scanned Workers</span>
                                         </div>
                                         <div class="col-md-3 col-sm-6 form-group">
-                                            <label class="top-label">IN Date <span class="req-star">*</span></label>
-                                            <asp:TextBox ID="txt_date" runat="server" CssClass="form-control modern-input" type="date"></asp:TextBox>
-                                        </div>
+    <label class="top-label">IN Date <span class="req-star">*</span></label>
+    <asp:TextBox ID="txt_date" runat="server" CssClass="form-control modern-input" type="date" onkeydown="return false;"></asp:TextBox>
+</div>
                                         <div class="col-md-3 col-sm-6 form-group">
                                             <label class="top-label">IN Time <span class="req-star">*</span></label>
                                             <asp:TextBox ID="txt_time" runat="server" CssClass="form-control modern-input" type="time"></asp:TextBox>
@@ -361,7 +391,8 @@
                                                         </asp:TemplateField>
                                                         <asp:TemplateField HeaderText="IN Time">
                                                             <ItemTemplate>
-                                                                <span class="badge bg-green"><asp:Label ID="lbl_in" runat="server" Text='<%# Bind("in") %>'></asp:Label></span>
+                                                                <span class="badge bg-green">
+                                                                    <asp:Label ID="lbl_in" runat="server" Text='<%# Bind("in") %>'></asp:Label></span>
                                                             </ItemTemplate>
                                                         </asp:TemplateField>
 
@@ -421,7 +452,7 @@
                                         <div class="ln_solid" style="margin-top: 30px; margin-bottom: 20px;"></div>
                                         <div class="row">
                                             <div class="col-md-12 text-center">
-                                                <asp:Button ID="btn_finalsubmit" runat="server" Text="Finalize IN-Punch" CssClass="btn btn-primary btn-modern btn-lg" style="padding: 10px 30px; font-size: 15px;" OnClientClick="showLoader();" OnClick="btn_finalsubmit_Click" />
+                                                <asp:Button ID="btn_finalsubmit" runat="server" Text="Finalize IN-Punch" CssClass="btn btn-primary btn-modern btn-lg" Style="padding: 10px 30px; font-size: 15px;" OnClientClick="showLoader();" OnClick="btn_finalsubmit_Click" />
                                             </div>
                                         </div>
                                     </div>
@@ -480,6 +511,52 @@
             </div>
         </div>
     </div>
+    <!-- 
+======================================================================
+When: May 05, 2026
+Why: UI to capture the reason and remarks for switching back to the old version.
+What: Add_Feedback_Capture_Modal
+====================================================================== 
+-->
+    <div class="modal fade" id="switchVersionModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 450px;">
+            <div class="modal-content modern-panel">
+                <div class="modal-header modern-title" style="background-color: #f8f9fa;">
+                    <h5 class="modal-title" style="color: #e74c3c; font-weight: 600;"><i class="fa fa-exchange"></i>Switching to Old Version</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small">To help us improve the Smart Workflow, please tell us why you are switching back to the old version.</p>
+
+                    <div class="form-group">
+                        <label class="top-label">Reason for switching <span class="req-star">*</span></label>
+                        <asp:DropDownList ID="DDL_SwitchReason" runat="server" CssClass="form-control modern-input">
+                            <asp:ListItem Value="" Text="-- Select Reason --"></asp:ListItem>
+                            <asp:ListItem Value="GPS is not capturing/too slow" Text="GPS is not capturing/too slow"></asp:ListItem>
+                            <asp:ListItem Value="Missing Work Order or Site" Text="Missing Work Order or Site"></asp:ListItem>
+                            <asp:ListItem Value="UI is confusing" Text="UI is confusing"></asp:ListItem>
+                            <asp:ListItem Value="Facing a technical error" Text="Facing a technical error"></asp:ListItem>
+                            <asp:ListItem Value="Just prefer the old look" Text="Just prefer the old look"></asp:ListItem>
+                            <asp:ListItem Value="Other" Text="Other"></asp:ListItem>
+                        </asp:DropDownList>
+                        <asp:RequiredFieldValidator ID="rfv_switch" runat="server" ControlToValidate="DDL_SwitchReason" ValidationGroup="SwitchVersion" ErrorMessage="Please select a reason" CssClass="text-danger small" Display="Dynamic"></asp:RequiredFieldValidator>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label class="top-label">Remarks (Optional)</label>
+                        <asp:TextBox ID="txt_switch_remarks" runat="server" CssClass="form-control modern-input" TextMode="MultiLine" Rows="3" placeholder="Tell us more about the issue you faced..."></asp:TextBox>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid #f0f2f5;">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <asp:Button ID="btn_confirm_switch" runat="server" Text="Submit & Switch" CssClass="btn btn-danger" ValidationGroup="SwitchVersion" OnClick="btn_confirm_switch_Click" />
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script type="text/javascript">
         function showPNotify(title, text, type) {
@@ -542,20 +619,56 @@
             }
         });
 
-        prm.add_endRequest(function () {
-            hideLoader(); // Ensures spinner vanishes if an error occurs
+            prm.add_endRequest(function () {
+                hideLoader(); // Ensures spinner vanishes if an error occurs
 
-            AttachInPunchDateListeners(); // Re-attach date validations
+                AttachInPunchDateListeners(); // Re-attach date validations
 
-            var scannerInput = document.getElementById('<%= txt_empworkman.ClientID %>');
-            if (scannerInput) {
-                scannerInput.readOnly = false;
-                scannerInput.style.backgroundColor = "#fff";
-                scannerInput.focus();
+                var scannerInput = document.getElementById('<%= txt_empworkman.ClientID %>');
+                if (scannerInput) {
+                    scannerInput.readOnly = false;
+                    scannerInput.style.backgroundColor = "#fff";
+                    scannerInput.focus();
+                }
+            });
+
+            // Initial Load
+            document.addEventListener("DOMContentLoaded", AttachInPunchDateListeners);
+
+            let savedMap = null;
+
+            function renderSavedMap() {
+                // 1. Grab coordinates from the ASP.NET HiddenFields
+                let latField = document.querySelector('input[id$="hf_db_lat"]');
+                let lonField = document.querySelector('input[id$="hf_db_lon"]');
+
+                if (latField && lonField && latField.value && lonField.value) {
+                    let lat = parseFloat(latField.value);
+                    let lon = parseFloat(lonField.value);
+
+                    let mapDiv = document.getElementById('savedMapPreview');
+
+                    if (mapDiv) {
+                        // Leaflet Bug Fix: Sometimes map tiles blur if div changes size. 
+                        // Invalidate sizes forces a fresh render.
+                        if (savedMap !== null) {
+                            savedMap.setView([lat, lon], 16);
+                            savedMap.invalidateSize();
+                        } else {
+                            // Initialize Map
+                            savedMap = L.map('savedMapPreview').setView([lat, lon], 16);
+
+                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                attribution: '© OpenStreetMap'
+                            }).addTo(savedMap);
+
+                            // Add the Red Pin Marker
+                            L.marker([lat, lon]).addTo(savedMap)
+                             .bindPopup("<b>JOB Creation Location</b><br>Lat: " + lat + "<br>Lon: " + lon)
+                             .openPopup();
+                        }
+                    }
+                }
             }
-        });
-
-        // Initial Load
-        document.addEventListener("DOMContentLoaded", AttachInPunchDateListeners);
     </script>
 </asp:Content>

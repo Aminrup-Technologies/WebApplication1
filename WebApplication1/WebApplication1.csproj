@@ -5579,6 +5579,7 @@
     <Compile Include="bussiness\production\jobs_approverdash.aspx.designer.cs">
       <DependentUpon>jobs_approverdash.aspx</DependentUpon>
     </Compile>
+    <Compile Include="bussiness\production\JobWorkflowLogger.cs" />
     <Compile Include="bussiness\production\job_360_view.aspx.cs">
       <DependentUpon>job_360_view.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

@@ -165,8 +165,16 @@ namespace WebApplication1.bussiness.production
 
                 if (dt.Rows.Count > 0)
                 {
-                    lbl_jobiddate.Text = Convert.ToDateTime(dt.Rows[0]["CreatedDate"]).ToString("dd-MMM-yyyy");
-                    txt_date.Text = Convert.ToDateTime(dt.Rows[0]["CreatedDate"]).ToString("yyyy-MM-dd");
+                    string jobDateDisplay = Convert.ToDateTime(dt.Rows[0]["CreatedDate"]).ToString("dd-MMM-yyyy");
+                    string jobDateValue = Convert.ToDateTime(dt.Rows[0]["CreatedDate"]).ToString("yyyy-MM-dd");
+
+                    lbl_jobiddate.Text = jobDateDisplay;
+                    txt_date.Text = jobDateValue;
+
+                    // Lock the HTML5 date picker to only allow this specific date
+                    txt_date.Attributes["min"] = jobDateValue;
+                    txt_date.Attributes["max"] = jobDateValue;
+
                     txt_time.Text = DateTime.Now.ToString("HH:mm");
 
                     lbl_jobcreatorname.Text = dt.Rows[0]["Creator_Name"].ToString();
@@ -190,6 +198,31 @@ namespace WebApplication1.bussiness.production
                     lbl_jobloc.Text = dt.Rows[0]["JOB_Location"].ToString();
                     lbl_jobshift.Text = dt.Rows[0]["JOB_Shift"].ToString();
                     lbl_permitno.Text = dt.Rows[0]["JOB_PermitNo"].ToString();
+
+                    // =======================================================
+                    // NEW: MAP GPS BINDING LOGIC
+                    // =======================================================
+                    string dbLat = dt.Rows[0]["GPS_Latitude"] != DBNull.Value ? dt.Rows[0]["GPS_Latitude"].ToString() : "";
+                    string dbLon = dt.Rows[0]["GPS_Longitude"] != DBNull.Value ? dt.Rows[0]["GPS_Longitude"].ToString() : "";
+
+                    if (!string.IsNullOrEmpty(dbLat) && !string.IsNullOrEmpty(dbLon))
+                    {
+                        hf_db_lat.Value = dbLat;
+                        hf_db_lon.Value = dbLon;
+                        div_saved_map.Style["display"] = "block"; // Unhide the map container
+
+                        // Trigger JS to draw the map. 
+                        // We use a 300ms timeout to ensure the UpdatePanel has finished rendering the unhidden DIV first.
+                        ScriptManager.RegisterStartupScript(this, GetType(), "DrawSavedMap", "setTimeout(renderSavedMap, 300);", true);
+                    }
+                    else
+                    {
+                        // Hide it if no GPS data is found for this JOBID
+                        div_saved_map.Style["display"] = "none";
+                        hf_db_lat.Value = "";
+                        hf_db_lon.Value = "";
+                    }
+                    // =======================================================
                 }
             }
             catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
@@ -265,6 +298,9 @@ namespace WebApplication1.bussiness.production
             if (CheckDuplicateEntry(entered_workman, lbl_jobid.Text))
             {
                 ShowNotification("Duplicate", "Employee is already staged in the list below.", "error");
+                // NEW: Log the rejection
+                JobWorkflowLogger.LogAction(lbl_jobid.Text, "3. IN-PUNCH SCAN (Rejected)", Session["WORKMAN"].ToString(), $"- Workman: {entered_workman}\n- Reason: Already staged in current session.");
+
                 txt_empworkman.Text = "";
                 return;
             }
@@ -272,6 +308,9 @@ namespace WebApplication1.bussiness.production
             if (!dbcl.CheckEmployeeActiveStatus(entered_workman))
             {
                 ShowNotification("Inactive", "Employee ID is invalid or inactive.", "error");
+                // NEW: Log the rejection
+                JobWorkflowLogger.LogAction(lbl_jobid.Text, "3. IN-PUNCH SCAN (Rejected)", Session["WORKMAN"].ToString(), $"- Workman: {entered_workman}\n- Reason: ID is invalid or marked as Inactive in Master.");
+
                 ResetScanner();
                 return;
             }
@@ -281,6 +320,10 @@ namespace WebApplication1.bussiness.production
                 string pJobID = "", pJobDate = "", pSubmitter = "";
                 Pull_PendingOUTDetails(entered_workman, ref pJobID, ref pJobDate, ref pSubmitter);
                 ShowNotification("Pending OUT-Punch", $"Worker must punch out of {pJobID} ({pJobDate}) submitted by {pSubmitter}.", "error");
+
+                // NEW: Log the rejection
+                JobWorkflowLogger.LogAction(lbl_jobid.Text, "3. IN-PUNCH SCAN (Rejected)", Session["WORKMAN"].ToString(), $"- Workman: {entered_workman}\n- Reason: Pending OUT-Punch on previous job ({pJobID}).");
+
                 ResetScanner();
                 return;
             }
@@ -469,6 +512,9 @@ namespace WebApplication1.bussiness.production
             int successCount = 0;
             int duplicateCount = 0;
 
+            // NEW: Prepare a string builder to collect log details for the .txt file
+            System.Text.StringBuilder logDetails = new System.Text.StringBuilder();
+
             try
             {
                 dbcl.Sqlconnection();
@@ -492,6 +538,8 @@ namespace WebApplication1.bussiness.production
                             if (Convert.ToInt32(chkCmd.ExecuteScalar()) > 0)
                             {
                                 duplicateCount++;
+                                // Log the blocked duplicate attempt
+                                logDetails.AppendLine($"- [BLOCKED] Duplicate Entry for: {workmanId} ({row["name"]})");
                                 continue;
                             }
                         }
@@ -539,7 +587,12 @@ namespace WebApplication1.bussiness.production
                             cmd.Parameters.AddWithValue("@AttendanceStatus", "Entry");
                             cmd.Parameters.AddWithValue("@AttendanceCode", "Ab");
 
-                            if (cmd.ExecuteNonQuery() > 0) successCount++;
+                            if (cmd.ExecuteNonQuery() > 0)
+                            {
+                                successCount++;
+                                // Collect successful entry details for the text log
+                                logDetails.AppendLine($"- [SUCCESS] IN-Punched: {workmanId} ({row["name"].ToString()}) at {row["in"].ToString()}");
+                            }
                         }
                     }
                 }
@@ -550,6 +603,20 @@ namespace WebApplication1.bussiness.production
                     upd.Parameters.AddWithValue("@JOBID", currentJobId);
                     upd.ExecuteNonQuery();
                 }
+
+                // =======================================================
+                // NEW: TXT FILE LOGGING (WRITING TO JOBID.txt)
+                // =======================================================
+                if (successCount > 0 || duplicateCount > 0)
+                {
+                    logDetails.Insert(0, $"Processed IN-Punch batch. Success: {successCount}, Duplicates: {duplicateCount}\n");
+                    JobWorkflowLogger.LogAction(currentJobId, "IN-PUNCH BATCH PROCESSING", Session["WORKMAN"].ToString(), logDetails.ToString());
+                }
+                else
+                {
+                    JobWorkflowLogger.LogAction(currentJobId, "IN-PUNCH FINALIZATION", Session["WORKMAN"].ToString(), "Master status synced to 'In-Punch Done'. No new workers added in this transaction.");
+                }
+                // =======================================================
 
                 // 3. UI Feedback
                 if (successCount > 0)
@@ -579,6 +646,9 @@ namespace WebApplication1.bussiness.production
             {
                 ShowNotification("System Error", ex.Message, "error");
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "hideLoader", "hideLoader();", true);
+
+                // Optional: Log errors to the TXT file too!
+                JobWorkflowLogger.LogAction(currentJobId, "IN-PUNCH ERROR", Session["WORKMAN"].ToString(), $"Exception: {ex.Message}");
             }
             finally
             {
@@ -724,9 +794,15 @@ namespace WebApplication1.bussiness.production
                 {
                     string changesStr = string.Join(" | ", changes);
 
-                    // 3. Write physical log
+                    // 3. Write physical log (Your existing employee master log)
                     string auditDetail = string.Format("Reason: Gatepass Update from Site{0}CHANGES DETECTED:{0}{1}", Environment.NewLine, changesStr);
                     LogAudit(workman, "MASTER_UPDATE", auditDetail);
+
+                    // =======================================================
+                    // NEW: TXT FILE LOGGING (GATEPASS OVERRIDE ON JOB)
+                    // =======================================================
+                    JobWorkflowLogger.LogAction(lbl_jobid.Text, "3. IN-PUNCH (Gatepass Override)", Session["WORKMAN"].ToString(), $"- Workman: {workman}\n- Changes: {changesStr}");
+                    // =======================================================
 
                     // 4. Update Database
                     string CmdString = "UPDATE tbl_Employee_Mustertable SET GatePassNo=@GatePassNo, GatePassExpiry=@GatePassExpiry, SafetyPassNo=@SafetyPassNo, SafetyPassExpiry=@SafetyPassExpiry, PVExpiry=@PVExpiry, GP_ModifierWrk=@GP_ModifierWrk, GP_ModifierName=@GP_ModifierName, GP_ModifiedDate=@GP_ModifiedDate, GP_UpdateApproval=@GP_UpdateApproval WHERE WorkmanSL=@WorkmanSL";
@@ -837,6 +913,53 @@ namespace WebApplication1.bussiness.production
                 dbcl.DisconnectDb();
             }
         }
+        /*
+        ======================================================================
+        When: May 05, 2026
+        Why: Captures user feedback from the modal, logs it to the database, and redirects them to the old V1 page. Includes a silent fail mechanism to ensure workflow isn't blocked if logging fails.
+        What: Insert_Version_Switch_Log_Method
+        ======================================================================
+        */
+        protected void btn_confirm_switch_Click(object sender, EventArgs e)
+        {
+            string reason = DDL_SwitchReason.SelectedValue;
+            string remarks = txt_switch_remarks.Text.Trim();
+            string workman = Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "Unknown";
 
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+
+                string qry = "INSERT INTO tbl_Version_Switch_Log (Workman_ID, Switch_Reason, Remarks, Page_From) VALUES (@Workman, @Reason, @Remarks, @Page)";
+                using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@Workman", workman);
+                    cmd.Parameters.AddWithValue("@Reason", reason);
+                    cmd.Parameters.AddWithValue("@Remarks", string.IsNullOrEmpty(remarks) ? (object)DBNull.Value : remarks);
+
+                    // THE FIX: Changed to the correct page name!
+                    cmd.Parameters.AddWithValue("@Page", "job_inpunch_v2.aspx");
+                    cmd.ExecuteNonQuery();
+                }
+
+                // =======================================================
+                // NEW: TXT FILE LOGGING (ABANDONED V2)
+                // =======================================================
+                JobWorkflowLogger.LogAction(lbl_jobid.Text, "UI DOWNGRADE", workman, $"User abandoned V2 IN-Punch and switched to V1.\n- Reason: {reason}\n- Remarks: {remarks}");
+            }
+            catch
+            {
+                // Fail silently
+            }
+            finally
+            {
+                dbcl.DisconnectDb();
+            }
+
+            // Redirect to the old version immediately after logging
+            // Ensure you change this to the old In-Punch page, not the create page!
+            Response.Redirect("job_inpunch.aspx", false);
+        }
     }
 }

@@ -113,6 +113,25 @@ namespace WebApplication1.bussiness.production
                             lbl_tbtverifiedby.Text = GetSafeString(row, "TBT_VerifiedBy", "N/A");
                             lbl_originalpermit.Text = GetSafeString(row, "JOB_PermitNo_Original", "N/A");
 
+                            // ---------------------------------------------------------
+                            // NEW: GPS COORDINATES & GOOGLE MAPS GENERATOR
+                            // ---------------------------------------------------------
+                            string lat = GetSafeString(row, "GPS_Latitude", "");
+                            string lon = GetSafeString(row, "GPS_Longitude", "");
+
+                            if (!string.IsNullOrEmpty(lat) && !string.IsNullOrEmpty(lon) && lat != "N/A" && lon != "N/A")
+                            {
+                                // Generate a clickable Google Maps link pointing to the exact coordinates
+                                lbl_gps.Text = $"<a href='https://www.google.com/maps/search/?api=1&query={lat},{lon}' " +
+                                               $"target='_blank' class='text-primary font-weight-bold' style='text-decoration: none;' " +
+                                               $"title='Click to view physical location on Google Maps'>" +
+                                               $"<i class='fa fa-map-marker text-danger fa-lg mr-1'></i> {lat}, {lon}</a>";
+                            }
+                            else
+                            {
+                                lbl_gps.Text = "<span class='text-muted font-italic'><i class='fa fa-map-marker'></i> Not Captured</span>";
+                            }
+
                             if (row.Table.Columns.Contains("UnblockedUntil") && row["UnblockedUntil"] != DBNull.Value)
                             {
                                 DateTime unblockedTime = Convert.ToDateTime(row["UnblockedUntil"]);

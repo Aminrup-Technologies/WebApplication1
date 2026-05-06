@@ -1,6 +1,8 @@
 ﻿<%@ Page Title="Create JOBID V2" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="create_jobid_v2.aspx.cs" Inherits="WebApplication1.bussiness.production.create_jobid_v2" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style type="text/css">
         /* Base typography and layout */
         .top-label {
@@ -169,9 +171,10 @@
                     <div class="x_panel modern-panel">
                         <div class="x_title modern-title" style="display: flex; justify-content: space-between; align-items: center;">
                             <h2 style="margin: 0;">Step 1: Create JOB ID <small style="color: #1ABB9C; font-weight: 600;">Smart Workflow</small></h2>
-                            <a href="create_jobid.aspx" class="modern-header-btn">
+                            <button type="button" class="modern-header-btn" data-toggle="modal" data-target="#switchVersionModal" style="cursor: pointer;">
                                 <i class="fa fa-history" style="margin-right: 5px;"></i>Switch to OLD Version
-                            </a>
+                           
+                            </button>
                             <div class="clearfix"></div>
                         </div>
 
@@ -185,6 +188,7 @@
                                             <div class="col-md-12 text-center" style="vertical-align: middle; font-size: 15px;">
                                                 <span style="font-weight: 600; color: #34495e;">Select JOB Date: </span>
                                                 <asp:TextBox ID="txt_jobdate" runat="server" TextMode="Date" CssClass="form-control modern-input d-inline-block" Style="width: auto; font-weight: 600; margin: 0 10px;" AutoPostBack="true" OnTextChanged="txt_jobdate_TextChanged"></asp:TextBox>
+                                                <asp:RequiredFieldValidator ID="rfv_jobdate" ValidationGroup="Submit" runat="server" CssClass="text-danger small" Display="Dynamic" ErrorMessage="Required" ControlToValidate="txt_jobdate"></asp:RequiredFieldValidator>
                                                 <span style="font-weight: 600; color: #34495e;">Day: </span>
                                                 <asp:Label ID="lbl_jobday" runat="server" Text="" ForeColor="#1ABB9C" Font-Bold="true"></asp:Label>
 
@@ -205,17 +209,17 @@
                                                 <asp:DropDownList ID="DDL_Region" runat="server" CssClass="form-control modern-input" AutoPostBack="true" OnSelectedIndexChanged="DDL_Region_SelectedIndexChanged"></asp:DropDownList>
                                                 <asp:RequiredFieldValidator ID="RequiredFieldValidator7" ValidationGroup="Submit" runat="server" CssClass="text-danger small" Display="Dynamic" ErrorMessage="Required" ControlToValidate="DDL_Region" InitialValue="Please Select Option"></asp:RequiredFieldValidator>
 
-                                                <div id="div_gps_status" runat="server" visible="false" class="mt-2" style="display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; padding: 6px 10px; border-radius: 6px; border: 1px solid #e9ecef;">
+                                                <%--<div id="div_gps_status" runat="server" visible="false" class="mt-2" style="display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; padding: 6px 10px; border-radius: 6px; border: 1px solid #e9ecef;">
                                                     <span id="gps_indicator" class="text-warning font-weight-bold" style="font-size: 12px;">
                                                         <i class="fa fa-spinner fa-spin" style="margin-right: 4px;"></i>Acquiring GPS...
                                                     </span>
                                                     <button type="button" class="btn btn-gps-retry m-0" onclick="requestGPSLocation(true);" title="Retry GPS Connection">
                                                         <i class="fa fa-refresh"></i>Retry
                                                     </button>
-                                                </div>
+                                                </div>--%>
 
-                                                <asp:HiddenField ID="hf_latitude" runat="server" />
-                                                <asp:HiddenField ID="hf_longitude" runat="server" />
+                                                <%--<asp:HiddenField ID="hf_latitude" runat="server" />
+                                                <asp:HiddenField ID="hf_longitude" runat="server" />--%>
                                             </div>
 
                                             <div class="col-md-3 col-sm-6 col-xs-12 form-group">
@@ -244,6 +248,7 @@
                                             <div class="col-md-3 col-sm-6 col-xs-12 form-group">
                                                 <label class="top-label">Attendance Code <span class="req-star">*</span></label>
                                                 <asp:DropDownList ID="DDL_AttenCode" runat="server" CssClass="form-control modern-input"></asp:DropDownList>
+                                                <asp:RequiredFieldValidator ID="rfv_attencode" ValidationGroup="Submit" runat="server" CssClass="text-danger small" Display="Dynamic" ErrorMessage="Required" ControlToValidate="DDL_AttenCode" InitialValue=""></asp:RequiredFieldValidator>
                                             </div>
                                         </div>
 
@@ -263,6 +268,7 @@
                                             <div class="col-md-3 col-sm-6 col-xs-12 form-group">
                                                 <label class="top-label">Location <span class="req-star">*</span></label>
                                                 <asp:DropDownList ID="DDL_Location" runat="server" CssClass="form-control modern-input"></asp:DropDownList>
+                                                <asp:RequiredFieldValidator ID="rfv_location" ValidationGroup="Submit" runat="server" CssClass="text-danger small" Display="Dynamic" ErrorMessage="Required" ControlToValidate="DDL_Location" InitialValue=""></asp:RequiredFieldValidator>
                                             </div>
                                         </div>
 
@@ -324,7 +330,7 @@
 
                                     </div>
 
-                                    <div id="jobid_creation_buttons" runat="server" visible="true">
+                                    <%--<div id="jobid_creation_buttons" runat="server" visible="true">
                                         <div class="ln_solid" style="margin-top: 30px; margin-bottom: 20px;"></div>
                                         <div class="row modern-actions">
                                             <div class="col-md-12 text-center">
@@ -333,18 +339,128 @@
                                                 <asp:Button ID="btn_submit" runat="server" Text="Create JOB & Continue" ValidationGroup="Submit" CssClass="btn btn-success" OnClick="btn_submit_Click" />
                                             </div>
                                         </div>
+                                    </div>--%>
+
+                                    <div id="jobid_creation_buttons" runat="server" visible="true">
+                                        <div class="ln_solid" style="margin-top: 30px; margin-bottom: 20px;"></div>
+
+                                        <!-- HIDDEN FIELDS FOR GPS TRACKING -->
+                                        <asp:HiddenField ID="hf_gps_required" runat="server" Value="No" />
+                                        <asp:HiddenField ID="hf_latitude" runat="server" />
+                                        <asp:HiddenField ID="hf_longitude" runat="server" />
+
+                                        <div class="row modern-actions">
+                                            <div class="col-md-12 text-center">
+                                                <asp:Button ID="btn_cancel" runat="server" Text="Cancel" CssClass="btn btn-danger" OnClick="btn_cancel_Click" CausesValidation="false" />
+                                                <asp:Button ID="btn_reset" runat="server" Text="Reset Form" CssClass="btn btn-warning" Style="color: #fff;" OnClick="btn_reset_Click" CausesValidation="false" />
+
+                                                <!-- THE NEW VISIBLE HTML BUTTON (Intercepts click to fetch GPS) -->
+                                                <button type="button" id="btn_visible_submit" class="btn btn-success" onclick="return captureLocationAndSubmit(this);">Create JOB & Continue</button>
+
+                                                <!-- THE HIDDEN ASP.NET BUTTON (Fired by JavaScript after GPS is captured) -->
+                                                <asp:Button ID="btn_submit" runat="server" ValidationGroup="Submit" OnClick="btn_submit_Click" Style="display: none;" />
+                                            </div>
+                                        </div>
                                     </div>
 
                                 </div>
                             </ContentTemplate>
                         </asp:UpdatePanel>
-
+                        <%--<div class="row mb-3">
+                            <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+                                <div id="div_gps_status" runat="server" visible="false" style="display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; padding: 10px 15px; border-radius: 8px; border: 1px solid #e9ecef; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);">
+                                    <span id="gps_indicator" class="text-warning font-weight-bold" style="font-size: 13px;">
+                                        <i class="fa fa-spinner fa-spin" style="margin-right: 6px;"></i>Acquiring Location in Background...
+                                    </span>
+                                    <button type="button" class="btn btn-gps-retry m-0" onclick="requestGPSLocation(true);" title="Retry GPS Connection">
+                                        <i class="fa fa-refresh"></i>Retry GPS
+                                    </button>
+                                </div>
+                                <div id="mapPreview" style="height: 150px; width: 100%; border-radius: 8px; margin-top: 10px; display: none; border: 1px solid #ced4da;"></div>
+                                <asp:HiddenField ID="hf_latitude" runat="server" />
+                                <asp:HiddenField ID="hf_longitude" runat="server" />
+                            </div>
+                        </div>--%>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- GPS Troubleshooting Modal -->
+    <div class="modal fade" id="gpsHelpModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #E74C3C; color: white;">
+                    <h5 class="modal-title"><i class="fa fa-unlock-alt"></i>How to Unblock Location</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>If you gave the website access but it is still failing, your phone's main settings are blocking your browser. Follow these steps:</p>
+
+                    <h6 style="font-weight: bold; color: #2980b9;">For Android Users (Chrome):</h6>
+                    <ol>
+                        <li>Click the <strong>Lock icon <i class="fa fa-lock"></i></strong>in the address bar at the top of your screen.</li>
+                        <li>Select <strong>Permissions</strong>.</li>
+                        <li>Ensure <strong>Location</strong> is turned ON.</li>
+                        <li><em>If it still fails:</em> Go to your phone's main <strong>Settings > Apps > Chrome > Permissions</strong> and allow Location.</li>
+                    </ol>
+
+                    <h6 style="font-weight: bold; color: #2980b9; margin-top: 15px;">For iPhone Users (Safari):</h6>
+                    <ol>
+                        <li>Go to your iPhone's home screen and open the <strong>Settings</strong> app.</li>
+                        <li>Scroll down and tap <strong>Privacy & Security</strong>.</li>
+                        <li>Tap <strong>Location Services</strong>.</li>
+                        <li>Scroll down, find <strong>Safari Websites</strong>, and change it to <strong>"While Using the App"</strong>.</li>
+                    </ol>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="switchVersionModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 450px;">
+            <div class="modal-content modern-panel">
+                <div class="modal-header modern-title" style="background-color: #f8f9fa;">
+                    <h5 class="modal-title" style="color: #e74c3c; font-weight: 600;"><i class="fa fa-exchange"></i>Switching to Old Version</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small">To help us improve the Smart Workflow, please tell us why you are switching back to the old version.</p>
+
+                    <div class="form-group">
+                        <label class="top-label">Reason for switching <span class="req-star">*</span></label>
+                        <asp:DropDownList ID="DDL_SwitchReason" runat="server" CssClass="form-control modern-input">
+                            <asp:ListItem Value="" Text="-- Select Reason --"></asp:ListItem>
+                            <asp:ListItem Value="GPS is not capturing/too slow" Text="GPS is not capturing/too slow"></asp:ListItem>
+                            <asp:ListItem Value="Missing Work Order or Site" Text="Missing Work Order or Site"></asp:ListItem>
+                            <asp:ListItem Value="UI is confusing" Text="UI is confusing"></asp:ListItem>
+                            <asp:ListItem Value="Facing a technical error" Text="Facing a technical error"></asp:ListItem>
+                            <asp:ListItem Value="Just prefer the old look" Text="Just prefer the old look"></asp:ListItem>
+                            <asp:ListItem Value="Other" Text="Other"></asp:ListItem>
+                        </asp:DropDownList>
+                        <asp:RequiredFieldValidator ID="rfv_switch" runat="server" ControlToValidate="DDL_SwitchReason" ValidationGroup="SwitchVersion" ErrorMessage="Please select a reason" CssClass="text-danger small" Display="Dynamic"></asp:RequiredFieldValidator>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label class="top-label">Remarks (Optional)</label>
+                        <asp:TextBox ID="txt_switch_remarks" runat="server" CssClass="form-control modern-input" TextMode="MultiLine" Rows="3" placeholder="Tell us more about the issue you faced..."></asp:TextBox>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid #f0f2f5;">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <asp:Button ID="btn_confirm_switch" runat="server" Text="Submit & Switch" CssClass="btn btn-danger" ValidationGroup="SwitchVersion" OnClick="btn_confirm_switch_Click" />
+                </div>
+            </div>
+        </div>
+    </div>
     <script type="text/javascript">
         function showPNotify(title, text, type) {
             new PNotify({
@@ -408,44 +524,73 @@
             }
         }
 
-        // ENHANCED HTML5 Geolocation API with Retry Logic
-        function requestGPSLocation(isRetry = false) {
-            let indicator = document.getElementById('gps_indicator');
-            let latField = document.querySelector('.js-lat-field');
-            let lonField = document.querySelector('.js-lon-field');
-        
-            // If user clicked retry, visually reset the indicator to processing state
-            if (isRetry && indicator) {
-                indicator.innerHTML = "<i class='fa fa-spinner fa-spin' style='margin-right:4px;'></i> Acquiring GPS...";
-                indicator.className = "text-warning font-weight-bold";
+        // =================================================================================
+        // POINT-OF-SUBMISSION GPS ARCHITECTURE (Inspired by Visit Planner)
+        // =================================================================================
+        function captureLocationAndSubmit(btnElement) {
+
+            // 1. FORCE NATIVE ASP.NET CLIENT-SIDE VALIDATION FIRST
+            // This ensures RequiredFieldValidators (like Work Order, Title) are met 
+            // before we waste time/battery trying to fetch GPS.
+            if (typeof Page_ClientValidate === 'function') {
+                if (!Page_ClientValidate('Submit')) {
+                    return false; // Form is missing required fields, stop here!
+                }
             }
 
+            // 2. CHECK IF THIS REGION EVEN REQUIRES GPS
+            let requiresGps = document.getElementById('<%= hf_gps_required.ClientID %>').value;
+            let hiddenSubmitBtn = document.getElementById('<%= btn_submit.ClientID %>');
+
+            if (requiresGps !== "Yes") {
+                // GPS not required. Show loading state and submit immediately.
+                btnElement.innerHTML = "<i class='fa fa-spinner fa-spin'></i> Processing...";
+                btnElement.disabled = true;
+                hiddenSubmitBtn.click();
+                return true;
+            }
+
+            // 3. GPS IS REQUIRED - CAPTURE IT NOW
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function (position) {
-                
-                    // Safely assign values only if the fields exist in the DOM
-                    if (latField && lonField) {
-                        latField.value = position.coords.latitude;
-                        lonField.value = position.coords.longitude;
-                    }
+                btnElement.innerHTML = "<i class='fa fa-spinner fa-spin'></i> Acquiring Location...";
+                btnElement.disabled = true;
 
-                    if (indicator) {
-                        indicator.innerHTML = "<i class='fa fa-check-circle text-success' style='margin-right:4px;'></i> GPS Captured Successfully";
-                        indicator.className = "text-success font-weight-bold";
-                    }
-                
-                    // Show a tiny success toast if they explicitly requested a retry
-                    if(isRetry) showPNotify('Success', 'GPS connection re-established.', 'success');
+                // Note: HighAccuracy=false prevents indoor Android timeouts
+                const options = { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 };
 
-                }, function (error) {
-                    showPNotify('GPS Error', 'Please enable location services or check your connection.', 'error');
-                    if (indicator) {
-                        indicator.innerHTML = "<i class='fa fa-times-circle text-danger' style='margin-right:4px;'></i> Location Denied / Failed";
-                        indicator.className = "text-danger font-weight-bold";
-                    }
-                });
+                navigator.geolocation.getCurrentPosition(
+                    function (position) {
+                        // SUCCESS: Save coords and force the server-side ASP.NET Postback
+                        document.getElementById('<%= hf_latitude.ClientID %>').value = position.coords.latitude;
+                        document.getElementById('<%= hf_longitude.ClientID %>').value = position.coords.longitude;
+                        hiddenSubmitBtn.click();
+                    },
+            function (error) {
+                // FAILED: Reset the button so they can try again
+                btnElement.innerHTML = "Create JOB & Continue";
+                btnElement.disabled = false;
+
+                let errorTitle = 'GPS Error';
+                let errorMsg = 'Could not acquire location.';
+
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorTitle = 'Location Blocked';
+                        errorMsg = 'Your browser or phone settings are blocking GPS access. <br><br><a href="javascript:void(0);" onclick="showGPSHelpModal();" style="color:#fff; text-decoration:underline; font-weight:bold;">Click here to Unblock</a>';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMsg = 'GPS signal is unavailable. Please ensure your phone\'s Location is ON.';
+                        break;
+                    case error.TIMEOUT:
+                        errorMsg = 'GPS request timed out. Please check your connection and click Submit again.';
+                        break;
+                }
+                showPNotify(errorTitle, errorMsg, 'error');
+            },
+            options
+        );
             } else {
-                showPNotify('Warning', 'Geolocation is not supported by this browser.', 'notice');
+                showPNotify('Browser Error', 'Geolocation is not supported by your browser.', 'error');
             }
         }
     </script>

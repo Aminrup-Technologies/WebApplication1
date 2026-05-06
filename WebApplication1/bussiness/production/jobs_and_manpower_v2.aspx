@@ -130,7 +130,7 @@
                     <h3>Daily JOB's, Manpower & Billing <span style="color: #1ABB9C; font-size: 16px;">(NEW Version)</span></h3>
                 </div>
                 <div class="title_right text-right">
-                    <a href="jobs_and_manpower.aspx" class="modern-header-btn">
+                    <a href="#" class="modern-header-btn">
                         <i class="fa fa-history" style="margin-right: 5px;"></i> Switch to OLD Version
                     </a>
                 </div>

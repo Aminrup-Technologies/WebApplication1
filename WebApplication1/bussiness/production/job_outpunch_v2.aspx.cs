@@ -167,6 +167,24 @@ namespace WebApplication1.bussiness.production
                 if (dt.Rows.Count > 0)
                 {
                     lbl_jobiddate.Text = Convert.ToDateTime(dt.Rows[0]["CreatedDate"]).ToString("dd-MMM-yyyy");
+
+                    // 1. Fetch the Job Date from your database (usually CreatedDate)
+                    DateTime jobDate = Convert.ToDateTime(dt.Rows[0]["CreatedDate"]);
+
+                    // 2. Calculate the Day Before
+                    DateTime dayBefore = jobDate.AddDays(-1);
+
+                    // 3. Convert to yyyy-MM-dd format required by HTML5 <input type="date">
+                    string maxDateValue = jobDate.ToString("yyyy-MM-dd");
+                    string minDateValue = dayBefore.ToString("yyyy-MM-dd");
+
+                    // 4. Bind the default text (usually defaults to the Job Date)
+                    txt_date.Text = maxDateValue;
+
+                    // 5. Lock the HTML5 date picker to only allow this 2-day window
+                    txt_date.Attributes["min"] = minDateValue;
+                    txt_date.Attributes["max"] = maxDateValue;
+
                     lbl_jobcreatorname.Text = dt.Rows[0]["Creator_Name"].ToString();
                     lbl_creatorwrk.Text = dt.Rows[0]["Creator_Workman"].ToString();
                     lbl_creatorregion.Text = dt.Rows[0]["Creator_Region"].ToString();
@@ -179,6 +197,31 @@ namespace WebApplication1.bussiness.production
                     lbl_jobloc.Text = dt.Rows[0]["JOB_Location"].ToString();
                     lbl_jobshift.Text = dt.Rows[0]["JOB_Shift"].ToString();
                     lbl_permitno.Text = dt.Rows[0]["JOB_PermitNo"].ToString();
+
+                    // =======================================================
+                    // NEW: MAP GPS BINDING LOGIC
+                    // =======================================================
+                    string dbLat = dt.Rows[0]["GPS_Latitude"] != DBNull.Value ? dt.Rows[0]["GPS_Latitude"].ToString() : "";
+                    string dbLon = dt.Rows[0]["GPS_Longitude"] != DBNull.Value ? dt.Rows[0]["GPS_Longitude"].ToString() : "";
+
+                    if (!string.IsNullOrEmpty(dbLat) && !string.IsNullOrEmpty(dbLon))
+                    {
+                        hf_db_lat.Value = dbLat;
+                        hf_db_lon.Value = dbLon;
+                        div_saved_map.Style["display"] = "block"; // Unhide the map container
+
+                        // Trigger JS to draw the map.
+                        // We use a 300ms timeout to ensure the UpdatePanel has finished rendering the unhidden DIV first.
+                        ScriptManager.RegisterStartupScript(this, GetType(), "DrawSavedMap", "setTimeout(renderSavedMap, 300);", true);
+                    }
+                    else
+                    {
+                        // Hide it if no GPS data is found for this JOBID
+                        div_saved_map.Style["display"] = "none";
+                        hf_db_lat.Value = "";
+                        hf_db_lon.Value = "";
+                    }
+                    // =======================================================
 
                     if (dt.Rows[0]["CSM_Documents"].ToString() == "Yes")
                     {
@@ -330,19 +373,49 @@ namespace WebApplication1.bussiness.production
         protected void GridView1_RowDeleting(object sender, GridViewDeleteEventArgs e)
         {
             string id = ((Label)GridView1.Rows[e.RowIndex].FindControl("lbl_Id")).Text;
+            string jobid = lbl_jobid.Text;
+
             try
             {
                 dbcl.Sqlconnection();
                 dbcl.ConnectDb();
+
+                // =======================================================
+                // NEW: FETCH DETAILS BEFORE DELETING FOR THE AUDIT LOG
+                // =======================================================
+                string deletedWorker = "Unknown";
+                using (SqlCommand fetchCmd = new SqlCommand("SELECT EmployeeWrk, EmployeeName FROM tbl_attendance WHERE Id=@Id", dbcl.Conn))
+                {
+                    fetchCmd.Parameters.AddWithValue("@Id", id);
+                    using (SqlDataReader rdr = fetchCmd.ExecuteReader())
+                    {
+                        if (rdr.Read())
+                        {
+                            deletedWorker = $"{rdr["EmployeeWrk"]} ({rdr["EmployeeName"]})";
+                        }
+                    }
+                }
+                // =======================================================
+
                 using (SqlCommand cmd = new SqlCommand("delete from tbl_attendance where Id=@Id", dbcl.Conn))
                 {
                     cmd.Parameters.AddWithValue("@Id", id);
                     cmd.ExecuteNonQuery();
                 }
                 dbcl.DisconnectDb();
+
+                // =======================================================
+                // NEW: TXT FILE LOGGING (DESTRUCTIVE ACTION)
+                // =======================================================
+                JobWorkflowLogger.LogAction(jobid, "4. OUT-PUNCH (Record Deleted)", Session["WORKMAN"].ToString(), $"- Supervisor completely removed IN-Punch record for: {deletedWorker}");
+                // =======================================================
+
                 ShowNotification("Deleted", "Record deleted successfully.", "success");
             }
-            catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
+            catch (Exception ex)
+            {
+                ShowNotification("Error", ex.Message, "error");
+            }
 
             CheckPendingOUT();
         }
@@ -366,6 +439,13 @@ namespace WebApplication1.bussiness.production
             if (!CanPunchOutWithin32Hours(intime))
             {
                 ShowNotification("Timeout Error", "Only 24/32 Hour back entry is allowed from IN-Time.", "error");
+
+                // =======================================================
+                // NEW: TXT FILE LOGGING (BLOCKED ACTION)
+                // =======================================================
+                JobWorkflowLogger.LogAction(DDL_JOBID.SelectedValue, "4. OUT-PUNCH (Blocked)", Session["WORKMAN"].ToString(), $"- Workman: {lbl_empworkman.Text}\n- Reason: Exceeded 24/32 hour timeout limit.\n- Attempted Out-Time: {outtime}");
+                // =======================================================
+
                 return false;
             }
 
@@ -404,12 +484,29 @@ namespace WebApplication1.bussiness.production
                     cmd.Parameters.AddWithValue("@AttendanceCode", DDL_AttenCode.SelectedValue);
                     cmd.ExecuteNonQuery();
                 }
+
+                // =======================================================
+                // NEW: TXT FILE LOGGING (INDIVIDUAL OUT-PUNCH)
+                // =======================================================
+                string logDetails = $"- [OUT-PUNCH] Workman: {lbl_empworkman.Text} ({txt_empname.Text})\n" +
+                                    $"- Out-Time      : {dtout.ToString("yyyy-MM-dd HH:mm")}\n" +
+                                    $"- Worked Hours  : {workedhours} (Lunch: {lunchyesno})\n" +
+                                    $"- Calc OT       : {emp_calOThrs} | Provided OT: {txt_ot.Text}\n" +
+                                    $"- Attn Code     : {DDL_AttenCode.SelectedValue}";
+
+                JobWorkflowLogger.LogAction(DDL_JOBID.SelectedValue, "4. OUT-PUNCH (Individual)", Session["WORKMAN"].ToString(), logDetails);
+                // =======================================================
+
                 dbcl.DisconnectDb();
                 return true;
             }
             catch (Exception ex)
             {
                 ShowNotification("Database Error", ex.Message, "error");
+
+                // Optional: Log errors to the TXT file
+                JobWorkflowLogger.LogAction(DDL_JOBID.SelectedValue, "OUT-PUNCH ERROR", Session["WORKMAN"].ToString(), $"Failed for {lbl_empworkman.Text}. Exception: {ex.Message}");
+
                 return false;
             }
         }
@@ -446,6 +543,12 @@ namespace WebApplication1.bussiness.production
                 // 1. Update Master Status Code to 4 (Exit)
                 string jobStatus = CC.CheckforPendingPermit(ddljobid, supv) == 0 ? "Blocked" : "Active";
                 UpdateJOBTable1(jobStatus, "Out-Punch Done", "4", "Exit");
+
+                // =======================================================
+                // NEW: TXT FILE LOGGING (SHIFT CLOSURE)
+                // =======================================================
+                JobWorkflowLogger.LogAction(ddljobid, "5. SHIFT CLOSED & FINALIZED", supv, "All workers successfully out-punched. Master Status Code updated to 4 (Exit). Job routed to Site Approver.");
+                // =======================================================
 
                 // 2. Fire and Forget Notifications (Does not block the UI)
                 Task.Run(() => TriggerShiftClosureNotifications(ddljobid));

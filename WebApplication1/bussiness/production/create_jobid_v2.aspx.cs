@@ -208,38 +208,6 @@ namespace WebApplication1.bussiness.production
             Workorder_Binder();
         }
 
-        private void WorkRegion_ControllerCheck_OLD()
-        {
-            string region = DDL_Region.SelectedValue;
-            if (string.IsNullOrEmpty(region)) return;
-
-            try
-            {
-                // 1. Check Region Safety Flags from tlb_work_state_region
-                string flagQuery = "SELECT Req_GPS_Tagging FROM tlb_work_state_region WHERE Work_Region_Code = @RegionCode";
-                SqlParameter[] flagParams = { new SqlParameter("@RegionCode", region) };
-                DataTable dtFlags = dbcl.SPreturn_dt(flagQuery, flagParams);
-
-                if (dtFlags.Rows.Count > 0 && dtFlags.Rows[0]["Req_GPS_Tagging"].ToString() == "Yes")
-                {
-                    // Show the UI indicator and fire the JavaScript Geolocation API
-                    div_gps_status.Visible = true;
-                    ScriptManager.RegisterStartupScript(this, GetType(), "GPS", "requestGPSLocation();", true);
-                }
-                else
-                {
-                    // Hide the indicator and clear out any old coordinates
-                    div_gps_status.Visible = false;
-                    hf_latitude.Value = "";
-                    hf_longitude.Value = "";
-                }
-            }
-            catch (Exception ex)
-            {
-                ShowNotification("Error", "Region Check Failed: " + ex.Message, "error");
-            }
-        }
-
         private void WorkRegion_ControllerCheck()
         {
             string region = DDL_Region.SelectedValue;
@@ -253,14 +221,13 @@ namespace WebApplication1.bussiness.production
 
                 if (dtFlags.Rows.Count > 0 && dtFlags.Rows[0]["Req_GPS_Tagging"].ToString() == "Yes")
                 {
-                    div_gps_status.Visible = true;
-                    WO_ReqGPS = true; // <-- NEW: Lock the requirement in memory
-                    ScriptManager.RegisterStartupScript(this, GetType(), "GPS", "requestGPSLocation();", true);
+                    WO_ReqGPS = true;
+                    hf_gps_required.Value = "Yes"; // Tells JavaScript to fetch GPS on submit
                 }
                 else
                 {
-                    div_gps_status.Visible = false;
-                    WO_ReqGPS = false; // <-- NEW: Remove the requirement
+                    WO_ReqGPS = false;
+                    hf_gps_required.Value = "No";  // Tells JavaScript to skip GPS
                     hf_latitude.Value = "";
                     hf_longitude.Value = "";
                 }
@@ -424,6 +391,9 @@ namespace WebApplication1.bussiness.production
                         Bind_AttendnaceCode();
                         txt_jobshift.Text = "";
                         txt_jobshift.ReadOnly = false;
+
+                        // NEW: Enable Validator
+                        rfv_attencode.Enabled = true;
                     }
                     else
                     {
@@ -432,6 +402,9 @@ namespace WebApplication1.bussiness.production
                         DDL_AttenCode.Items.Insert(0, new ListItem("N/A", "NA"));
                         txt_jobshift.Text = "G";
                         txt_jobshift.ReadOnly = false;
+
+                        // NEW: Disable Validator so it doesn't block submission
+                        rfv_attencode.Enabled = false;
                     }
 
                     // 4. BILLING TYPE DROPDOWN (Safe Evaluation)
@@ -580,18 +553,67 @@ namespace WebApplication1.bussiness.production
         protected void btn_submit_Click(object sender, EventArgs e)
         {
             // =========================================================
-            // BUG FIX: STRICT GPS ENFORCEMENT
+            // 1. FORCE ASP.NET SERVER VALIDATION
+            // Ensures all enabled RequiredFieldValidators pass on the server
+            // =========================================================
+            Page.Validate("Submit");
+            if (!Page.IsValid)
+            {
+                ShowNotification("Validation Failed", "Please ensure all mandatory fields (marked with *) are filled out.", "error");
+                return;
+            }
+
+            // =========================================================
+            // 2. HARD-CODED ANTI-BYPASS SECURITY
+            // Checks raw values in case browser JavaScript was disabled/bypassed
+            // =========================================================
+            if (string.IsNullOrWhiteSpace(txt_jobdate.Text) ||
+                string.IsNullOrWhiteSpace(DDL_Region.SelectedValue) ||
+                string.IsNullOrWhiteSpace(DDL_Workorder.SelectedValue) ||
+                string.IsNullOrWhiteSpace(DDL_Worksite.SelectedValue) ||
+                string.IsNullOrWhiteSpace(DDL_Approver.SelectedValue) ||
+                string.IsNullOrWhiteSpace(DDL_Location.SelectedValue) ||
+                string.IsNullOrWhiteSpace(txt_jobshift.Text) ||
+                string.IsNullOrWhiteSpace(txt_jobtitle.Text))
+            {
+                ShowNotification("Security Block", "Critical form data is missing. Request rejected.", "error");
+                return;
+            }
+
+            // Check dynamic matrix requirements manually
+            if (div_BillingType.Visible && string.IsNullOrWhiteSpace(DDL_BillingType.SelectedValue))
+            {
+                ShowNotification("Validation Failed", "Billing Type is required.", "error");
+                return;
+            }
+
+            if (!txt_permitno.ReadOnly && string.IsNullOrWhiteSpace(txt_permitno.Text))
+            {
+                ShowNotification("Validation Failed", "Work Permit Number is required.", "error");
+                return;
+            }
+
+            if (DDL_AttenCode.Enabled && string.IsNullOrWhiteSpace(DDL_AttenCode.SelectedValue))
+            {
+                ShowNotification("Validation Failed", "Attendance Code is required.", "error");
+                return;
+            }
+
+            // =========================================================
+            // 3. STRICT GPS ENFORCEMENT
             // =========================================================
             if (WO_ReqGPS)
             {
                 if (string.IsNullOrEmpty(hf_latitude.Value) || string.IsNullOrEmpty(hf_longitude.Value))
                 {
                     ShowNotification("GPS Required", "Location tracking is mandatory for this Region. Please allow location access in your browser and click Retry.", "error");
-                    return; // Stops the submission entirely!
+                    return;
                 }
             }
-            // =========================================================
 
+            // =========================================================
+            // 4. BUSINESS LOGIC (Title Word Count)
+            // =========================================================
             string[] words = txt_jobtitle.Text.Trim().Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
             if (words.Length <= 3)
             {
@@ -599,7 +621,49 @@ namespace WebApplication1.bussiness.production
                 return;
             }
 
+            // =========================================================
+            // 5. PROCEED TO INSERTION
+            // =========================================================
             string generatedJobId = Insert_JOBData();
+
+            if (!string.IsNullOrEmpty(generatedJobId))
+            {
+                // =======================================================
+                // NEW: TXT FILE LOGGING (LIFECYCLE INITIATION)
+                // =======================================================
+                System.Text.StringBuilder logDetails = new System.Text.StringBuilder();
+                logDetails.AppendLine($"- Work Region   : {DDL_Region.SelectedItem?.Text}");
+                logDetails.AppendLine($"- Work Order    : {DDL_Workorder.SelectedItem?.Text}");
+                logDetails.AppendLine($"- Billing Type  : {(div_BillingType.Visible ? DDL_BillingType.SelectedItem?.Text : "Non-Billing")}");
+                logDetails.AppendLine($"- Job Date      : {txt_jobdate.Text}");
+                logDetails.AppendLine($"- Job Title     : {txt_jobtitle.Text}");
+                logDetails.AppendLine($"- Work Site     : {DDL_Worksite.SelectedItem?.Text}");
+                logDetails.AppendLine($"- Site Incharge : {DDL_Approver.SelectedItem?.Text}");
+                logDetails.AppendLine($"- Shift / Attn  : {txt_jobshift.Text} / {DDL_AttenCode.SelectedValue}");
+                logDetails.AppendLine($"- Permit No     : {txt_permitno.Text}");
+                logDetails.AppendLine($"- GPS Captured  : Lat: {hf_latitude.Value}, Lon: {hf_longitude.Value}");
+                logDetails.AppendLine($"- Required Docs : {GetSelectedDocuments()}");
+
+                // Send payload to our central logger
+                JobWorkflowLogger.LogAction(generatedJobId, "1. CREATE JOB (V2 Smart Workflow)", Session["WORKMAN"].ToString(), logDetails.ToString());
+                // =======================================================
+
+                string maskedJobId = EncodeJobID(generatedJobId);
+
+                // V2 DYNAMIC ROUTING
+                if (WO_MasterStatusCode == "3")
+                {
+                    Response.Redirect($"job_inpunch_v2.aspx?jobid={maskedJobId}", false);
+                }
+                else
+                {
+                    Response.Redirect($"job_permitupload_v2.aspx?jobid={maskedJobId}", false);
+                }
+            }
+            else
+            {
+                ShowNotification("Failed", "Could not create the JOB ID.", "error");
+            }
 
             if (!string.IsNullOrEmpty(generatedJobId))
             {
@@ -693,7 +757,9 @@ namespace WebApplication1.bussiness.production
                     string lat = hf_latitude.Value;
                     string lon = hf_longitude.Value;
 
-                    string updateQry = "UPDATE tbl_jobs SET Required_Documents=@Docs, GPS_Latitude=@Lat, GPS_Longitude=@Lon WHERE JOBID=@JobID";
+                    // THE FIX: Added App_Version='V2' to the query string
+                    string updateQry = "UPDATE tbl_jobs SET Required_Documents=@Docs, GPS_Latitude=@Lat, GPS_Longitude=@Lon, App_Version='V2' WHERE JOBID=@JobID";
+
                     using (SqlCommand updCmd = new SqlCommand(updateQry, dbcl.Conn))
                     {
                         updCmd.Parameters.AddWithValue("@Docs", selectedDocs);
@@ -1000,7 +1066,7 @@ namespace WebApplication1.bussiness.production
             txt_jobshift.ReadOnly = false;
             txt_jobtitle.Attributes.Remove("placeholder");
 
-            div_gps_status.Visible = false;
+            //div_gps_status.Visible = false;
             div_wo_badges.Visible = false;
             div_documents.Visible = false;
             div_NonBillingAlert.Visible = false;
@@ -1034,6 +1100,41 @@ namespace WebApplication1.bussiness.production
             }
             catch { /* Fail silently to not disrupt the user's workflow */ }
             finally { dbcl.DisconnectDb(); }
+        }
+
+        protected void btn_confirm_switch_Click(object sender, EventArgs e)
+        {
+            string reason = DDL_SwitchReason.SelectedValue;
+            string remarks = txt_switch_remarks.Text.Trim();
+            string workman = Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "Unknown";
+
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+
+                string qry = "INSERT INTO tbl_Version_Switch_Log (Workman_ID, Switch_Reason, Remarks, Page_From) VALUES (@Workman, @Reason, @Remarks, @Page)";
+                using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@Workman", workman);
+                    cmd.Parameters.AddWithValue("@Reason", reason);
+                    cmd.Parameters.AddWithValue("@Remarks", string.IsNullOrEmpty(remarks) ? (object)DBNull.Value : remarks);
+                    cmd.Parameters.AddWithValue("@Page", "create_jobid_v2.aspx");
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch
+            {
+                // Fail silently. We do not want to block the user from switching versions 
+                // just because the background analytics logging failed.
+            }
+            finally
+            {
+                dbcl.DisconnectDb();
+            }
+
+            // Redirect to the old version immediately after logging
+            Response.Redirect("create_jobid.aspx", false);
         }
     }
 }
