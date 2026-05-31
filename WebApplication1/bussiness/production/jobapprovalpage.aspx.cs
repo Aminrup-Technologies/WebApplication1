@@ -1040,9 +1040,7 @@ namespace WebApplication1.bussiness.production
             Response.Redirect(Request.Url.AbsoluteUri);
         }
 
-
-
-        protected void btn_approve_Click(object sender, EventArgs e)
+        protected void btn_approve_Click_OLD(object sender, EventArgs e)
         {
             try
             {
@@ -1050,7 +1048,7 @@ namespace WebApplication1.bussiness.production
                 string remarks = txt_remarks.Text.ToString();
                 string attendancecode = DDL_AttenCode.SelectedValue.ToString();
 
-                if (Update_AttendanceTableStatus(jobid, "Approved", "Present", attendancecode) == true)
+                if (Update_AttendanceTableStatus_OLD(jobid, "Approved", "Present", attendancecode) == true)
                 {
                     Update_JOBTableStatus(jobid, "Blocked", "Approved by Approver", "5", "Approved", remarks);
                     txt_remarks.ReadOnly = true;
@@ -1071,23 +1069,65 @@ namespace WebApplication1.bussiness.production
             Response.Redirect(Request.Url.AbsoluteUri);
         }
 
-        protected void btn_reject_Click(object sender, EventArgs e)
+        protected void btn_approve_Click(object sender, EventArgs e)
         {
             try
             {
                 string jobid = txt_jobid.Text.ToString();
                 string remarks = txt_remarks.Text.ToString();
 
-                if (Update_AttendanceTableStatus(jobid, "Rejected", "Absent", "Ab") == true)
+                // 1. SAFE CALL: Pass only the JOBID and the Status
+                if (Update_AttendanceTableStatus(jobid, "Approved") == true)
                 {
-                    Update_JOBTableStatus(jobid, "Blocked", "Rejected by Approver", "6", "Rejected", remarks);
+                    // 2. Update the master JOB table
+                    Update_JOBTableStatus(jobid, "Blocked", "Approved by Approver", "5", "Approved", remarks);
+
                     txt_remarks.ReadOnly = true;
-                    btn_approve.Visible = false;
-                    btn_reject.Enabled = false;
-                    btn_reject.Text = "Rejected";
+                    btn_approve.Enabled = false;
+                    btn_approve.Text = "Approved";
+                    btn_reject.Visible = false;
 
                     Bind_JOBIDDetails(jobid);
+
+                    // 3. Log the action
+                    JobWorkflowLogger.LogAction(jobid, "APPROVER: JOB APPROVED", Session["WORKMAN"].ToString(), "Shift approved by Site In-Charge. Attendance codes preserved.");
+
+                    string title = "Success:";
+                    string body = "JOBID has been Approved.";
+                    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
                 }
+            }
+            catch (Exception ex)
+            {
+                string title = "Error :";
+                string body = ex.Message;
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+            }
+        }
+
+        private Boolean Update_AttendanceTableStatus(string jobid, string status)
+        {
+            Boolean flag = false;
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+
+                // SAFE SQL: Only update the approval fields. Do NOT touch AttendanceStatus or AttendanceCode.
+                string CmdString = @"UPDATE tbl_attendance 
+                             SET SiteIncharge_Approval = @SiteIncharge_Approval, 
+                                 Approval_Date = GETDATE() 
+                             WHERE JOBID = @JOBID AND DeleteStatus = 0";
+
+                using (SqlCommand cmd = new SqlCommand(CmdString, dbcl.Conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+                    cmd.Parameters.AddWithValue("@JOBID", jobid);
+                    cmd.Parameters.AddWithValue("@SiteIncharge_Approval", status);
+                    cmd.ExecuteNonQuery();
+                }
+
+                flag = true;
             }
             catch (Exception ex)
             {
@@ -1095,11 +1135,14 @@ namespace WebApplication1.bussiness.production
                 string body = "Error : " + ex.Message;
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
-
-            Response.Redirect(Request.Url.AbsoluteUri);
+            finally
+            {
+                dbcl.DisconnectDb();
+            }
+            return flag;
         }
 
-        private Boolean Update_AttendanceTableStatus(string jobid, string status, string attenstatus, string code)
+        private Boolean Update_AttendanceTableStatus_OLD(string jobid, string status, string attenstatus, string code)
         {
             Boolean flag = false;
             try

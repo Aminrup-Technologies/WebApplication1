@@ -15,12 +15,29 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsPostBack)
             {
+                // 1. Core Security & Session Validation
                 if (Session["USERID"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null)
                 {
                     Response.Redirect("~/login.aspx", false);
                     return;
                 }
-                txt_jobid.Focus();
+
+                // 2. NEW: Auto-Load Logic (Catches the hyperlink from the Exceptions Dashboard)
+                if (Request.QueryString["jobid"] != null)
+                {
+                    string incomingJobId = Request.QueryString["jobid"].ToString().Trim();
+
+                    // Populate the text box so the user sees what they are looking at
+                    txt_jobid.Text = incomingJobId;
+
+                    // Immediately fire the core data loader
+                    Load360View(incomingJobId);
+                }
+                else
+                {
+                    // Only set focus to the search box if they arrived manually without a URL parameter
+                    txt_jobid.Focus();
+                }
             }
         }
 
@@ -31,13 +48,17 @@ namespace WebApplication1.bussiness.production
         {
             // Validates against standard Administrative Roles across the ATS Platform
             return Session["USERTYPE"] != null &&
-                   (Session["USERTYPE"].ToString() == "Admin" || Session["USERTYPE"].ToString() == "Office Staff");
+                   (Session["USERTYPE"].ToString().Equals("Admin", StringComparison.OrdinalIgnoreCase) ||
+                    Session["USERTYPE"].ToString().Equals("Office Staff", StringComparison.OrdinalIgnoreCase));
         }
 
         private void ShowNotification(string title, string message, string type)
         {
             if (string.IsNullOrEmpty(message)) message = "An unknown error occurred.";
+
+            // Ensure no breaking line breaks or unescaped quotes break the JavaScript execution
             string cleanMessage = message.Replace("'", "\\'").Replace("\"", "\\\"").Replace("\r", "").Replace("\n", "<br/>");
+
             string script = $"showPNotify('{title}', '{cleanMessage}', '{type}');";
             ScriptManager.RegisterStartupScript(this, this.GetType(), "PNotify", script, true);
         }
@@ -51,6 +72,7 @@ namespace WebApplication1.bussiness.production
             else
             {
                 ShowNotification("Validation", "Please enter a JOBID to search.", "warning");
+                txt_jobid.Focus();
             }
         }
 
@@ -361,6 +383,75 @@ namespace WebApplication1.bussiness.production
                 catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
                 finally { dbcl.DisconnectDb(); }
             }
+        }
+
+
+        protected void gvManpower_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.DataRow)
+            {
+                // Get the data
+                DateTime inPunch = Convert.ToDateTime(DataBinder.Eval(e.Row.DataItem, "Inpunch_Time"));
+                DateTime systemLog = Convert.ToDateTime(DataBinder.Eval(e.Row.DataItem, "TimeStamp"));
+
+                // If system log is > 30 minutes AFTER the claimed in-punch, it's backdated
+                if (systemLog > inPunch.AddMinutes(30))
+                {
+                    e.Row.BackColor = System.Drawing.Color.MistyRose; // Soft red highlight
+                    e.Row.ToolTip = "Backdated Entry Detected!";
+                }
+            }
+        }
+
+        protected void btnSaveEdit_Click(object sender, EventArgs e)
+        {
+            string id = hf_EditWorkerId.Value;
+            string jobid = txt_jobid.Text.Trim();
+
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+
+                // Validate Inputs
+                if (string.IsNullOrEmpty(txt_EditInTime.Text) || string.IsNullOrEmpty(txt_EditOutTime.Text))
+                {
+                    ShowNotification("Validation Error", "In-Punch and Out-Punch times are required.", "warning");
+                    return;
+                }
+
+                // Update the record with Transaction safety
+                string updQry = @"UPDATE tbl_attendance 
+                          SET Inpunch_Time = @In, 
+                              Outpunch_Time = @Out, 
+                              ProvidedOT = @OT, 
+                              AttendanceStatus = @Status,
+                              LastModified = GETDATE(),
+                              ModifiedByName = @Admin
+                          WHERE Id = @Id";
+
+                using (SqlCommand cmd = new SqlCommand(updQry, dbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@Id", id);
+                    cmd.Parameters.AddWithValue("@In", txt_EditInTime.Text);
+                    cmd.Parameters.AddWithValue("@Out", txt_EditOutTime.Text);
+                    cmd.Parameters.AddWithValue("@OT", string.IsNullOrEmpty(txt_EditOT.Text) ? 0 : decimal.Parse(txt_EditOT.Text));
+                    cmd.Parameters.AddWithValue("@Status", ddl_EditStatus.SelectedValue);
+                    cmd.Parameters.AddWithValue("@Admin", Session["USERNAME"].ToString());
+                    cmd.ExecuteNonQuery();
+                }
+
+                // Log the change
+                JobWorkflowLogger.LogAction(jobid, "ADMIN: EDIT WORKER", Session["WORKMAN"].ToString(), $"Attendance record {id} updated. New Status: {ddl_EditStatus.SelectedValue}");
+
+                ShowNotification("Update Success", "Worker attendance updated.", "success");
+                Load360View(jobid);
+            }
+            catch (Exception ex)
+            {
+                ShowNotification("Update Error", ex.Message, "error");
+            }
+            finally { dbcl.DisconnectDb(); }
         }
 
         protected void btn_EditCoreDetails_Click(object sender, EventArgs e)
@@ -753,7 +844,7 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-        private void EvaluateActionMatrix(DataRow row, int pipelineStep, bool isBlocked, DateTime? dtFirstInPunchLogic, DateTime? dtCreatedDate, int actualWorkerCount)
+        private void EvaluateActionMatrix_OLD(DataRow row, int pipelineStep, bool isBlocked, DateTime? dtFirstInPunchLogic, DateTime? dtCreatedDate, int actualWorkerCount)
         {
             // 1. Hide all buttons initially
             btn_Act_UploadPermit.Visible = false; btn_Act_InPunch.Visible = false; btn_Act_AddDocs.Visible = false;
@@ -857,6 +948,108 @@ namespace WebApplication1.bussiness.production
                 btn_Act_SwapDate.Visible = true;
                 btn_Act_Delete.Visible = true;
                 if (!isWithin3Days) lbl_bottleneck.Text += " No attendance logged. Please Swap the Job Date to a current date, or Delete the record.";
+            }
+        }
+
+        private void EvaluateActionMatrix(DataRow row, int pipelineStep, bool isBlocked, DateTime? dtFirstInPunchLogic, DateTime? dtCreatedDate, int actualWorkerCount)
+        {
+            // 1. Reset all buttons to hidden
+            btn_Act_UploadPermit.Visible = false; btn_Act_InPunch.Visible = false; btn_Act_AddDocs.Visible = false;
+            btn_Act_OutPunch.Visible = false; btn_Act_Unblock.Visible = false; btn_Act_Resubmit.Visible = false;
+            btn_Act_ForceOut.Visible = false; btn_Act_SwapDate.Visible = false; btn_Act_Delete.Visible = false;
+            btn_Act_ForcePermitBypass.Visible = false; btn_Act_ResetToCreated.Visible = false;
+            btn_Act_CancelShift.Visible = false; btn_Act_AdminRollback.Visible = false;
+
+            // Reset Alert Box
+            divBottleneck.Attributes["class"] = "d-none";
+            lbl_bottleneck.Text = "";
+
+            string approvalStatus = row["Incharge_Approval"].ToString();
+            string entryExitStatus = row["EntryExit"].ToString();
+            string masterCode = row["MasterStatusCode"].ToString();
+            string jobStatus = row["JOBID_Status"].ToString();
+
+            // Safely parse DeleteStatus
+            bool isDeleted = row["DeleteStatus"] != DBNull.Value &&
+                             (row["DeleteStatus"].ToString() == "1" || row["DeleteStatus"].ToString().ToLower() == "true");
+
+            if (isDeleted || jobStatus == "Deleted" || jobStatus == "Cancelled")
+            {
+                divBottleneck.Attributes["class"] = "alert alert-danger text-white font-weight-bold";
+                lbl_bottleneck.Text = $"<i class='fa fa-ban'></i> ARCHIVED/VOID RECORD: This JOB was DELETED/CANCELLED. No further actions allowed.";
+                return;
+            }
+
+            // ----------------------------------------------------------------------
+            // ADMIN OVERRIDES (God Mode)
+            // ----------------------------------------------------------------------
+            if (IsAdmin())
+            {
+                if (masterCode == "1") { btn_Act_ForcePermitBypass.Visible = true; btn_Act_CancelShift.Visible = true; }
+                if (masterCode == "3" && actualWorkerCount == 0) { btn_Act_ResetToCreated.Visible = true; btn_Act_CancelShift.Visible = true; }
+                if (approvalStatus == "Approved") { btn_Act_AdminRollback.Visible = true; }
+            }
+
+            // ----------------------------------------------------------------------
+            // TIME LOGIC (3-Day Window + Grace Period)
+            // ----------------------------------------------------------------------
+            bool isWithin3Days = dtCreatedDate.HasValue && dtCreatedDate.Value.Date >= DateTime.Now.AddDays(-3).Date;
+
+            // Check Grace Period (The Unblock Logic)
+            DateTime? graceExpiry = row["UnblockedUntil"] != DBNull.Value ? (DateTime?)Convert.ToDateTime(row["UnblockedUntil"]) : null;
+            bool isGraceActive = graceExpiry.HasValue && DateTime.Now < graceExpiry.Value;
+
+            // 3. UNBLOCK BUTTON (Only show if truly blocked)
+            if ((isBlocked || jobStatus == "Blocked") && entryExitStatus != "Exit" && IsAdmin())
+            {
+                btn_Act_Unblock.Visible = true;
+            }
+
+            // 4. PIPELINE ACTIVATION (Allow if within 3 days OR Grace Period is active)
+            if (isWithin3Days || isGraceActive)
+            {
+                // If grace is active, show the warning that it expires
+                if (isGraceActive)
+                {
+                    divBottleneck.Attributes["class"] = "alert alert-warning text-dark font-weight-bold";
+                    lbl_bottleneck.Text = $"<i class='fa fa-clock-o'></i> GRACE PERIOD ACTIVE: Job unblocked until {graceExpiry.Value:dd-MMM HH:mm}";
+                }
+
+                if (pipelineStep == 2) btn_Act_UploadPermit.Visible = true;
+                if (pipelineStep == 3) btn_Act_InPunch.Visible = true;
+                if (pipelineStep == 4) btn_Act_AddDocs.Visible = true;
+                if (pipelineStep == 5) btn_Act_OutPunch.Visible = true;
+
+                if (entryExitStatus == "Entry" && dtFirstInPunchLogic.HasValue && dtCreatedDate.HasValue && dtCreatedDate.Value.Date < DateTime.Now.Date)
+                {
+                    btn_Act_ForceOut.Visible = true;
+                }
+            }
+            else
+            {
+                // HARD LOCKOUT (Expired & No Grace)
+                divBottleneck.Attributes["class"] = "alert alert-danger text-white font-weight-bold";
+                lbl_bottleneck.Text = "SYSTEM LOCKOUT: Job is older than 3 days. Standard processing is disabled.";
+
+                if ((entryExitStatus == "Entry" || entryExitStatus == "Created") && dtFirstInPunchLogic.HasValue)
+                {
+                    if (IsAdmin()) btn_Act_ForceOut.Visible = true;
+                    lbl_bottleneck.Text += " Admin must Force OUT-Punch to close this shift.";
+                }
+            }
+
+            // 5. FIX & RESUBMIT
+            if (approvalStatus == "Rejected" || approvalStatus == "Returned" || approvalStatus == "Cancelled")
+            {
+                btn_Act_Resubmit.Visible = true;
+            }
+
+            // 6. PRE-PUNCH CONTROLS
+            if (!dtFirstInPunchLogic.HasValue)
+            {
+                btn_Act_SwapDate.Visible = true;
+                btn_Act_Delete.Visible = true;
+                if (!isWithin3Days && !isGraceActive) lbl_bottleneck.Text += " No attendance logged. Swap Date or Delete.";
             }
         }
 
@@ -1002,6 +1195,59 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_Act_Resubmit_Click(object sender, EventArgs e)
         {
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+
+                // 1. INITIATE TRANSACTION
+                SqlTransaction transaction = dbcl.Conn.BeginTransaction();
+
+                try
+                {
+                    // 2. Execute State Rollback
+                    string qryJob = @"UPDATE tbl_jobs 
+                              SET MasterStatusCode = '3', 
+                                  JOB_Status = 'Permit Uploaded', 
+                                  EntryExit = 'Entry', 
+                                  UpdatedBy = @AdminName, 
+                                  UpdatedOn = GETDATE() 
+                              WHERE JOBID = @JOBID";
+
+                    using (SqlCommand cmdJob = new SqlCommand(qryJob, dbcl.Conn, transaction))
+                    {
+                        cmdJob.Parameters.AddWithValue("@JOBID", txt_jobid.Text);
+                        cmdJob.Parameters.AddWithValue("@AdminName", Session["USERNAME"].ToString());
+                        cmdJob.ExecuteNonQuery();
+                    }
+
+                    // 3. COMMIT TRANSACTION
+                    transaction.Commit();
+
+                    // 4. LOG THE ACTION USING YOUR NATIVE LOGGER
+                    JobWorkflowLogger.LogAction(txt_jobid.Text, "ADMIN OVERRIDE: FIX & RESUBMIT", Session["WORKMAN"].ToString(), "JOB reset to Step 3 (IN-Punch phase) to allow supervisor adjustments.");
+
+                    ShowNotification("Job Reset", "The JOBID has been reset to the IN-Punch phase.", "success");
+                    Load360View(txt_jobid.Text);
+                }
+                catch (Exception exTransaction)
+                {
+                    transaction.Rollback();
+                    throw new Exception("Reset failed: " + exTransaction.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowNotification("Critical Error", ex.Message, "error");
+            }
+            finally
+            {
+                dbcl.DisconnectDb();
+            }
+        }
+
+        protected void btn_Act_Resubmit_Click_OLD(object sender, EventArgs e)
+        {
             string jobid = txt_jobid.Text.Trim();
             string adminUser = Session["USERNAME"] != null ? Session["USERNAME"].ToString() : "ADMIN";
 
@@ -1060,6 +1306,100 @@ namespace WebApplication1.bussiness.production
         }
 
         protected void btn_Act_ForceOut_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+
+                // 1. INITIATE TRANSACTION
+                SqlTransaction transaction = dbcl.Conn.BeginTransaction();
+
+                try
+                {
+                    // 2. Fetch Stuck Workers (Pass transaction to the command)
+                    string getStuckWorkersQry = "SELECT Id, EmployeeWrk, Inpunch_Time, WourkHours, LunchFactor FROM tbl_attendance WHERE JOBID = @JOBID AND Outpunch_Time IS NULL AND (DeleteStatus = 0 OR DeleteStatus IS NULL)";
+
+                    DataTable dtStuckWorkers = new DataTable();
+                    using (SqlCommand cmdGet = new SqlCommand(getStuckWorkersQry, dbcl.Conn, transaction))
+                    {
+                        cmdGet.Parameters.AddWithValue("@JOBID", txt_jobid.Text);
+                        using (SqlDataReader rdr = cmdGet.ExecuteReader())
+                        {
+                            dtStuckWorkers.Load(rdr);
+                        }
+                    }
+
+                    // 3. Loop and Force Close EACH worker (Must use the transaction)
+                    foreach (DataRow worker in dtStuckWorkers.Rows)
+                    {
+                        int id = Convert.ToInt32(worker["Id"]);
+                        string empWrk = worker["EmployeeWrk"].ToString();
+                        DateTime inTime = Convert.ToDateTime(worker["Inpunch_Time"]);
+                        int standardHours = worker["WourkHours"] != DBNull.Value ? Convert.ToInt32(worker["WourkHours"]) : 8;
+                        string lunchFactor = worker["LunchFactor"] != DBNull.Value ? worker["LunchFactor"].ToString() : "No";
+
+                        DateTime outTime = inTime.AddHours(standardHours);
+                        int workedTimeMins = standardHours * 60;
+                        decimal workedHoursDec = Convert.ToDecimal(standardHours);
+
+                        using (SqlCommand cmdSP = new SqlCommand("SP_Update_AttendancePunchOUT", dbcl.Conn, transaction))
+                        {
+                            cmdSP.CommandType = CommandType.StoredProcedure;
+                            cmdSP.Parameters.AddWithValue("@Id", id);
+                            cmdSP.Parameters.AddWithValue("@JOBID", txt_jobid.Text);
+                            cmdSP.Parameters.AddWithValue("@SubmitterStatus", "Exit");
+                            cmdSP.Parameters.AddWithValue("@EmployeeWrk", empWrk);
+                            cmdSP.Parameters.AddWithValue("@Outpunch_Time", outTime);
+                            cmdSP.Parameters.AddWithValue("@WorkedTime", workedTimeMins);
+                            cmdSP.Parameters.AddWithValue("@WorkedHours", workedHoursDec);
+                            cmdSP.Parameters.AddWithValue("@LunchFactor", lunchFactor);
+                            cmdSP.Parameters.AddWithValue("@Calc_OT", 0);
+                            cmdSP.Parameters.AddWithValue("@ProvidedOT", 0);
+                            cmdSP.Parameters.AddWithValue("@LastModified", DateTime.Now);
+                            cmdSP.Parameters.AddWithValue("@AttendanceStatus", "Present");
+                            cmdSP.Parameters.AddWithValue("@AttendanceCode", "P");
+
+                            cmdSP.ExecuteNonQuery();
+                        }
+                    }
+
+                    // 4. Update the Master Job Status
+                    string qryJob = "UPDATE tbl_jobs SET JOBID_Status = 'Active', JOB_Status = 'Out-Punch Done', MasterStatusCode = '4', EntryExit = 'Exit' WHERE JOBID = @JOBID";
+                    using (SqlCommand cmdJob = new SqlCommand(qryJob, dbcl.Conn, transaction))
+                    {
+                        cmdJob.Parameters.AddWithValue("@JOBID", txt_jobid.Text);
+                        cmdJob.ExecuteNonQuery();
+                    }
+
+                    // 5. IF EVERYTHING SUCCEEDED, COMMIT THE DATABASE CHANGES
+                    transaction.Commit();
+                    JobWorkflowLogger.LogAction(txt_jobid.Text, "ADMIN OVERRIDE: FORCE OUT-PUNCH", Session["WORKMAN"].ToString(), "Admin forcefully closed shift for all active workers via 360 View.");
+                    ShowNotification("Forced Closed", "All active manpower forcefully clocked out safely. JOB advanced to Approver queue.", "success");
+                    Load360View(txt_jobid.Text);
+
+                    // EMAIL NOTIFICATION INTEGRATION
+                    string emailBody = $"<p><b>SYSTEM ALERT:</b> The JOBID <b>{txt_jobid.Text}</b> has been forcefully OUT-Punched and closed by ATS Administrator: {Session["USERNAME"]}.</p><p>Please log in to review the attendance records.</p>";
+                    // dbcl.SendEmail("supervisor_email@domain.com", $"ATS Alert: {txt_jobid.Text} Force Closed", emailBody);
+                }
+                catch (Exception exTransaction)
+                {
+                    // IF ANYTHING FAILS (Server crash, type mismatch), REVERT ALL CHANGES
+                    transaction.Rollback();
+                    throw new Exception("Transaction Failed and Rolled Back. Reason: " + exTransaction.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowNotification("Critical Error", ex.Message, "error");
+            }
+            finally
+            {
+                dbcl.DisconnectDb();
+            }
+        }
+
+        protected void btn_Act_ForceOut_Click_OLD(object sender, EventArgs e)
         {
             try
             {
@@ -1124,6 +1464,62 @@ namespace WebApplication1.bussiness.production
         }
 
         protected void btn_Act_AdminRollback_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+
+                // 1. INITIATE TRANSACTION
+                SqlTransaction transaction = dbcl.Conn.BeginTransaction();
+
+                try
+                {
+                    string adminName = Session["USERNAME"] != null ? Session["USERNAME"].ToString() : "SYSTEM ADMIN";
+                    string remark = $"ADMIN OVERRIDE: Approval revoked and returned for corrections by {adminName}.";
+
+                    // 2. Roll the JOBID back to Step 4 (Out-Punch Done)
+                    string qryJob = @"UPDATE tbl_jobs 
+                              SET Incharge_Approval = 'Returned', 
+                                  MasterStatusCode = '4', 
+                                  JOB_Status = 'Out-Punch Done', 
+                                  Incharge_Remarks = @Remark, 
+                                  UpdatedBy = @AdminName, 
+                                  UpdatedOn = GETDATE() 
+                              WHERE JOBID = @JOBID";
+
+                    using (SqlCommand cmdJob = new SqlCommand(qryJob, dbcl.Conn, transaction))
+                    {
+                        cmdJob.Parameters.AddWithValue("@JOBID", txt_jobid.Text);
+                        cmdJob.Parameters.AddWithValue("@Remark", remark);
+                        cmdJob.Parameters.AddWithValue("@AdminName", adminName);
+                        cmdJob.ExecuteNonQuery();
+                    }
+
+                    // 3. COMMIT TRANSACTION
+                    transaction.Commit();
+                    JobWorkflowLogger.LogAction(txt_jobid.Text, "ADMIN OVERRIDE: APPROVAL REVOKED", Session["WORKMAN"].ToString(), "Pipeline rolled back from Step 6 to Step 4 for data correction.");
+
+                    ShowNotification("Rollback Successful", "JOBID returned to Supervisor queue.", "success");
+                    Load360View(txt_jobid.Text);
+                }
+                catch (Exception exTransaction)
+                {
+                    transaction.Rollback();
+                    throw new Exception("Rollback failed: " + exTransaction.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowNotification("Critical Error", ex.Message, "error");
+            }
+            finally
+            {
+                dbcl.DisconnectDb();
+            }
+        }
+
+        protected void btn_Act_AdminRollback_Click_OLD(object sender, EventArgs e)
         {
             try
             {
@@ -1254,6 +1650,51 @@ namespace WebApplication1.bussiness.production
             catch (Exception ex)
             {
                 ShowNotification("Inspector Error", "Failed to load raw data: " + ex.Message, "error");
+            }
+            finally
+            {
+                dbcl.DisconnectDb();
+            }
+        }
+
+        protected void btn_Act_UnblockJob_Click(object sender, EventArgs e)
+        {
+            // Security Guard: Ensure only Admins can execute this
+            if (!IsAdmin())
+            {
+                ShowNotification("Access Denied", "You do not have permission to perform this override.", "error");
+                return;
+            }
+
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+
+                // SQL: Lift the block and set the grace period expiration
+                string qry = @"UPDATE tbl_jobs 
+                       SET IsBlocked = 0, 
+                           UnblockedUntil = DATEADD(hour, 24, GETDATE()) 
+                       WHERE JOBID = @JOBID";
+
+                using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
+                {
+                    cmd.Parameters.AddWithValue("@JOBID", txt_jobid.Text.Trim());
+                    cmd.ExecuteNonQuery();
+                }
+
+                // AUDIT LOGGING (Using your centralized logger)
+                JobWorkflowLogger.LogAction(txt_jobid.Text, "ADMIN: UNBLOCK JOB", Session["WORKMAN"].ToString(),
+                    "Granted 24-hour grace period to blocked job. Standard processing re-enabled.");
+
+                ShowNotification("Job Unblocked", "The job has been unblocked for the next 24 hours.", "success");
+
+                // Refresh the Control Tower view
+                Load360View(txt_jobid.Text);
+            }
+            catch (Exception ex)
+            {
+                ShowNotification("Unblock Error", ex.Message, "error");
             }
             finally
             {

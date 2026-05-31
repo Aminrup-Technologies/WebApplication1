@@ -42,6 +42,18 @@
                             </div>
                             <i class="fa fa-users"></i>Blocked JOBID
                         </a>
+                        <a class="btn btn-app" href="manage_job_exceptions.aspx" id="A11" runat="server" visible="true">
+                            <div id="Div15" class="badge bg-green" runat="server">
+                                <asp:Label ID="Label12" runat="server" Text="Ok" Visible="true"></asp:Label>
+                            </div>
+                            <i class="fa fa-users"></i>JOB Annmolies
+                        </a>
+                        <a class="btn btn-app" href="analyze_attendance_anomalies.aspx" id="A12" runat="server" visible="true">
+                            <div id="Div16" class="badge bg-green" runat="server">
+                                <asp:Label ID="Label13" runat="server" Text="Ok" Visible="true"></asp:Label>
+                            </div>
+                            <i class="fa fa-users"></i>Atten Annmolies
+                        </a>
                     </div>
                 </div>
             </div>

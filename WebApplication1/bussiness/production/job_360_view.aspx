@@ -258,6 +258,13 @@
                         <i class="fa fa-undo text-danger"></i> Admin Rollback
                                 </asp:LinkButton>
 
+                                <asp:LinkButton ID="btn_Act_UnblockJob" runat="server" 
+                                    CssClass="btn btn-warning btn-sm" 
+                                    OnClick="btn_Act_UnblockJob_Click"
+                                    OnClientClick="return confirm('Are you sure you want to grant a 24-hour grace period to this job?');">
+                                    <i class="fa fa-unlock"></i> Unblock (24h)
+                                </asp:LinkButton>
+
                                 <asp:LinkButton ID="btn_Act_ViewRawData" runat="server" CssClass="btn btn-dark btn-sm mb-2 mr-2 text-white" OnClick="btn_Act_ViewRawData_Click" Visible="false"
                                     ToolTip="IMPACT: Opens a developer-level view of the raw database rows linked to this JOBID for deep debugging."><i class="fa fa-database"></i> Raw DB Inspector</asp:LinkButton>
                             </div>
@@ -553,7 +560,7 @@
                         </div>
                         <div class="x_content">
                             <div class="card-box table-responsive">
-                                <asp:GridView ID="gvManpower" runat="server" Width="100%" CssClass="table table-striped jambo_table table-bordered table-sm dt-responsive nowrap" AutoGenerateColumns="false" EmptyDataText="<div class='p-3 text-center text-muted'>No Manpower IN-Punched Yet</div>" OnRowCommand="gvManpower_RowCommand">
+                                <asp:GridView ID="gvManpower" runat="server" Width="100%" CssClass="table table-striped jambo_table table-bordered table-sm dt-responsive nowrap" AutoGenerateColumns="false" EmptyDataText="<div class='p-3 text-center text-muted'>No Manpower IN-Punched Yet</div>" OnRowCommand="gvManpower_RowCommand" OnRowDataBound="gvManpower_RowDataBound">
                                     <Columns>
                                         <asp:TemplateField HeaderText="Sl">
                                             <ItemTemplate><%# Container.DataItemIndex + 1 %></ItemTemplate>
@@ -757,12 +764,30 @@
             </div>
         </div>
     </div>
-    <script>
+    <script type="text/javascript">
         $(document).ready(function () {
             $('[title]').tooltip({
                 placement: 'bottom',
                 trigger: 'hover'
             });
+        });
+
+        $(document).ready(function () {
+            // --- Session Keep-Alive Heartbeat ---
+            // Pings the server every 10 minutes (600,000 ms) to prevent IIS from destroying the session
+            // while the Admin is busy reading long Raw Data Inspector tables.
+
+            setInterval(function () {
+                // We use a lightweight GET request to the current page.
+                // Appending a timestamp prevents browser caching.
+                $.get(location.href + (location.href.indexOf('?') > -1 ? '&' : '?') + "keepAlive=" + new Date().getTime())
+                 .done(function () {
+                     console.log("Session heartbeat sent successfully.");
+                 })
+                 .fail(function () {
+                     console.warn("Session heartbeat failed. Network disconnected?");
+                 });
+            }, 600000); // 10 minutes
         });
     </script>
 </asp:Content>

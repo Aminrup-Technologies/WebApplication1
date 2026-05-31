@@ -175,6 +175,15 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.LinkButton btn_Act_AdminRollback;
         
         /// <summary>
+        /// btn_Act_UnblockJob control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton btn_Act_UnblockJob;
+        
+        /// <summary>
         /// btn_Act_ViewRawData control.
         /// </summary>
         /// <remarks>

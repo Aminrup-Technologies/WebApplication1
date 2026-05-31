@@ -81,9 +81,9 @@
                                         <asp:Label ID="lbl_msg" runat="server" Text="Click SUBMIT to Save Data!!"></asp:Label>
                                     </div>
                                     <div class="col-md-6 col-sm-12">
-                                        <button type="button" class="btn btn-danger btn-sm collapse-link">Cancel</button>
-                                        <asp:Button ID="btn_reset" runat="server" Text="Reset" CssClass="btn btn-warning btn-sm" PostBackUrl="~/bussiness/production/jobapp_controller.aspx" />
                                         <asp:Button ID="btn_submit" runat="server" Text="Submit" CssClass="btn btn-success btn-sm" OnClick="btn_submit_Click" />
+                                        <asp:Button ID="btn_reset" runat="server" Text="Reset" CssClass="btn btn-danger btn-sm" PostBackUrl="~/bussiness/production/jobapp_controller.aspx" />
+                                        <asp:Button ID="btnBack" runat="server" Text="Back" CssClass="btn btn-sm btn-warning" PostBackUrl="~/bussiness/production/anlys_jobsdeta.aspx"/>
                                     </div>
                                 </div>
                             </div>

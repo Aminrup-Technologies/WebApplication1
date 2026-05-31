@@ -262,6 +262,7 @@
     <Content Include="bussiness\production\add_wo_skillcategory.aspx" />
     <Content Include="bussiness\production\aminrup\adda.aspx" />
     <Content Include="bussiness\production\aminrup\manage_roles.aspx" />
+    <Content Include="bussiness\production\analyze_attendance_anomalies.aspx" />
     <Content Include="bussiness\production\anlys_employees.aspx" />
     <Content Include="bussiness\production\anlys_jobsdeta.aspx" />
     <Content Include="bussiness\production\anlys_musterdeta.aspx" />
@@ -326,6 +327,7 @@
     <Content Include="bussiness\production\login.aspx" />
     <Content Include="bussiness\production\magician.aspx" />
     <Content Include="bussiness\production\manage_jobid_v2.aspx" />
+    <Content Include="bussiness\production\manage_job_exceptions.aspx" />
     <Content Include="bussiness\production\manage_profile.aspx" />
     <Content Include="bussiness\production\manage_rolls.aspx" />
     <Content Include="bussiness\production\manage_rollsaccess.aspx" />
@@ -5348,6 +5350,13 @@
     <Compile Include="bussiness\production\aminrup\manage_roles.aspx.designer.cs">
       <DependentUpon>manage_roles.aspx</DependentUpon>
     </Compile>
+    <Compile Include="bussiness\production\analyze_attendance_anomalies.aspx.cs">
+      <DependentUpon>analyze_attendance_anomalies.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\analyze_attendance_anomalies.aspx.designer.cs">
+      <DependentUpon>analyze_attendance_anomalies.aspx</DependentUpon>
+    </Compile>
     <Compile Include="bussiness\production\anlys_employees.aspx.cs">
       <DependentUpon>anlys_employees.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -5650,6 +5659,13 @@
     </Compile>
     <Compile Include="bussiness\production\manage_jobid_v2.aspx.designer.cs">
       <DependentUpon>manage_jobid_v2.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\manage_job_exceptions.aspx.cs">
+      <DependentUpon>manage_job_exceptions.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\manage_job_exceptions.aspx.designer.cs">
+      <DependentUpon>manage_job_exceptions.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\manage_profile.aspx.cs">
       <DependentUpon>manage_profile.aspx</DependentUpon>
