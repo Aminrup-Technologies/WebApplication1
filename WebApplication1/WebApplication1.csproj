@@ -245,6 +245,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="appsettings.secrets.config" />
     <Content Include="bussiness\.gitignore" />
     <Content Include="bussiness\production\add_expenses.aspx" />
     <Content Include="bussiness\production\add_expense_heads.aspx" />
@@ -5203,6 +5204,7 @@
     <Content Include="bussiness\vendors\validator\.gitignore" />
     <Content Include="bussiness\vendors\validator\package.json" />
     <Content Include="bussiness\vendors\validator\README.md" />
+    <Content Include="connections.config" />
     <None Include="Properties\PublishProfiles\atsuat.aminruptechnologies.co.in - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\atswork.co.in - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\ats_live.pubxml" />
