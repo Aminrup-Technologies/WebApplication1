@@ -434,7 +434,16 @@ namespace WebApplication1.bussiness.production
                         <a href='https://atswork.co.in/' style='background-color:#1ABB9C; color:#fff; text-decoration:none; padding:10px 20px; border-radius:5px; font-weight:bold;'>Open ATS Portal to Approve</a>
                     </div>";
 
-                SmtpClient smtp = new SmtpClient { Host = "smtp.zoho.in", Port = 587, EnableSsl = true, Credentials = new System.Net.NetworkCredential("it.support@aminruptechnologies.co.in", "TPw800QrVMU2") };
+                string smtpUser = System.Configuration.ConfigurationManager.AppSettings["SmtpUser"] ?? "";
+                string smtpPass = System.Configuration.ConfigurationManager.AppSettings["SmtpPass"] ?? "";
+
+                if (string.IsNullOrEmpty(smtpUser) || string.IsNullOrEmpty(smtpPass))
+                {
+                    LogSystemEvent("Email", "SKIP", $"SMTP not configured - approval email to {emailAddress} skipped.");
+                    return;
+                }
+
+                SmtpClient smtp = new SmtpClient { Host = "smtp.zoho.in", Port = 587, EnableSsl = true, Credentials = new System.Net.NetworkCredential(smtpUser, smtpPass) };
                 smtp.Send(mail);
                 LogSystemEvent("Email", "SUCCESS", $"Sent to {emailAddress}");
             }

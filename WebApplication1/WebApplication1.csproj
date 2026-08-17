@@ -40,18 +40,12 @@
     <DeployEncryptKey>
     </DeployEncryptKey>
     <RunCodeAnalysis>false</RunCodeAnalysis>
-    <PublishDatabaseSettings>
-      <Objects>
-        <ObjectGroup Name="DbConn-Deployment" Order="1">
-          <Destination Path="Data Source=KAUSHIK-PC\SQLEXPRESS%3bInitial Catalog=ats_erp%3bIntegrated Security=True" />
-          <Object Type="DbFullSql">
-            <PreSource Path="Data Source=atswork.in%3b Initial Catalog=ats_erp%3b Persist Security Info=True%3bUser ID=webapp%3b Password=OH4Y%40ats%3b Max Pool Size=1000000%3b" ScriptSchema="True" ScriptData="True" CopyAllFullTextCatalogs="False" DriDefaults="True" />
-            <Source Path="obj\Debug\AutoScripts\DbConn-Deployment_SchemaAndData.sql" Transacted="True" />
-          </Object>
-        </ObjectGroup>
-      </Objects>
-    </PublishDatabaseSettings>
     <ExcludeGeneratedDebugSymbol>true</ExcludeGeneratedDebugSymbol>
+  </PropertyGroup>
+  <!-- SECURITY: do NOT overwrite the real server-side secret config files on publish.
+       connections.config is the tracked boot-safe placeholder; appsettings.secrets.config holds SMTP/Msg91 keys on the server. -->
+  <PropertyGroup>
+    <ExcludeFilesFromDeployment>connections.config;appsettings.secrets.config</ExcludeFilesFromDeployment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>

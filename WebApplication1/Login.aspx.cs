@@ -373,7 +373,16 @@ namespace WebApplication1.bussiness.production
                 MailMessage mm = new MailMessage("it.support@aminruptechnologies.co.in", to);
                 mm.Subject = "Password Reset OTP";
                 mm.Body = $"Hi {name},\n\nYour OTP is: {otp}\nThis OTP is valid for 5 minutes.";
-                SmtpClient smtp = new SmtpClient("smtp.zoho.in", 587) { EnableSsl = true, Credentials = new NetworkCredential("it.support@aminruptechnologies.co.in", "TPw800QrVMU2") };
+                string smtpUser = System.Configuration.ConfigurationManager.AppSettings["SmtpUser"] ?? "";
+                string smtpPass = System.Configuration.ConfigurationManager.AppSettings["SmtpPass"] ?? "";
+
+                if (string.IsNullOrEmpty(smtpUser) || string.IsNullOrEmpty(smtpPass))
+                {
+                    dbcl.WriteToFile("OTP email skipped: SMTP credentials not configured (SmtpUser/SmtpPass).");
+                    return false;
+                }
+
+                SmtpClient smtp = new SmtpClient("smtp.zoho.in", 587) { EnableSsl = true, Credentials = new NetworkCredential(smtpUser, smtpPass) };
                 smtp.Send(mm); return true;
             }
             catch (Exception ex) { dbcl.WriteToFile(ex.ToString()); return false; }

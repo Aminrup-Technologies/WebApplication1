@@ -145,9 +145,14 @@ namespace WebApplication1.bussiness.production
         {
             string smtpServer = "smtp.zoho.in";
             int smtpPort = 587;
-            string smtpUsername = "it.support@aminruptechnologies.co.in";
-            //string smtpPassword = "W4rqD>Vq5>g25jS$";
-            string smtpPassword = "TPw800QrVMU2";
+            string smtpUsername = System.Configuration.ConfigurationManager.AppSettings["SmtpUser"] ?? "";
+            string smtpPassword = System.Configuration.ConfigurationManager.AppSettings["SmtpPass"] ?? "";
+
+            if (string.IsNullOrEmpty(smtpUsername) || string.IsNullOrEmpty(smtpPassword))
+            {
+                WriteToFile("Mailer skipped: SMTP credentials not configured (SmtpUser/SmtpPass appSettings).");
+                return;
+            }
 
             try
             {
@@ -178,8 +183,14 @@ namespace WebApplication1.bussiness.production
         {
             string smtpServer = "smtp.zoho.in";
             int smtpPort = 587;
-            string smtpUsername = "it.support@aminruptechnologies.co.in";
-            string smtpPassword = "TPw800QrVMU2";
+            string smtpUsername = System.Configuration.ConfigurationManager.AppSettings["SmtpUser"] ?? "";
+            string smtpPassword = System.Configuration.ConfigurationManager.AppSettings["SmtpPass"] ?? "";
+
+            if (string.IsNullOrEmpty(smtpUsername) || string.IsNullOrEmpty(smtpPassword))
+            {
+                WriteToFile("Mailer skipped: SMTP credentials not configured (SmtpUser/SmtpPass appSettings).");
+                return;
+            }
 
             try
             {
@@ -392,8 +403,9 @@ namespace WebApplication1.bussiness.production
 
             Sqlconnection();
             ConnectDb();
-            string cmdstring = "Select SIte_Incharge_workman from " + table + " where ddl_name = '" + ddl + "'";
+            string cmdstring = "Select SIte_Incharge_workman from " + table + " where ddl_name = @ddl";
             SqlCommand cmd = new SqlCommand(cmdstring, Conn);
+            cmd.Parameters.AddWithValue("@ddl", ddl);
             SqlDataReader re = cmd.ExecuteReader();
             if (re.Read())
             {
@@ -410,8 +422,9 @@ namespace WebApplication1.bussiness.production
 
             Sqlconnection();
             ConnectDb();
-            string cmdstring = "Select org_sitewrkman from " + table + " where ddl_name = '" + ddl + "'";
+            string cmdstring = "Select org_sitewrkman from " + table + " where ddl_name = @ddl";
             SqlCommand cmd = new SqlCommand(cmdstring, Conn);
+            cmd.Parameters.AddWithValue("@ddl", ddl);
             SqlDataReader re = cmd.ExecuteReader();
             if (re.Read())
             {
@@ -450,8 +463,9 @@ namespace WebApplication1.bussiness.production
             {
                 Sqlconnection();
                 ConnectDb();
-                string cmdstring = "Select WorkStatus from tbl_Employee_Mustertable where WorkmanSL = '" + workman + "'";
+                string cmdstring = "Select WorkStatus from tbl_Employee_Mustertable where WorkmanSL = @workman";
                 SqlCommand cmd = new SqlCommand(cmdstring, Conn);
+                cmd.Parameters.AddWithValue("@workman", workman);
                 SqlDataReader re = cmd.ExecuteReader();
                 if (re.Read())
                 {
@@ -482,8 +496,9 @@ namespace WebApplication1.bussiness.production
             string wrkman = "";
             Sqlconnection();
             ConnectDb();
-            string cmdstring = "Select emp_status,emp_wrk_status from tbl_users where workman_sl = '" + workman + "'";
+            string cmdstring = "Select emp_status,emp_wrk_status from tbl_users where workman_sl = @workman";
             SqlCommand cmd = new SqlCommand(cmdstring, Conn);
+            cmd.Parameters.AddWithValue("@workman", workman);
             SqlDataReader re = cmd.ExecuteReader();
             if (re.Read())
             {
@@ -513,10 +528,11 @@ namespace WebApplication1.bussiness.production
         //This function is used to return name aganist a workman number
         public void FindEmployeeDataforInPunch(string workman, ref string name, ref string workhours, ref string worksitename, ref string worksitecode, ref string category, ref string categorycode, ref string designation, ref string designationcode, ref string gatepassno, ref string gpexp, ref string sftyno, ref string sftyexp, ref string pvexp)
         {
-            string cmdString = "select FullName, WorkSite, Worksite_Code, WorkHours, SkillCategory,SkillCategoryDB, SkillDesignation,SkillDesignationDB, GatePassNo, GatePassExpiry,SafetyPassNo, SafetyPassExpiry, PVExpiry from tbl_Employee_Mustertable where WorkmanSL='" + workman + "'";
+            string cmdString = "select FullName, WorkSite, Worksite_Code, WorkHours, SkillCategory,SkillCategoryDB, SkillDesignation,SkillDesignationDB, GatePassNo, GatePassExpiry,SafetyPassNo, SafetyPassExpiry, PVExpiry from tbl_Employee_Mustertable where WorkmanSL=@workman";
             Sqlconnection();
             ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdString, Conn);
+            cmd.Parameters.AddWithValue("@workman", workman);
             SqlDataReader Rdr;
             Rdr = cmd.ExecuteReader();
             if (Rdr.Read())
@@ -542,10 +558,11 @@ namespace WebApplication1.bussiness.production
 
         public void FindEmployeeName(string workman, ref string name)
         {
-            string cmdString = "select FullName from tbl_Employee_Mustertable where WorkmanSL='" + workman + "'";
+            string cmdString = "select FullName from tbl_Employee_Mustertable where WorkmanSL=@workman";
             Sqlconnection();
             ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdString, Conn);
+            cmd.Parameters.AddWithValue("@workman", workman);
             SqlDataReader Rdr;
             Rdr = cmd.ExecuteReader();
             if (Rdr.Read())
@@ -557,10 +574,11 @@ namespace WebApplication1.bussiness.production
 
         public void FindWorksite(string workman, ref string sitename)
         {
-            string cmdString = "select emp_worksite from tbl_emp_given_work where workman_sl='" + workman.ToString() + "'";
+            string cmdString = "select emp_worksite from tbl_emp_given_work where workman_sl=@workman";
             Sqlconnection();
             ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdString, Conn);
+            cmd.Parameters.AddWithValue("@workman", workman);
             SqlDataReader Rdr;
             Rdr = cmd.ExecuteReader();
             if (Rdr.Read())
@@ -573,10 +591,11 @@ namespace WebApplication1.bussiness.production
         //This function is used to return name aganist a workman number
         public void FindNameandWorkRgn(string workman, ref string name, ref string workregn)
         {
-            string cmdString = "select emp_fullname,emp_workregion from tbl_users where workman_sl='" + workman.ToString() + "'";
+            string cmdString = "select emp_fullname,emp_workregion from tbl_users where workman_sl=@workman";
             Sqlconnection();
             ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdString, Conn);
+            cmd.Parameters.AddWithValue("@workman", workman);
             SqlDataReader Rdr;
             Rdr = cmd.ExecuteReader();
             if (Rdr.Read())
@@ -590,10 +609,11 @@ namespace WebApplication1.bussiness.production
         //This function is used to return name aganist a workman number
         public void FindName(string name, ref string workman)
         {
-            string cmdString = "select workman_sl from tbl_users where emp_fullname='" + name.ToString() + "'";
+            string cmdString = "select workman_sl from tbl_users where emp_fullname=@name";
             Sqlconnection();
             ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdString, Conn);
+            cmd.Parameters.AddWithValue("@name", name);
             SqlDataReader Rdr;
             Rdr = cmd.ExecuteReader();
             if (Rdr.Read())
@@ -606,11 +626,12 @@ namespace WebApplication1.bussiness.production
         {
             Boolean outyes = false;
 
-            string cmdString = "select top(1) Supv_approval_status from tbl_employee_attendance where emp_wrk='" + workman.ToString() + "' order by id desc";
+            string cmdString = "select top(1) Supv_approval_status from tbl_employee_attendance where emp_wrk=@workman order by id desc";
             Sqlconnection();
             ConnectDb();
             string name = "";
             SqlCommand cmd = new SqlCommand(cmdString, Conn);
+            cmd.Parameters.AddWithValue("@workman", workman);
             SqlDataReader Rdr;
             Rdr = cmd.ExecuteReader();
             if (Rdr.Read())

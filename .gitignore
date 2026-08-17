@@ -377,3 +377,6 @@ FodyWeavers.xsd
 /WebApplication1/bussiness/production/WindowsServiceLog/29102024
 /WebApplication1/bussiness/production/WindowsServiceLog/01112024
 /WebApplication1/bussiness/production/WindowsServiceLog
+
+# Local secret overrides - NEVER commit this file
+/WebApplication1/appsettings.secrets.config

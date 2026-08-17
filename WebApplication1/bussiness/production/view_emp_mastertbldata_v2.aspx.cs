@@ -306,7 +306,7 @@ namespace WebApplication1.bussiness.production
                 Session.Remove("RESET_EMAIL");
             }
 
-            string newPassword = "ATS@" + new Random().Next(1000, 9999).ToString();
+            string newPassword = (System.Configuration.ConfigurationManager.AppSettings["DefaultPasswordPrefix"] ?? "ATS@") + new Random().Next(1000, 9999).ToString();
             string adminUser = Session["USERID"].ToString();
 
             try
@@ -424,7 +424,7 @@ namespace WebApplication1.bussiness.production
             // -----------------------------------------------------------------
             // 2. PROCEED WITH PASSWORD RESET (Leave the rest of your method exactly as it is!)
             // -----------------------------------------------------------------
-            string newPassword = "ATS@" + new Random().Next(1000, 9999).ToString();
+            string newPassword = (System.Configuration.ConfigurationManager.AppSettings["DefaultPasswordPrefix"] ?? "ATS@") + new Random().Next(1000, 9999).ToString();
             string adminUser = Session["USERID"].ToString();
 
             try
@@ -532,7 +532,7 @@ namespace WebApplication1.bussiness.production
             // -----------------------------------------------------------------
             // 2. GENERATE AND DISTRIBUTE PASSWORD
             // -----------------------------------------------------------------
-            string newPassword = "ATS@" + new Random().Next(1000, 9999).ToString();
+            string newPassword = (System.Configuration.ConfigurationManager.AppSettings["DefaultPasswordPrefix"] ?? "ATS@") + new Random().Next(1000, 9999).ToString();
             string adminUser = Session["USERID"].ToString();
 
             try
@@ -652,11 +652,18 @@ namespace WebApplication1.bussiness.production
                     SmtpServer.Port = 587;
                     SmtpServer.EnableSsl = true;
 
-                    string smtpUser = ConfigurationManager.AppSettings["SmtpUser"] ?? "it.support@aminruptechnologies.co.in";
-                    string smtpPass = ConfigurationManager.AppSettings["SmtpPass"] ?? "TPw800QrVMU2";
-                    SmtpServer.Credentials = new System.Net.NetworkCredential(smtpUser, smtpPass);
+                    string smtpUser = ConfigurationManager.AppSettings["SmtpUser"] ?? "";
+                    string smtpPass = ConfigurationManager.AppSettings["SmtpPass"] ?? "";
 
-                    SmtpServer.Send(mail);
+                    if (!string.IsNullOrEmpty(smtpUser) && !string.IsNullOrEmpty(smtpPass))
+                    {
+                        SmtpServer.Credentials = new System.Net.NetworkCredential(smtpUser, smtpPass);
+                        SmtpServer.Send(mail);
+                    }
+                    else
+                    {
+                        dbcl.WriteToFile("Password reset email skipped: SMTP credentials not configured (SmtpUser/SmtpPass).");
+                    }
                 }
             }
             catch (Exception ex)
@@ -691,11 +698,18 @@ namespace WebApplication1.bussiness.production
                 SmtpServer.Port = 587;
                 SmtpServer.EnableSsl = true;
 
-                string smtpUser = ConfigurationManager.AppSettings["SmtpUser"] ?? "it.support@aminruptechnologies.co.in";
-                string smtpPass = ConfigurationManager.AppSettings["SmtpPass"] ?? "TPw800QrVMU2";
-                SmtpServer.Credentials = new System.Net.NetworkCredential(smtpUser, smtpPass);
+                string smtpUser = ConfigurationManager.AppSettings["SmtpUser"] ?? "";
+                string smtpPass = ConfigurationManager.AppSettings["SmtpPass"] ?? "";
 
-                SmtpServer.Send(mail);
+                if (!string.IsNullOrEmpty(smtpUser) && !string.IsNullOrEmpty(smtpPass))
+                {
+                    SmtpServer.Credentials = new System.Net.NetworkCredential(smtpUser, smtpPass);
+                    SmtpServer.Send(mail);
+                }
+                else
+                {
+                    dbcl.WriteToFile("OTP email skipped: SMTP credentials not configured (SmtpUser/SmtpPass).");
+                }
             }
         }
 

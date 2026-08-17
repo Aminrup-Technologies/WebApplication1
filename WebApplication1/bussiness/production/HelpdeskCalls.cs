@@ -62,8 +62,13 @@ namespace WebApplication1.bussiness.production
         {
             string smtpServer = "smtp.zoho.in";
             int smtpPort = 587;
-            string smtpUsername = "it.support@aminruptechnologies.co.in";
-            string smtpPassword = "TPw800QrVMU2";
+            string smtpUsername = System.Configuration.ConfigurationManager.AppSettings["SmtpUser"] ?? "";
+            string smtpPassword = System.Configuration.ConfigurationManager.AppSettings["SmtpPass"] ?? "";
+
+            if (string.IsNullOrEmpty(smtpUsername) || string.IsNullOrEmpty(smtpPassword))
+            {
+                return; // SMTP not configured - skip notification rather than crash the ticket flow
+            }
 
             try
             {
