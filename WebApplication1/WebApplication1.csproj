@@ -6375,7 +6375,7 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\packages\Microsoft Chart Controls\Assemblies\System.Web.DataVisualization.dll" />
+    <!-- Removed stale Analyzer: Microsoft Chart Controls was never a NuGet package, the folder does not exist on clean clones, and System.Web.DataVisualization is unused in code. -->
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bussiness\production\Logs\" />
