@@ -33,46 +33,58 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsPostBack)
             {
+                // 1. Session Validation
                 if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
                 {
-                    Response.Redirect("~/login.aspx");
+                    Response.Redirect("~/login.aspx", false);
+                    return;
+                }
+
+                // 2. Initialize Date Combo Boxes (Loads the DropDowns as "01", "02", etc.)
+                dbcl.CalDateCombo1(DDL_Day, DDL_Month, DDL_Year);
+
+                // 3. Check for URL Payloads (Sync Mode)
+                if (!string.IsNullOrEmpty(Request.QueryString["empwrk"]) &&
+                    !string.IsNullOrEmpty(Request.QueryString["month"]) &&
+                    !string.IsNullOrEmpty(Request.QueryString["year"]))
+                {
+                    string empWrk = Request.QueryString["empwrk"].Trim();
+
+                    // THE FIX: Pad the month with a leading zero so "5" safely becomes "05" to match the DropDown!
+                    string monthVal = Request.QueryString["month"].Trim().PadLeft(2, '0');
+                    string yearVal = Request.QueryString["year"].Trim();
+
+                    // Sync Date Dropdowns securely
+                    if (DDL_Month.Items.FindByValue(monthVal) != null)
+                        DDL_Month.SelectedValue = monthVal;
+
+                    if (DDL_Year.Items.FindByValue(yearVal) != null)
+                        DDL_Year.SelectedValue = yearVal;
+
+                    // Sync Search Type to 'By Workman SL' (Value = 2)
+                    DDL_SearchType.SelectedValue = "2";
+
+                    // Trigger the UI visibility toggle to show the Workman textbox
+                    DDL_SearchType_SelectedIndexChanged(null, null);
+
+                    // Populate the input payload
+                    txt_empworkman.Text = empWrk;
+
+                    // Automatically load the data grid and heatmap
+                    Binder();
                 }
                 else
                 {
-                    // 1. Initialize the Date Combo Boxes
-                    dbcl.CalDateCombo1(DDL_Day, DDL_Month, DDL_Year);
+                    // 4. Default Mode (Manual Entry)
+                    DDL_SearchType.SelectedIndex = 0;
 
-                    // 2. NEW LOGIC: Check if the page is receiving automated parameters from the Anomaly Ledger
-                    if (Request.QueryString["empwrk"] != null && Request.QueryString["month"] != null && Request.QueryString["year"] != null)
-                    {
-                        string empWrk = Request.QueryString["empwrk"].ToString();
-                        string monthVal = Request.QueryString["month"].ToString();
-                        string yearVal = Request.QueryString["year"].ToString();
+                    Nameinputrow1.Visible = false;
+                    Nameinputrow2.Visible = false;
+                    WorkmanInput_Row1.Visible = false;
+                    WorkmanInput_Row2.Visible = false;
 
-                        // Automate the "By Workman SL" Search Type Selection[cite: 1]
-                        DDL_SearchType.SelectedValue = "2";
-
-                        // Manually trigger the visibility logic for the textboxes[cite: 1]
-                        DDL_SearchType_SelectedIndexChanged(null, null);
-
-                        // Fill the text box with the Workman ID from the URL[cite: 1]
-                        txt_empworkman.Text = empWrk;
-
-                        // Match the month and year dropdowns to the URL parameters[cite: 1]
-                        if (DDL_Month.Items.FindByValue(monthVal) != null)
-                            DDL_Month.SelectedValue = monthVal;
-
-                        if (DDL_Year.Items.FindByValue(yearVal) != null)
-                            DDL_Year.SelectedValue = yearVal;
-
-                        // Automatically fire the grid binder to display results[cite: 1]
-                        Binder();
-                    }
-                    else
-                    {
-                        // Standard manual load behavior[cite: 1]
-                        DDL_SearchType.Focus();
-                    }
+                    pnlAnalytics.Visible = false;
+                    DDL_SearchType.Focus();
                 }
             }
         }

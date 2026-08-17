@@ -208,64 +208,57 @@
                                 <h5 class="mr-4 mb-2 font-weight-bold text-dark"><i class="fa fa-cogs"></i>Available Actions:</h5>
 
                                 <%-- Standard Pipeline Actions --%>
-                                <asp:LinkButton ID="btn_Act_UploadPermit" runat="server" CssClass="btn btn-primary btn-sm mb-2 mr-2" OnClick="btn_Act_UploadPermit_Click" Visible="false"
+                                <asp:LinkButton ID="btn_Act_UploadPermit" runat="server" CssClass="btn btn-primary btn-sm mb-2 mr-2" OnClick="btn_Act_UploadPermit_Click" Visible="false" CausesValidation="false"
                                     ToolTip="Proceed to upload mandatory safety permits for this shift."><i class="fa fa-paperclip"></i> Upload Permit</asp:LinkButton>
 
-                                <asp:LinkButton ID="btn_Act_InPunch" runat="server" CssClass="btn btn-info btn-sm mb-2 mr-2" OnClick="btn_Act_InPunch_Click" Visible="false"
+                                <asp:LinkButton ID="btn_Act_InPunch" runat="server" CssClass="btn btn-info btn-sm mb-2 mr-2" OnClick="btn_Act_InPunch_Click" Visible="false" CausesValidation="false"
                                     ToolTip="Open the scanner to IN-Punch manpower for this shift."><i class="fa fa-sign-in"></i> IN-Punch Manpower</asp:LinkButton>
 
-                                <asp:LinkButton ID="btn_Act_AddDocs" runat="server" CssClass="btn btn-info btn-sm mb-2 mr-2" OnClick="btn_Act_AddDocs_Click" Visible="false"
+                                <asp:LinkButton ID="btn_Act_AddDocs" runat="server" CssClass="btn btn-info btn-sm mb-2 mr-2" OnClick="btn_Act_AddDocs_Click" Visible="false" CausesValidation="false"
                                     ToolTip="Upload daily site compliance documents (TBT/SOP)."><i class="fa fa-file-text"></i> Add Site Docs</asp:LinkButton>
 
-                                <asp:LinkButton ID="btn_Act_OutPunch" runat="server" CssClass="btn btn-warning btn-sm mb-2 mr-2 text-dark" OnClick="btn_Act_OutPunch_Click" Visible="false"
+                                <asp:LinkButton ID="btn_Act_OutPunch" runat="server" CssClass="btn btn-warning btn-sm mb-2 mr-2 text-dark" OnClick="btn_Act_OutPunch_Click" Visible="false" CausesValidation="false"
                                     ToolTip="Proceed to OUT-Punch workers and close this shift."><i class="fa fa-sign-out"></i> OUT-Punch Shift</asp:LinkButton>
 
                                 <%-- Exception Handling & Overrides --%>
                                 <asp:LinkButton ID="btn_Act_Unblock" runat="server" CssClass="btn btn-dark btn-sm mb-2 mr-2" OnClick="btn_Act_Unblock_Click"
-                                    OnClientClick="return confirm('Are you sure you want to Unblock this JOB and grant a 24-hour grace period?');" Visible="false"
+                                    OnClientClick="if(!confirm('Are you sure you want to Unblock this JOB and grant a 24-hour grace period?')) return false;" Visible="false" CausesValidation="false"
                                     ToolTip="IMPACT: Removes the 72-hour system block and grants a 24-hour grace period for corrections."><i class="fa fa-unlock"></i> Unblock JOB</asp:LinkButton>
 
-                                <asp:LinkButton ID="btn_Act_Resubmit" runat="server" CssClass="btn btn-secondary btn-sm mb-2 mr-2" OnClick="btn_Act_Resubmit_Click" Visible="false"
+                                <asp:LinkButton ID="btn_Act_Resubmit" runat="server" CssClass="btn btn-secondary btn-sm mb-2 mr-2" OnClick="btn_Act_Resubmit_Click" Visible="false" CausesValidation="false"
                                     ToolTip="IMPACT: Resets rejected/cancelled jobs back to 'In-Punch Done' state and invalidates existing attendance so the supervisor can correct it."><i class="fa fa-refresh"></i> Fix & Resubmit</asp:LinkButton>
 
                                 <asp:LinkButton ID="btn_Act_ForceOut" runat="server" CssClass="btn btn-danger btn-sm mb-2 mr-2" OnClick="btn_Act_ForceOut_Click"
-                                    OnClientClick="return confirm('WARNING: This will forcefully clock out all manpower. Proceed?');" Visible="false"
+                                    OnClientClick="if(!confirm('WARNING: This will forcefully clock out all manpower. Proceed?')) return false;" Visible="false" CausesValidation="false"
                                     ToolTip="IMPACT: Automatically clocks out all active workers using their standard shift hours and forces the job to close."><i class="fa fa-stop-circle"></i> Force OUT-Punch</asp:LinkButton>
 
-                                <asp:LinkButton ID="btn_Act_SwapDate" runat="server" CssClass="btn btn-secondary btn-sm mb-2 mr-2" OnClick="btn_Act_SwapDate_Click" Visible="false"
+                                <asp:LinkButton ID="btn_Act_SwapDate" runat="server" CssClass="btn btn-secondary btn-sm mb-2 mr-2" OnClick="btn_Act_SwapDate_Click" Visible="false" CausesValidation="false"
                                     ToolTip="IMPACT: Changes the official creation date of this job (Allowed only if no attendance is logged)."><i class="fa fa-calendar"></i> Swap Date</asp:LinkButton>
 
                                 <asp:LinkButton ID="btn_Act_Delete" runat="server" CssClass="btn btn-danger btn-sm mb-2 mr-2" OnClick="btn_Act_Delete_Click"
-                                    OnClientClick="return confirm('Delete this JOB permanently? This cannot be undone.');" Visible="false"
+                                    OnClientClick="if(!confirm('Delete this JOB permanently? This cannot be undone.')) return false;" Visible="false" CausesValidation="false"
                                     ToolTip="IMPACT: Permanently soft-deletes this job and completely removes it from all active operational workflows."><i class="fa fa-trash"></i> Delete JOB</asp:LinkButton>
 
                                 <%-- Admin God Mode Actions --%>
                                 <asp:LinkButton ID="btn_Act_ForcePermitBypass" runat="server" CssClass="btn btn-warning btn-sm mb-2 mr-2 text-dark" OnClick="btn_Act_ForcePermitBypass_Click"
-                                    OnClientClick="return confirm('EMERGENCY BYPASS: Bypass the safety permit requirement?');" Visible="false"
+                                    OnClientClick="if(!confirm('EMERGENCY BYPASS: Bypass the safety permit requirement?')) return false;" Visible="false" CausesValidation="false"
                                     ToolTip="IMPACT: Administratively bypasses the safety permit requirement, unlocking the job for IN-Punching immediately."><i class="fa fa-shield"></i> Bypass Permits</asp:LinkButton>
 
                                 <asp:LinkButton ID="btn_Act_ResetToCreated" runat="server" CssClass="btn btn-danger btn-sm mb-2 mr-2" OnClick="btn_Act_ResetToCreated_Click"
-                                    OnClientClick="return confirm('ROLLBACK: Reset the job to Step 1 and delete attached permits?');" Visible="false"
+                                    OnClientClick="if(!confirm('ROLLBACK: Reset the job to Step 1 and delete attached permits?')) return false;" Visible="false" CausesValidation="false"
                                     ToolTip="IMPACT: Deletes all uploaded permits and rolls the job back to Step 1 (Created state)."><i class="fa fa-backward"></i> Reset to Created</asp:LinkButton>
 
                                 <asp:LinkButton ID="btn_Act_CancelShift" runat="server" CssClass="btn btn-dark btn-sm mb-2 mr-2" OnClick="btn_Act_CancelShift_Click"
-                                    OnClientClick="return confirm('CANCEL SHIFT: Mark this job as Void/Cancelled?');" Visible="false"
+                                    OnClientClick="if(!confirm('CANCEL SHIFT: Mark this job as Void/Cancelled?')) return false;" Visible="false" CausesValidation="false"
                                     ToolTip="IMPACT: Voids the ghost shift completely and safely archives the record."><i class="fa fa-times-circle"></i> Cancel/Void Shift</asp:LinkButton>
 
                                 <asp:LinkButton ID="btn_Act_AdminRollback" runat="server" CssClass="btn btn-warning btn-sm mb-2 mr-2 text-dark" OnClick="btn_Act_AdminRollback_Click"
-                                    OnClientClick="return confirm('ADMIN OVERRIDE: Revoke this approval and roll the JOB back to the Supervisor for corrections?');" Visible="false"
+                                    OnClientClick="if(!confirm('ADMIN OVERRIDE: Revoke this approval and roll the JOB back to the Supervisor for corrections?')) return false;" Visible="false" CausesValidation="false"
                                     ToolTip="IMPACT: Revokes Final Approval, changes status to 'Returned', and rolls the job back to the supervisor for critical payroll corrections.">
-                        <i class="fa fa-undo text-danger"></i> Admin Rollback
+    <i class="fa fa-undo text-danger"></i> Admin Rollback
                                 </asp:LinkButton>
 
-                                <asp:LinkButton ID="btn_Act_UnblockJob" runat="server" 
-                                    CssClass="btn btn-warning btn-sm" 
-                                    OnClick="btn_Act_UnblockJob_Click"
-                                    OnClientClick="return confirm('Are you sure you want to grant a 24-hour grace period to this job?');">
-                                    <i class="fa fa-unlock"></i> Unblock (24h)
-                                </asp:LinkButton>
-
-                                <asp:LinkButton ID="btn_Act_ViewRawData" runat="server" CssClass="btn btn-dark btn-sm mb-2 mr-2 text-white" OnClick="btn_Act_ViewRawData_Click" Visible="false"
+                                <asp:LinkButton ID="btn_Act_ViewRawData" runat="server" CssClass="btn btn-dark btn-sm mb-2 mr-2 text-white" OnClick="btn_Act_ViewRawData_Click" Visible="false" CausesValidation="false"
                                     ToolTip="IMPACT: Opens a developer-level view of the raw database rows linked to this JOBID for deep debugging."><i class="fa fa-database"></i> Raw DB Inspector</asp:LinkButton>
                             </div>
                         </div>
@@ -602,12 +595,12 @@
                                                     CssClass="btn btn-warning btn-xs text-dark" ToolTip="Modify Time/OT"
                                                     Visible='<%# IsAdmin() && Eval("DeleteStatus").ToString() != "1" %>'>
             <i class="fa fa-pencil"></i> Edit
-        </asp:LinkButton>
+                                                </asp:LinkButton>
                                                 <asp:LinkButton ID="btnInvalidate" runat="server" CommandName="InvalidateWorker" CommandArgument='<%# Eval("EmployeeWrk") %>'
                                                     CssClass="btn btn-danger btn-xs" ToolTip="Invalidate Worker" OnClientClick="return confirm('ADMIN ACTION: Remove this worker from the roster?');"
                                                     Visible='<%# IsAdmin() && Eval("DeleteStatus").ToString() != "1" %>'>
             <i class="fa fa-trash"></i> Drop
-        </asp:LinkButton>
+                                                </asp:LinkButton>
                                             </ItemTemplate>
                                             <ItemStyle CssClass="text-center" />
                                         </asp:TemplateField>

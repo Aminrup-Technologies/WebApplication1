@@ -24,10 +24,19 @@ namespace WebApplication1.bussiness.production
 
                 Bind_BillingType();
 
-                DateTime now = DateTime.Now;
-                lbl_year.Text = now.Year.ToString();
-                lbl_monthcode.Text = now.Month.ToString();
-                lbl_month.Text = now.ToString("MMMM");
+                // SOLUTION 2: Check if returning from Details page with saved Session state
+                if (Session["Grid_Year"] != null && Session["Grid_Month"] != null)
+                {
+                    lbl_year.Text = Session["Grid_Year"].ToString();
+                    lbl_monthcode.Text = Session["Grid_Month"].ToString();
+                }
+                else
+                {
+                    // First time visit, use current date
+                    DateTime now = DateTime.Now;
+                    lbl_year.Text = now.Year.ToString();
+                    lbl_monthcode.Text = now.Month.ToString().PadLeft(2, '0');
+                }
 
                 GridBinder(lbl_year.Text, lbl_monthcode.Text);
             }
@@ -72,6 +81,10 @@ namespace WebApplication1.bussiness.production
         // =================================================================================
         private void GridBinder(string year, string month)
         {
+            // SOLUTION 2: Save state to session every time the grid binds
+            Session["Grid_Year"] = year;
+            Session["Grid_Month"] = month;
+
             string monthName = "";
             dbcl.FindMonthName(month, ref monthName);
             lbl_month.Text = monthName;
@@ -81,7 +94,7 @@ namespace WebApplication1.bussiness.production
             try
             {
                 StringBuilder query = new StringBuilder();
-                query.Append("SELECT * FROM tbl_jobs WHERE Creator_Workman=@Workman AND YEAR(CreatedDate)=@Year AND MONTH(CreatedDate)=@Month ");
+                query.Append("SELECT Id, CreatedDate, Creator_Workman, JOBID, JOBID_Status, FinalUpldStatus, JOB_Site, JOB_Location, JOB_InchargeName, Incharge_Approval, JOB_Shift, JOB_PermitNo, ManpowerCount, JOB_Title FROM tbl_jobs WHERE Creator_Workman=@Workman AND YEAR(CreatedDate)=@Year AND MONTH(CreatedDate)=@Month AND ISNULL(DeleteStatus, 0) = 0 ");
 
                 // Dynamically append Status Filters
                 string statusFilter = DDL_JobStatus.SelectedValue;
@@ -256,44 +269,59 @@ namespace WebApplication1.bussiness.production
 
         protected void JOBID_Delete(string id, string dbcode)
         {
+            string deletedBy = Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "Unknown";
+
             try
             {
-                // Capture who is performing the delete for the Audit Trail
-                string deletedBy = Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "Unknown";
-
                 dbcl.Sqlconnection();
                 dbcl.ConnectDb();
 
-                // 1. Soft Delete the Main Job (Flag as Deleted & Hide from Views)
-                string qry1 = "UPDATE tbl_jobs SET DeleteStatus = 1, ViewStatus = 0, DeletedOn = GETDATE(), DeletedBy = @DeletedBy WHERE Id=@Id AND JOBID=@JOBID";
-                using (SqlCommand cmd1 = new SqlCommand(qry1, dbcl.Conn))
+                // 1. BEGIN THE TRANSACTION
+                using (SqlTransaction transaction = dbcl.Conn.BeginTransaction())
                 {
-                    cmd1.Parameters.AddWithValue("@Id", id);
-                    cmd1.Parameters.AddWithValue("@JOBID", dbcode);
-                    cmd1.Parameters.AddWithValue("@DeletedBy", deletedBy);
-                    cmd1.ExecuteNonQuery();
-                }
+                    try
+                    {
+                        // Soft Delete Main Job
+                        string qry1 = "UPDATE tbl_jobs SET DeleteStatus = 1, ViewStatus = 0, DeletedOn = GETDATE(), DeletedBy = @DeletedBy WHERE Id=@Id AND JOBID=@JOBID";
+                        using (SqlCommand cmd1 = new SqlCommand(qry1, dbcl.Conn, transaction))
+                        {
+                            cmd1.Parameters.AddWithValue("@Id", id);
+                            cmd1.Parameters.AddWithValue("@JOBID", dbcode);
+                            cmd1.Parameters.AddWithValue("@DeletedBy", deletedBy);
+                            cmd1.ExecuteNonQuery();
+                        }
 
-                // 2. Soft Delete all associated Attendance records
-                string qry2 = "UPDATE tbl_attendance SET DeleteStatus = 1, ViewStatus = 0, DeletedOn = GETDATE(), DeletedBy = @DeletedBy WHERE JOBID=@JOBID";
-                using (SqlCommand cmd2 = new SqlCommand(qry2, dbcl.Conn))
-                {
-                    cmd2.Parameters.AddWithValue("@JOBID", dbcode);
-                    cmd2.Parameters.AddWithValue("@DeletedBy", deletedBy);
-                    cmd2.ExecuteNonQuery();
-                }
+                        // Soft Delete Attendance
+                        string qry2 = "UPDATE tbl_attendance SET DeleteStatus = 1, ViewStatus = 0, DeletedOn = GETDATE(), DeletedBy = @DeletedBy WHERE JOBID=@JOBID";
+                        using (SqlCommand cmd2 = new SqlCommand(qry2, dbcl.Conn, transaction))
+                        {
+                            cmd2.Parameters.AddWithValue("@JOBID", dbcode);
+                            cmd2.Parameters.AddWithValue("@DeletedBy", deletedBy);
+                            cmd2.ExecuteNonQuery();
+                        }
 
-                // 3. Soft Delete all associated Permit documents
-                string qry3 = "UPDATE tbl_jobspermit SET DeleteStatus = 1, ViewStatus = 0, DeletedOn = GETDATE(), DeletedBy = @DeletedBy WHERE JOBID=@JOBID";
-                using (SqlCommand cmd3 = new SqlCommand(qry3, dbcl.Conn))
-                {
-                    cmd3.Parameters.AddWithValue("@JOBID", dbcode);
-                    cmd3.Parameters.AddWithValue("@DeletedBy", deletedBy);
-                    cmd3.ExecuteNonQuery();
-                }
+                        // Soft Delete Permits
+                        string qry3 = "UPDATE tbl_jobspermit SET DeleteStatus = 1, ViewStatus = 0, DeletedOn = GETDATE(), DeletedBy = @DeletedBy WHERE JOBID=@JOBID";
+                        using (SqlCommand cmd3 = new SqlCommand(qry3, dbcl.Conn, transaction))
+                        {
+                            cmd3.Parameters.AddWithValue("@JOBID", dbcode);
+                            cmd3.Parameters.AddWithValue("@DeletedBy", deletedBy);
+                            cmd3.ExecuteNonQuery();
+                        }
 
-                ShowNotification("Deleted", "Job and associated records have been removed successfully.", "success");
-                GridBinder(lbl_year.Text, lbl_monthcode.Text); // Refresh UI
+                        // 2. IF ALL SUCCEED, COMMIT THE CHANGES TO DATABASE
+                        transaction.Commit();
+
+                        ShowNotification("Deleted", "Job and associated records have been removed successfully.", "success");
+                        GridBinder(lbl_year.Text, lbl_monthcode.Text); // Refresh UI
+                    }
+                    catch (Exception ex)
+                    {
+                        // 3. IF ANY STEP FAILS, ROLLBACK EVERYTHING!
+                        transaction.Rollback();
+                        throw new Exception("Database update interrupted. All changes reversed. Error: " + ex.Message);
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -303,39 +331,6 @@ namespace WebApplication1.bussiness.production
             {
                 dbcl.DisconnectDb();
             }
-        }
-
-        protected void JOBID_Delete_OLD(string id, string dbcode)
-        {
-            try
-            {
-                dbcl.Sqlconnection();
-                dbcl.ConnectDb();
-
-                using (SqlCommand cmd1 = new SqlCommand("DELETE FROM tbl_jobs WHERE Id=@Id AND JOBID=@JOBID", dbcl.Conn))
-                {
-                    cmd1.Parameters.AddWithValue("@Id", id);
-                    cmd1.Parameters.AddWithValue("@JOBID", dbcode);
-                    cmd1.ExecuteNonQuery();
-                }
-
-                using (SqlCommand cmd2 = new SqlCommand("DELETE FROM tbl_attendance WHERE JOBID=@JOBID", dbcl.Conn))
-                {
-                    cmd2.Parameters.AddWithValue("@JOBID", dbcode);
-                    cmd2.ExecuteNonQuery();
-                }
-
-                using (SqlCommand cmd3 = new SqlCommand("DELETE FROM tbl_jobspermit WHERE JOBID=@JOBID", dbcl.Conn))
-                {
-                    cmd3.Parameters.AddWithValue("@JOBID", dbcode);
-                    cmd3.ExecuteNonQuery();
-                }
-
-                ShowNotification("Deleted", "Data Deleted Successfully", "success");
-                GridBinder(lbl_year.Text, lbl_monthcode.Text); // Refresh UI
-            }
-            catch (Exception ex) { ShowNotification("Delete Failed", ex.Message, "error"); }
-            finally { dbcl.DisconnectDb(); }
         }
 
         // =================================================================================
@@ -353,7 +348,11 @@ namespace WebApplication1.bussiness.production
             DDL_BillingType.SelectedIndex = 0;
 
             lbl_year.Text = DateTime.Now.Year.ToString();
-            lbl_monthcode.Text = DateTime.Now.Month.ToString();
+            lbl_monthcode.Text = DateTime.Now.Month.ToString().PadLeft(2, '0');
+
+            // SOLUTION 2: Clear saved state when explicitly resetting
+            Session.Remove("Grid_Year");
+            Session.Remove("Grid_Month");
 
             GridBinder(lbl_year.Text, lbl_monthcode.Text);
         }

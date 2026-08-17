@@ -1113,10 +1113,11 @@ namespace WebApplication1.bussiness.production
                 dbcl.Sqlconnection();
                 dbcl.ConnectDb();
 
-                // SAFE SQL: Only update the approval fields. Do NOT touch AttendanceStatus or AttendanceCode.
+                // REVISED SQL: Update approval fields AND overwrite AttendanceStatus to 'Present'
                 string CmdString = @"UPDATE tbl_attendance 
                              SET SiteIncharge_Approval = @SiteIncharge_Approval, 
-                                 Approval_Date = GETDATE() 
+                                 Approval_Date = GETDATE(),
+                                 AttendanceStatus = 'Present'
                              WHERE JOBID = @JOBID AND DeleteStatus = 0";
 
                 using (SqlCommand cmd = new SqlCommand(CmdString, dbcl.Conn))
@@ -1488,6 +1489,54 @@ namespace WebApplication1.bussiness.production
         protected void btn_attachmanpower_Click(object sender, EventArgs e)
         {
             Response.Redirect("attach_manpower.aspx?JOBID=" + txt_jobid.Text.ToString() + "");
+        }
+
+        protected void btn_reject_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string jobid = txt_jobid.Text.ToString();
+                string remarks = txt_remarks.Text.Trim();
+
+                // Optional but recommended: Force the approver to provide a reason for rejection
+                if (string.IsNullOrEmpty(remarks) || remarks.Equals("N/A", StringComparison.OrdinalIgnoreCase))
+                {
+                    string valTitle = "Validation Error:";
+                    string valBody = "Please provide remarks for rejecting this job.";
+                    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + valTitle + "', '" + valBody + "');", true);
+                    return;
+                }
+
+                // 1. Update Attendance Status to Rejected
+                if (Update_AttendanceTableStatus(jobid, "Rejected") == true)
+                {
+                    // 2. Update the master JOB table
+                    // Note: Adjust the MasterStatusCode ("5") if your DB uses a different code for rejected states
+                    Update_JOBTableStatus(jobid, "Blocked", "Rejected by Approver", "5", "Rejected", remarks);
+
+                    // 3. Update UI
+                    txt_remarks.ReadOnly = true;
+                    btn_reject.Enabled = false;
+                    btn_reject.Text = "Rejected";
+                    btn_approve.Visible = false;
+
+                    // 4. Re-bind to refresh the state
+                    Bind_JOBIDDetails(jobid);
+
+                    // 5. Log the action (matching your approval logging pattern)
+                    JobWorkflowLogger.LogAction(jobid, "APPROVER: JOB REJECTED", Session["WORKMAN"].ToString(), "Shift rejected by Site In-Charge.");
+
+                    string title = "Success:";
+                    string body = "JOBID has been Rejected.";
+                    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                }
+            }
+            catch (Exception ex)
+            {
+                string title = "Error :";
+                string body = ex.Message;
+                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+            }
         }
     }
 }
