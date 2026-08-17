@@ -89,8 +89,15 @@ namespace WebApplication1.bussiness.production
 
         private void LogLoginTiming(string phase, Stopwatch sw, string loginId)
         {
-            if (EnableLoginTimingLog)
+            if (!EnableLoginTimingLog) return;
+            try
+            {
                 dbcl.WriteToFile("LOGIN-TIMING [" + loginId + "] [" + phase + "] " + sw.ElapsedMilliseconds + "ms");
+            }
+            catch
+            {
+                // Logging must never break the login flow; swallow I/O failures.
+            }
         }
 
         private void PerformLogin(string id, string pass)
@@ -133,6 +140,14 @@ namespace WebApplication1.bussiness.production
                 return;
             }
 
+            // Migrate legacy plain-text password to hash regardless of account status,
+            // so plaintext never lingers for blocked accounts either.
+            if (needsMigration)
+            {
+                dbcl.SPreturn_dt("UPDATE tbl_Employee_Mustertable SET LoginPassword=@NewHash WHERE LoginID=@ID",
+                    new SqlParameter[] { new SqlParameter("@NewHash", inputHashedPass), new SqlParameter("@ID", id) });
+            }
+
             // Active Status Check
             if (row["WorkStatus"].ToString() != "Active")
             {
@@ -143,8 +158,8 @@ namespace WebApplication1.bussiness.production
 
             // --- ALL VALIDATIONS PASSED: PROCEED WITH LOGIN ---
 
-            // Single batched post-auth write: audit entry + LastLogin/LoginStatus update, plus the
-            // legacy plain-text -> hash migration when needed. One round-trip instead of two/three.
+            // Single batched post-auth write: audit entry + LastLogin/LoginStatus update.
+            // One round-trip instead of two. (Legacy password migration runs separately above.)
             string postAuthSql = @"
                 INSERT INTO tbl_UserLoginAudit (LoginID, WorkmanSL, LoginTime, LoginResult, FailureReason, IPAddress, UserAgent, SessionID)
                 VALUES (@LoginID, @WorkmanSL, GETDATE(), 'SUCCESS', NULL, @IP, @Agent, @SessionID);
@@ -158,12 +173,6 @@ namespace WebApplication1.bussiness.production
                 new SqlParameter("@Agent", Request.UserAgent ?? ""),
                 new SqlParameter("@SessionID", Session.SessionID)
             };
-
-            if (needsMigration)
-            {
-                postAuthSql += " UPDATE tbl_Employee_Mustertable SET LoginPassword = @NewHash WHERE LoginID = @LoginID;";
-                postAuthParams.Add(new SqlParameter("@NewHash", inputHashedPass));
-            }
 
             dbcl.SPreturn_dt(postAuthSql, postAuthParams.ToArray());
             LogLoginTiming("postAuthWrite", sw, id);

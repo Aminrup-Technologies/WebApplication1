@@ -80,8 +80,15 @@ namespace WebApplication1.bussiness.production
 
         private void LogTiming(string phase, Stopwatch sw)
         {
-            if (EnableTimingLog)
+            if (!EnableTimingLog) return;
+            try
+            {
                 dbcl.WriteToFile("HOMEPAGE-TIMING [" + phase + "] " + sw.ElapsedMilliseconds + "ms");
+            }
+            catch
+            {
+                // Logging must never break the dashboard load; swallow I/O failures.
+            }
         }
 
         private void ShowNotification(string title, string message, string type)
