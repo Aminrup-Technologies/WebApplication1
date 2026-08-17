@@ -1666,40 +1666,40 @@ namespace WebApplication1.bussiness.production
                 return;
             }
 
-            try
-            {
-                dbcl.Sqlconnection();
-                dbcl.ConnectDb();
+            //try
+            //{
+            //    dbcl.Sqlconnection();
+            //    dbcl.ConnectDb();
 
-                // SQL: Lift the block and set the grace period expiration
-                string qry = @"UPDATE tbl_jobs 
-                       SET IsBlocked = 0, 
-                           UnblockedUntil = DATEADD(hour, 24, GETDATE()) 
-                       WHERE JOBID = @JOBID";
+            //    // SQL: Lift the block and set the grace period expiration
+            //    string qry = @"UPDATE tbl_jobs 
+            //           SET IsBlocked = 0, 
+            //               UnblockedUntil = DATEADD(hour, 24, GETDATE()) 
+            //           WHERE JOBID = @JOBID";
 
-                using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
-                {
-                    cmd.Parameters.AddWithValue("@JOBID", txt_jobid.Text.Trim());
-                    cmd.ExecuteNonQuery();
-                }
+            //    using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
+            //    {
+            //        cmd.Parameters.AddWithValue("@JOBID", txt_jobid.Text.Trim());
+            //        cmd.ExecuteNonQuery();
+            //    }
 
-                // AUDIT LOGGING (Using your centralized logger)
-                JobWorkflowLogger.LogAction(txt_jobid.Text, "ADMIN: UNBLOCK JOB", Session["WORKMAN"].ToString(),
-                    "Granted 24-hour grace period to blocked job. Standard processing re-enabled.");
+            //    // AUDIT LOGGING (Using your centralized logger)
+            //    JobWorkflowLogger.LogAction(txt_jobid.Text, "ADMIN: UNBLOCK JOB", Session["WORKMAN"].ToString(),
+            //        "Granted 24-hour grace period to blocked job. Standard processing re-enabled.");
 
-                ShowNotification("Job Unblocked", "The job has been unblocked for the next 24 hours.", "success");
+            //    ShowNotification("Job Unblocked", "The job has been unblocked for the next 24 hours.", "success");
 
-                // Refresh the Control Tower view
-                Load360View(txt_jobid.Text);
-            }
-            catch (Exception ex)
-            {
-                ShowNotification("Unblock Error", ex.Message, "error");
-            }
-            finally
-            {
-                dbcl.DisconnectDb();
-            }
+            //    // Refresh the Control Tower view
+            //    Load360View(txt_jobid.Text);
+            //}
+            //catch (Exception ex)
+            //{
+            //    ShowNotification("Unblock Error", ex.Message, "error");
+            //}
+            //finally
+            //{
+            //    dbcl.DisconnectDb();
+            //}
         }
     }
 }

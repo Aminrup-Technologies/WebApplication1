@@ -118,8 +118,11 @@
                         </asp:GridView>
                     </div>
                 </div>
-
+                
             </ContentTemplate>
+            <Triggers>
+                    <asp:PostBackTrigger ControlID="btnExportExcel" />
+                </Triggers>
         </asp:UpdatePanel>
     </div>
 </asp:Content>

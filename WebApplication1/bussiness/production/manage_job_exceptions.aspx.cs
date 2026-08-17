@@ -4,6 +4,8 @@ using System.Data.SqlClient;
 using System.Web.UI.WebControls;
 using ClosedXML.Excel;
 using System.IO;
+using System.Web;
+using System.Web.UI;
 
 namespace WebApplication1.bussiness.production
 {
@@ -193,32 +195,83 @@ namespace WebApplication1.bussiness.production
 
         protected void btnExportExcel_Click(object sender, EventArgs e)
         {
-            if (Session["ExceptionExportData"] != null)
+            try
             {
-                DataTable dt = (DataTable)Session["ExceptionExportData"];
+                DataTable dt = Session["ExceptionExportData"] as DataTable;
+
+                if (dt == null || dt.Rows.Count == 0)
+                {
+                    ScriptManager.RegisterStartupScript(this, GetType(), "msg",
+                        "alert('No records available for export.');", true);
+                    return;
+                }
+
+                // Create a copy so original session data remains untouched
+                DataTable exportDt = dt.Copy();
+
+                // Remove unwanted columns
+                if (exportDt.Columns.Contains("Recommended_Admin_Action"))
+                    exportDt.Columns.Remove("Recommended_Admin_Action");
 
                 using (XLWorkbook wb = new XLWorkbook())
                 {
-                    // Remove the "Recommended_Admin_Action" column if you don't want it in the clean ledger export
-                    DataTable exportDt = dt.Copy();
-                    exportDt.Columns.Remove("Recommended_Admin_Action");
+                    var ws = wb.Worksheets.Add(exportDt, "Exceptions Ledger");
 
-                    wb.Worksheets.Add(exportDt, "Exceptions_Ledger");
+                    // -----------------------------
+                    // Worksheet Formatting
+                    // -----------------------------
+                    ws.Row(1).Style.Font.Bold = true;
+                    ws.Row(1).Style.Font.FontColor = XLColor.White;
+                    ws.Row(1).Style.Fill.BackgroundColor = XLColor.SteelBlue;
+                    ws.Row(1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    ws.Row(1).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
 
-                    Response.Clear();
-                    Response.Buffer = true;
-                    Response.Charset = "";
-                    Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                    Response.AddHeader("content-disposition", $"attachment;filename=Job_Exceptions_{DateTime.Now.ToString("yyyyMMdd")}.xlsx");
+                    // Adjust columns
+                    ws.Columns().AdjustToContents();
 
-                    using (MemoryStream MyMemoryStream = new MemoryStream())
+                    // Freeze Header
+                    ws.SheetView.FreezeRows(1);
+
+                    // Add thin borders
+                    ws.RangeUsed().Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                    ws.RangeUsed().Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+
+                    // Center specific columns (optional)
+                    ws.Columns(1, 3).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                    using (MemoryStream stream = new MemoryStream())
                     {
-                        wb.SaveAs(MyMemoryStream);
-                        MyMemoryStream.WriteTo(Response.OutputStream);
+                        wb.SaveAs(stream);
+
+                        Response.Clear();
+                        Response.ClearContent();
+                        Response.ClearHeaders();
+                        Response.Buffer = true;
+
+                        Response.ContentType =
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                        Response.AddHeader(
+                            "Content-Disposition",
+                            "attachment; filename=Job_Exceptions_" +
+                            DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx");
+
+                        Response.BinaryWrite(stream.ToArray());
+
                         Response.Flush();
-                        Response.End();
+
+                        HttpContext.Current.ApplicationInstance.CompleteRequest();
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                ScriptManager.RegisterStartupScript(
+                    this,
+                    GetType(),
+                    "ExportError",
+                    "alert('Excel Export Failed : " + ex.Message.Replace("'", "") + "');",
+                    true);
             }
         }
     }

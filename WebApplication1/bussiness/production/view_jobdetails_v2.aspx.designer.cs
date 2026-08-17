@@ -22,6 +22,42 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.HiddenField HF_Msg;
         
         /// <summary>
+        /// btn_update control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btn_update;
+        
+        /// <summary>
+        /// btn_cancel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btn_cancel;
+        
+        /// <summary>
+        /// btn_share_whatsapp control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton btn_share_whatsapp;
+        
+        /// <summary>
+        /// btn_back control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btn_back;
+        
+        /// <summary>
         /// txt_jobtitle control.
         /// </summary>
         /// <remarks>
@@ -94,15 +130,6 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.TextBox txt_permitno;
         
         /// <summary>
-        /// RegularExpressionValidator1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RegularExpressionValidator RegularExpressionValidator1;
-        
-        /// <summary>
         /// txt_worksitename control.
         /// </summary>
         /// <remarks>
@@ -139,24 +166,6 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.TextBox txt_jobloc;
         
         /// <summary>
-        /// txt_jobsupv control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txt_jobsupv;
-        
-        /// <summary>
-        /// lbl_creatorwrk control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbl_creatorwrk;
-        
-        /// <summary>
         /// txt_inchargename control.
         /// </summary>
         /// <remarks>
@@ -175,76 +184,22 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Label lbl_inchargewrk;
         
         /// <summary>
-        /// txt_approverrmrks control.
+        /// txt_jobsupv control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txt_approverrmrks;
+        protected global::System.Web.UI.WebControls.TextBox txt_jobsupv;
         
         /// <summary>
-        /// btn_update control.
+        /// lbl_creatorwrk control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btn_update;
-        
-        /// <summary>
-        /// btn_cancel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btn_cancel;
-        
-        /// <summary>
-        /// btn_back control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btn_back;
-        
-        /// <summary>
-        /// lbl_msg control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbl_msg;
-        
-        /// <summary>
-        /// btn_share_whatsapp control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btn_share_whatsapp;
-        
-        /// <summary>
-        /// lbl_permitdeleteddate control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbl_permitdeleteddate;
-        
-        /// <summary>
-        /// lbl_permitdeletedby control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbl_permitdeletedby;
+        protected global::System.Web.UI.WebControls.Label lbl_creatorwrk;
         
         /// <summary>
         /// GridView1 control.
@@ -256,13 +211,22 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.GridView GridView1;
         
         /// <summary>
-        /// GridView2 control.
+        /// attachmanpowerrow control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView GridView2;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl attachmanpowerrow;
+        
+        /// <summary>
+        /// btn_attachmanpower control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btn_attachmanpower;
         
         /// <summary>
         /// ResendApp_Div control.
@@ -283,39 +247,12 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Button btn_resendapp;
         
         /// <summary>
-        /// lbl_resenddiv_msg control.
+        /// GridView2 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lbl_resenddiv_msg;
-        
-        /// <summary>
-        /// attachmanpowerrow control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl attachmanpowerrow;
-        
-        /// <summary>
-        /// Label1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label Label1;
-        
-        /// <summary>
-        /// btn_attachmanpower control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btn_attachmanpower;
+        protected global::System.Web.UI.WebControls.GridView GridView2;
     }
 }
