@@ -6,6 +6,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Drawing;
 using System.Threading;
 using System.IO;
@@ -70,6 +71,26 @@ namespace WebApplication1.bussiness.production
         // ==========================================
         // PNOTIFY HELPER METHOD
         // ==========================================
+
+        // Opt-in phase timings for diagnosing the slow post-login landing experience.
+        // Enable by adding <add key="EnableLoginTimingLog" value="true" /> to appSettings.
+        private static readonly bool EnableTimingLog =
+            string.Equals(System.Configuration.ConfigurationManager.AppSettings["EnableLoginTimingLog"],
+                          "true", StringComparison.OrdinalIgnoreCase);
+
+        private void LogTiming(string phase, Stopwatch sw)
+        {
+            if (!EnableTimingLog) return;
+            try
+            {
+                dbcl.WriteToFile("HOMEPAGE-TIMING [" + phase + "] " + sw.ElapsedMilliseconds + "ms");
+            }
+            catch
+            {
+                // Logging must never break the dashboard load; swallow I/O failures.
+            }
+        }
+
         private void ShowNotification(string title, string message, string type)
         {
             // 'type' options: 'success', 'error', 'info', 'notice'
@@ -171,6 +192,8 @@ namespace WebApplication1.bussiness.production
 
         private void LoadAllHomepageData()
         {
+            Stopwatch sw = Stopwatch.StartNew();
+
             //string workmanSL = Session["WORKMAN"]?.ToString() ?? "";
             //string loginID = Session["USERID"]?.ToString() ?? "";
 
@@ -205,6 +228,7 @@ namespace WebApplication1.bussiness.production
                         }
                     }
                 } // Connection closes automatically here
+                LogTiming("spGetEmployeeHomepageData", sw);
 
                 // 2. DISTRIBUTE DATA TO UI
                 if (ds.Tables.Count >= 3)
@@ -216,9 +240,12 @@ namespace WebApplication1.bussiness.production
                     // Update loginstatus and Last Login Information
                     //dbcl.UPDT_EmpMuster_LoginInfo(workmanSL, loginID);
                 }
+                LogTiming("processEmployeeData", sw);
 
                 // 3. Keep Attendance separate as it uses external Payroll class logic
                 AttendanceDataBinder();
+                LogTiming("attendanceDataBinder", sw);
+                LogTiming("total", sw);
             }
             catch (Exception ex)
             {

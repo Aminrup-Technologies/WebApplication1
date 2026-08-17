@@ -5,8 +5,10 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Mail;
@@ -79,90 +81,29 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-        private void PerformLogin_OLD(string id, string pass)
+        // Opt-in phase timings for diagnosing slow logins on a specific environment.
+        // Enable by adding <add key="EnableLoginTimingLog" value="true" /> to appSettings.
+        private static readonly bool EnableLoginTimingLog =
+            string.Equals(System.Configuration.ConfigurationManager.AppSettings["EnableLoginTimingLog"],
+                          "true", StringComparison.OrdinalIgnoreCase);
+
+        private void LogLoginTiming(string phase, Stopwatch sw, string loginId)
         {
-            string inputHashedPass = HashPassword(pass);
-            string query = @"
-                SELECT TOP 1 
-                    LoginID, LoginPassword, WorkStatus, DOR, PasswordExpiry, WorkmanSL, FirstName, FullName,
-                    User_RoleType, UserRoleDB, RolePermissionDB, WorkRegion, WorkState, WorkCompany,
-                    WorkSite, Worksite_Code, SkillDesignation, SkillCategory, PrfPicFile
-                FROM tbl_Employee_Mustertable WHERE LoginID = @LoginID";
-
-            DataTable dt = dbcl.SPreturn_dt(query, new SqlParameter[] { new SqlParameter("@LoginID", id) });
-
-            if (dt.Rows.Count == 0)
+            if (!EnableLoginTimingLog) return;
+            try
             {
-                InsertLoginAudit(id, null, "FAILED", "InvalidUser");
-                Notify("Failed", "Invalid ID or Password.", "error");
-                return;
+                dbcl.WriteToFile("LOGIN-TIMING [" + loginId + "] [" + phase + "] " + sw.ElapsedMilliseconds + "ms");
             }
-
-            DataRow row = dt.Rows[0];
-            string storedPassword = row["LoginPassword"].ToString();
-            string workmanSL = row["WorkmanSL"].ToString();
-
-            bool isPasswordValid = false;
-            bool needsMigration = false;
-
-            if (storedPassword == inputHashedPass) { isPasswordValid = true; }
-            else if (storedPassword == pass) { isPasswordValid = true; needsMigration = true; }
-
-            if (!isPasswordValid)
+            catch
             {
-                InsertLoginAudit(id, workmanSL, "FAILED", "InvalidPassword");
-                Notify("Failed", "Invalid ID or Password.", "error");
-                return;
+                // Logging must never break the login flow; swallow I/O failures.
             }
-
-            if (needsMigration)
-            {
-                dbcl.SPreturn_dt("UPDATE tbl_Employee_Mustertable SET LoginPassword=@NewHash WHERE LoginID=@ID",
-                    new SqlParameter[] { new SqlParameter("@NewHash", inputHashedPass), new SqlParameter("@ID", id) });
-            }
-
-            if (row["WorkStatus"].ToString() != "Active")
-            {
-                InsertLoginAudit(id, workmanSL, "BLOCKED", "Inactive");
-                Notify("Denied", "Account is inactive.", "error");
-                return;
-            }
-
-            InsertLoginAudit(id, workmanSL, "SUCCESS", null);
-
-            if (chk_remember.Checked) { Response.Cookies.Add(new HttpCookie("ATS_SavedID", id) { Expires = DateTime.Now.AddDays(15) }); }
-            else if (Request.Cookies["ATS_SavedID"] != null) { Response.Cookies["ATS_SavedID"].Expires = DateTime.Now.AddDays(-1); }
-
-            dbcl.SPreturn_dt("UPDATE tbl_Employee_Mustertable SET LastLogin=GETDATE(), LoginStatus=1 WHERE LoginID=@ID", new SqlParameter[] { new SqlParameter("@ID", id) });
-
-            string loginID = row["LoginID"].ToString();
-
-            Session["USERID"] = loginID;
-            Session["WORKMAN"] = workmanSL;
-            Session["USERFNAME"] = row["FirstName"].ToString();
-            Session["USERNAME"] = row["FullName"].ToString();
-            Session["USERTYPE"] = row["User_RoleType"].ToString();
-            Session["UserRoleDB"] = row["UserRoleDB"].ToString();
-            Session["RolePermissionDB"] = row["RolePermissionDB"].ToString();
-            Session["REGION"] = row["WorkRegion"].ToString();
-            Session["STATE"] = row["WorkState"].ToString();
-            Session["COMPANY_CODE"] = row["WorkCompany"].ToString();
-            Session["U_SITE"] = row["WorkSite"].ToString();
-            Session["U_SITECODE"] = row["Worksite_Code"].ToString();
-            Session["U_DESG"] = row["SkillDesignation"].ToString();
-            Session["U_SKILL"] = row["SkillCategory"].ToString();
-
-            string photo = row["PrfPicFile"].ToString();
-            Session["User_Photo"] = (!string.IsNullOrEmpty(photo) && Directory.Exists(rootFolder) && File.Exists(Path.Combine(rootFolder, photo))) ? photo : "No_Image.jpg";
-
-            dbcl.UPDT_EmpMuster_LoginInfo(workmanSL, loginID);
-
-            Response.Redirect("~/bussiness/production/homepage_v2.aspx", false);
-            Context.ApplicationInstance.CompleteRequest();
         }
 
         private void PerformLogin(string id, string pass)
         {
+            Stopwatch sw = Stopwatch.StartNew();
+
             string inputHashedPass = HashPassword(pass);
             string query = @"
                 SELECT TOP 1 
@@ -172,6 +113,7 @@ namespace WebApplication1.bussiness.production
                 FROM tbl_Employee_Mustertable WHERE LoginID = @LoginID";
 
             DataTable dt = dbcl.SPreturn_dt(query, new SqlParameter[] { new SqlParameter("@LoginID", id) });
+            LogLoginTiming("fetchUser", sw, id);
 
             if (dt.Rows.Count == 0)
             {
@@ -198,7 +140,8 @@ namespace WebApplication1.bussiness.production
                 return;
             }
 
-            // Migrate plain-text password to hash if needed
+            // Migrate legacy plain-text password to hash regardless of account status,
+            // so plaintext never lingers for blocked accounts either.
             if (needsMigration)
             {
                 dbcl.SPreturn_dt("UPDATE tbl_Employee_Mustertable SET LoginPassword=@NewHash WHERE LoginID=@ID",
@@ -215,15 +158,28 @@ namespace WebApplication1.bussiness.production
 
             // --- ALL VALIDATIONS PASSED: PROCEED WITH LOGIN ---
 
-            InsertLoginAudit(id, workmanSL, "SUCCESS", null);
+            // Single batched post-auth write: audit entry + LastLogin/LoginStatus update.
+            // One round-trip instead of two. (Legacy password migration runs separately above.)
+            string postAuthSql = @"
+                INSERT INTO tbl_UserLoginAudit (LoginID, WorkmanSL, LoginTime, LoginResult, FailureReason, IPAddress, UserAgent, SessionID)
+                VALUES (@LoginID, @WorkmanSL, GETDATE(), 'SUCCESS', NULL, @IP, @Agent, @SessionID);
+                UPDATE tbl_Employee_Mustertable SET LastLogin = GETDATE(), LoginStatus = 1 WHERE LoginID = @LoginID;";
+
+            List<SqlParameter> postAuthParams = new List<SqlParameter>
+            {
+                new SqlParameter("@LoginID", id),
+                new SqlParameter("@WorkmanSL", (object)workmanSL ?? DBNull.Value),
+                new SqlParameter("@IP", Request.UserHostAddress ?? ""),
+                new SqlParameter("@Agent", Request.UserAgent ?? ""),
+                new SqlParameter("@SessionID", Session.SessionID)
+            };
+
+            dbcl.SPreturn_dt(postAuthSql, postAuthParams.ToArray());
+            LogLoginTiming("postAuthWrite", sw, id);
 
             // Handle 'Remember Me' Cookie
             if (chk_remember.Checked) { Response.Cookies.Add(new HttpCookie("ATS_SavedID", id) { Expires = DateTime.Now.AddDays(15) }); }
             else if (Request.Cookies["ATS_SavedID"] != null) { Response.Cookies["ATS_SavedID"].Expires = DateTime.Now.AddDays(-1); }
-
-            // Update Login Timestamp and Active Status (Consolidated into 1 query)
-            dbcl.SPreturn_dt("UPDATE tbl_Employee_Mustertable SET LastLogin=GETDATE(), LoginStatus=1 WHERE LoginID=@ID",
-                new SqlParameter[] { new SqlParameter("@ID", id) });
 
             string loginID = row["LoginID"].ToString();
 
@@ -242,12 +198,15 @@ namespace WebApplication1.bussiness.production
             Session[SessionKeys.SiteCode] = row["Worksite_Code"].ToString();
             Session[SessionKeys.Designation] = row["SkillDesignation"].ToString();
             Session[SessionKeys.Skill] = row["SkillCategory"].ToString();
+            LogLoginTiming("sessionSet", sw, id);
 
             // Handle Profile Picture securely
             string photo = row["PrfPicFile"].ToString();
             Session[SessionKeys.UserPhoto] = (!string.IsNullOrEmpty(photo) && Directory.Exists(rootFolder) && File.Exists(Path.Combine(rootFolder, photo)))
                                             ? photo
                                             : "No_Image.jpg";
+
+            LogLoginTiming("total", sw, id);
 
             // Redirect to new optimized dashboard
             Response.Redirect("~/bussiness/production/homepage_v2.aspx", false);
