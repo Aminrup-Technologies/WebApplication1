@@ -27,7 +27,7 @@ namespace WebApplication1.bussiness.production
 
         // TODO: Provide the Superset username and password of an account that has access to view this dashboard
         private static readonly string ServiceUsername = "magician";
-        private static readonly string ServicePassword = "M@g1k_25";
+        private static readonly string ServicePassword = System.Configuration.ConfigurationManager.AppSettings["SupersetPassword"] ?? "";
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -52,6 +52,11 @@ namespace WebApplication1.bussiness.production
 
         private static async Task<string> GetGuestTokenAsync()
         {
+            if (string.IsNullOrEmpty(ServicePassword))
+            {
+                throw new Exception("Superset service password not configured (SupersetPassword appSettings).");
+            }
+
             using (HttpClient client = new HttpClient())
             {
                 // STEP 1: Get the standard access token

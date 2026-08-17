@@ -15,7 +15,7 @@ namespace WebApplication1.bussiness.production
         private static readonly string SupersetBaseUrl = "https://reports.aminruptechnologies.co.in";
         private static readonly string EmbeddedId = "d4a3719c-a6f4-404e-ad3a-a48d1055921a";
         private static readonly string ServiceUsername = "magician";
-        private static readonly string ServicePassword = "M@g1k_25";
+        private static readonly string ServicePassword = System.Configuration.ConfigurationManager.AppSettings["SupersetPassword"] ?? "";
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -38,6 +38,11 @@ namespace WebApplication1.bussiness.production
 
         private static async Task<string> GetGuestTokenAsync()
         {
+            if (string.IsNullOrEmpty(ServicePassword))
+            {
+                throw new Exception("Superset service password not configured (SupersetPassword appSettings).");
+            }
+
             using (HttpClient client = new HttpClient())
             {
                 var loginPayload = new

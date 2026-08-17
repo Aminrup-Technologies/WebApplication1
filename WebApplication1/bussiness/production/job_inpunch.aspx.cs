@@ -870,10 +870,11 @@ namespace WebApplication1.bussiness.production
 
         static void SendEmail(string body)
         {
-            // Example of sending an email using System.Net.Mail
+            // Sends job details email using configured SMTP credentials (appSettings SmtpUser/SmtpPass)
             using (MailMessage mail = new MailMessage())
             {
-                mail.From = new MailAddress("your_email@gmail.com");
+                mail.From = new MailAddress(
+                    System.Configuration.ConfigurationManager.AppSettings["SmtpUser"] ?? "");
                 mail.To.Add("client_email@example.com");
                 mail.Subject = "Job Details";
                 mail.Body = body;
@@ -882,7 +883,15 @@ namespace WebApplication1.bussiness.production
                 using (SmtpClient smtp = new SmtpClient("smtp.zoho.in"))
                 {
                     smtp.Port = 587;
-                    smtp.Credentials = new NetworkCredential("your_email@gmail.com", "your_password");
+                    string smtpUser = System.Configuration.ConfigurationManager.AppSettings["SmtpUser"] ?? "";
+                    string smtpPass = System.Configuration.ConfigurationManager.AppSettings["SmtpPass"] ?? "";
+
+                    if (string.IsNullOrEmpty(smtpUser) || string.IsNullOrEmpty(smtpPass))
+                    {
+                        return; // SMTP not configured - skip sending
+                    }
+
+                    smtp.Credentials = new NetworkCredential(smtpUser, smtpPass);
                     smtp.EnableSsl = true;
                     smtp.Send(mail);
                 }

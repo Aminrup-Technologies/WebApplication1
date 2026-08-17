@@ -817,7 +817,16 @@ namespace WebApplication1.bussiness.production
                 smtp.Host = "smtp.zoho.in"; // Ensure your SMTP Host is configured here
                 smtp.Port = 587;
                 smtp.UseDefaultCredentials = false;
-                smtp.Credentials = new System.Net.NetworkCredential("it.support@aminruptechnologies.co.in", "TPw800QrVMU2"); // Ensure Credentials are set
+                string smtpUser = System.Configuration.ConfigurationManager.AppSettings["SmtpUser"] ?? "";
+                string smtpPass = System.Configuration.ConfigurationManager.AppSettings["SmtpPass"] ?? "";
+
+                if (string.IsNullOrEmpty(smtpUser) || string.IsNullOrEmpty(smtpPass))
+                {
+                    LogSystemEvent("Email", "SKIP", $"SMTP not configured - approval email to {emailAddress} skipped.");
+                    return;
+                }
+
+                smtp.Credentials = new System.Net.NetworkCredential(smtpUser, smtpPass);
                 smtp.EnableSsl = true;
 
                 smtp.Send(mail);
