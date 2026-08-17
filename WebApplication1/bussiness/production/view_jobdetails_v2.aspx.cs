@@ -255,6 +255,9 @@ namespace WebApplication1.bussiness.production
                     cmd.Parameters.AddWithValue("@JOB_Shift", txt_jobshift.Text.ToString());
                     cmd.ExecuteNonQuery();
                 }
+
+                JobWorkflowLogger.LogAction(jobid, "JOB DETAILS EDITED", Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "Unknown",
+                    $"PermitNo='{txt_permitno.Text}', Title='{txt_jobtitle.Text}', Shift='{txt_jobshift.Text}'.");
             }
             catch (Exception ex) { ShowNotification("Update Error", ex.Message, "error"); }
             finally { dbcl.DisconnectDb(); }
@@ -294,6 +297,9 @@ namespace WebApplication1.bussiness.production
                     cmd.ExecuteNonQuery();
                 }
 
+                JobWorkflowLogger.LogAction(permitJobId, "PERMIT DOCUMENT DELETED", deletedBy,
+                    $"Permit file '{file}' (Id={id}) soft-deleted from JOB {permitJobId}.");
+
                 ShowNotification("Deleted", "Attachment Soft-Deleted Successfully", "success");
                 Bind_JOBIDDetails(jobid, dbid, supv);
             }
@@ -319,6 +325,9 @@ namespace WebApplication1.bussiness.production
                     cmd.Parameters.AddWithValue("@DeletedBy", deletedBy);
                     cmd.ExecuteNonQuery();
                 }
+
+                JobWorkflowLogger.LogAction(manpowerJobId, "ATTENDANCE DELETED", deletedBy,
+                    $"Attendance record Id={id} soft-deleted for JOB {manpowerJobId}.");
 
                 ShowNotification("Deleted", "Manpower Soft-Deleted Successfully", "success");
                 string CmdString3 = "select * from tbl_attendance where JOBID='" + txt_jobid.Text + "' and DeleteStatus=0 order by Id desc";
@@ -438,6 +447,9 @@ namespace WebApplication1.bussiness.production
                 cmd.ExecuteNonQuery();
                 cmd.Dispose();
                 dbcl.DisconnectDb();
+
+                JobWorkflowLogger.LogAction(jobid, "ATTENDANCE EDITED", Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "Unknown",
+                    $"Employee {empwrk}: In={convtimein}, Out={convtimeout}, Lunch={lunchyesno}, WorkedHrs={workedhours}, CalcOT={emp_calOThrs}, ProvidedOT={new_pot}, Status={ddl_newattensttaus}, Code={ddl_newattencode}.");
 
                 ShowNotification("Success", "Data has been UPDATED !!", "success");
             }
@@ -630,11 +642,15 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_resendapp_Click(object sender, EventArgs e)
         {
+            JobWorkflowLogger.LogAction(txt_jobid.Text, "RE-SEND FOR APPROVAL", Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "Unknown",
+                "JOB reset to 'Pending' approval (status Blocked, MasterStatusCode 4 / Exit).");
             UpdateJOBTable1("Blocked", "Out-Punch Done", "4", "Exit");
         }
 
         protected void btn_attachmanpower_Click(object sender, EventArgs e)
         {
+            JobWorkflowLogger.LogAction(txt_jobid.Text, "ATTACH MANPOWER", Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "Unknown",
+                "Navigated to manpower attachment screen.");
             Response.Redirect("attach_manpower.aspx?JOBID=" + txt_jobid.Text.ToString());
         }
 

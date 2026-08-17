@@ -58,6 +58,29 @@ namespace WebApplication1.bussiness.production
             ScriptManager.RegisterStartupScript(this, this.GetType(), "PNotify", script, true);
         }
 
+        // Shift-closure popup with navigation buttons (no blind redirect).
+        // Reuses the PNotify pop-up (insert_brs:false renders HTML buttons).
+        private void ShowShiftClosedPopup(string jobid)
+        {
+            string safeJobId = (jobid ?? "").Replace("\\", "\\\\").Replace("'", "\\'");
+            string script = $@"
+                new PNotify({{
+                    title: 'Shift Closed',
+                    text: '<div class=""text-center"">Shift has been successfully finalized and sent to the Approver.' +
+                          '<br/><br/><a class=""btn btn-success btn-sm mr-1"" href=""job_360_view.aspx?jobid={safeJobId}"">' +
+                          '<i class=""fa fa-eye""></i> Open JOB 360</a>' +
+                          '<a class=""btn btn-info btn-sm"" href=""jobs_and_manpower_v2.aspx"">' +
+                          '<i class=""fa fa-th-large""></i> JOB Dashboard</a></div>',
+                    type: 'success',
+                    styling: 'bootstrap3',
+                    hide: false,
+                    insert_brs: false,
+                    width: '460px',
+                    buttons: {{ sticker: false, closer: true }}
+                }});";
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "ShiftClosedPopup", script, true);
+        }
+
         public static string DecodeJobID(string maskedData)
         {
             if (string.IsNullOrEmpty(maskedData)) return "";
@@ -553,8 +576,8 @@ namespace WebApplication1.bussiness.production
                 // 2. Fire and Forget Notifications (Does not block the UI)
                 Task.Run(() => TriggerShiftClosureNotifications(ddljobid));
 
-                // 3. Update UI Immediately
-                ShowNotification("Shift Closed", "Shift has been successfully finalized and sent to the Approver.", "success");
+                // 3. Update UI Immediately - pop-up with redirect buttons (no blind redirect)
+                ShowShiftClosedPopup(ddljobid);
                 ViewState_TableRow.Visible = false;
                 NoPenidngPunch.Visible = false;
                 ActiveJOB_Checker();
