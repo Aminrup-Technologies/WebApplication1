@@ -734,6 +734,9 @@ namespace WebApplication1.bussiness.production
                 cmd.ExecuteNonQuery();
                 dbcl.Conn.Close();
 
+                JobWorkflowLogger.LogAction(dbjobid, "ATTENDANCE DELETED", Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "Unknown",
+                    $"Attendance record Id={id} removed for JOB {dbjobid}.");
+
                 ShowNotification("Deleted", "Data has been DELETED !!", "success");
             }
             catch (Exception ex)
@@ -810,6 +813,9 @@ namespace WebApplication1.bussiness.production
 
                     ShowNotification("Deleted", "Attachment Deleted Successfully", "success");
                 }
+
+                JobWorkflowLogger.LogAction(jobid, "PERMIT DOCUMENT DELETED", Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "Unknown",
+                    $"Permit file '{file}' (Id={id}) removed from JOB {jobid}.");
 
                 Bind_JOBIDDetails(jobid, dbid, supv);
             }
@@ -930,6 +936,9 @@ namespace WebApplication1.bussiness.production
                 cmd.Parameters.AddWithValue("@JOB_Shift", txt_jobshift.Text.ToString());
                 cmd.ExecuteNonQuery();
                 cmd.Dispose();
+
+                JobWorkflowLogger.LogAction(jobid, "JOB DETAILS EDITED", Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "Unknown",
+                    $"PermitNo='{txt_permitno.Text}', Title='{txt_jobtitle.Text}', Shift='{txt_jobshift.Text}'.");
             }
             catch (Exception ex)
             {
@@ -1114,6 +1123,9 @@ namespace WebApplication1.bussiness.production
                 cmd.Dispose();
                 dbcl.DisconnectDb();
 
+                JobWorkflowLogger.LogAction(jobid, "ATTENDANCE EDITED", Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "Unknown",
+                    $"Employee {empwrk}: In={convtimein}, Out={convtimeout}, Lunch={lunchyesno}, WorkedHrs={workedhours}, CalcOT={emp_calOThrs}, ProvidedOT={new_pot}, Status={ddl_newattensttaus}, Code={ddl_newattencode}.");
+
                 ShowNotification("Success", "Data has been UPDATED !!", "success");
             }
             catch (Exception ex)
@@ -1144,11 +1156,15 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_attachmanpower_Click(object sender, EventArgs e)
         {
+            JobWorkflowLogger.LogAction(txt_jobid.Text, "ATTACH MANPOWER", Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "Unknown",
+                "Navigated to manpower attachment screen.");
             Response.Redirect("attach_manpower.aspx?JOBID=" + txt_jobid.Text.ToString() + "");
         }
 
         protected void btn_resendapp_Click(object sender, EventArgs e)
         {
+            JobWorkflowLogger.LogAction(txt_jobid.Text, "RE-SEND FOR APPROVAL", Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "Unknown",
+                "JOB reset to 'Pending' approval (status Blocked, MasterStatusCode 4 / Exit).");
             UpdateJOBTable1("Blocked", "Out-Punch Done", "4", "Exit");
         }
     }

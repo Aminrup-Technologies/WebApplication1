@@ -247,6 +247,9 @@ namespace WebApplication1.bussiness.production
                     cmd.ExecuteNonQuery();
                 }
 
+                JobWorkflowLogger.LogAction(jobid, "STATUS SWAP (BLOCK/UNBLOCK)", Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "Unknown",
+                    $"JOB {jobid} status changed to '{newStatus}'.");
+
                 ShowNotification("Success", $"JOB Status changed to {newStatus}", "success");
                 GridBinder(lbl_year.Text, lbl_monthcode.Text); // Refresh UI
             }
@@ -291,6 +294,9 @@ namespace WebApplication1.bussiness.production
                     cmd3.Parameters.AddWithValue("@DeletedBy", deletedBy);
                     cmd3.ExecuteNonQuery();
                 }
+
+                JobWorkflowLogger.LogAction(dbcode, "JOB DELETED (SOFT)", deletedBy,
+                    $"JOB {dbcode} (Id={id}) soft-deleted along with its attendance and permit records.");
 
                 ShowNotification("Deleted", "Job and associated records have been removed successfully.", "success");
                 GridBinder(lbl_year.Text, lbl_monthcode.Text); // Refresh UI
