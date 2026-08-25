@@ -45,7 +45,11 @@
                                         <label>Work Region</label>
                                         <asp:DropDownList ID="ddlRegion" runat="server" CssClass="form-control"></asp:DropDownList>
                                     </div>
-                                    <div class="col-md-6" style="margin-top: 24px;">
+                                    <div class="col-md-2">
+                                        <label>Company</label>
+                                        <asp:DropDownList ID="ddlCompany" runat="server" CssClass="form-control"></asp:DropDownList>
+                                    </div>
+                                    <div class="col-md-4" style="margin-top: 24px;">
                                         <asp:Button ID="btnSearch" runat="server" Text="Filter Audit" CssClass="btn btn-sm btn-primary" OnClick="btnSearch_Click" />
                                         <asp:Button ID="btnClear" runat="server" Text="Clear" CssClass="btn btn-sm btn-danger" OnClick="btnClear_Click" />
                                         <asp:Button ID="btnBack" runat="server" Text="Back" CssClass="btn btn-sm btn-warning" PostBackUrl="~/bussiness/production/anlys_jobsdeta.aspx" />
@@ -62,10 +66,10 @@
                     <asp:Repeater ID="rptSummary" runat="server" OnItemCommand="rptSummary_ItemCommand">
                         <ItemTemplate>
                             <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-                                <asp:LinkButton ID="lnkCard" runat="server" CommandName="FilterCategory" CommandArgument='<%# Eval("Anomaly_Type") %>' CssClass='<%# Eval("Anomaly_Type").ToString() == hfSelectedAnomaly.Value ? "clickable-card active-filter-card" : "clickable-card" %>'>
+                                <asp:LinkButton ID="lnkCard" runat="server" CommandName="FilterCategory" CommandArgument='<%# Eval("AnomalyType") %>' CssClass='<%# Eval("AnomalyType").ToString() == hfSelectedAnomaly.Value ? "clickable-card active-filter-card" : "clickable-card" %>'>
                                     <div class="tile-stats" style="padding:15px; border-left: 4px solid <%# Eval("Severity_Color") %>;">
                                         <div class="count"><%# Eval("Anomaly_Count") %></div>
-                                        <h3 style="font-size:13px; font-weight:bold; white-space:normal;"><%# Eval("Anomaly_Type") %></h3>
+                                        <h3 style="font-size:13px; font-weight:bold; white-space:normal;"><%# Eval("AnomalyType") %></h3>
                                         <p style="margin-bottom:0; color:<%# Eval("Severity_Color") %>; font-weight:bold;"><%# Eval("Severity_Level") %></p>
                                     </div>
                                 </asp:LinkButton>
@@ -94,80 +98,35 @@
                                     <ItemTemplate><%# Container.DataItemIndex + 1 %></ItemTemplate>
                                 </asp:TemplateField>
 
-                                <asp:TemplateField HeaderText="Job Reference" HeaderStyle-Width="12%">
+                                <asp:BoundField DataField="AnomalyType" HeaderText="Anomaly Type" HeaderStyle-Width="12%" />
+
+                                <asp:BoundField DataField="Violation_Detail" HeaderText="Violation Detail" HeaderStyle-Width="16%" />
+
+                                <asp:TemplateField HeaderText="JOBID" HeaderStyle-Width="12%">
                                     <ItemTemplate>
                                         <a href='job_360_view.aspx?jobid=<%# Eval("JOBID") %>' target="_blank" class="text-primary font-weight-bold" style="font-size: 13px; text-decoration: underline;">
                                             <i class="fa fa-briefcase"></i><%# Eval("JOBID") %>
                                         </a>
-                                        <br />
-                                        <span class="text-muted small">
-                                            <i class="fa fa-calendar"></i>Date: <strong><%# Eval("Job_Date") %></strong>
-                                        </span>
                                     </ItemTemplate>
                                 </asp:TemplateField>
 
-                                <asp:TemplateField HeaderText="Employee & Site" HeaderStyle-Width="20%">
+                                <asp:TemplateField HeaderText="Employee" HeaderStyle-Width="18%">
                                     <ItemTemplate>
-                                        <a href='view_empmonthlyatt.aspx?empwrk=<%# Eval("EmployeeWrk") %>&month=<%# Eval("CreatedMonth") %>&year=<%# Eval("CreatedYear") %>'
+                                        <a href='view_empmonthlyatt.aspx?empwrk=<%# Eval("Entity_ID") %>&month=<%# AuditMonth %>&year=<%# AuditYear %>'
                                             target="_blank" class="font-weight-bold" style="color: #2C3E50; text-decoration: underline; font-size: 13px;">
-                                            <i class="fa fa-user"></i><%# Eval("Employee_Details") %>
+                                            <i class="fa fa-user"></i><%# Eval("EmployeeName") %>
                                         </a>
                                         <br />
                                         <span class="text-muted small">
-                                            <i class="fa fa-map-marker"></i><%# Eval("Worksite") %>
+                                            <i class="fa fa-id-card-o"></i><%# Eval("Entity_ID") %>
                                         </span>
                                     </ItemTemplate>
                                 </asp:TemplateField>
 
-                                <asp:TemplateField HeaderText="Punches & Code" HeaderStyle-Width="20%">
-                                    <ItemTemplate>
-                                        <span class="label label-warning" style="font-size: 11px;">Code: <%# Eval("AttendanceCode") %></span>
-                                        <br />
-                                        <span class="text-muted" style="display: inline-block; margin-top: 4px;">
-                                            <i class="fa fa-sign-in text-success"></i>IN: <%# Eval("IN_Time") %><br />
-                                            <i class="fa fa-sign-out text-danger"></i>OUT: <%# Eval("OUT_Time") %>
-                                        </span>
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-
-                                <asp:TemplateField HeaderText="Hours & OT Breakdown" HeaderStyle-Width="18%">
-                                    <ItemTemplate>
-                                        <div style="line-height: 1.6;">
-                                            <!-- Registered Hours -->
-                                            <span class="small text-muted" title="Registered Shift Hours">
-                                                <i class="fa fa-clock-o"></i><b>Reg Hrs:</b> <%# Eval("Registered_Hours") %>
-                                            </span>
-                                            |
-                                            <!-- Actually Worked Hours -->
-                                            <span class="small text-primary" title="Actually Worked Hours">
-                                                <i class="fa fa-hourglass-half"></i><b>Worked:</b> <%# Eval("WorkedHours") %>
-                                            </span>
-                                            <br />
-                                            <!-- System Calculated OT -->
-                                            <span class="small" title="System Calculated Overtime">
-                                                <i class="fa fa-calculator text-muted"></i><b>Sys OT:</b> <%# Eval("System_OT") %>
-                                            </span>
-                                            |
-                                            <!-- Manually Given OT (Highlighted in Red for auditing) -->
-                                            <span class="small text-danger font-weight-bold" title="Manually Given Overtime">
-                                                <i class="fa fa-edit"></i><b>Given OT:</b> <%# Eval("Final_OT") %>
-                                            </span>
-                                        </div>
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-
-                                <asp:TemplateField HeaderText="Audit Trail" HeaderStyle-Width="18%">
-                                    <ItemTemplate>
-                                        <span class="small"><i class="fa fa-pencil"></i><b>Created:</b> <%# Eval("Creator_Details") %></span><br />
-                                        <span class="small"><i class="fa fa-check-circle text-success"></i><b>Approved:</b> <%# Eval("Approver_Details") %></span>
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-
-                                <asp:TemplateField HeaderText="Anomaly Detected" HeaderStyle-Width="15%">
-                                    <ItemTemplate>
-                                        <span class="text-danger font-weight-bold"><i class="fa fa-warning"></i><%# Eval("Anomaly_Type") %></span>
-                                    </ItemTemplate>
-                                </asp:TemplateField>
+                                <asp:BoundField DataField="Inpunch_Time_Readable" HeaderText="IN-Punch" HeaderStyle-Width="10%" />
+                                <asp:BoundField DataField="Outpunch_Time_Readable" HeaderText="OUT-Punch" HeaderStyle-Width="10%" />
+                                <asp:BoundField DataField="Metric_Trigger" HeaderText="Metric Trigger" HeaderStyle-Width="10%" />
+                                <asp:BoundField DataField="Submitted_By" HeaderText="Submitted By" HeaderStyle-Width="11%" />
 
                             </Columns>
                             <EmptyDataTemplate>
@@ -195,7 +154,7 @@
                 $('#<%= gvAnomalies.ClientID %>').DataTable().destroy();
             }
             $('#<%= gvAnomalies.ClientID %>').DataTable({
-                "order": [[2, "desc"]] // Sort by Date by default
+                "order": [[1, "asc"]] // Sort by Anomaly Type by default
             });
         }
 
