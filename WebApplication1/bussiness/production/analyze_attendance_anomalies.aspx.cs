@@ -11,6 +11,9 @@ namespace WebApplication1.bussiness.production
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
 
+        protected int AuditMonth { get; private set; }
+        protected int AuditYear { get; private set; }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -27,6 +30,7 @@ namespace WebApplication1.bussiness.production
                 txtToDate.Text = DateTime.Now.ToString("yyyy-MM-dd");
 
                 BindRegionDropdown();
+                BindCompanyDropdown();
                 LoadDashboard();
             }
         }
@@ -47,6 +51,22 @@ namespace WebApplication1.bussiness.production
             ddlRegion.Items.Insert(0, new ListItem("-- ALL REGIONS --", "ALL"));
         }
 
+        private void BindCompanyDropdown()
+        {
+            string qry = "SELECT DISTINCT Company_Name, Company_Code FROM tlb_workregion_company ORDER BY Company_Name";
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
+            using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
+            {
+                ddlCompany.DataSource = cmd.ExecuteReader();
+                ddlCompany.DataTextField = "Company_Name";
+                ddlCompany.DataValueField = "Company_Code";
+                ddlCompany.DataBind();
+            }
+            dbcl.DisconnectDb();
+            ddlCompany.Items.Insert(0, new ListItem("-- ALL COMPANIES --", "ALL"));
+        }
+
         protected void btnSearch_Click(object sender, EventArgs e)
         {
             hfSelectedAnomaly.Value = "ALL"; // Reset card filter on new date/region search
@@ -58,6 +78,8 @@ namespace WebApplication1.bussiness.production
             txtFromDate.Text = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).ToString("yyyy-MM-dd");
             txtToDate.Text = DateTime.Now.ToString("yyyy-MM-dd");
             ddlRegion.SelectedIndex = 0;
+            if (ddlCompany.Items.Count > 0)
+                ddlCompany.SelectedIndex = 0;
             hfSelectedAnomaly.Value = "ALL";
             LoadDashboard();
         }
@@ -77,125 +99,209 @@ namespace WebApplication1.bussiness.production
 
         private void LoadDashboard()
         {
-            LoadSummaryCards();
-            LoadAnomalyDetails();
+            try
+            {
+                DataTable dtAudit = ExecutePrePayrollAudit();
+                LoadSummaryCards(dtAudit);
+                LoadAnomalyDetails(dtAudit);
 
-            lblCurrentFilter.Text = hfSelectedAnomaly.Value == "ALL" ? "" : $" (Filtered: {hfSelectedAnomaly.Value})";
+                lblCurrentFilter.Text = hfSelectedAnomaly.Value == "ALL" ? "" : $" (Filtered: {hfSelectedAnomaly.Value})";
+            }
+            catch (Exception ex)
+            {
+                LoadSummaryCards(new DataTable());
+                LoadAnomalyDetails(new DataTable());
+                lblCurrentFilter.Text = " (Audit load failed)";
+                string safeMessage = System.Web.HttpUtility.JavaScriptStringEncode(ex.Message);
+                System.Web.UI.ScriptManager.RegisterStartupScript(this, GetType(), "AuditSpError",
+                    $"showPNotify('Audit Error', '{safeMessage}', 'error');", true);
+            }
         }
 
-        private void LoadSummaryCards()
+        private DataTable ExecutePrePayrollAudit()
         {
-            string qry = @"
-                SELECT 
-                    Anomaly_Type,
-                    COUNT(Id) AS Anomaly_Count,
-                    Severity_Level,
-                    CASE Severity_Level 
-                        WHEN 'Critical' THEN '#E74C3C' 
-                        WHEN 'High' THEN '#E67E22' 
-                        WHEN 'Medium' THEN '#F1C40F' 
-                        ELSE '#3498DB' 
-                    END AS Severity_Color
-                FROM (
-                    SELECT 
-                        Id,
-                        CASE 
-                            WHEN Outpunch_Time IS NOT NULL AND Outpunch_Time <= Inpunch_Time THEN 'Negative or Zero Shift Time'
-                            WHEN ISNULL(WorkedHours, 0) > 16 THEN 'Excessive Shift (>16 Hours)'
-                            WHEN ISNULL(ProvidedOT, 0) > ISNULL(Calc_OT, 0) THEN 'Manual OT Exceeds System OT'
-                            WHEN AttendanceCode IN ('A', 'Ab') AND ISNULL(WorkedHours, 0) > 0 THEN 'Absent Code but Hours Logged'
-                            WHEN AttendanceCode NOT IN ('A', 'Ab', 'OD', 'FL') AND Outpunch_Time IS NULL THEN 'Present Code but Missing OUT-Punch'
-                            WHEN DATEDIFF(DAY, CreatedDate, CAST(TimeStamp AS DATE)) > 3 THEN 'Late System Entry (>3 Days Backdated)'
-                            ELSE 'Clean'
-                        END AS Anomaly_Type,
-                        CASE 
-                            WHEN Outpunch_Time IS NOT NULL AND Outpunch_Time <= Inpunch_Time THEN 'Critical'
-                            WHEN ISNULL(WorkedHours, 0) > 16 THEN 'High'
-                            WHEN ISNULL(ProvidedOT, 0) > ISNULL(Calc_OT, 0) THEN 'Medium'
-                            WHEN AttendanceCode IN ('A', 'Ab') AND ISNULL(WorkedHours, 0) > 0 THEN 'High'
-                            WHEN AttendanceCode NOT IN ('A', 'Ab', 'OD', 'FL') AND Outpunch_Time IS NULL THEN 'Critical'
-                            WHEN DATEDIFF(DAY, CreatedDate, CAST(TimeStamp AS DATE)) > 3 THEN 'Warning'
-                            ELSE 'Clean'
-                        END AS Severity_Level
-                    FROM tbl_attendance
-                    WHERE SiteIncharge_Approval = 'Approved' 
-                      AND ISNULL(DeleteStatus, 0) = 0
-                      AND CONVERT(date, CreatedDate) BETWEEN @FromDate AND @ToDate
-                      AND (@Region = 'ALL' OR JOB_Region = @Region)
-                ) AS AuditData
-                WHERE Anomaly_Type != 'Clean'
-                GROUP BY Anomaly_Type, Severity_Level
-                ORDER BY CASE Severity_Level WHEN 'Critical' THEN 1 WHEN 'High' THEN 2 WHEN 'Medium' THEN 3 ELSE 4 END;";
+            DataTable dt = new DataTable();
 
-            SqlParameter[] param = {
-                new SqlParameter("@FromDate", txtFromDate.Text),
-                new SqlParameter("@ToDate", txtToDate.Text),
-                new SqlParameter("@Region", ddlRegion.SelectedValue)
-            };
+            object targetYear = DBNull.Value;
+            object targetMonth = DBNull.Value;
+            ResolveAuditPeriod(out targetYear, out targetMonth);
 
-            rptSummary.DataSource = dbcl.SPreturn_dt(qry, param);
+            string region = ddlRegion.SelectedValue;
+            object targetRegion = (string.IsNullOrEmpty(region) || region == "ALL") ? (object)DBNull.Value : region;
+
+            string company = ddlCompany.SelectedValue;
+            object targetCompany = (string.IsNullOrEmpty(company) || company == "ALL") ? (object)DBNull.Value : company;
+
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand("USP_Pre_Payroll_Audit", dbcl.Conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandTimeout = 180;
+                    cmd.Parameters.Add("@TargetYear", SqlDbType.Int).Value = targetYear;
+                    cmd.Parameters.Add("@TargetMonth", SqlDbType.Int).Value = targetMonth;
+                    cmd.Parameters.Add("@TargetRegion", SqlDbType.VarChar, 50).Value = targetRegion;
+                    cmd.Parameters.Add("@TargetCompany", SqlDbType.VarChar, 50).Value = targetCompany;
+
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        da.Fill(dt);
+                    }
+                }
+            }
+            finally
+            {
+                dbcl.DisconnectDb();
+            }
+
+            return dt;
+        }
+
+        private void ResolveAuditPeriod(out object targetYear, out object targetMonth)
+        {
+            targetYear = DBNull.Value;
+            targetMonth = DBNull.Value;
+            AuditYear = DateTime.Now.Year;
+            AuditMonth = DateTime.Now.Month;
+
+            DateTime fromDate;
+            if (DateTime.TryParse(txtFromDate.Text, out fromDate))
+            {
+                AuditYear = fromDate.Year;
+                AuditMonth = fromDate.Month;
+                targetYear = fromDate.Year;
+                targetMonth = fromDate.Month;
+                return;
+            }
+
+            DateTime toDate;
+            if (DateTime.TryParse(txtToDate.Text, out toDate))
+            {
+                AuditYear = toDate.Year;
+                AuditMonth = toDate.Month;
+                targetYear = toDate.Year;
+                targetMonth = toDate.Month;
+            }
+        }
+
+        private void LoadSummaryCards(DataTable dtAudit)
+        {
+            DataTable dtSummary = new DataTable();
+            dtSummary.Columns.Add("AnomalyType", typeof(string));
+            dtSummary.Columns.Add("Anomaly_Type", typeof(string));
+            dtSummary.Columns.Add("Anomaly_Count", typeof(int));
+            dtSummary.Columns.Add("Severity_Level", typeof(string));
+            dtSummary.Columns.Add("Severity_Color", typeof(string));
+
+            if (dtAudit != null && dtAudit.Rows.Count > 0 && dtAudit.Columns.Contains("AnomalyType"))
+            {
+                DataTable dtDistinct = dtAudit.DefaultView.ToTable(true, "AnomalyType");
+                foreach (DataRow typeRow in dtDistinct.Rows)
+                {
+                    string anomalyType = Convert.ToString(typeRow["AnomalyType"]);
+                    if (string.IsNullOrWhiteSpace(anomalyType))
+                        continue;
+
+                    int count = 0;
+                    string severityFromSp = null;
+                    foreach (DataRow row in dtAudit.Rows)
+                    {
+                        if (string.Equals(Convert.ToString(row["AnomalyType"]), anomalyType, StringComparison.OrdinalIgnoreCase))
+                        {
+                            count++;
+                            if (severityFromSp == null && dtAudit.Columns.Contains("Severity_Level") && row["Severity_Level"] != DBNull.Value)
+                                severityFromSp = Convert.ToString(row["Severity_Level"]);
+                        }
+                    }
+
+                    string severityLevel;
+                    string severityColor;
+                    MapSeverity(anomalyType, severityFromSp, out severityLevel, out severityColor);
+
+                    DataRow summaryRow = dtSummary.NewRow();
+                    summaryRow["AnomalyType"] = anomalyType;
+                    summaryRow["Anomaly_Type"] = anomalyType;
+                    summaryRow["Anomaly_Count"] = count;
+                    summaryRow["Severity_Level"] = severityLevel;
+                    summaryRow["Severity_Color"] = severityColor;
+                    dtSummary.Rows.Add(summaryRow);
+                }
+            }
+
+            rptSummary.DataSource = dtSummary;
             rptSummary.DataBind();
         }
 
-        private void LoadAnomalyDetails()
+        private static void MapSeverity(string anomalyType, string severityFromSp, out string severityLevel, out string severityColor)
         {
-            string qry = @"
-                SELECT * FROM (
-                    SELECT 
-                        a.JOBID,
-                        CONVERT(VARCHAR, a.CreatedDate, 106) AS Job_Date,
-                        a.JOB_Region,
-                        a.JOB_SiteName AS Worksite,
-                        
-                        a.Creator_Name + ' [' + a.Creator_Workman + ']' AS Creator_Details,
-                        a.JOB_InchargeName + ' [' + a.JOB_InchargeWrk + ']' AS Approver_Details,
-                        
-                        a.EmployeeName + ' [' + a.EmployeeWrk + ']' AS Employee_Details,
-                        a.EmployeeWrk, 
-                        MONTH(a.CreatedDate) AS CreatedMonth, 
-                        YEAR(a.CreatedDate) AS CreatedYear,
+            if (!string.IsNullOrWhiteSpace(severityFromSp))
+            {
+                severityLevel = severityFromSp;
+                switch (severityFromSp.Trim().ToLowerInvariant())
+                {
+                    case "critical":
+                        severityColor = "#E74C3C";
+                        return;
+                    case "high":
+                        severityColor = "#E67E22";
+                        return;
+                    case "medium":
+                        severityColor = "#F1C40F";
+                        return;
+                    default:
+                        severityColor = "#3498DB";
+                        return;
+                }
+            }
 
-                        a.AttendanceCode,
-                        FORMAT(a.Inpunch_Time, 'dd-MMM-yyyy hh:mm tt') AS IN_Time,
-                        ISNULL(FORMAT(a.Outpunch_Time, 'dd-MMM-yyyy hh:mm tt'), 'MISSING OUT-PUNCH') AS OUT_Time,
-                        a.WorkedHours,
-                        a.WourkHours AS Registered_Hours,
-                        a.Calc_OT AS System_OT,
-                        a.ProvidedOT AS Final_OT,
-                        FORMAT(a.TimeStamp, 'dd-MMM-yyyy hh:mm tt') AS System_Entry_Time,
-                        
-                        CASE 
-                            WHEN a.Outpunch_Time IS NOT NULL AND a.Outpunch_Time <= a.Inpunch_Time THEN 'Negative or Zero Shift Time'
-                            WHEN ISNULL(a.WorkedHours, 0) > 16 THEN 'Excessive Shift (>16 Hours)'
-                            WHEN ISNULL(a.ProvidedOT, 0) > ISNULL(a.Calc_OT, 0) THEN 'Manual OT Exceeds System OT'
-                            WHEN a.AttendanceCode IN ('A', 'Ab') AND ISNULL(a.WorkedHours, 0) > 0 THEN 'Absent Code but Hours Logged'
-                            WHEN a.AttendanceCode NOT IN ('A', 'Ab', 'OD', 'FL') AND a.Outpunch_Time IS NULL THEN 'Present Code but Missing OUT-Punch'
-                            WHEN DATEDIFF(DAY, a.CreatedDate, CAST(a.TimeStamp AS DATE)) > 3 THEN 'Late System Entry (>3 Days Backdated)'
-                            ELSE 'Clean'
-                        END AS Anomaly_Type
+            string type = (anomalyType ?? string.Empty).ToLowerInvariant();
+            if (type.Contains("negative") || type.Contains("zero") || type.Contains("missing") || type.Contains("critical"))
+            {
+                severityLevel = "Critical";
+                severityColor = "#E74C3C";
+            }
+            else if (type.Contains("excessive") || type.Contains("16") || type.Contains("absent"))
+            {
+                severityLevel = "High";
+                severityColor = "#E67E22";
+            }
+            else if (type.Contains("ot") || type.Contains("override") || type.Contains("manual"))
+            {
+                severityLevel = "Medium";
+                severityColor = "#F1C40F";
+            }
+            else if (type.Contains("backdate") || type.Contains("late") || type.Contains("abuse"))
+            {
+                severityLevel = "Warning";
+                severityColor = "#3498DB";
+            }
+            else
+            {
+                severityLevel = "High";
+                severityColor = "#E67E22";
+            }
+        }
 
-                    FROM tbl_attendance a
-                    WHERE a.SiteIncharge_Approval = 'Approved' 
-                      AND ISNULL(a.DeleteStatus, 0) = 0
-                      AND CONVERT(date, a.CreatedDate) BETWEEN @FromDate AND @ToDate
-                      AND (@Region = 'ALL' OR a.JOB_Region = @Region)
-                ) AS FinalData 
-                WHERE Anomaly_Type != 'Clean' 
-                  AND (@Category = 'ALL' OR Anomaly_Type = @Category)
-                ORDER BY Job_Date DESC, JOBID;";
+        private void LoadAnomalyDetails(DataTable dtAudit)
+        {
+            DataTable dtDetails = dtAudit == null ? new DataTable() : dtAudit.Clone();
+            string selected = hfSelectedAnomaly.Value ?? "ALL";
 
-            SqlParameter[] param = {
-                new SqlParameter("@FromDate", txtFromDate.Text),
-                new SqlParameter("@ToDate", txtToDate.Text),
-                new SqlParameter("@Region", ddlRegion.SelectedValue),
-                new SqlParameter("@Category", hfSelectedAnomaly.Value)
-            };
+            if (dtAudit != null)
+            {
+                foreach (DataRow row in dtAudit.Rows)
+                {
+                    string anomalyType = dtAudit.Columns.Contains("AnomalyType") ? Convert.ToString(row["AnomalyType"]) : string.Empty;
+                    if (selected == "ALL" || string.Equals(anomalyType, selected, StringComparison.OrdinalIgnoreCase))
+                        dtDetails.ImportRow(row);
+                }
+            }
 
-            DataTable dtDetails = dbcl.SPreturn_dt(qry, param);
             gvAnomalies.DataSource = dtDetails;
             gvAnomalies.DataBind();
 
-            // Store for Excel Export
             Session["AnomalyExportData"] = dtDetails;
         }
 
@@ -207,12 +313,7 @@ namespace WebApplication1.bussiness.production
 
                 using (XLWorkbook wb = new XLWorkbook())
                 {
-                    // Clean up hidden columns before export
                     DataTable exportDt = dt.Copy();
-                    if (exportDt.Columns.Contains("EmployeeWrk")) exportDt.Columns.Remove("EmployeeWrk");
-                    if (exportDt.Columns.Contains("CreatedMonth")) exportDt.Columns.Remove("CreatedMonth");
-                    if (exportDt.Columns.Contains("CreatedYear")) exportDt.Columns.Remove("CreatedYear");
-
                     wb.Worksheets.Add(exportDt, "Attendance_Anomalies");
 
                     Response.Clear();
