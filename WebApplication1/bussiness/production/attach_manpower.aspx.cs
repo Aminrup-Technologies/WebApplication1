@@ -311,7 +311,7 @@ namespace WebApplication1.bussiness.production
         {
             try
             {
-                string query = "select * from tbl_attendance where EmployeeWrk=@EmployeeWrk and AttendanceStatus='Entry' and Outpunch_Time is NULL";
+                string query = "select * from tbl_attendance where EmployeeWrk=@EmployeeWrk and AttendanceStatus='Entry' and Outpunch_Time is NULL AND (DeleteStatus = 0 OR DeleteStatus IS NULL)";
                 SqlParameter[] pram = {
                                           new SqlParameter("@EmployeeWrk",workman),
                                       };

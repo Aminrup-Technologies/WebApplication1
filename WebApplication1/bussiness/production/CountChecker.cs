@@ -200,7 +200,7 @@ namespace WebApplication1.bussiness.production
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
-            string cmdString = "select COUNT(EmployeeWrk) from tbl_attendance where EmployeeWrk=@EmployeeWrk and AttendanceStatus='Entry' and Outpunch_Time is NULL ";
+            string cmdString = "select COUNT(EmployeeWrk) from tbl_attendance where EmployeeWrk=@EmployeeWrk and AttendanceStatus='Entry' and Outpunch_Time is NULL AND (DeleteStatus = 0 OR DeleteStatus IS NULL)";
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
             cmd.CommandType = CommandType.Text;
             cmd.Parameters.AddWithValue("@EmployeeWrk", workman);

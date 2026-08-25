@@ -334,7 +334,7 @@ namespace WebApplication1.bussiness.production
 
         private void Pull_PendingOUTDetails(string workman, ref string pJobID, ref string pJobDate, ref string pSubmitter)
         {
-            string query = "select JOBID, CreatedDate, Creator_Name from tbl_attendance where EmployeeWrk=@EmployeeWrk and AttendanceStatus='Entry' and Outpunch_Time is NULL";
+            string query = "select JOBID, CreatedDate, Creator_Name from tbl_attendance where EmployeeWrk=@EmployeeWrk and AttendanceStatus='Entry' and Outpunch_Time is NULL AND (DeleteStatus = 0 OR DeleteStatus IS NULL)";
             SqlParameter[] pram = { new SqlParameter("@EmployeeWrk", workman) };
             DataTable dtOut = dbcl.SPreturn_dt(query, pram);
             if (dtOut.Rows.Count > 0)
