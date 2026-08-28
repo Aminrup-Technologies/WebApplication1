@@ -289,11 +289,11 @@ namespace WebApplication1.bussiness.production
                     }
 
                     // 9. Bind Dependent Grids AFTER we know the job exists
-                    string CmdString2 = "select * from tbl_jobspermit where JOBID='" + jobid + "' order by Id desc";
-                    BindGrid(CmdString2);
+                    string CmdString2 = "select * from tbl_jobspermit where JOBID=@JOBID order by Id desc";
+                    BindGrid(CmdString2, new SqlParameter[] { new SqlParameter("@JOBID", jobid) });
 
-                    string CmdString3 = "select * from tbl_attendance where JOBID='" + jobid + "' order by Id desc";
-                    BindGrid2(CmdString3);
+                    string CmdString3 = "select * from tbl_attendance where JOBID=@JOBID order by Id desc";
+                    BindGrid2(CmdString3, new SqlParameter[] { new SqlParameter("@JOBID", jobid) });
                 }
             }
             catch (Exception ex)
@@ -514,11 +514,15 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-        private void BindGrid(string cmdString)
+        private void BindGrid(string cmdString, SqlParameter[] parameters = null)
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
+            if (parameters != null)
+            {
+                cmd.Parameters.AddRange(parameters);
+            }
             SqlDataAdapter ad = new SqlDataAdapter(cmd);
             DataSet ds = new DataSet();
             ad.Fill(ds);
@@ -527,11 +531,15 @@ namespace WebApplication1.bussiness.production
             dbcl.Conn.Close();
         }
 
-        private void BindGrid2(string cmdString)
+        private void BindGrid2(string cmdString, SqlParameter[] parameters = null)
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
+            if (parameters != null)
+            {
+                cmd.Parameters.AddRange(parameters);
+            }
             SqlDataAdapter ad = new SqlDataAdapter(cmd);
             DataSet ds = new DataSet();
             ad.Fill(ds);
@@ -737,8 +745,8 @@ namespace WebApplication1.bussiness.production
             GridView2.EditIndex = e.NewEditIndex;
 
             string jobid = txt_jobid.Text.ToString();
-            string CmdString3 = "select * from tbl_attendance where JOBID='" + jobid + "' order by Id desc";
-            BindGrid2(CmdString3);
+            string CmdString3 = "select * from tbl_attendance where JOBID=@JOBID order by Id desc";
+            BindGrid2(CmdString3, new SqlParameter[] { new SqlParameter("@JOBID", jobid) });
         }
 
         protected void GridView2_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e)
@@ -746,8 +754,8 @@ namespace WebApplication1.bussiness.production
             GridView2.EditIndex = -1;
 
             string jobid = txt_jobid.Text.ToString();
-            string CmdString3 = "select * from tbl_attendance where JOBID='" + jobid + "' order by Id desc";
-            BindGrid2(CmdString3);
+            string CmdString3 = "select * from tbl_attendance where JOBID=@JOBID order by Id desc";
+            BindGrid2(CmdString3, new SqlParameter[] { new SqlParameter("@JOBID", jobid) });
         }
 
         protected void GridView2_RowUpdating(object sender, GridViewUpdateEventArgs e)
@@ -816,8 +824,8 @@ namespace WebApplication1.bussiness.production
 
             GridView2.EditIndex = -1;
 
-            string CmdString3 = "select * from tbl_attendance where JOBID='" + jobid + "' order by Id desc";
-            BindGrid2(CmdString3);
+            string CmdString3 = "select * from tbl_attendance where JOBID=@JOBID order by Id desc";
+            BindGrid2(CmdString3, new SqlParameter[] { new SqlParameter("@JOBID", jobid) });
 
             Response.Redirect(Request.Url.AbsoluteUri);
         }
@@ -834,10 +842,12 @@ namespace WebApplication1.bussiness.production
             {
                 dbcl.Sqlconnection();
                 dbcl.ConnectDb();
-                string cmdString = "delete from tbl_attendance where Id='" + id + "' and JOBID='" + dbjobid + "'  ";
+                string cmdString = "delete from tbl_attendance where Id=@Id and JOBID=@JOBID";
                 SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
                 cmd.CommandType = CommandType.Text;
                 cmd.CommandTimeout = 0;
+                cmd.Parameters.Add(new SqlParameter("@Id", id));
+                cmd.Parameters.Add(new SqlParameter("@JOBID", dbjobid));
                 cmd.ExecuteNonQuery();
                 dbcl.Conn.Close();
 
@@ -855,8 +865,8 @@ namespace WebApplication1.bussiness.production
 
 
             string jobid = txt_jobid.Text.ToString();
-            string CmdString3 = "select * from tbl_attendance where JOBID='" + jobid + "' order by Id desc";
-            BindGrid2(CmdString3);
+            string CmdString3 = "select * from tbl_attendance where JOBID=@JOBID order by Id desc";
+            BindGrid2(CmdString3, new SqlParameter[] { new SqlParameter("@JOBID", jobid) });
         }
 
 
