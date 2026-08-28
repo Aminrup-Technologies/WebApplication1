@@ -10,10 +10,8 @@ namespace WebApplication1.bussiness.production
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
         CountChecker CC = new CountChecker();
 
-        public static string state = string.Empty;
         public static string region = string.Empty;
         public static string comp = string.Empty;
-        public static string datalock = string.Empty;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -31,16 +29,12 @@ namespace WebApplication1.bussiness.production
                         string[] retrievedArray = (string[])Session["Changer"];
                         region = retrievedArray[1].ToString();
                         comp = retrievedArray[2].ToString();
-                        state = retrievedArray[0].ToString();
-                        datalock = retrievedArray[3].ToString();
                         //Session["Changer"]= null;
                     }
                     else
                     {
                         region = Session["REGION"].ToString();
                         comp = Session["COMPANY_CODE"].ToString();
-                        state = Session["STATE"].ToString();
-                        datalock = "0";
                     }
 
                     //string CmdString = "select BilingType, BillingCode from tlb_JOB_BillingType order by Id";

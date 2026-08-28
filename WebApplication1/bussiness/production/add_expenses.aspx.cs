@@ -17,7 +17,6 @@ namespace WebApplication1.bussiness.production
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
         DataTable dt1 = new DataTable();
-        Boolean FileFlag = false;
         string EXPID = "";
         string Server_FileName = String.Empty;
         string Server_FilePath = String.Empty;
@@ -184,7 +183,6 @@ namespace WebApplication1.bussiness.production
                 lblMessage.Text = "Please Select File"; //if file uploader has no file selected
 
                 lbl_fileyesno.Text = "No";
-                FileFlag = false;
             }
             else
             if (FileUpload1.HasFile)
@@ -239,7 +237,6 @@ namespace WebApplication1.bussiness.production
                         //btnUpload.Text = "Uploaded";
                         lblMessage.Text = "File Uploaded Successfully";
 
-                        FileFlag = true;
                         lbl_fileyesno.Text = "Yes";
 
                         //InsertIntoDB(Server_FileName, FileType, ext, bytes);
@@ -257,7 +254,6 @@ namespace WebApplication1.bussiness.production
                         lblMessage.ForeColor = System.Drawing.Color.Red;
                         lblMessage.Text = "Select Only PDF File having extension (.pdf) ";
 
-                        FileFlag = false;
                         lbl_fileyesno.Text = "No";
                     }
                 }
@@ -267,7 +263,6 @@ namespace WebApplication1.bussiness.production
                     lblMessage.ForeColor = System.Drawing.Color.Red;
                     lblMessage.Text = "Error: " + ex.Message.ToString();
 
-                    FileFlag = false;
                     lbl_fileyesno.Text = "No";
                 }
             }

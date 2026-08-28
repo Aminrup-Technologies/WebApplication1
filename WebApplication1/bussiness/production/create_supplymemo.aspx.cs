@@ -29,7 +29,6 @@ namespace WebApplication1.bussiness.production
         public static string jobdate = string.Empty;
 
         public static string SQLQRY_MAX_SPID_NO = "SELECT TOP 1 TRM_REQUEST_NO FROM T_REQUEST_MASTER ORDER BY TRM_ID DESC";
-        public static string qry_jobdetails = "select * from tbl_jobs where JOBID=@JOBID";
         public static string qry_permitdetails = "select * from tbl_jobspermit where JOBID=@JOBID order by Id desc";
         public static string qry_polineitems = "select Id, WODB_Code, WOI_DBCode, ItemNO, LineNumber, ServiceNumber, Service_Description, Order_Quantity, Rate, PerUnit_Value, '' as Shift_Skill  from tlb_WO_LineItems_Data where WO_Number=@WO_Number order by Id";
         public static string qry_polineitems2= "select Id, JOBID as WODB_Code, SMJID as WOI_DBCode, ItemNO, LineNumber, ServiceNumber, Service_Description, Order_Quantity, Rate, PerUnit_Value,Shift_Skill from tbl_SupMem_LineItems_Data where JOBID=@JOBID order by Id";
@@ -44,7 +43,6 @@ namespace WebApplication1.bussiness.production
         DataTable FirstDatatable;
         Boolean flag = false;
 
-        DataTable dt_lineitems = new DataTable();
         DataTable dt_selectedrows = new DataTable();
 
         // Default folder
@@ -1908,7 +1906,6 @@ namespace WebApplication1.bussiness.production
 
         // Replace the connection string with your own
         private const string ConnectionString = "your_connection_string_here";
-        private static readonly object LockObject = new object();
 
         private string InsertDataWithTransaction(ref SqlTransaction sqlTran, string jobID, string smjID)
         {

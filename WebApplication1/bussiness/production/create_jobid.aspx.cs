@@ -24,9 +24,7 @@ namespace WebApplication1.bussiness.production
         //Below are the string to save the Data fetched from the DB  against the selected WOrk Order
         static string DB_WOWorkRegion = "";
         static string DB_WOCompnayCode = "";
-        static string DB_WODeptCode = "";
         static string DB_WODeptDBCode = "";
-        static string DB_WODeptName = "";
         static string DB_WOType = "";
 
 
@@ -46,19 +44,11 @@ namespace WebApplication1.bussiness.production
         static string DB_WKSDeptCode = "";
         static string DB_WKSDeptDBCode = "";
 
-        static string DB_DeptLocation = "";
-        static string DB_DeptLocationCode = String.Empty;
 
-        static string SiteIncharge_Wrk = String.Empty;
-        static string SiteIncharge_Name = String.Empty;
 
-        static string Server_FileName = String.Empty;
-        static string Server_FilePath = String.Empty;
-        static string FileType = String.Empty;
 
         static Byte[] bytes = { 0 };
 
-        Boolean FileFlag = false;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -86,7 +76,6 @@ namespace WebApplication1.bussiness.production
                 else
                 {
                     //lbl_fileyesno.Text = "No";
-                    FileFlag = false;
 
                     jobid_creation.Visible = true;
                     jobid_creation_buttons.Visible = true;
@@ -198,8 +187,6 @@ namespace WebApplication1.bussiness.production
 
                     DB_WOWorkRegion = dt.Rows[0]["Work_Region_Code"].ToString();
                     DB_WOCompnayCode = dt.Rows[0]["Company_Code"].ToString();
-                    DB_WODeptName = dt.Rows[0]["Department_Name"].ToString(); //Actual Department name from WO table
-                    DB_WODeptCode = dt.Rows[0]["Department_Code"].ToString();
                     DB_WODeptDBCode = dt.Rows[0]["Dept_DBCode"].ToString();   //actual Department DBID
 
                     DataChecker();
