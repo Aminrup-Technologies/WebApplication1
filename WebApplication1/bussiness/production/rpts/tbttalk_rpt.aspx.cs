@@ -14,8 +14,6 @@ namespace WebApplication1.bussiness.production.rpts
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
         DataTable dt = new DataTable();
 
-        static string imglink = "~\\images\\No_Image.jpg";
-        static string imgfilename = "N/A";
 
         protected void Page_Load(object sender, EventArgs e)
         {

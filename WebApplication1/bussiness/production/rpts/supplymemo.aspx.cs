@@ -16,7 +16,6 @@ namespace WebApplication1.bussiness.production.rpts
         public static string dbid = string.Empty;
         public static string supv = string.Empty;
 
-        public static string wo_number = string.Empty;
         public static string viewid = string.Empty;
         public static string yr = string.Empty;
         public static string mnt = string.Empty;

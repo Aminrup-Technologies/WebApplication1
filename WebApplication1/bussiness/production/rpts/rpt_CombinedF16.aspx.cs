@@ -16,9 +16,6 @@ namespace WebApplication1.bussiness.production.rpts
         string str = string.Empty;
         Int32 dayss = 0;
         Int32 ots = 0;
-        Int32 CalMonthDays = 0;
-        Int32 StartDay = 0;
-        Int32 EndDay = 0;
 
         protected void Page_Load(object sender, EventArgs e)
         {

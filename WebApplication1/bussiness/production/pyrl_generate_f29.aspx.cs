@@ -28,7 +28,6 @@ namespace WebApplication1.bussiness.production
         private static decimal TTL_OverTime = .0m;
         private static decimal TTL_BasicSalary = .0m;
         private static decimal TTL_HRAPay = .0m;
-        private static decimal TTL_ConvPay = .0m;
         private static decimal TTL_WashPay = .0m;
         private static decimal TTL_OTSalary = .0m;
         private static decimal TTL_OthersPay = .0m;
@@ -162,7 +161,6 @@ namespace WebApplication1.bussiness.production
                 TTL_OverTime = .0m;
                 TTL_BasicSalary = .0m;
                 TTL_HRAPay = .0m;
-                TTL_ConvPay = .0m;
                 TTL_WashPay = .0m;
                 TTL_OTSalary = .0m;
                 TTL_OthersPay = .0m;
@@ -523,7 +521,6 @@ namespace WebApplication1.bussiness.production
                 str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + row["HRAPay"].ToString() + "</td>";
                 TTL_HRAPay = TTL_HRAPay + decimal.Parse(row["HRAPay"].ToString());
                 str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + row["ConvPay"].ToString() + "</td>";
-                TTL_ConvPay = TTL_ConvPay + decimal.Parse(row["ConvPay"].ToString());
                 str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>-</td>";
                 str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + row["WashPay"].ToString() + "</td>";
                 TTL_WashPay = TTL_WashPay + decimal.Parse(row["WashPay"].ToString());

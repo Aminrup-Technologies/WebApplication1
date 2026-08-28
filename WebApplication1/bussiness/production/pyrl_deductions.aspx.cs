@@ -21,7 +21,6 @@ namespace WebApplication1.bussiness.production
 
         public static decimal GorssBreaker = 20500;
 
-        DataTable dt = new DataTable();
 
         protected void Page_Load(object sender, EventArgs e)
         {
