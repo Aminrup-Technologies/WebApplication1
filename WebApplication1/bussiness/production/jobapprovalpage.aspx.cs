@@ -69,11 +69,15 @@ namespace WebApplication1.bussiness.production
             dbcl.DisconnectDb();
         }
 
-        private void Bind_Approver(string CmdString)
+        private void Bind_Approver(string CmdString, SqlParameter parameter = null)
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             SqlCommand Cmd = new SqlCommand(CmdString, dbcl.Conn);
+            if (parameter != null)
+            {
+                Cmd.Parameters.Add(parameter);
+            }
             Cmd.CommandType = CommandType.Text;
             DDL_Approver.DataSource = Cmd.ExecuteReader();
             DDL_Approver.DataTextField = "Employee_Name";
@@ -200,8 +204,8 @@ namespace WebApplication1.bussiness.production
 
                     // 4. Bind Dependent Dropdowns
                     DDL_Worksite.SelectedValue = lbl_worksitedbcode.Text;
-                    string CmdString = "select Employee_Name, Employee_Workman from tlb_atsworksiteIncharges where DB_Code='" + lbl_worksitedbcode.Text + "' order by Id";
-                    Bind_Approver(CmdString);
+                    string CmdString = "select Employee_Name, Employee_Workman from tlb_atsworksiteIncharges where DB_Code=@DBCode order by Id";
+                    Bind_Approver(CmdString, new SqlParameter("@DBCode", lbl_worksitedbcode.Text));
                     DDL_Approver.SelectedValue = lbl_worksitedbcode.Text;
 
                     // 5. Populate Remaining Job Info
@@ -1288,8 +1292,8 @@ namespace WebApplication1.bussiness.production
 
         protected void DDL_Worksite_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string CmdString = "select Employee_Name, Employee_Workman from tlb_atsworksiteIncharges where DB_Code='" + DDL_Worksite.SelectedValue.ToString() + "' order by Id";
-            Bind_Approver(CmdString);
+            string CmdString = "select Employee_Name, Employee_Workman from tlb_atsworksiteIncharges where DB_Code=@DBCode order by Id";
+            Bind_Approver(CmdString, new SqlParameter("@DBCode", DDL_Worksite.SelectedValue.ToString()));
         }
 
         protected void btn_attachmanpower_Click(object sender, EventArgs e)
