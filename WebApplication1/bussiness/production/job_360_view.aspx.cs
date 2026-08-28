@@ -379,7 +379,7 @@ namespace WebApplication1.bussiness.production
                         }
                     }
                 }
-                catch (Exception) { ShowNotification("Error", ex.Message, "error"); }
+                catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
                 finally { dbcl.DisconnectDb(); }
             }
         }
@@ -496,7 +496,7 @@ namespace WebApplication1.bussiness.production
                 ShowNotification("Success", "Core JOB details updated.", "success");
                 Load360View(txt_jobid.Text);
             }
-            catch (Exception) { ShowNotification("Error", ex.Message, "error"); }
+            catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
             finally { dbcl.DisconnectDb(); }
         }
 
@@ -533,7 +533,7 @@ namespace WebApplication1.bussiness.production
                 ShowNotification("Worker Updated", "Attendance details updated successfully.", "success");
                 Load360View(txt_jobid.Text); // Refresh the dashboard
             }
-            catch (Exception) { ShowNotification("Update Error", ex.Message, "error"); }
+            catch (Exception ex) { ShowNotification("Update Error", ex.Message, "error"); }
             finally { dbcl.DisconnectDb(); }
         }
 
@@ -569,7 +569,7 @@ namespace WebApplication1.bussiness.production
                         Response.End();
                     }
                 }
-                catch (Exception) { ShowNotification("Download Error", ex.Message, "error"); }
+                catch (Exception ex) { ShowNotification("Download Error", ex.Message, "error"); }
             }
         }
         private string GetSafeString(DataRow row, string colName, string defaultVal = "N/A")
@@ -1075,7 +1075,7 @@ namespace WebApplication1.bussiness.production
                 ShowNotification("Unblocked", "JOB has been unblocked. A 24-hour grace period has been applied.", "success");
                 Load360View(txt_jobid.Text);
             }
-            catch (Exception) { ShowNotification("Error", ex.Message, "error"); }
+            catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
             finally { dbcl.DisconnectDb(); }
         }
 
@@ -1098,7 +1098,7 @@ namespace WebApplication1.bussiness.production
                 ShowNotification("Bypassed", "Safety Permits have been bypassed. The JOB is unlocked for IN-Punching.", "success");
                 Load360View(txt_jobid.Text);
             }
-            catch (Exception) { ShowNotification("Error", ex.Message, "error"); }
+            catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
             finally { dbcl.DisconnectDb(); }
         }
 
@@ -1124,7 +1124,7 @@ namespace WebApplication1.bussiness.production
                 ShowNotification("Reset Successful", "JOB has been rolled back to Step 1 (Created). Permits must be re-uploaded.", "success");
                 Load360View(txt_jobid.Text);
             }
-            catch (Exception) { ShowNotification("Error", ex.Message, "error"); }
+            catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
             finally { dbcl.DisconnectDb(); }
         }
 
@@ -1148,7 +1148,7 @@ namespace WebApplication1.bussiness.production
                 ShowNotification("Shift Voided", "The Ghost Shift has been cancelled and permanently archived.", "success");
                 Load360View(txt_jobid.Text);
             }
-            catch (Exception) { ShowNotification("Error", ex.Message, "error"); }
+            catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
             finally { dbcl.DisconnectDb(); }
         }
 
@@ -1456,7 +1456,7 @@ namespace WebApplication1.bussiness.production
                 ShowNotification("Forced Closed", "All active manpower forcefully clocked out based on standard shift hours. JOB advanced to Approver queue.", "success");
                 Load360View(txt_jobid.Text);
             }
-            catch (Exception) { ShowNotification("Error", ex.Message, "error"); }
+            catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
             finally { dbcl.DisconnectDb(); }
         }
 

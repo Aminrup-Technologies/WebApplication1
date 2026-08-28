@@ -258,7 +258,7 @@ namespace WebApplication1.bussiness.production
                 JobWorkflowLogger.LogAction(jobid, "JOB DETAILS EDITED", Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "Unknown",
                     $"PermitNo='{txt_permitno.Text}', Title='{txt_jobtitle.Text}', Shift='{txt_jobshift.Text}'.");
             }
-            catch (Exception) { ShowNotification("Update Error", ex.Message, "error"); }
+            catch (Exception ex) { ShowNotification("Update Error", ex.Message, "error"); }
             finally { dbcl.DisconnectDb(); }
         }
 
@@ -302,7 +302,7 @@ namespace WebApplication1.bussiness.production
                 ShowNotification("Deleted", "Attachment Soft-Deleted Successfully", "success");
                 Bind_JOBIDDetails(jobid, dbid, supv);
             }
-            catch (Exception) { ShowNotification("Error", ex.Message, "error"); }
+            catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
             finally { dbcl.DisconnectDb(); }
         }
 
@@ -332,7 +332,7 @@ namespace WebApplication1.bussiness.production
                 string CmdString3 = "select * from tbl_attendance where JOBID='" + txt_jobid.Text + "' and DeleteStatus=0 order by Id desc";
                 BindGrid2(CmdString3);
             }
-            catch (Exception) { ShowNotification("Error", ex.Message, "error"); }
+            catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
             finally { dbcl.DisconnectDb(); }
         }
 
@@ -886,7 +886,7 @@ namespace WebApplication1.bussiness.production
                 smtp.Send(mail);
                 LogSystemEvent("Email", "SUCCESS", $"Sent to {emailAddress}");
             }
-            catch (Exception) { LogSystemEvent("Email", "CRASH", $"SMTP Failed for {emailAddress}.", ex.Message); }
+            catch (Exception ex) { LogSystemEvent("Email", "CRASH", $"SMTP Failed for {emailAddress}.", ex.Message); }
         }
 
         protected void btn_back_Click(object sender, EventArgs e)
