@@ -304,215 +304,6 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-        private void Bind_JOBIDDetails_OLD(string jobid)
-        {
-            string CmdString2 = "select * from tbl_jobspermit where JOBID='" + jobid + "' order by Id desc";
-            BindGrid(CmdString2);
-
-            string CmdString3 = "select * from tbl_attendance where JOBID='" + jobid + "' order by Id desc";
-            BindGrid2(CmdString3);
-            try
-            {
-                string query = "select * from tbl_jobs where JOBID=@JOBID";
-                SqlParameter[] pram = {
-                                          new SqlParameter("@JOBID",jobid),
-                                      };
-                dt = dbcl.SPreturn_dt(query, pram);
-                if (dt.Rows.Count > 0)
-                {
-                    DateTime createdDate = Convert.ToDateTime(dt.Rows[0]["CreatedDate"]);
-                    txt_jobdate.Text = createdDate.ToString("dd-MM-yyyy");
-
-                    // 1. Extract the necessary fields from your DataTable (dt)
-                    bool isDbBlocked = Convert.ToBoolean(dt.Rows[0]["IsBlocked"]);
-                    //DateTime createdDate = Convert.ToDateTime(dt.Rows[0]["CreatedDate"]);
-                    object unblockedUntilObj = dt.Rows[0]["UnblockedUntil"]; // Fetch the shield column
-                    string entryExitStatus = dt.Rows[0]["EntryExit"].ToString(); // Fetch the stage
-                    string jobIdStatus = dt.Rows[0]["JOBID_Status"].ToString(); // Fetch the freeze status
-
-                    //bool isElapsed = Is72HoursElapsed(createdDate);
-                    // 2. Call the targeted method
-                    bool isElapsed = Is72HoursElapsed(createdDate, unblockedUntilObj);
-
-                    
-
-                    //lbl_jobcreatorname.Text = dt.Rows[0]["Creator_Name"].ToString();
-                    //lbl_creatorwrk.Text = dt.Rows[0]["Creator_Workman"].ToString();
-                    //lbl_creatorregion.Text = dt.Rows[0]["Creator_Region"].ToString();
-                    //lbl_creatorcompany.Text = dt.Rows[0]["Creator_Company"].ToString();
-                    //lbl_crtrsitename.Text = dt.Rows[0]["Creator_Site"].ToString();
-                    //lbl_crtrsitecode.Text = dt.Rows[0]["Creator_SiteCode"].ToString();
-                    txt_workorderno.Text = dt.Rows[0]["WorkOrderNo"].ToString();
-                    txt_jobid.Text = dt.Rows[0]["JOBID"].ToString();
-                    lbl_jobidsstatus.Text = dt.Rows[0]["JOBID_Status"].ToString();
-                    //lbl_jobrgn.Text = dt.Rows[0]["JOB_Region"].ToString();
-                    //lbl_jobcompay.Text = dt.Rows[0]["JOB_Company"].ToString();
-                    txt_worksitename.Text = dt.Rows[0]["JOB_Site"].ToString();
-                    lbl_worksitedbcode.Text = dt.Rows[0]["JOB_SiteCode"].ToString();
-
-                    DDL_Worksite.SelectedValue = lbl_worksitedbcode.Text.ToString();
-
-                    string CmdString = "select Employee_Name, Employee_Workman from tlb_atsworksiteIncharges where DB_Code='" + lbl_worksitedbcode.Text.ToString() + "' order by Id";
-                    Bind_Approver(CmdString);
-
-                    DDL_Approver.SelectedValue = lbl_worksitedbcode.Text.ToString();
-
-                    lbl_inchargewrk.Text = dt.Rows[0]["JOB_InchargeWrk"].ToString();
-
-                    txt_inchargename.Text = dt.Rows[0]["JOB_InchargeName"].ToString();
-                    txt_jobdept.Text = dt.Rows[0]["JOB_Dept"].ToString();
-                    txt_jobloc.Text = dt.Rows[0]["JOB_Location"].ToString();
-                    txt_jobshift.Text = dt.Rows[0]["JOB_Shift"].ToString();
-                    txt_permitno.Text = dt.Rows[0]["JOB_PermitNo"].ToString();
-
-                    lbl_permituploaddate.Text = dt.Rows[0]["PermitUploadDate"].ToString();
-                    lbl_filecount.Text = dt.Rows[0]["FileCount"].ToString();
-                    lbl_permitdeleteddate.Text = dt.Rows[0]["PermitDeleteDate"].ToString();
-                    lbl_permitdeletedby.Text = dt.Rows[0]["PermitDeletedByName"].ToString();
-
-                    string uploadstatus = dt.Rows[0]["FinalUpldStatus"].ToString();
-
-                    if (uploadstatus == "Yes")
-                    {
-                        lbl_prmtupldstatus.Text = "Uploaded";
-                        lbl_prmtupldstatus.ForeColor = Color.Green;
-                    }
-                    else
-                    {
-                        lbl_prmtupldstatus.Text = "Pending";
-                        lbl_prmtupldstatus.ForeColor = Color.Red;
-                    }
-
-
-                    string approvalstatus = dt.Rows[0]["Incharge_Approval"].ToString();
-                    if (approvalstatus == "Approved")
-                    {
-                        lbl_approvalstatus.Text = "Approved";
-                        lbl_approvalstatus.ForeColor = Color.Green;
-
-                        btn_approve.Visible = true;
-                        btn_approve.Enabled = false;
-                        btn_approve.Text = "Approved";
-                        btn_reject.Visible = false;
-
-                    }
-                    else if (approvalstatus == "Rejected")
-                    {
-                        lbl_approvalstatus.Text = "Rejected";
-                        lbl_approvalstatus.ForeColor = Color.Green;
-
-                        btn_approve.Visible = false;
-                        btn_reject.Visible = true;
-                        btn_reject.Enabled = false;
-                        btn_reject.Text = "Rejected";
-
-                    }
-                    else
-                    {
-                        //if (isElapsed || isBlocked)
-                        //{
-                        //    btn_approve.Enabled = false;
-                        //    btn_reject.Enabled = false;
-                        //    btn_update.Enabled = false;
-                        //    btn_update.Visible = false;
-                        //    string title = "Notifications :";
-                        //    string body = "72 hours have elapsed since the job creation. Elapsed Time: " + GetElapsedTime(createdDate);
-                        //    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
-                        //}
-                        //else
-                        //{
-                        //    btn_approve.Enabled = true;
-                        //    btn_reject.Enabled = true;
-                        //    btn_update.Enabled = true;
-                        //    btn_update.Visible = true;
-                        //}
-
-                        //lbl_approvalstatus.Text = "Pending";
-                        //lbl_approvalstatus.ForeColor = Color.Red;
-
-                        ////btn_update.Enabled = true;
-                        ////btn_update.Visible = true;
-                        ////btn_approve.Enabled = true;
-                        ////btn_reject.Enabled = true;
-
-                        //bool finalBlock = (isElapsed && isBlocked) || isBlocked;
-                        // We only enforce the final lock if 72 hours elapsed OR the system blocked it
-                        bool finalBlock = isDbBlocked || isElapsed;
-
-                        //if (finalBlock)
-                        //{
-                        //    btn_approve.Enabled = false;
-                        //    btn_reject.Enabled = false;
-                        //    btn_update.Enabled = false;
-                        //    btn_update.Visible = false;
-
-                        //    string title = "Notifications :";
-                        //    string body = isElapsed
-                        //        ? "72 hours have elapsed since the job creation. Elapsed Time: " + GetElapsedTime(createdDate)
-                        //        : "This job has been blocked by an administrator.";
-
-                        //    ClientScript.RegisterStartupScript(this.GetType(), "Popup",
-                        //        "ShowPopup('" + title + "', '" + body + "');", true);
-
-                        //    lbl_approvalstatus.Text = isElapsed ? "Blocked (Time Expired)" : "Blocked (Admin)";
-                        //    lbl_approvalstatus.ForeColor = Color.Red;
-                        //}
-                        // 4. The Lockdown UI
-                        // We ensure we are enforcing this on jobs that are actually at the Approval stage (Exit/Blocked)
-                        if (finalBlock && entryExitStatus == "Exit" && jobIdStatus == "Blocked")
-                        {
-                            btn_approve.Enabled = false;
-                            btn_reject.Enabled = false;
-                            btn_update.Enabled = false;
-                            btn_update.Visible = false;
-
-                            string title = "Approval Window Closed:";
-                            string body = isElapsed
-                                ? "The 72-hour window to approve this job has expired. Please contact HR Admin to request a 24-hour unblock."
-                                : "This job is currently blocked by the system.";
-
-                            ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
-
-                            lbl_approvalstatus.Text = isElapsed ? "Blocked (Time Expired)" : "Blocked (System)";
-                            lbl_approvalstatus.ForeColor = System.Drawing.Color.Red;
-                        }
-                        else
-                        {
-                            btn_approve.Enabled = true;
-                            btn_reject.Enabled = true;
-                            btn_update.Enabled = true;
-                            btn_update.Visible = true;
-
-                            lbl_approvalstatus.Text = "Pending";
-                            lbl_approvalstatus.ForeColor = Color.Red;
-                        }
-                    }
-
-                    string billingtype = dt.Rows[0]["BillingCode"].ToString();
-                    DDL_BillingType.SelectedValue = billingtype;
-
-                    string attencode = dt.Rows[0]["AttendanceCode"].ToString();
-                    DDL_AttenCode.SelectedValue = attencode;
-
-                    txt_jobtitle.Text = dt.Rows[0]["JOB_Title"].ToString();
-                    //txt_approverrmrks.Text = dt.Rows[0]["JOB_Title"].ToString();
-                    txt_approverrmrks.Text = "N/A";
-
-                    //string CmdString2 = "select * from tbl_jobspermit where JOBID='" + jobid + "' order by Id desc";
-                    //BindGrid(CmdString2);
-
-                    //string CmdString3 = "select * from tbl_attendance where JOBID='" + jobid + "' order by Id desc";
-                    //BindGrid2(CmdString3);
-                }
-            }
-            catch (Exception ex)
-            {
-                string title = "Notifications :";
-                string body = "Error : " + ex.Message;
-                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
-            }
-        }
-
         private void BindGrid(string cmdString, SqlParameter[] parameters = null)
         {
             dbcl.Sqlconnection();
@@ -1258,10 +1049,12 @@ namespace WebApplication1.bussiness.production
 
                     dbcl.Sqlconnection();
                     dbcl.ConnectDb();
-                    string cmdString = "delete from tbl_jobspermit where Id='" + id + "' and JOBID= '" + jobid + "' ";
+                    string cmdString = "delete from tbl_jobspermit where Id=@Id and JOBID=@JOBID";
                     SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
                     cmd.CommandType = CommandType.Text;
                     cmd.CommandTimeout = 0;
+                    cmd.Parameters.Add(new SqlParameter("@Id", id));
+                    cmd.Parameters.Add(new SqlParameter("@JOBID", jobid));
                     cmd.ExecuteNonQuery();
                     dbcl.Conn.Close();
 
@@ -1278,10 +1071,12 @@ namespace WebApplication1.bussiness.production
 
                     dbcl.Sqlconnection();
                     dbcl.ConnectDb();
-                    string cmdString = "delete from tbl_jobspermit where Id='" + id + "' and JOBID= '" + jobid + "' ";
+                    string cmdString = "delete from tbl_jobspermit where Id=@Id and JOBID=@JOBID";
                     SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
                     cmd.CommandType = CommandType.Text;
                     cmd.CommandTimeout = 0;
+                    cmd.Parameters.Add(new SqlParameter("@Id", id));
+                    cmd.Parameters.Add(new SqlParameter("@JOBID", jobid));
                     cmd.ExecuteNonQuery();
                     dbcl.Conn.Close();
 
@@ -1293,10 +1088,12 @@ namespace WebApplication1.bussiness.production
                 {
                     dbcl.Sqlconnection();
                     dbcl.ConnectDb();
-                    string cmdString = "delete from tbl_jobspermit where Id='" + id + "' and JOBID= '" + jobid + "' ";
+                    string cmdString = "delete from tbl_jobspermit where Id=@Id and JOBID=@JOBID";
                     SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
                     cmd.CommandType = CommandType.Text;
                     cmd.CommandTimeout = 0;
+                    cmd.Parameters.Add(new SqlParameter("@Id", id));
+                    cmd.Parameters.Add(new SqlParameter("@JOBID", jobid));
                     cmd.ExecuteNonQuery();
                     dbcl.Conn.Close();
 
