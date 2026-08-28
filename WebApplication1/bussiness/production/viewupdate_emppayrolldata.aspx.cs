@@ -16,11 +16,9 @@ namespace WebApplication1.bussiness.production
     public partial class viewupdate_emppayrolldata : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
-        public static string Query = string.Empty;
         public static string state = string.Empty;
         public static string region = string.Empty;
         public static string comp = string.Empty;
-        public static string datalock = string.Empty;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -40,7 +38,6 @@ namespace WebApplication1.bussiness.production
                             region = retrievedArray[1].ToString();
                             comp = retrievedArray[2].ToString();
                             state = retrievedArray[0].ToString();
-                            datalock = retrievedArray[3].ToString();
                             //Session["Changer"]= null;
                         }
                         else
@@ -48,7 +45,6 @@ namespace WebApplication1.bussiness.production
                             region = Session["REGION"].ToString();
                             comp = Session["COMPANY_CODE"].ToString();
                             state = Session["STATE"].ToString();
-                            datalock = "0";
                         }
 
                         string CmdString2 = "select Category_Type, Category_DB from tlb_payroll_category where Country_Code = 'IN' and State_Code='" + state + "' and WorkRegion_Code='" + region + "' and Company_Code='" + comp + "' order by Id desc";

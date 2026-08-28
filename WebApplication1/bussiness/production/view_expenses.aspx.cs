@@ -12,7 +12,6 @@ namespace WebApplication1.bussiness.production
     public partial class view_expenses : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
-        CountChecker CC = new CountChecker();
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)

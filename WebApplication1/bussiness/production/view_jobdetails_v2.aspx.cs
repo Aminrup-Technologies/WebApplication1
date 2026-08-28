@@ -27,7 +27,6 @@ namespace WebApplication1.bussiness.production
         public static string supv = string.Empty;
         static string message = "";
 
-        static readonly string rootFolder = @"C:\atswork.in\wwwroot\erp_images\Permits";
         private static readonly HttpClient httpClient = new HttpClient();
 
         protected void Page_Load(object sender, EventArgs e)

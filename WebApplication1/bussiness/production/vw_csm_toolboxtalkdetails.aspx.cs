@@ -17,7 +17,6 @@ namespace WebApplication1.bussiness.production
     public partial class vw_csm_toolboxtalkdetails : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
-        CountChecker CC = new CountChecker();
         DataTable dt = new DataTable();
 
         static string imglink = "~\\images\\No_Image.jpg";
