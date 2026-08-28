@@ -715,27 +715,12 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_reset_Click(object sender, EventArgs e)
         {
-            DateTime now = DateTime.Now;
-            DateTime startDate = new DateTime(now.Year, now.Month, 1);
-            DateTime endDate = startDate.AddMonths(1);
+            DDL_JobStatus.SelectedIndex = 0;
+            DDL_BillingType.SelectedIndex = 0;
 
-            string CmdString2 = @"
-                SELECT *
-                FROM tbl_jobs
-                WHERE JOB_InchargeWrk = @Workman
-                  AND JOB_Status = 'Out-Punch Done'
-                  AND EntryExit = 'Exit'
-                  AND CreatedDate >= @StartDate
-                  AND CreatedDate < @EndDate
-                ORDER BY CreatedDate DESC";
-
-            SqlParameter[] parameters = {
-                new SqlParameter("@Workman", Session["WORKMAN"].ToString()),
-                new SqlParameter("@StartDate", startDate),
-                new SqlParameter("@EndDate", endDate)
-            };
-
-            BindGrid(CmdString2, parameters);
+            string Year = DateTime.Now.Year.ToString();
+            string Month = DateTime.Now.Month.ToString();
+            GridBinder(Year, Month);
         }
 
         protected void btn_submit_Click(object sender, EventArgs e)
