@@ -581,7 +581,7 @@ namespace WebApplication1.bussiness.production
                     Dt1.Rows.Add(dr);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 dbcl.SendEmail("hr@atswork.in", "Supply Memo Creation", "Failed to load or update the Manpower Details");
                 string title = "Error :";
@@ -1012,7 +1012,7 @@ namespace WebApplication1.bussiness.production
                             string AttendanceCode = DataBinder.Eval(e.Row.DataItem, "AttendanceCode").ToString();
                             DDL_AttendanceCode.Items.FindByValue(AttendanceCode).Selected = true;
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
                             string title = "Error :";
                             string body = "No Sttaus Code Mapping found...!!";
@@ -1109,7 +1109,7 @@ namespace WebApplication1.bussiness.production
                             }
 
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
                             string title = "Error :";
                             //string body = ex.Message;
@@ -2066,7 +2066,7 @@ namespace WebApplication1.bussiness.production
                 // Bind the GridView
                 Bind_JOBIDDetails(jobid, dbid, supv);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Log the exception (e.g., to a file, database, or event log)
                 // Display an error message to the user

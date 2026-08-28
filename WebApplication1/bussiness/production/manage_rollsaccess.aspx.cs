@@ -99,7 +99,7 @@ namespace WebApplication1.bussiness.production
                     GridViewPlantLines.DataSource = dataTable;
                     GridViewPlantLines.DataBind();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // Handle exceptions (log or display error message)
                 }
@@ -147,7 +147,7 @@ namespace WebApplication1.bussiness.production
                     ClearForm(); // Clear form inputs after successful insertion
                     BindGridView(); // Update GridView after successful insertion
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     transaction.Rollback();
                 }
@@ -203,7 +203,7 @@ namespace WebApplication1.bussiness.production
                     GridViewPlantLines.DataSource = dataTable;
                     GridViewPlantLines.DataBind();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // Handle exceptions (log or display error message)
                 }
@@ -291,7 +291,7 @@ namespace WebApplication1.bussiness.production
                     cmd.ExecuteNonQuery();
                     BindGridView();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // Handle exceptions (log or display error message)
                 }

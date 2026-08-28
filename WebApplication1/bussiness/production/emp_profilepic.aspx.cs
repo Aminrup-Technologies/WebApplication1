@@ -96,7 +96,7 @@ namespace WebApplication1.bussiness.production
                 cmd.Dispose();
                 dbcl.Conn.Close();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Handle the exception (log or display error)
             }
@@ -227,7 +227,7 @@ namespace WebApplication1.bussiness.production
 
                 UploadMessage_Div.Visible = true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }

@@ -1101,7 +1101,7 @@ namespace WebApplication1.bussiness.production
                 //string body = "Panel 3 Data Saved";
                 //ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 string title = "Notifications :";
                 string body = "TBT ID cannot be attched to JOBID";

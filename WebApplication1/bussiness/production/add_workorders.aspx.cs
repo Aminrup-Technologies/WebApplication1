@@ -331,7 +331,7 @@ namespace WebApplication1.bussiness.production
                 string body = "Data Updated Successfully";
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 throw;
@@ -360,7 +360,7 @@ namespace WebApplication1.bussiness.production
                 cmd.ExecuteNonQuery();
                 dbcl.Conn.Close();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 throw;

@@ -108,7 +108,7 @@ namespace WebApplication1.bussiness.production
                 da.Fill(dt);
                 ViewState["Manpower"] = dt;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 dt = null;
                 //throw;

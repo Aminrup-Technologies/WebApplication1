@@ -1600,7 +1600,7 @@ namespace WebApplication1.bussiness.production
                 string body = "Saved in draft Mode";
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 string title = "Notifications :";
                 string body = "Saved in draft Mode";

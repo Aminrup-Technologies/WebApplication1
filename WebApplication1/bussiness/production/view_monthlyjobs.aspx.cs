@@ -263,7 +263,7 @@ namespace WebApplication1.bussiness.production
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Handle and log the exception
                 // You can replace Console.WriteLine with an appropriate logging mechanism

@@ -359,7 +359,7 @@ namespace WebApplication1.bussiness.production
                     return exeresult == 1;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //Console.WriteLine("Error: " + ex.Message);
                 return false;

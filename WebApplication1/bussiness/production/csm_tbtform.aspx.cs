@@ -1306,7 +1306,7 @@ namespace WebApplication1.bussiness.production
                 // Handle SQL exception
                 // Log or display error message
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Handle other exceptions
                 // Log or display error message
@@ -1844,7 +1844,7 @@ namespace WebApplication1.bussiness.production
                 cmd.ExecuteNonQuery();
                 cmd.Dispose();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 string title = "Notifications :";
                 string body = "TBT ID cannot be attched to JOBID";
@@ -2215,7 +2215,7 @@ namespace WebApplication1.bussiness.production
                     isSuccess = true;
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // Log the exception or handle it as needed
                     //Console.WriteLine("An error occurred: " + ex.Message);

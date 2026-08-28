@@ -50,7 +50,7 @@ namespace WebApplication1.bussiness.production
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -111,7 +111,7 @@ namespace WebApplication1.bussiness.production
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }

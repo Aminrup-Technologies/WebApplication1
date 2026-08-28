@@ -448,7 +448,7 @@ namespace WebApplication1.bussiness.production
                 ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('The ticket has been successfully withdrawn.');", true);
                 Response.Redirect("GrievanceReq_View.aspx");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('An error occurred while withdrawing the ticket.');", true);
             }

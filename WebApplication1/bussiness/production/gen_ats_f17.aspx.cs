@@ -339,7 +339,7 @@ namespace WebApplication1.bussiness.production
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Log exception server-side in production. Show friendly message to user.
                 string title = "Notifications :";

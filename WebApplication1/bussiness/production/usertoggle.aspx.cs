@@ -87,7 +87,7 @@ namespace WebApplication1.bussiness.production
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Failsafe: hide alert if DB errors out
                 divRejectionAlert.Visible = false;
@@ -473,7 +473,7 @@ namespace WebApplication1.bussiness.production
                             ScriptManager.RegisterStartupScript(this, GetType(), "showalert", $"alert('{successMessage}');", true);
                             LoadPANDetails(); // reload data
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
                             try { tx.Rollback(); } catch { /* ignore rollback errors */ }
                             throw; // will be caught in outer catch

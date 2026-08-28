@@ -1846,7 +1846,7 @@ namespace WebApplication1.bussiness.production
                 DisconnectDb();
                 cmd.Dispose();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -1872,7 +1872,7 @@ namespace WebApplication1.bussiness.production
                 cmd.Dispose();
                 Conn.Close();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -1897,7 +1897,7 @@ namespace WebApplication1.bussiness.production
                 cmd.Dispose();
                 Conn.Close();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -1921,7 +1921,7 @@ namespace WebApplication1.bussiness.production
                 cmd.Dispose();
                 Conn.Close();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }

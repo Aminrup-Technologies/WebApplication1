@@ -148,7 +148,7 @@ namespace WebApplication1.bussiness.production.rpts
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Optionally handle/log errors
             }
@@ -216,7 +216,7 @@ namespace WebApplication1.bussiness.production.rpts
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Handle Exception
             }
@@ -263,7 +263,7 @@ namespace WebApplication1.bussiness.production.rpts
                     ManpowerGrid.DataBind();
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Log Error
             }
@@ -295,7 +295,7 @@ namespace WebApplication1.bussiness.production.rpts
                     ShiftGrid.DataBind();
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Log Error
             }
@@ -375,7 +375,7 @@ namespace WebApplication1.bussiness.production.rpts
                     LineItems_Grid.DataBind();
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Handle Exception
             }
