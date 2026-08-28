@@ -113,20 +113,7 @@ namespace WebApplication1.bussiness.production
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
 
-            string CmdString2 = @"
-                SELECT *
-                FROM tbl_jobs
-                WHERE JOB_InchargeWrk = @Workman
-                  AND JOB_InchargeName = @Username
-                  AND JOB_Status = 'Out-Punch Done'
-                  AND EntryExit = 'Exit'
-                ORDER BY CreatedDate DESC";
-            SqlParameter[] parameters = {
-                new SqlParameter("@Workman", Session["WORKMAN"].ToString()),
-                new SqlParameter("@Username", Session["USERNAME"].ToString())
-            };
-            BindGrid(CmdString2, parameters);
-            Response.Redirect(Request.Url.AbsoluteUri);
+            GridBinder(lbl_year.Text, lbl_monthcode.Text);
         }
 
 
@@ -337,19 +324,7 @@ namespace WebApplication1.bussiness.production
             }
             dbcl.Conn.Close();
 
-            string CmdString2 = @"
-                SELECT *
-                FROM tbl_jobs
-                WHERE JOB_InchargeWrk = @Workman
-                  AND JOB_InchargeName = @Username
-                  AND JOB_Status = 'Out-Punch Done'
-                  AND EntryExit = 'Exit'
-                ORDER BY CreatedDate DESC";
-            SqlParameter[] parameters = {
-                new SqlParameter("@Workman", Session["WORKMAN"].ToString()),
-                new SqlParameter("@Username", Session["USERNAME"].ToString())
-            };
-            BindGrid(CmdString2, parameters);
+            GridBinder(lbl_year.Text, lbl_monthcode.Text);
         }
 
         protected void btn_prevmonth_Click(object sender, EventArgs e)
