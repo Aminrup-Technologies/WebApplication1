@@ -56,7 +56,7 @@ namespace WebApplication1.bussiness.production
 
             // Parameterized Query (JOB_InchargeName filter removed)
             string query = @"
-                SELECT TOP 100 
+                SELECT
                     Id, CreatedDate, Creator_Workman, Creator_Name, WorkOrderNo, JOBID,
                     IIF(JOB_Status != 'Level1MemoCreated', JOBID_Status, Level1_BillingCode) AS JOBID_Status,
                     JOBID_Status as Orig_JOBID_Status, JOB_Site, JOB_InchargeName, JOB_Shift, JOB_Title, JOB_PermitNo,
