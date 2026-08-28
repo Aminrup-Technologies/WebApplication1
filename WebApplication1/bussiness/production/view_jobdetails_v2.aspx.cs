@@ -22,9 +22,9 @@ namespace WebApplication1.bussiness.production
         CountChecker CC = new CountChecker();
         DataTable dt = new DataTable();
 
-        public static string jobid = string.Empty;
-        public static string dbid = string.Empty;
-        public static string supv = string.Empty;
+        public string jobid = string.Empty;
+        public string dbid = string.Empty;
+        public string supv = string.Empty;
         static string message = "";
 
         static readonly string rootFolder = @"C:\atswork.in\wwwroot\erp_images\Permits";
@@ -32,6 +32,10 @@ namespace WebApplication1.bussiness.production
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            jobid = Request.QueryString["JOBID"];
+            dbid = Request.QueryString["dbid"];
+            supv = Request.QueryString["supv"];
+
             if (!IsPostBack)
             {
                 if (Session["USERID"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null)
@@ -41,10 +45,6 @@ namespace WebApplication1.bussiness.production
                 }
 
                 message = "Today's JOB Details,\r\n\r\n";
-
-                jobid = Request.QueryString["JOBID"];
-                dbid = Request.QueryString["dbid"];
-                supv = Request.QueryString["supv"];
 
                 Bind_JOBIDDetails(jobid, dbid, supv);
                 Checker();
