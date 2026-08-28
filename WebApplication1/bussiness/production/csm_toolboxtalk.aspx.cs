@@ -268,7 +268,6 @@ namespace WebApplication1.bussiness.production
                 if (dt.Rows.Count > 0)
                 {
                     string Date = dt.Rows[0]["CreatedDate"].ToString();
-                    string date2 = "";
                     string date3 = "";
                     if (Date == null || Date == "")
                     {
@@ -1101,7 +1100,7 @@ namespace WebApplication1.bussiness.production
                 //string body = "Panel 3 Data Saved";
                 //ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 string title = "Notifications :";
                 string body = "TBT ID cannot be attched to JOBID";

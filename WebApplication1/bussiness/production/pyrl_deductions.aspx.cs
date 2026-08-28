@@ -21,7 +21,6 @@ namespace WebApplication1.bussiness.production
 
         public static decimal GorssBreaker = 20500;
 
-        DataTable dt = new DataTable();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -841,7 +840,6 @@ namespace WebApplication1.bussiness.production
             PayRoll.PFPayCalculation(BasicSalary, ref PFPay);
 
             //-------------------Total Allowances --------------------//
-            decimal ttl_allow = DaVdaPay + HRAPay + ConvPay + MedPay + WashPay + AttPay + SPCLPay + MiscPay;
 
 
 

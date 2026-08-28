@@ -119,11 +119,9 @@ namespace WebApplication1.bussiness.production
 
             //string strtday = "01";
             string strtday = DDL_Day.SelectedItem.Text.ToString();
-            Int32 minday = Convert.ToInt32(strtday);
 
             //string endday = "30";
             string endday = DDL_D2.SelectedItem.Text.ToString();
-            Int32 maxday = Convert.ToInt32(endday);
 
             string current_year = DDL_Year.SelectedItem.Text.ToString();
             string current_month1 = DDL_Month.SelectedItem.Text.ToString();
@@ -420,8 +418,6 @@ namespace WebApplication1.bussiness.production
                 decimal ded = Convert.ToDecimal(row["TotalDeduction"].ToString());
                 decimal NetPayFinal = Convert.ToDecimal(row["NetPayFinal"].ToString());
 
-                decimal gross1 = basicsal + basicotpay + otherspay;
-                decimal gross2 = netpay + esi + pf + ded;
 
                 str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + basicsal + "</td>";
                 str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>-</td>";

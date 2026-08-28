@@ -18,7 +18,6 @@ namespace WebApplication1.bussiness.production
         public static string state = string.Empty;
         public static string region = string.Empty;
         public static string comp = string.Empty;
-        public static string datalock = string.Empty;
 
 
         protected void Page_Load(object sender, EventArgs e)
@@ -37,7 +36,6 @@ namespace WebApplication1.bussiness.production
                         region = retrievedArray[1].ToString();
                         comp = retrievedArray[2].ToString();
                         state = retrievedArray[0].ToString();
-                        datalock = retrievedArray[3].ToString();
                         //Session["Changer"]= null;
                     }
                     else
@@ -45,7 +43,6 @@ namespace WebApplication1.bussiness.production
                         region = Session["REGION"].ToString();
                         comp = Session["COMPANY_CODE"].ToString();
                         state = Session["STATE"].ToString();
-                        datalock = "0";
                     }
 
                     if (state == "PI")
@@ -372,7 +369,6 @@ namespace WebApplication1.bussiness.production
 
         public void InsertPayrollWages(string Country_Code, string Country_Name, string State_Code, string State_Name, string WorkRegion_Code, string WorkRegion_Name, string Company_Name, string Company_Code, string Category_DB, string Category_Type, string Category_Code, string Wages_DB, decimal Wages_Rate, decimal VDA_Rate, decimal Total_Wages, DateTime Active_Date, string Status)
         {
-            SqlConnection connection = null;
             SqlCommand command = null;
 
             try

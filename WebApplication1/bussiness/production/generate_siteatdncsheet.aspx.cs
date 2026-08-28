@@ -24,7 +24,6 @@ namespace WebApplication1.bussiness.production
         DataTable dt_emps = new DataTable();
         DataTable dt_present = new DataTable();
         DataTable dt_ot = new DataTable();
-        DataTable dt_presentot = new DataTable();
 
         public static string state = string.Empty;
         public static string region = string.Empty;
@@ -142,7 +141,6 @@ namespace WebApplication1.bussiness.production
             string region = DDL_Region.SelectedValue.ToString();
 
             string wrksitecode = DDL_Worksite.SelectedValue.ToString();
-            string wrksitename = DDL_Worksite.SelectedItem.Text.ToString();
 
 
             //added on 25-feb-2023 for directly sending the start and end date to the SQL query
@@ -207,7 +205,6 @@ namespace WebApplication1.bussiness.production
                     Int32 ttlot = 0;
                     string wrkman = re["EmployeeWrk"].ToString();
                     string emp_name = re["EmployeeName"].ToString();
-                    string emp_desg = re["SkillDesignation"].ToString();
                     str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='5%' style='background-color:white; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + Sl + "</td>";
                     str = str + "<td width='5%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + wrkman + "</td>";
                     str = str + "<td width='18%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + emp_name + "</td>";
@@ -235,7 +232,6 @@ namespace WebApplication1.bussiness.production
         }
         private void FindAttendance1(string day, string month, string year, string wrk, ref Int32 dayss, ref Int32 ttlot, string region, string wrksitecode)
         {
-            string date = day + "-" + month + "-" + year;
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             string cmdstring1 = "select max(AttendanceStatus) as AttendanceStatus, AttendanceCode, COALESCE(SUM(ProvidedOT),0) as OT from tbl_attendance where MONTH(CreatedDate)='" + month + "' and DAY(CreatedDate)='" + day + "' and YEAR(CreatedDate)='" + year + "' and EmployeeWrk='" + wrk + "' and SiteIncharge_Approval='Approved' and JOB_Region='" + region + "' and JOB_SiteCode='" + wrksitecode + "' group by AttendanceCode";
@@ -329,7 +325,6 @@ namespace WebApplication1.bussiness.production
         }
         private void FindAttendanceOT1(string day, string month, string year, string wrk, ref Int32 dayss, ref Int32 ots, string region, string wrksitecode)
         {
-            string date = day + "-" + month + "-" + year;
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             string cmdstring1 = "select COALESCE(SUM(ProvidedOT),0) as OT from tbl_attendance where MONTH(CreatedDate)='" + month + "' and DAY(CreatedDate)='" + day + "' and YEAR(CreatedDate)='" + year + "' and EmployeeWrk='" + wrk + "'and SiteIncharge_Approval='Approved'  and JOB_Region='" + region + "' and JOB_SiteCode='" + wrksitecode + "'";
@@ -1351,7 +1346,6 @@ namespace WebApplication1.bussiness.production
 
         private void FindAttendanceOT4(string day, string month, string year, string wrk, ref Int32 dayss, ref decimal ots, string region)
         {
-            string date = day + "-" + month + "-" + year;
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             string cmdstring1 = "select ProvidedOT as OT from tbl_attendance where MONTH(CreatedDate)='" + month + "' and DAY(CreatedDate)='" + day + "' and YEAR(CreatedDate)='" + year + "' and EmployeeWrk='" + wrk + "' and SiteIncharge_Approval='Approved'";

@@ -13,7 +13,6 @@ namespace WebApplication1.gentelella_master.production
     public partial class webmaster : System.Web.UI.MasterPage
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
-        CountChecker CC = new CountChecker();
 
         protected int IdleTimeoutMinutes { get; set; } = 10; // Default fallback
         protected string AutoLogoutUrl { get; set; } = "https://atswork.in/"; // Default fallback

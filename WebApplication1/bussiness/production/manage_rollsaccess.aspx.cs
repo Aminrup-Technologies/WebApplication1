@@ -99,7 +99,7 @@ namespace WebApplication1.bussiness.production
                     GridViewPlantLines.DataSource = dataTable;
                     GridViewPlantLines.DataBind();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // Handle exceptions (log or display error message)
                 }
@@ -147,7 +147,7 @@ namespace WebApplication1.bussiness.production
                     ClearForm(); // Clear form inputs after successful insertion
                     BindGridView(); // Update GridView after successful insertion
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     transaction.Rollback();
                 }
@@ -203,7 +203,7 @@ namespace WebApplication1.bussiness.production
                     GridViewPlantLines.DataSource = dataTable;
                     GridViewPlantLines.DataBind();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // Handle exceptions (log or display error message)
                 }
@@ -291,7 +291,7 @@ namespace WebApplication1.bussiness.production
                     cmd.ExecuteNonQuery();
                     BindGridView();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // Handle exceptions (log or display error message)
                 }
@@ -307,7 +307,6 @@ namespace WebApplication1.bussiness.production
             if (e.Row.RowType == DataControlRowType.DataRow && (e.Row.RowState & DataControlRowState.Edit) == DataControlRowState.Edit)
             {
                 // Prepopulate fields during edit mode
-                int id = Convert.ToInt32(GridViewPlantLines.DataKeys[e.Row.RowIndex].Values["id"]);
                 string local_name = DataBinder.Eval(e.Row.DataItem, "Emp_PermissionValue").ToString();
                 string line_sap_code = DataBinder.Eval(e.Row.DataItem, "Emp_PermissionText").ToString();
 

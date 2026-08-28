@@ -14,8 +14,6 @@ namespace WebApplication1.bussiness.production.rpts
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
         DataTable dt = new DataTable();
 
-        static string imglink = "~\\images\\No_Image.jpg";
-        static string imgfilename = "N/A";
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -54,10 +52,6 @@ namespace WebApplication1.bussiness.production.rpts
                 dt = dbcl.SPreturn_dt(query, pram);
                 if (dt.Rows.Count > 0)
                 {
-                    string Panel1status = dt.Rows[0]["Panel1_Status"].ToString();
-                    string Panel2status = dt.Rows[0]["Panel2_Status"].ToString();
-                    string Panel3status = dt.Rows[0]["TBTPhoto"].ToString();
-                    string filename = dt.Rows[0]["TBT_PhotoFile"].ToString();
 
                     string jobid = dt.Rows[0]["Ref_JOBID"].ToString();
                     lbl_jobid.Text = jobid;
@@ -65,7 +59,6 @@ namespace WebApplication1.bussiness.production.rpts
 
                     string tbtdate = dt.Rows[0]["TBT_Date"].ToString();
                     lbl_tbtdate.Text = DateBinder(tbtdate);
-                    string jobdate = dt.Rows[0]["Ref_JOBDate"].ToString();
                     lbl_jobdate.Text = DateBinder(tbtdate);
 
                     lbl_tbtrgn.Text = dt.Rows[0]["TBT_Region"].ToString();
@@ -305,10 +298,8 @@ namespace WebApplication1.bussiness.production.rpts
                     lbl_jobworksite.Text = dt.Rows[0]["JOB_Site"].ToString();
 
                     lbl_inchargewrk.Text = dt.Rows[0]["JOB_InchargeWrk"].ToString();
-                    string incharge = dt.Rows[0]["JOB_InchargeName"].ToString();
 
                     lbl_jobdept.Text = dt.Rows[0]["JOB_Dept"].ToString();
-                    string loc = dt.Rows[0]["JOB_Location"].ToString();
 
                     lbl_jobshift.Text = dt.Rows[0]["JOB_Shift"].ToString();
                     lbl_permitno.Text = dt.Rows[0]["JOB_PermitNo"].ToString();
@@ -328,7 +319,6 @@ namespace WebApplication1.bussiness.production.rpts
 
         private void Bind_Attendnace(string jobid)
         {
-            string ddljobid = lbl_jobid.Text.ToString();
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             string CmdString = "Select * from tbl_attendance where JOBID='" + jobid + "' order by Id";

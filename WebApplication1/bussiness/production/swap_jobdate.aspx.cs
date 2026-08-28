@@ -874,7 +874,6 @@ namespace WebApplication1.bussiness.production
         private void UpdateAttendanceDate(string jobid)
         {
             string intime = txt_date.Text.TrimEnd().ToString() + " 12:00:00 AM";
-            string current = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt");
             DateTime crnttym = DateTime.ParseExact(intime, "yyyy-MM-dd hh:mm:ss tt", CultureInfo.InvariantCulture);
             try
             {

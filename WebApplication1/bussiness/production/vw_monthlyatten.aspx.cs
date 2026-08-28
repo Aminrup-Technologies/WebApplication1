@@ -19,7 +19,6 @@ namespace WebApplication1.bussiness.production
         Payroll_OH4Y PayRoll = new Payroll_OH4Y();
 
         public static decimal GorssBreaker_KPO = 18500;
-        public static decimal GorssBreaker_AGL = 18500;
 
         public static decimal GorssBreaker = 18500;
         public static decimal Allowances_Allow = 12000;
@@ -108,7 +107,6 @@ namespace WebApplication1.bussiness.production
         {
             string Year = DateTime.Now.Year.ToString();
             string Month = DateTime.Now.ToString("MM");
-            string MonthName = DateTime.Now.ToString("MMMM");
 
             finalized.Visible = false;
             realtime.Visible = true;
@@ -1023,7 +1021,6 @@ namespace WebApplication1.bussiness.production
         private void Demo()
         {
             Document document = new Document(PageSize.A4, 15f, 15f, 15f, 15f);
-            Font NormalFont = FontFactory.GetFont("Arial", 12, Font.NORMAL, BaseColor.BLACK);
             using (System.IO.MemoryStream memoryStream = new System.IO.MemoryStream())
             {
                 PdfWriter writer = PdfWriter.GetInstance(document, memoryStream);
@@ -1238,7 +1235,6 @@ namespace WebApplication1.bussiness.production
             ds = GetData(EmployeeID, Month, Year);
             if (ds != null && ds.Tables.Count == 5 && ds.Tables[0].Rows.Count > 0 && ds.Tables[1].Rows.Count > 0)
             {
-                Panel pnlPrintControl = new Panel();
                 Document doc = new Document(PageSize.A4, 36f, 36f, 36f, 36f);//36f, 36f, 90f, 100f);
                 PdfWriter.GetInstance(doc, Response.OutputStream);
                 doc.Open();

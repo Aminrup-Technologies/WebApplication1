@@ -15,10 +15,8 @@ namespace WebApplication1.bussiness.production
     public partial class add_workorderdata : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
-        public static string state = string.Empty;
         public static string region = string.Empty;
         public static string comp = string.Empty;
-        public static string datalock = string.Empty;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -36,16 +34,12 @@ namespace WebApplication1.bussiness.production
                         string[] retrievedArray = (string[])Session["Changer"];
                         region = retrievedArray[1].ToString();
                         comp = retrievedArray[2].ToString();
-                        state = retrievedArray[0].ToString();
-                        datalock = retrievedArray[3].ToString();
                         //Session["Changer"]= null;
                     }
                     else
                     {
                         region = Session["REGION"].ToString();
                         comp = Session["COMPANY_CODE"].ToString();
-                        state = Session["STATE"].ToString();
-                        datalock = "0";
                     }
 
                     string CmdString1 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region order by Id";
@@ -111,7 +105,6 @@ namespace WebApplication1.bussiness.production
 
         protected void DDL_WorkRegion_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string DDL_String = DDL_WorkRegion.SelectedItem.Text.ToString();
             string DDL_Value = DDL_WorkRegion.SelectedValue.ToString();
 
             string CmdString2 = "select Company_Name, Company_Code from tlb_workregion_company where Work_Region_Code='"+ DDL_Value + "' order by Id";
@@ -258,10 +251,8 @@ namespace WebApplication1.bussiness.production
 
         protected void DDL_Company_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string DDL_String = DDL_WorkRegion.SelectedItem.Text.ToString();
             string DDL_Value = DDL_WorkRegion.SelectedValue.ToString();
 
-            string DDL_CompText = DDL_Company.SelectedItem.Text.ToString();
             string DDL_CompValue = DDL_Company.SelectedValue.ToString();
 
             string CmdString2 = "select Company_Department, CompDept_Code from tlb_workregion_compdept where Work_Region_Code='" + DDL_Value + "' and Company_Code = '"+DDL_CompValue+"' order by Id";
@@ -284,13 +275,10 @@ namespace WebApplication1.bussiness.production
 
         protected void DDL_Departments_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string DDL_String = DDL_WorkRegion.SelectedItem.Text.ToString();
             string DDL_Value = DDL_WorkRegion.SelectedValue.ToString();
 
-            string DDL_CompText = DDL_Company.SelectedItem.Text.ToString();
             string DDL_CompValue = DDL_Company.SelectedValue.ToString();
 
-            string DDL_DeptText = DDL_Departments.SelectedItem.Text.ToString();
             string DDL_DeptValue = DDL_Departments.SelectedValue.ToString();
 
             string CmdString2 = "select WO_Number, DB_Code from tlb_WO_Data where Work_Region_Code='" + DDL_Value + "' and Company_Code = '" + DDL_CompValue + "' and Dept_DBCode = '" + DDL_DeptValue+ "' and WO_Status='Active' order by Id";

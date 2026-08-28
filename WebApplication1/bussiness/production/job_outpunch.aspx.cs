@@ -482,13 +482,11 @@ namespace WebApplication1.bussiness.production
             string outtime = txt_date.Text.TrimEnd().ToString() + " " + txt_time.Text.ToString();
             string intime = txt_inpunchtime.Text.ToString();
             DateTime dtout = DateTime.Parse(outtime.ToString());
-            DateTime dtin = DateTime.Parse(intime);
             string lunchyesno = RBTN_LunchFactor.SelectedValue.ToString();
 
 
             Int32 workdmins = 0;
             string current = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt");
-            DateTime crnttym = DateTime.ParseExact(current, "yyyy-MM-dd hh:mm:ss tt", CultureInfo.InvariantCulture);
             dbcl.Findworktime1(outtime, current, ref workdmins);
 
 

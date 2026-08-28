@@ -12,7 +12,6 @@ namespace WebApplication1.bussiness.production
     public partial class manage_profile : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
-        Payroll_OH4Y PayRoll = new Payroll_OH4Y();
         DataTable dt = new DataTable();
 
         public static string UserPass = "";

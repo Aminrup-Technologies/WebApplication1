@@ -980,7 +980,6 @@ namespace WebApplication1.bussiness.production
 
                 //Standard PDF setup, iText doesn't care what type of stream we're using
                 var doc = new iTextSharp.text.Document();
-                var writer = iTextSharp.text.pdf.PdfWriter.GetInstance(doc, MS);
                 doc.Open();
                 doc.Add(new iTextSharp.text.Paragraph("Work Order No :      " + ""+ txt_workorderno.Text + ""));
                 PdfPTable table = new PdfPTable(3);

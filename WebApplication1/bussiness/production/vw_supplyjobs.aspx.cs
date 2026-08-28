@@ -12,7 +12,6 @@ namespace WebApplication1.bussiness.production
     public partial class vw_supplyjobs : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
-        CountChecker CC = new CountChecker();
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -234,7 +233,6 @@ namespace WebApplication1.bussiness.production
             string dbid = (row.FindControl("lbl_Id") as Label).Text;
             string jobid = (row.FindControl("lbl_JOBID") as Label).Text;
             string supv = (row.FindControl("lbl_Creator_Workman") as Label).Text;
-            string jobidstatus = (row.FindControl("lbl_JOBID_Status") as Label).Text;
 
             if (e.CommandName == "View_Details")
             {

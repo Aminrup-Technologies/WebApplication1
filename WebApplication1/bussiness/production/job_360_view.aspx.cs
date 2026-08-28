@@ -326,7 +326,6 @@ namespace WebApplication1.bussiness.production
 
                     // 2. Recalculate Active Manpower Headcount on Master Table
                     string updJob = @"UPDATE tbl_jobs 
-                                      SET ManpowerCount = (SELECT COUNT(1) FROM tbl_attendance WHERE JOBID = @JOBID AND (DeleteStatus = 0 OR DeleteStatus IS NULL)) 
                                       WHERE JOBID = @JOBID";
 
                     using (SqlCommand cmdJob = new SqlCommand(updJob, dbcl.Conn))
@@ -1278,7 +1277,6 @@ namespace WebApplication1.bussiness.production
                 }
 
                 string qryAtt = @"UPDATE tbl_attendance 
-                                  SET SiteIncharge_Approval = 'Returned', 
                                       Approval_Date = NULL,
                                       AttendanceStatus = 'Absent',
                                       LastModified = GETDATE(),
@@ -1379,7 +1377,6 @@ namespace WebApplication1.bussiness.production
                     Load360View(txt_jobid.Text);
 
                     // EMAIL NOTIFICATION INTEGRATION
-                    string emailBody = $"<p><b>SYSTEM ALERT:</b> The JOBID <b>{txt_jobid.Text}</b> has been forcefully OUT-Punched and closed by ATS Administrator: {Session["USERNAME"]}.</p><p>Please log in to review the attendance records.</p>";
                     // dbcl.SendEmail("supervisor_email@domain.com", $"ATS Alert: {txt_jobid.Text} Force Closed", emailBody);
                 }
                 catch (Exception exTransaction)

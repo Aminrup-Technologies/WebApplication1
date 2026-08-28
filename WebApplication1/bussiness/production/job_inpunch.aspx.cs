@@ -665,7 +665,6 @@ namespace WebApplication1.bussiness.production
 
                 string intime = txt_date.Text.TrimEnd().ToString() + " " + txt_time.Text.ToString();
                 string current = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt");
-                DateTime crnttym = DateTime.ParseExact(current, "yyyy-MM-dd hh:mm:ss tt", CultureInfo.InvariantCulture);
 
                 //The below function is used to Check When user in Performing INPUNCH ---- Relaxation to Entry
                 Int32 DelayedHours = 0;

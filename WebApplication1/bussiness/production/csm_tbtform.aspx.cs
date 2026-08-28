@@ -28,9 +28,7 @@ namespace WebApplication1.bussiness.production
         public static Boolean Panel2_flag = false;
         public static Boolean Panel3_flag = false;
         public static Boolean Panel4_flag = false;
-        public static Boolean Final_flag = false;
 
-        DataTable temporaryDataTable = new DataTable();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -312,7 +310,6 @@ namespace WebApplication1.bussiness.production
             Panel2_flag = false;
             Panel3_flag = false;
             Panel4_flag = false;
-            Final_flag = false;
 
             if (DDL_JOBID.SelectedIndex == 0)
             {
@@ -852,7 +849,6 @@ namespace WebApplication1.bussiness.production
                         Panel2_flag = false;
                         Panel3_flag = false;
                         Panel4_flag = false;
-                        Final_flag = false;
 
                         Label1.Text = "Completed";
                         Label1.ForeColor = Color.Green;
@@ -930,7 +926,6 @@ namespace WebApplication1.bussiness.production
                         Panel2_flag = true;
                         Panel3_flag = false;
                         Panel4_flag = false;
-                        Final_flag = false;
 
                         lbl_TBTID.Text = dt.Rows[0]["TBT_ID"].ToString();
                         lbl_TBTID.Visible = true;
@@ -1008,7 +1003,6 @@ namespace WebApplication1.bussiness.production
                         Panel2_flag = true;
                         Panel3_flag = true;
                         Panel4_flag = false;
-                        Final_flag = false;
 
                         lbl_TBTID.Text = dt.Rows[0]["TBT_ID"].ToString();
                         lbl_TBTID.Visible = true;
@@ -1084,7 +1078,6 @@ namespace WebApplication1.bussiness.production
                         Panel2_flag = true;
                         Panel3_flag = true;
                         Panel4_flag = true;
-                        Final_flag = false;
 
                         lbl_TBTID.Text = dt.Rows[0]["TBT_ID"].ToString();
                         lbl_TBTID.Visible = true;
@@ -1141,7 +1134,6 @@ namespace WebApplication1.bussiness.production
                         Panel2_flag = true;
                         Panel3_flag = true;
                         Panel4_flag = true;
-                        Final_flag = true;
 
                         Label1.Text = "Completed";
                         Label1.ForeColor = Color.Green;
@@ -1198,7 +1190,6 @@ namespace WebApplication1.bussiness.production
                         Panel2_flag = false;
                         Panel3_flag = false;
                         Panel4_flag = false;
-                        Final_flag = false;
 
                         ScriptManager.RegisterStartupScript(this, GetType(), "OpenFinalTab", "OpenFinalTab();", true);
                     }
@@ -1306,7 +1297,7 @@ namespace WebApplication1.bussiness.production
                 // Handle SQL exception
                 // Log or display error message
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Handle other exceptions
                 // Log or display error message
@@ -1844,7 +1835,7 @@ namespace WebApplication1.bussiness.production
                 cmd.ExecuteNonQuery();
                 cmd.Dispose();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 string title = "Notifications :";
                 string body = "TBT ID cannot be attched to JOBID";
@@ -2215,7 +2206,7 @@ namespace WebApplication1.bussiness.production
                     isSuccess = true;
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // Log the exception or handle it as needed
                     //Console.WriteLine("An error occurred: " + ex.Message);

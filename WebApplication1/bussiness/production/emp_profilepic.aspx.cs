@@ -11,7 +11,6 @@ namespace WebApplication1.bussiness.production
     public partial class emp_profilepic : System.Web.UI.Page
     {
         // Default folder
-        static readonly string rootFolder = @"C:\atswork.in\wwwroot\erp_images\ProfilePhoto";
 
         //static readonly string rootFolder = @"D:\OH4Y Works\OH4Y_2021\Demo\WebApplication1\WebApplication1\erp_images\ProfilePhoto";
 
@@ -19,7 +18,6 @@ namespace WebApplication1.bussiness.production
         static string PrfPicFile = "N/A";
 
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
-        Boolean FileFlag = false;
 
 
         protected void Page_Load(object sender, EventArgs e)
@@ -96,7 +94,7 @@ namespace WebApplication1.bussiness.production
                 cmd.Dispose();
                 dbcl.Conn.Close();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Handle the exception (log or display error)
             }
@@ -110,8 +108,6 @@ namespace WebApplication1.bussiness.production
 
 
             string Server_FileName = String.Empty;
-            string Server_FilePath = String.Empty;
-            string FileType = String.Empty;
             string ext = string.Empty;
             Byte[] bytes = { 0 };
 
@@ -127,7 +123,6 @@ namespace WebApplication1.bussiness.production
                 lblMessage.Text = "Please Select File"; //if file uploader has no file selected
 
                 lbl_fileyesno.Text = "No";
-                FileFlag = false;
             }
             else if (FileUpload1.HasFile)
             {
@@ -200,7 +195,6 @@ namespace WebApplication1.bussiness.production
                     lblMessage.ForeColor = System.Drawing.Color.Red;
                     lblMessage.Text = "Error: " + ex.Message.ToString();
 
-                    FileFlag = false;
                     lbl_fileyesno.Text = "No";
                 }
             }
@@ -227,7 +221,7 @@ namespace WebApplication1.bussiness.production
 
                 UploadMessage_Div.Visible = true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }

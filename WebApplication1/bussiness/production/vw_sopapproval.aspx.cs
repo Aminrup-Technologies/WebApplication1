@@ -12,7 +12,6 @@ namespace WebApplication1.bussiness.production
     public partial class vw_sopapproval : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
-        CountChecker CC = new CountChecker();
         public static string viewerid = "";
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -199,9 +198,7 @@ namespace WebApplication1.bussiness.production
             GridViewRow row = GridView1.Rows[rowIndex];
 
             //Fetch value of Name.
-            string dbid = (row.FindControl("lbl_Id") as Label).Text;
             string jobid = (row.FindControl("lbl_Ref_JOBID") as Label).Text;
-            string tbtid = (row.FindControl("lbl_SOP_ID") as Label).Text;
 
             if (e.CommandName == "View_JOBDetails")
             {
