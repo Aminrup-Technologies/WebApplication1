@@ -99,12 +99,9 @@ namespace WebApplication1.bussiness.production
             DateTime currentDate = DateTime.Now;
 
             string current_year = DDL_Year.SelectedItem.Text.ToString();
-            string current_month1 = DDL_Month.SelectedItem.Text.ToString();
             string current_month2 = DDL_Month.SelectedValue.ToString();
 
             // Get the current year and month
-            int currentYear = DateTime.Now.Year;
-            int currentMonth = DateTime.Now.Month;
 
             int month = int.Parse(current_month2);
             int year = int.Parse(current_year);
@@ -346,7 +343,6 @@ namespace WebApplication1.bussiness.production
                 decimal HRAAmount = Convert.ToDecimal(lbl_HRA.Text.ToString());
                 decimal ConvAmount = Convert.ToDecimal(lbl_Conv_Allowance.Text.ToString());
                 decimal MedAmount = Convert.ToDecimal(lbl_Medical_Allowance.Text.ToString());
-                decimal WashAmount = Convert.ToDecimal(lbl_Washing_Allowance.Text.ToString());
                 decimal AttAmount = Convert.ToDecimal(lbl_ATT_Allowance.Text.ToString());
                 decimal SPCLAmount = Convert.ToDecimal(lbl_SPCL_Allowance.Text.ToString());
                 decimal MiscAmount = Convert.ToDecimal(lbl_Misc_Earnings.Text.ToString());
@@ -425,7 +421,6 @@ namespace WebApplication1.bussiness.production
 
                 //---------------- OT Pay -------- Gross Rate
                 decimal otpay = 0.0m;
-                decimal wrkhrs = Convert.ToDecimal(lbl_WorkHours.Text.ToString());
                 decimal otdiv = Convert.ToDecimal(lbl_OT_Divisibility.Text.ToString());  //Added on 29-11-2021
                 decimal otfactor = Convert.ToDecimal(lbl_OTFactor.Text.ToString());
                 string otrate = lbl_OTMultiplier.Text.ToString();
@@ -517,7 +512,6 @@ namespace WebApplication1.bussiness.production
 
 
                 //----------------Gross Calculation & NET Payment 2 -------------------------------//
-                decimal washgross = actualgross + WashPayF + ConvPay;
 
                 if (actualgross > GorssBreaker)
                 {
@@ -927,7 +921,6 @@ namespace WebApplication1.bussiness.production
                 }
                 catch (Exception ex)
                 {
-                    string msg = ex.Message;
                     //throw;
                 }
             }

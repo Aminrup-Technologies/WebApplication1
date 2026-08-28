@@ -704,7 +704,6 @@ namespace WebApplication1.bussiness.production
             string _allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#abcdefghijklmnopqrstuvwxyz";
             Random randNum = new Random();
             char[] chars = new char[PasswordLength];
-            int allowedCharCount = _allowedChars.Length;
 
             for (int i = 0; i < PasswordLength; i++)
             {

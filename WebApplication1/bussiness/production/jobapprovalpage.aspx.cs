@@ -322,7 +322,6 @@ namespace WebApplication1.bussiness.production
                 {
                     DateTime createdDate = Convert.ToDateTime(dt.Rows[0]["CreatedDate"]);
                     txt_jobdate.Text = createdDate.ToString("dd-MM-yyyy");
-                    bool isBlocked = Convert.ToBoolean(dt.Rows[0]["IsBlocked"]);
 
                     // 1. Extract the necessary fields from your DataTable (dt)
                     bool isDbBlocked = Convert.ToBoolean(dt.Rows[0]["IsBlocked"]);

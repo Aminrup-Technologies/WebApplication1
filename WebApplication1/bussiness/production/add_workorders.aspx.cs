@@ -137,7 +137,6 @@ namespace WebApplication1.bussiness.production
 
         protected void DDL_WorkRegion_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string DDL_String = DDL_WorkRegion.SelectedItem.Text.ToString();
             string DDL_Value = DDL_WorkRegion.SelectedValue.ToString();
 
             string CmdString2 = "select Company_Name, Company_Code from tlb_workregion_company where Work_Region_Code='" + DDL_Value + "' order by Id";
@@ -164,10 +163,8 @@ namespace WebApplication1.bussiness.production
 
         protected void DDL_Company_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string DDL_RegionName = DDL_WorkRegion.SelectedItem.Text.ToString();
             string DDL_RegionValue = DDL_WorkRegion.SelectedValue.ToString();
 
-            string DDL_CompanyName = DDL_Company.SelectedItem.Text.ToString();
             string DDL_CompanyValue = DDL_Company.SelectedValue.ToString();
 
             string CmdString3 = "select Company_Department, DB_Code from tlb_workregion_compdept where Work_Region_Code='" + DDL_RegionValue + "' and Company_Code='" + DDL_CompanyValue + "' order by Id";

@@ -362,7 +362,6 @@ namespace WebApplication1.bussiness.production
             catch (Exception)
             {
                 //Console.WriteLine("Error: " + ex.Message);
-                return false;
             }
         }
 

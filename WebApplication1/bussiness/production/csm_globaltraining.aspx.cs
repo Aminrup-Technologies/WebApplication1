@@ -363,7 +363,6 @@ namespace WebApplication1.bussiness.production
         {
             string sopnum = txt_sopno.Text.ToString();
             string soptitle = txt_sopdesc.Text.ToString();
-            string sopduration = txt_duration.Text.ToString() != "" ? txt_duration.Text.ToString() : "25";
 
 
             if (sopnum != "" && soptitle != "")
@@ -562,7 +561,6 @@ namespace WebApplication1.bussiness.production
         {
             Bind_SiteInchargeName();
 
-            string Worksite_Name = DDL_Worksite.SelectedItem.Text.ToString();
             string Worksite_DBCode = DDL_Worksite.SelectedValue.ToString();
 
             try
@@ -578,7 +576,6 @@ namespace WebApplication1.bussiness.production
                     lbl_worksitecode.Text = dbcode;
 
                     string DB_WKSDept = dt.Rows[0]["Company_Department"].ToString();
-                    string DB_WKSDeptCode = dt.Rows[0]["CompDept_Code"].ToString();
                     string DB_WKSDeptDBCode = dt.Rows[0]["Dept_DBCode"].ToString();
 
                     Bind_SiteInchargeName();

@@ -112,7 +112,6 @@ namespace WebApplication1.bussiness.production
         protected void btn_submit_Click(object sender, EventArgs e)
         {
             string current_year = DDL_Year.SelectedItem.Text.ToString();
-            string current_month1 = DDL_Month.SelectedItem.Text.ToString();
             string current_month2 = DDL_Month.SelectedValue.ToString();
             year = current_year;
             month = current_month2;
@@ -515,7 +514,6 @@ namespace WebApplication1.bussiness.production
                 decimal HRAAmount = Convert.ToDecimal(lbl_HRA.Text.ToString());
                 decimal ConvAmount = Convert.ToDecimal(lbl_Conv_Allowance.Text.ToString());
                 decimal MedAmount = Convert.ToDecimal(lbl_Medical_Allowance.Text.ToString());
-                decimal WashAmount = Convert.ToDecimal(lbl_Washing_Allowance.Text.ToString());
                 decimal AttAmount = Convert.ToDecimal(lbl_ATT_Allowance.Text.ToString());
                 decimal SPCLAmount = Convert.ToDecimal(lbl_SPCL_Allowance.Text.ToString());
                 decimal MiscAmount = Convert.ToDecimal(lbl_Misc_Earnings.Text.ToString());
@@ -972,7 +970,6 @@ namespace WebApplication1.bussiness.production
                 decimal HRAAmount = Convert.ToDecimal(lbl_HRA.Text.ToString());
                 decimal ConvAmount = Convert.ToDecimal(lbl_Conv_Allowance.Text.ToString());
                 decimal MedAmount = Convert.ToDecimal(lbl_Medical_Allowance.Text.ToString());
-                decimal WashAmount = Convert.ToDecimal(lbl_Washing_Allowance.Text.ToString());
                 decimal AttAmount = Convert.ToDecimal(lbl_ATT_Allowance.Text.ToString());
                 decimal SPCLAmount = Convert.ToDecimal(lbl_SPCL_Allowance.Text.ToString());
                 decimal MiscAmount = Convert.ToDecimal(lbl_Misc_Earnings.Text.ToString());
@@ -1605,7 +1602,6 @@ namespace WebApplication1.bussiness.production
                 }
                 catch (Exception ex)
                 {
-                    string msg = ex.Message;
                     //throw;
                 }
             }

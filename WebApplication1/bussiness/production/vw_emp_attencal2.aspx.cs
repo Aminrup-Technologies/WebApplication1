@@ -81,7 +81,6 @@ namespace WebApplication1.bussiness.production
         }
         protected void Calendar1_SelectionChanged(object sender, EventArgs e)
         {
-            string date = Calendar1.SelectedDate.ToShortDateString();
             hdnlink_Click(null, null);
 
         }

@@ -105,7 +105,6 @@ namespace WebApplication1.bussiness.production
             string region = DDL_Region.SelectedValue.ToString();
 
             string wrksitecode = DDL_Worksite.SelectedValue.ToString();
-            string wrksitename = DDL_Worksite.SelectedItem.Text.ToString();
 
             //Session["WRKRGN"] = region;
 
@@ -193,7 +192,6 @@ namespace WebApplication1.bussiness.production
         }
         private void FindAttendance1(string day, string month, string year, string wrk, ref Int32 dayss, ref Int32 ttlot, string region, string wrksitecode)
         {
-            string date = day + "-" + month + "-" + year;
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             string cmdstring1 = "select max(AttendanceStatus) as AttendanceStatus, AttendanceCode, ProvidedOT as OT from tbl_attendance where MONTH(CreatedDate)='" + month + "' and DAY(CreatedDate)='" + day + "' and YEAR(CreatedDate)='" + year + "' and EmployeeWrk='" + wrk + "' and SiteIncharge_Approval='Approved' and JOB_Region='" + region + "' and JOB_SiteCode='" + wrksitecode + "' group by AttendanceCode";
@@ -286,7 +284,6 @@ namespace WebApplication1.bussiness.production
         }
         private void FindAttendanceOT1(string day, string month, string year, string wrk, ref Int32 dayss, ref Int32 ots, string region, string wrksitecode)
         {
-            string date = day + "-" + month + "-" + year;
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             string cmdstring1 = "select COALESCE(SUM(ProvidedOT),0) as OT from tbl_attendance where MONTH(CreatedDate)='" + month + "' and DAY(CreatedDate)='" + day + "' and YEAR(CreatedDate)='" + year + "' and EmployeeWrk='" + wrk + "'and SiteIncharge_Approval='Approved' and JOB_Region='" + region + "' and JOB_SiteCode='" + wrksitecode + "'";
@@ -415,7 +412,6 @@ namespace WebApplication1.bussiness.production
         }
         private void FindAttendance2(string day, string month, string year, string wrk, ref Int32 dayss, ref Int32 Halfdays,string region, string wrksitecode)
         {
-            string date = day + "-" + month + "-" + year;
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             string cmdstring1 = "select max(AttendanceStatus) as AttendanceStatus, AttendanceCode, COALESCE(SUM(ProvidedOT),0) as OT from tbl_attendance where MONTH(CreatedDate)='" + month + "' and DAY(CreatedDate)='" + day + "' and YEAR(CreatedDate)='" + year + "' and EmployeeWrk='" + wrk + "' and SiteIncharge_Approval='Approved' and JOB_Region='" + region + "' and JOB_SiteCode='" + wrksitecode + "' group by AttendanceCode";
@@ -533,7 +529,6 @@ namespace WebApplication1.bussiness.production
 
         private void FindAttendance3(string day, string month, string year, string wrk, ref Int32 dayss, ref decimal ots,string region, string wrksitecode)
         {
-            string date = day + "-" + month + "-" + year;
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             string cmdstring1 = "select COALESCE(SUM(ProvidedOT),0) as OT from tbl_attendance where MONTH(CreatedDate)='" + month + "' and DAY(CreatedDate)='" + day + "' and YEAR(CreatedDate)='" + year + "' and EmployeeWrk='" + wrk + "' and SiteIncharge_Approval='Approved' and JOB_Region='" + region + "' and JOB_SiteCode='" + wrksitecode + "'";
@@ -629,7 +624,6 @@ namespace WebApplication1.bussiness.production
         }
         private void FindAttendance4(string day, string month, string year, string wrk, ref Int32 dayss, string region, string wrksitecode)
         {
-            string date = day + "-" + month + "-" + year;
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             string cmdstring1 = "select max(AttendanceStatus) as AttendanceStatus, AttendanceCode, COALESCE(SUM(ProvidedOT),0) as OT from tbl_attendance where MONTH(CreatedDate)='" + month + "' and DAY(CreatedDate)='" + day + "' and YEAR(CreatedDate)='" + year + "' and EmployeeWrk='" + wrk + "' and SiteIncharge_Approval='Approved' and JOB_Region='" + region + "' and JOB_SiteCode='" + wrksitecode + "' group by AttendanceCode";
@@ -717,7 +711,6 @@ namespace WebApplication1.bussiness.production
 
         private void FindAttendanceOT4(string day, string month, string year, string wrk, ref Int32 dayss, ref decimal ots, string region, string wrksitecode)
         {
-            string date = day + "-" + month + "-" + year;
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             string cmdstring1 = "select COALESCE(SUM(ProvidedOT),0) as OT from tbl_attendance where MONTH(CreatedDate)='" + month + "' and DAY(CreatedDate)='" + day + "' and YEAR(CreatedDate)='" + year + "' and EmployeeWrk='" + wrk + "' and SiteIncharge_Approval='Approved' and JOB_Region='" + region + "' and JOB_SiteCode='" + wrksitecode + "'";

@@ -92,7 +92,6 @@ namespace WebApplication1.bussiness.production
         protected void btn_submit_Click(object sender, EventArgs e)
         {
             string current_year = DDL_Year.SelectedItem.Text.ToString();
-            string current_month1 = DDL_Month.SelectedItem.Text.ToString();
             string current_month2 = DDL_Month.SelectedValue.ToString();
 
             int month = int.Parse(current_month2);
@@ -101,8 +100,6 @@ namespace WebApplication1.bussiness.production
 
             string strtday = "01";
             string endday = daysInMonth.ToString("D2");
-            Int32 minday = Convert.ToInt32(strtday);
-            Int32 maxday = Convert.ToInt32(endday);
 
             BindDefaultHeader(strtday, endday, current_year, current_month2, region);
 
@@ -348,7 +345,6 @@ namespace WebApplication1.bussiness.production
             string year = DDL_Year.SelectedValue;
 
             string current_year = DDL_Year.SelectedItem.Text.ToString();
-            string current_month1 = DDL_Month.SelectedItem.Text.ToString();
             string current_month2 = DDL_Month.SelectedValue.ToString();
 
             int month1 = int.Parse(current_month2);
@@ -373,7 +369,6 @@ namespace WebApplication1.bussiness.production
         protected void btn_esicdownload_Click(object sender, EventArgs e)
         {
             string current_year = DDL_Year.SelectedItem.Text.ToString();
-            string current_month1 = DDL_Month.SelectedItem.Text.ToString();
             string current_month2 = DDL_Month.SelectedValue.ToString();
 
             int month1 = int.Parse(current_month2);
@@ -398,7 +393,6 @@ namespace WebApplication1.bussiness.production
         protected void btn_txtdownload_Click(object sender, EventArgs e)
         {
             string current_year = DDL_Year.SelectedItem.Text.ToString();
-            string current_month1 = DDL_Month.SelectedItem.Text.ToString();
             string current_month2 = DDL_Month.SelectedValue.ToString();
 
             int month1 = int.Parse(current_month2);

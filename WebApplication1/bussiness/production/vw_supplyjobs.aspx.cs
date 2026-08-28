@@ -184,7 +184,6 @@ namespace WebApplication1.bussiness.production
             string dbid = (row.FindControl("lbl_Id") as Label).Text;
             string jobid = (row.FindControl("lbl_JOBID") as Label).Text;
             string supv = (row.FindControl("lbl_Creator_Workman") as Label).Text;
-            string jobidstatus = (row.FindControl("lbl_JOBID_Status") as Label).Text;
 
             if (e.CommandName == "View_Details")
             {

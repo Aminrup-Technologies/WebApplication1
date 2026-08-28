@@ -307,7 +307,6 @@ namespace WebApplication1.bussiness.production
             if (e.Row.RowType == DataControlRowType.DataRow && (e.Row.RowState & DataControlRowState.Edit) == DataControlRowState.Edit)
             {
                 // Prepopulate fields during edit mode
-                int id = Convert.ToInt32(GridViewPlantLines.DataKeys[e.Row.RowIndex].Values["id"]);
                 string local_name = DataBinder.Eval(e.Row.DataItem, "Emp_PermissionValue").ToString();
                 string line_sap_code = DataBinder.Eval(e.Row.DataItem, "Emp_PermissionText").ToString();
 

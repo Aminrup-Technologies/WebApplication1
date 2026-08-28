@@ -841,7 +841,6 @@ namespace WebApplication1.bussiness.production
             PayRoll.PFPayCalculation(BasicSalary, ref PFPay);
 
             //-------------------Total Allowances --------------------//
-            decimal ttl_allow = DaVdaPay + HRAPay + ConvPay + MedPay + WashPay + AttPay + SPCLPay + MiscPay;
 
 
 

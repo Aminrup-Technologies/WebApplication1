@@ -146,7 +146,6 @@ namespace WebApplication1.bussiness.production
             //Fetch value of Name.
             string dbid = (row.FindControl("lbl_Id") as Label).Text;
             string empwrk = (row.FindControl("lbl_WorkmanSL") as Label).Text;
-            string empname = (row.FindControl("lbl_FullName") as Label).Text;
             string workstatus = (row.FindControl("lbl_WorkStatus") as Label).Text;
 
             if (e.CommandName == "Swap_WorkStatus")

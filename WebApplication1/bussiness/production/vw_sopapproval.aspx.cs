@@ -199,9 +199,7 @@ namespace WebApplication1.bussiness.production
             GridViewRow row = GridView1.Rows[rowIndex];
 
             //Fetch value of Name.
-            string dbid = (row.FindControl("lbl_Id") as Label).Text;
             string jobid = (row.FindControl("lbl_Ref_JOBID") as Label).Text;
-            string tbtid = (row.FindControl("lbl_SOP_ID") as Label).Text;
 
             if (e.CommandName == "View_JOBDetails")
             {

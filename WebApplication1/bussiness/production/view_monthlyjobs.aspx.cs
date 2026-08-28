@@ -33,8 +33,6 @@ namespace WebApplication1.bussiness.production
                     dbcl.CalDateCombo1(DDL_Day, DDL_Month, DDL_Year);
 
                     DateTime d = DateTime.Now;
-                    string month = d.Month.ToString();
-                    string year = d.Year.ToString();
                     //string region = Session["REGION"].ToString();
 
                     //if (Session["WORKMAN"].ToString() == "J8")

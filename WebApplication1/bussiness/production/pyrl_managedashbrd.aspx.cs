@@ -223,7 +223,6 @@ namespace WebApplication1.bussiness.production
             lbl_inactivedeductions.Text = "***";
             lbl_activeworksites.Text = "***";
 
-            string DDL_String = DDL_WorkRegion.SelectedItem.Text.ToString();
             string DDL_Value = DDL_WorkRegion.SelectedValue.ToString();
 
             string CmdString2 = "select Company_Name, Company_Code from tlb_workregion_company where Work_Region_Code='" + DDL_Value + "' order by Id";
@@ -314,20 +313,6 @@ namespace WebApplication1.bussiness.production
 
                 // Retrieve the values of the output parameters
                 int employeeCount = Convert.ToInt32(command.Parameters["@EmployeeCount"].Value);
-                int hsEmpCount = Convert.ToInt32(command.Parameters["@HS_EmpCount"].Value);
-                int sEmpCount = Convert.ToInt32(command.Parameters["@S_EmpCount"].Value);
-                int ssEmpCount = Convert.ToInt32(command.Parameters["@SS_EmpCount"].Value);
-                int usEmpCount = Convert.ToInt32(command.Parameters["@US_EmpCount"].Value);
-                int f16YesEmpCount = Convert.ToInt32(command.Parameters["@F16_Yes_EmpCount"].Value);
-                int f16NoEmpCount = Convert.ToInt32(command.Parameters["@F16_No_EmpCount"].Value);
-                int f17YesEmpCount = Convert.ToInt32(command.Parameters["@F17_Yes_EmpCount"].Value);
-                int f17NoEmpCount = Convert.ToInt32(command.Parameters["@F17_No_EmpCount"].Value);
-                int fsYesnzEmpCount = Convert.ToInt32(command.Parameters["@FS_Yes_NZCount"].Value);
-                int fsYeszEmpCount = Convert.ToInt32(command.Parameters["@FS_Yes_ZCount"].Value);
-                int fsNozEmpCount = Convert.ToInt32(command.Parameters["@FS_No_ZCount"].Value);
-                int fsnonzEmpCount = Convert.ToInt32(command.Parameters["@FS_No_NZCount"].Value);
-                int CompDataEmpCount = Convert.ToInt32(command.Parameters["@CompleteDataEmpCount"].Value);
-                int InCompDataEmpCount = Convert.ToInt32(command.Parameters["@InCompleteDataEmpCount"].Value);
                 int Status = Convert.ToInt32(command.Parameters["@Status"].Value);
                 string StatusMessage = Convert.ToString(command.Parameters["@Status"].Value);
 
@@ -383,21 +368,6 @@ namespace WebApplication1.bussiness.production
 
                 // Read outputs
                 int employeeCount = Convert.ToInt32(command.Parameters["@EmployeeCount"].Value);
-                int hsEmpCount = Convert.ToInt32(command.Parameters["@HS_EmpCount"].Value);
-                int sEmpCount = Convert.ToInt32(command.Parameters["@S_EmpCount"].Value);
-                int ssEmpCount = Convert.ToInt32(command.Parameters["@SS_EmpCount"].Value);
-                int usEmpCount = Convert.ToInt32(command.Parameters["@US_EmpCount"].Value);
-                int npEmpCount = Convert.ToInt32(command.Parameters["@NP_EmpCount"].Value);
-                int f16YesEmpCount = Convert.ToInt32(command.Parameters["@F16_Yes_EmpCount"].Value);
-                int f16NoEmpCount = Convert.ToInt32(command.Parameters["@F16_No_EmpCount"].Value);
-                int f17YesEmpCount = Convert.ToInt32(command.Parameters["@F17_Yes_EmpCount"].Value);
-                int f17NoEmpCount = Convert.ToInt32(command.Parameters["@F17_No_EmpCount"].Value);
-                int fsYesnzEmpCount = Convert.ToInt32(command.Parameters["@FS_Yes_NZCount"].Value);
-                int fsYeszEmpCount = Convert.ToInt32(command.Parameters["@FS_Yes_ZCount"].Value);
-                int fsNozEmpCount = Convert.ToInt32(command.Parameters["@FS_No_ZCount"].Value);
-                int fsnonzEmpCount = Convert.ToInt32(command.Parameters["@FS_No_NZCount"].Value);
-                int compDataEmpCount = Convert.ToInt32(command.Parameters["@CompleteDataEmpCount"].Value);
-                int inCompDataEmpCount = Convert.ToInt32(command.Parameters["@InCompleteDataEmpCount"].Value);
                 int status = Convert.ToInt32(command.Parameters["@Status"].Value);
 
                 // ✅ Correct parameter name here
@@ -438,8 +408,6 @@ namespace WebApplication1.bussiness.production
 
                 // Get the output parameter values
                 int employeeCount = Convert.ToInt32(command1.Parameters["@EmployeeCount"].Value);
-                int completeDataEmpCount = Convert.ToInt32(command1.Parameters["@CompleteDataEmpCount"].Value);
-                int inCompleteDataEmpCount = Convert.ToInt32(command1.Parameters["@InCompleteDataEmpCount"].Value);
                 int status = Convert.ToInt32(command1.Parameters["@Status"].Value);
 
                 BankFactorStatus = status;

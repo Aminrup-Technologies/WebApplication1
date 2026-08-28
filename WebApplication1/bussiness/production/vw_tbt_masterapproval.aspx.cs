@@ -195,7 +195,6 @@ namespace WebApplication1.bussiness.production
             //Fetch value of Name.
             string dbid = (row.FindControl("lbl_Id") as Label).Text;
             string jobid = (row.FindControl("lbl_Ref_JOBID") as Label).Text;
-            string tbtid = (row.FindControl("lbl_TBT_ID") as Label).Text;
 
             if (e.CommandName == "View_JOBDetails")
             {

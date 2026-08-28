@@ -421,7 +421,6 @@ namespace WebApplication1.bussiness.production
 
                 //---------------- OT Pay -------- Gross Rate
                 decimal otpay = 0.0m;
-                decimal wrkhrs = Convert.ToDecimal(lbl_WorkHours.Text.ToString());
                 decimal otdiv = Convert.ToDecimal(lbl_OT_Divisibility.Text.ToString());  //Added on 29-11-2021
                 decimal otfactor = Convert.ToDecimal(lbl_OTFactor.Text.ToString());
                 string otrate = lbl_OTMultiplier.Text.ToString();
@@ -859,7 +858,6 @@ namespace WebApplication1.bussiness.production
                 }
                 catch (Exception ex)
                 {
-                    string msg = ex.Message;
                     //throw;
                 }
             }

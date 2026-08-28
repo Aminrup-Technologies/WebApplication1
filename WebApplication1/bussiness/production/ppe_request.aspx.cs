@@ -621,36 +621,8 @@ namespace WebApplication1.bussiness.production
                 string FRJacket_yn = RBTN_FRJacket.SelectedItem.Text.ToString();
                 string Apron_yn = RBTN_Apron.SelectedItem.Text.ToString();
 
-                string helmet_why = DDL_HelmetWhy.SelectedItem.Text.ToString();
-                string SftyShoes_why = DDL_SftyShoesWhy.SelectedItem.Text.ToString();
-                string DutyShirt_why = DDL_DutyShirtWhy.SelectedItem.Text.ToString();
-                string DutyPant_why = DDL_DutyPantWhy.SelectedItem.Text.ToString();
-                string SafetyGoogles_why = DDL_SafetyGooglesWhy.SelectedItem.Text.ToString();
-                string NoseMask_why = DDL_NoseMaskWhy.SelectedItem.Text.ToString();
-                string CottonGloves_why = DDL_CottonGlovesWhy.SelectedItem.Text.ToString();
-                string BlackGoogles_why = DDL_BlackGooglesWhy.SelectedItem.Text.ToString();
-                string PVCGloves_why = DDL_PVCGlovesWhy.SelectedItem.Text.ToString();
-                string LthrGloves_why = DDL_LthrGlovesWhy.SelectedItem.Text.ToString();
-                string LegGard_why = DDL_LegGardWhy.SelectedItem.Text.ToString();
-                string HandSleves_why = DDL_HandSlevesWhy.SelectedItem.Text.ToString();
-                string FRJacket_why = DDL_FRJacketWhy.SelectedItem.Text.ToString();
-                string Apron_why = DDL_ApronWhy.SelectedItem.Text.ToString();
 
 
-                string helmet_size = DDL_HelmetSize.SelectedItem.Text.ToString();
-                string SftyShoes_size = DDL_SftyShoesSize.SelectedItem.Text.ToString();
-                string DutyShirt_size = DDL_DutyShirtSize.SelectedItem.Text.ToString();
-                string DutyPant_size = DDL_DutyPantSize.SelectedItem.Text.ToString();
-                string SafetyGoogles_size = DDL_SafetyGooglesSize.SelectedItem.Text.ToString();
-                string NoseMask_size = DDL_NoseMaskSize.SelectedItem.Text.ToString();
-                string CottonGloves_size = DDL_CottonGlovesSize.SelectedItem.Text.ToString();
-                string BlackGoogles_size = DDL_BlackGooglesSize.SelectedItem.Text.ToString();
-                string PVCGloves_size = DDL_PVCGlovesSize.SelectedItem.Text.ToString();
-                string LthrGloves_size = DDL_LthrGlovesSize.SelectedItem.Text.ToString();
-                string LegGard_size = DDL_LegGardSize.SelectedItem.Text.ToString();
-                string HandSleves_size = DDL_HandSlevesSize.SelectedItem.Text.ToString();
-                string FRJacket_size = DDL_FRJacketSize.SelectedItem.Text.ToString();
-                string Apron_size = DDL_ApronSize.SelectedItem.Text.ToString();
 
                 dbcl.Sqlconnection();
                 //SqlCommand cmd = new SqlCommand("SP_InsertInto_TBTDataTable", dbcl.Conn);

@@ -241,8 +241,6 @@ namespace WebApplication1.bussiness.production
                             LastUpdatedOn = @UpdatedOn
                         WHERE PayrollYear = @Year 
                           AND PayrollMonth = @Month
-                          AND PayrollRegion = @Region
-                          AND PayrollCompany = @Company";
 
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {

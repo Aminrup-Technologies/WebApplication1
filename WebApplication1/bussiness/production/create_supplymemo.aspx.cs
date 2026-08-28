@@ -758,7 +758,6 @@ namespace WebApplication1.bussiness.production
                     ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
                 }
 
-                string ddljobid = jobid;
                 Bind_JOBIDDetails(jobid, dbid, supv);
             }
             catch (Exception ex)
@@ -1438,7 +1437,6 @@ namespace WebApplication1.bussiness.production
 
             GridViewRow currentRow2 = (GridViewRow)((DropDownList)sender).Parent.Parent;
             DropDownList ddl2 = (DropDownList)currentRow2.FindControl("DDL_EmpDesignation");
-            string ddl2_val = ddl2.SelectedValue.ToString();
 
             try
             {

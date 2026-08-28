@@ -33,7 +33,6 @@ namespace WebApplication1.bussiness.production
 
                     ddlViewLevel.SelectedValue = "3";
 
-                    int viewLevel = int.Parse(ddlViewLevel.SelectedValue);
                     int year = now.Year;
                     int month = now.Month;
 

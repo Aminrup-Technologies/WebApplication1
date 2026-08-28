@@ -110,8 +110,6 @@ namespace WebApplication1.bussiness.production
 
 
             string Server_FileName = String.Empty;
-            string Server_FilePath = String.Empty;
-            string FileType = String.Empty;
             string ext = string.Empty;
             Byte[] bytes = { 0 };
 

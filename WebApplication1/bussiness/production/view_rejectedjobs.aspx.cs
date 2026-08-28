@@ -57,7 +57,6 @@ namespace WebApplication1.bussiness.production
                 string jobidstatus = lbl_JOBID_Status.Text.ToString();
                 string approvalstatus = lbl_Incharge_Approval.Text.ToString();
 
-                string prmtno = lbl_JOB_PermitNo.Text.ToString();
                 string lblupldstatus = lbl_FinalUpldStatus.Text.ToString();
 
                 if (jobidstatus == "Active")

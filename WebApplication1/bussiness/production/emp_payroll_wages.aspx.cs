@@ -372,7 +372,6 @@ namespace WebApplication1.bussiness.production
 
         public void InsertPayrollWages(string Country_Code, string Country_Name, string State_Code, string State_Name, string WorkRegion_Code, string WorkRegion_Name, string Company_Name, string Company_Code, string Category_DB, string Category_Type, string Category_Code, string Wages_DB, decimal Wages_Rate, decimal VDA_Rate, decimal Total_Wages, DateTime Active_Date, string Status)
         {
-            SqlConnection connection = null;
             SqlCommand command = null;
 
             try

@@ -363,7 +363,6 @@ namespace WebApplication1.bussiness.production
                 string intime = txt_indate.Text.TrimEnd().ToString() + " " + txt_intime.Text.ToString();
                 string outtime = txt_outdate.Text.TrimEnd().ToString() + " " + txt_outtime.Text.ToString();
                 string current = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt");
-                DateTime crnttym = DateTime.ParseExact(current, "yyyy-MM-dd hh:mm:ss tt", CultureInfo.InvariantCulture);
                 string lunchyesno = RBTN_LunchFactor.SelectedValue.ToString();
 
                 //The below function is used to Check When user in Performing INPUNCH ---- Relaxation to Entry

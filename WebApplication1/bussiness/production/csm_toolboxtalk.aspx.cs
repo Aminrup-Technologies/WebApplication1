@@ -268,7 +268,6 @@ namespace WebApplication1.bussiness.production
                 if (dt.Rows.Count > 0)
                 {
                     string Date = dt.Rows[0]["CreatedDate"].ToString();
-                    string date2 = "";
                     string date3 = "";
                     if (Date == null || Date == "")
                     {

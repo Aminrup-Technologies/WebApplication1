@@ -212,7 +212,6 @@ namespace WebApplication1.bussiness.production
 
             DropDownList status = (DropDownList)GridView1.Rows[e.RowIndex].FindControl("DDL_Status");
             string new_status = status.SelectedItem.Text.ToString();
-            string new_deptcode = status.SelectedValue.ToString();
 
             try
             {

@@ -351,14 +351,6 @@ namespace WebApplication1.bussiness.production
                 FixedSalary_YesNo = lbl_FixedSalary_YesNo.Text.ToString();
                 FixedAmount = Convert.ToDecimal(lbl_FixedAmount.Text.ToString());
 
-                decimal DaVdaAmount = Convert.ToDecimal(lbl_DA_VDA.Text.ToString());
-                decimal HRAAmount = Convert.ToDecimal(lbl_HRA.Text.ToString());
-                decimal ConvAmount = Convert.ToDecimal(lbl_Conv_Allowance.Text.ToString());
-                decimal MedAmount = Convert.ToDecimal(lbl_Medical_Allowance.Text.ToString());
-                decimal WashAmount = Convert.ToDecimal(lbl_Washing_Allowance.Text.ToString());
-                decimal AttAmount = Convert.ToDecimal(lbl_ATT_Allowance.Text.ToString());
-                decimal SPCLAmount = Convert.ToDecimal(lbl_SPCL_Allowance.Text.ToString());
-                decimal MiscAmount = Convert.ToDecimal(lbl_Misc_Earnings.Text.ToString());
 
                 int AdvanceAmt = Convert.ToInt32(lbl_Cur_Advance.Text.ToString());
                 int FinesAmt = Convert.ToInt32(lbl_Cur_Fines.Text.ToString());
@@ -889,7 +881,6 @@ namespace WebApplication1.bussiness.production
                 }
                 catch (Exception ex)
                 {
-                    string msg = ex.Message;
                     //throw;
                 }
             }
