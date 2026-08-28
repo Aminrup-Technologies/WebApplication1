@@ -23,9 +23,9 @@ namespace WebApplication1.bussiness.production
         CountChecker CC = new CountChecker();
         DataTable dt = new DataTable();
 
-        public static string jobid = string.Empty;
-        public static string dbid = string.Empty;
-        public static string supv = string.Empty;
+        public string jobid = string.Empty;
+        public string dbid = string.Empty;
+        public string supv = string.Empty;
 
         string message = "";
 
@@ -35,6 +35,10 @@ namespace WebApplication1.bussiness.production
         //static readonly string rootFolder = @"D:\OH4Y Works\OH4Y_2021\Demo\WebApplication1\WebApplication1\erp_images\Permits";
         protected void Page_Load(object sender, EventArgs e)
         {
+            jobid = Request.QueryString["JOBID"];
+            dbid = Request.QueryString["dbid"];
+            supv = Request.QueryString["supv"];
+
             if (!IsPostBack)
             {
                 if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
@@ -44,9 +48,6 @@ namespace WebApplication1.bussiness.production
                 else
                 {
                     ViewState["RefUrl"] = Request.UrlReferrer.ToString();
-                    jobid = Request.QueryString["JOBID"];
-                    dbid = Request.QueryString["dbid"];
-                    supv = Request.QueryString["supv"];
 
                     Bind_JOBIDDetails(jobid, dbid, supv);
                     Checker();
