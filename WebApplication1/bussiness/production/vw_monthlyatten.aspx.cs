@@ -19,7 +19,6 @@ namespace WebApplication1.bussiness.production
         Payroll_OH4Y PayRoll = new Payroll_OH4Y();
 
         public static decimal GorssBreaker_KPO = 18500;
-        public static decimal GorssBreaker_AGL = 18500;
 
         public static decimal GorssBreaker = 18500;
         public static decimal Allowances_Allow = 12000;

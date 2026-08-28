@@ -12,7 +12,6 @@ namespace WebApplication1.bussiness.production
     public partial class vw_tbtforapproval : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
-        CountChecker CC = new CountChecker();
         public static string viewerid = "";
 
         protected void Page_Load(object sender, EventArgs e)
