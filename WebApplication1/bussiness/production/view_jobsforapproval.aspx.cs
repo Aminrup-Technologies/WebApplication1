@@ -30,8 +30,26 @@ namespace WebApplication1.bussiness.production
                     lbl_monthcode.Text = DateTime.Now.Month.ToString();
                     lbl_month.Text = now.ToString("MMMM");
 
-                    string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' and YEAR(CreatedDate)='" + DateTime.Now.Year.ToString() + "' and MONTH(CreatedDate)='" + DateTime.Now.Month.ToString() + "' order by CreatedDate desc";
-                    BindGrid(CmdString2);
+                    DateTime startDate = new DateTime(now.Year, now.Month, 1);
+                    DateTime endDate = startDate.AddMonths(1);
+
+                    string CmdString2 = @"
+                        SELECT *
+                        FROM tbl_jobs
+                        WHERE JOB_InchargeWrk = @Workman
+                          AND JOB_Status = 'Out-Punch Done'
+                          AND EntryExit = 'Exit'
+                          AND CreatedDate >= @StartDate
+                          AND CreatedDate < @EndDate
+                        ORDER BY CreatedDate DESC";
+
+                    SqlParameter[] parameters = {
+                        new SqlParameter("@Workman", Session["WORKMAN"].ToString()),
+                        new SqlParameter("@StartDate", startDate),
+                        new SqlParameter("@EndDate", endDate)
+                    };
+
+                    BindGrid(CmdString2, parameters);
 
                     //string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' order by CreatedDate desc";
                     //BindGrid(CmdString2);
@@ -59,11 +77,15 @@ namespace WebApplication1.bussiness.production
             dbcl.DisconnectDb();
         }
 
-        private void BindGrid(string cmdString)
+        private void BindGrid(string cmdString, SqlParameter[] parameters = null)
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
+            if (parameters != null)
+            {
+                cmd.Parameters.AddRange(parameters);
+            }
             SqlDataAdapter ad = new SqlDataAdapter(cmd);
             DataSet ds = new DataSet();
             ad.Fill(ds);
@@ -91,7 +113,19 @@ namespace WebApplication1.bussiness.production
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
 
-            string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_InchargeName='" + Session["USERNAME"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' order by CreatedDate desc"; BindGrid(CmdString2);
+            string CmdString2 = @"
+                SELECT *
+                FROM tbl_jobs
+                WHERE JOB_InchargeWrk = @Workman
+                  AND JOB_InchargeName = @Username
+                  AND JOB_Status = 'Out-Punch Done'
+                  AND EntryExit = 'Exit'
+                ORDER BY CreatedDate DESC";
+            SqlParameter[] parameters = {
+                new SqlParameter("@Workman", Session["WORKMAN"].ToString()),
+                new SqlParameter("@Username", Session["USERNAME"].ToString())
+            };
+            BindGrid(CmdString2, parameters);
             Response.Redirect(Request.Url.AbsoluteUri);
         }
 
@@ -102,10 +136,12 @@ namespace WebApplication1.bussiness.production
             {
                 dbcl.Sqlconnection();
                 dbcl.ConnectDb();
-                string cmdString = "delete from tbl_jobs where Id='" + id + "' and JOBID='" + dbcode + "'  ";
+                string cmdString = "delete from tbl_jobs where Id=@Id and JOBID=@JOBID";
                 SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
                 cmd.CommandType = CommandType.Text;
                 cmd.CommandTimeout = 0;
+                cmd.Parameters.AddWithValue("@Id", id);
+                cmd.Parameters.AddWithValue("@JOBID", dbcode);
                 cmd.ExecuteNonQuery();
                 dbcl.Conn.Close();
             }
@@ -124,10 +160,11 @@ namespace WebApplication1.bussiness.production
             {
                 dbcl.Sqlconnection();
                 dbcl.ConnectDb();
-                string cmdString = "delete from tbl_attendance where JOBID='" + dbcode + "'  ";
+                string cmdString = "delete from tbl_attendance where JOBID=@JOBID";
                 SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
                 cmd.CommandType = CommandType.Text;
                 cmd.CommandTimeout = 0;
+                cmd.Parameters.AddWithValue("@JOBID", dbcode);
                 cmd.ExecuteNonQuery();
                 dbcl.Conn.Close();
             }
@@ -265,29 +302,54 @@ namespace WebApplication1.bussiness.production
             dbcl.ConnectDb();
             string statusdata = "";
             string statusdata1 = "";
-            string cmdstring = "select JOBID_Status from tbl_jobs where JOBID='" + jobid + "' and Id = '" + dbid + "'";
+            string cmdstring = "select JOBID_Status from tbl_jobs where JOBID=@JOBID and Id=@Id";
             SqlCommand cmd = new SqlCommand(cmdstring, dbcl.Conn);
+            cmd.Parameters.AddWithValue("@JOBID", jobid);
+            cmd.Parameters.AddWithValue("@Id", dbid);
             SqlDataReader re = cmd.ExecuteReader();
             if (re.Read())
             {
                 statusdata = re["JOBID_Status"].ToString();
             }
+            re.Close();
 
 
             if (statusdata == "Active")
             {
                 statusdata1 = "Blocked";
 
-                dbcl.executeRdr("update tbl_jobs set JOBID_Status ='" + statusdata1 + "' where JOBID='" + jobid + "' and Id = '" + dbid + "'");
+                SqlCommand upd = new SqlCommand("update tbl_jobs set JOBID_Status=@JOBID_Status where JOBID=@JOBID and Id=@Id", dbcl.Conn);
+                upd.Parameters.AddWithValue("@JOBID_Status", statusdata1);
+                upd.Parameters.AddWithValue("@JOBID", jobid);
+                upd.Parameters.AddWithValue("@Id", dbid);
+                upd.CommandTimeout = 0;
+                upd.ExecuteNonQuery();
             }
             else
             {
                 statusdata1 = "Active";
-                dbcl.executeRdr("update tbl_jobs set JOBID_Status ='" + statusdata1 + "' where JOBID='" + jobid + "' and Id = '" + dbid + "'");
+                SqlCommand upd = new SqlCommand("update tbl_jobs set JOBID_Status=@JOBID_Status where JOBID=@JOBID and Id=@Id", dbcl.Conn);
+                upd.Parameters.AddWithValue("@JOBID_Status", statusdata1);
+                upd.Parameters.AddWithValue("@JOBID", jobid);
+                upd.Parameters.AddWithValue("@Id", dbid);
+                upd.CommandTimeout = 0;
+                upd.ExecuteNonQuery();
             }
             dbcl.Conn.Close();
 
-            string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_InchargeName='" + Session["USERNAME"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' order by CreatedDate desc"; BindGrid(CmdString2);
+            string CmdString2 = @"
+                SELECT *
+                FROM tbl_jobs
+                WHERE JOB_InchargeWrk = @Workman
+                  AND JOB_InchargeName = @Username
+                  AND JOB_Status = 'Out-Punch Done'
+                  AND EntryExit = 'Exit'
+                ORDER BY CreatedDate DESC";
+            SqlParameter[] parameters = {
+                new SqlParameter("@Workman", Session["WORKMAN"].ToString()),
+                new SqlParameter("@Username", Session["USERNAME"].ToString())
+            };
+            BindGrid(CmdString2, parameters);
         }
 
         protected void btn_prevmonth_Click(object sender, EventArgs e)
@@ -365,118 +427,340 @@ namespace WebApplication1.bussiness.production
             lbl_year.Text = Year;
             lbl_monthcode.Text = Month;
 
+            int year = Convert.ToInt32(Year);
+            int month = Convert.ToInt32(Month);
+            DateTime startDate = new DateTime(year, month, 1);
+            DateTime endDate = startDate.AddMonths(1);
+
+            SqlParameter[] monthParams = {
+                new SqlParameter("@Workman", Session["WORKMAN"].ToString()),
+                new SqlParameter("@StartDate", startDate),
+                new SqlParameter("@EndDate", endDate)
+            };
+            SqlParameter[] billingParams = {
+                new SqlParameter("@Workman", Session["WORKMAN"].ToString()),
+                new SqlParameter("@StartDate", startDate),
+                new SqlParameter("@EndDate", endDate),
+                new SqlParameter("@BillingCode", DDL_BillingType.SelectedValue.ToString())
+            };
+
             if (DDL_JobStatus.SelectedIndex == 0 && DDL_BillingType.SelectedIndex == 0)
             {
-                string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' order by CreatedDate desc";
-                BindGrid(CmdString2);
+                string CmdString2 = @"
+                    SELECT *
+                    FROM tbl_jobs
+                    WHERE JOB_InchargeWrk = @Workman
+                      AND JOB_Status = 'Out-Punch Done'
+                      AND EntryExit = 'Exit'
+                      AND CreatedDate >= @StartDate
+                      AND CreatedDate < @EndDate
+                    ORDER BY CreatedDate DESC";
+                BindGrid(CmdString2, monthParams);
             }
             else if (DDL_JobStatus.SelectedIndex != 0 && DDL_BillingType.SelectedIndex == 0)
             {
                 if (DDL_JobStatus.SelectedValue == "0")
                 {
-                    string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' order by CreatedDate desc";
-                    BindGrid(CmdString2);
+                    string CmdString2 = @"
+                    SELECT *
+                    FROM tbl_jobs
+                    WHERE JOB_InchargeWrk = @Workman
+                      AND JOB_Status = 'Out-Punch Done'
+                      AND EntryExit = 'Exit'
+                      AND CreatedDate >= @StartDate
+                      AND CreatedDate < @EndDate
+                    ORDER BY CreatedDate DESC";
+                    BindGrid(CmdString2, monthParams);
                 }
                 else if (DDL_JobStatus.SelectedValue == "1")
                 {
-                    string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOBID_Status='Active' order by CreatedDate desc";
-                    BindGrid(CmdString2);
+                    string CmdString2 = @"
+                    SELECT *
+                    FROM tbl_jobs
+                    WHERE JOB_InchargeWrk = @Workman
+                      AND JOB_Status = 'Out-Punch Done'
+                      AND EntryExit = 'Exit'
+                      AND CreatedDate >= @StartDate
+                      AND CreatedDate < @EndDate
+                      AND JOBID_Status = 'Active'
+                    ORDER BY CreatedDate DESC";
+                    BindGrid(CmdString2, monthParams);
                 }
                 else if (DDL_JobStatus.SelectedValue == "2")
                 {
-                    string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOBID_Status!='Active' order by CreatedDate desc";
-                    BindGrid(CmdString2);
+                    string CmdString2 = @"
+                    SELECT *
+                    FROM tbl_jobs
+                    WHERE JOB_InchargeWrk = @Workman
+                      AND JOB_Status = 'Out-Punch Done'
+                      AND EntryExit = 'Exit'
+                      AND CreatedDate >= @StartDate
+                      AND CreatedDate < @EndDate
+                      AND JOBID_Status != 'Active'
+                    ORDER BY CreatedDate DESC";
+                    BindGrid(CmdString2, monthParams);
                 }
                 else if (DDL_JobStatus.SelectedValue == "3")
                 {
-                    string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and FinalUpldStatus!='Yes' order by CreatedDate desc";
-                    BindGrid(CmdString2);
+                    string CmdString2 = @"
+                    SELECT *
+                    FROM tbl_jobs
+                    WHERE JOB_InchargeWrk = @Workman
+                      AND JOB_Status = 'Out-Punch Done'
+                      AND EntryExit = 'Exit'
+                      AND CreatedDate >= @StartDate
+                      AND CreatedDate < @EndDate
+                      AND FinalUpldStatus != 'Yes'
+                    ORDER BY CreatedDate DESC";
+                    BindGrid(CmdString2, monthParams);
                 }
                 else if (DDL_JobStatus.SelectedValue == "4")
                 {
-                    string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and FinalUpldStatus='Yes' order by CreatedDate desc";
-                    BindGrid(CmdString2);
+                    string CmdString2 = @"
+                    SELECT *
+                    FROM tbl_jobs
+                    WHERE JOB_InchargeWrk = @Workman
+                      AND JOB_Status = 'Out-Punch Done'
+                      AND EntryExit = 'Exit'
+                      AND CreatedDate >= @StartDate
+                      AND CreatedDate < @EndDate
+                      AND FinalUpldStatus = 'Yes'
+                    ORDER BY CreatedDate DESC";
+                    BindGrid(CmdString2, monthParams);
                 }
                 else if (DDL_JobStatus.SelectedValue == "5")
                 {
-                    string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and Incharge_Approval='Pending' order by CreatedDate desc";
-                    BindGrid(CmdString2);
+                    string CmdString2 = @"
+                    SELECT *
+                    FROM tbl_jobs
+                    WHERE JOB_InchargeWrk = @Workman
+                      AND JOB_Status = 'Out-Punch Done'
+                      AND EntryExit = 'Exit'
+                      AND CreatedDate >= @StartDate
+                      AND CreatedDate < @EndDate
+                      AND Incharge_Approval = 'Pending'
+                    ORDER BY CreatedDate DESC";
+                    BindGrid(CmdString2, monthParams);
                 }
                 else if (DDL_JobStatus.SelectedValue == "6")
                 {
-                    string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and Incharge_Approval='Approved' order by CreatedDate desc";
-                    BindGrid(CmdString2);
+                    string CmdString2 = @"
+                    SELECT *
+                    FROM tbl_jobs
+                    WHERE JOB_InchargeWrk = @Workman
+                      AND JOB_Status = 'Out-Punch Done'
+                      AND EntryExit = 'Exit'
+                      AND CreatedDate >= @StartDate
+                      AND CreatedDate < @EndDate
+                      AND Incharge_Approval = 'Approved'
+                    ORDER BY CreatedDate DESC";
+                    BindGrid(CmdString2, monthParams);
                 }
                 else if (DDL_JobStatus.SelectedValue == "7")
                 {
-                    string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and Incharge_Approval='Returned' order by CreatedDate desc";
-                    BindGrid(CmdString2);
+                    string CmdString2 = @"
+                    SELECT *
+                    FROM tbl_jobs
+                    WHERE JOB_InchargeWrk = @Workman
+                      AND JOB_Status = 'Out-Punch Done'
+                      AND EntryExit = 'Exit'
+                      AND CreatedDate >= @StartDate
+                      AND CreatedDate < @EndDate
+                      AND Incharge_Approval = 'Returned'
+                    ORDER BY CreatedDate DESC";
+                    BindGrid(CmdString2, monthParams);
                 }
                 else if (DDL_JobStatus.SelectedValue == "8")
                 {
-                    string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and Incharge_Approval='Rejected' order by CreatedDate desc";
-                    BindGrid(CmdString2);
+                    string CmdString2 = @"
+                    SELECT *
+                    FROM tbl_jobs
+                    WHERE JOB_InchargeWrk = @Workman
+                      AND JOB_Status = 'Out-Punch Done'
+                      AND EntryExit = 'Exit'
+                      AND CreatedDate >= @StartDate
+                      AND CreatedDate < @EndDate
+                      AND Incharge_Approval = 'Rejected'
+                    ORDER BY CreatedDate DESC";
+                    BindGrid(CmdString2, monthParams);
                 }
             }
             else if (DDL_JobStatus.SelectedIndex == 0 && DDL_BillingType.SelectedIndex != 0)
             {
-                string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' order by CreatedDate desc";
-                BindGrid(CmdString2);
+                string CmdString2 = @"
+                    SELECT *
+                    FROM tbl_jobs
+                    WHERE JOB_InchargeWrk = @Workman
+                      AND JOB_Status = 'Out-Punch Done'
+                      AND EntryExit = 'Exit'
+                      AND CreatedDate >= @StartDate
+                      AND CreatedDate < @EndDate
+                      AND BillingCode = @BillingCode
+                    ORDER BY CreatedDate DESC";
+                BindGrid(CmdString2, billingParams);
             }
             else if (DDL_JobStatus.SelectedIndex != 0 && DDL_BillingType.SelectedIndex != 0)
             {
                 if (DDL_JobStatus.SelectedValue == "0")
                 {
-                    string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' order by CreatedDate desc";
-                    BindGrid(CmdString2);
+                    string CmdString2 = @"
+                    SELECT *
+                    FROM tbl_jobs
+                    WHERE JOB_InchargeWrk = @Workman
+                      AND JOB_Status = 'Out-Punch Done'
+                      AND EntryExit = 'Exit'
+                      AND CreatedDate >= @StartDate
+                      AND CreatedDate < @EndDate
+                      AND BillingCode = @BillingCode
+                    ORDER BY CreatedDate DESC";
+                    BindGrid(CmdString2, billingParams);
                 }
                 else if (DDL_JobStatus.SelectedValue == "1")
                 {
-                    string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOBID_Status='Active' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' order by CreatedDate desc";
-                    BindGrid(CmdString2);
+                    string CmdString2 = @"
+                    SELECT *
+                    FROM tbl_jobs
+                    WHERE JOB_InchargeWrk = @Workman
+                      AND JOB_Status = 'Out-Punch Done'
+                      AND EntryExit = 'Exit'
+                      AND CreatedDate >= @StartDate
+                      AND CreatedDate < @EndDate
+                      AND JOBID_Status = 'Active'
+                      AND BillingCode = @BillingCode
+                    ORDER BY CreatedDate DESC";
+                    BindGrid(CmdString2, billingParams);
                 }
                 else if (DDL_JobStatus.SelectedValue == "2")
                 {
-                    string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOBID_Status!='Active' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' order by CreatedDate desc";
-                    BindGrid(CmdString2);
+                    string CmdString2 = @"
+                    SELECT *
+                    FROM tbl_jobs
+                    WHERE JOB_InchargeWrk = @Workman
+                      AND JOB_Status = 'Out-Punch Done'
+                      AND EntryExit = 'Exit'
+                      AND CreatedDate >= @StartDate
+                      AND CreatedDate < @EndDate
+                      AND JOBID_Status != 'Active'
+                      AND BillingCode = @BillingCode
+                    ORDER BY CreatedDate DESC";
+                    BindGrid(CmdString2, billingParams);
                 }
                 else if (DDL_JobStatus.SelectedValue == "3")
                 {
-                    string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and FinalUpldStatus!='Yes' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' order by CreatedDate desc";
-                    BindGrid(CmdString2);
+                    string CmdString2 = @"
+                    SELECT *
+                    FROM tbl_jobs
+                    WHERE JOB_InchargeWrk = @Workman
+                      AND JOB_Status = 'Out-Punch Done'
+                      AND EntryExit = 'Exit'
+                      AND CreatedDate >= @StartDate
+                      AND CreatedDate < @EndDate
+                      AND FinalUpldStatus != 'Yes'
+                      AND BillingCode = @BillingCode
+                    ORDER BY CreatedDate DESC";
+                    BindGrid(CmdString2, billingParams);
                 }
                 else if (DDL_JobStatus.SelectedValue == "4")
                 {
-                    string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and FinalUpldStatus='Yes' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' order by CreatedDate desc";
-                    BindGrid(CmdString2);
+                    string CmdString2 = @"
+                    SELECT *
+                    FROM tbl_jobs
+                    WHERE JOB_InchargeWrk = @Workman
+                      AND JOB_Status = 'Out-Punch Done'
+                      AND EntryExit = 'Exit'
+                      AND CreatedDate >= @StartDate
+                      AND CreatedDate < @EndDate
+                      AND FinalUpldStatus = 'Yes'
+                      AND BillingCode = @BillingCode
+                    ORDER BY CreatedDate DESC";
+                    BindGrid(CmdString2, billingParams);
                 }
                 else if (DDL_JobStatus.SelectedValue == "5")
                 {
-                    string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and Incharge_Approval='Pending' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' order by CreatedDate desc";
-                    BindGrid(CmdString2);
+                    string CmdString2 = @"
+                    SELECT *
+                    FROM tbl_jobs
+                    WHERE JOB_InchargeWrk = @Workman
+                      AND JOB_Status = 'Out-Punch Done'
+                      AND EntryExit = 'Exit'
+                      AND CreatedDate >= @StartDate
+                      AND CreatedDate < @EndDate
+                      AND Incharge_Approval = 'Pending'
+                      AND BillingCode = @BillingCode
+                    ORDER BY CreatedDate DESC";
+                    BindGrid(CmdString2, billingParams);
                 }
                 else if (DDL_JobStatus.SelectedValue == "6")
                 {
-                    string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and Incharge_Approval='Approved' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' order by CreatedDate desc";
-                    BindGrid(CmdString2);
+                    string CmdString2 = @"
+                    SELECT *
+                    FROM tbl_jobs
+                    WHERE JOB_InchargeWrk = @Workman
+                      AND JOB_Status = 'Out-Punch Done'
+                      AND EntryExit = 'Exit'
+                      AND CreatedDate >= @StartDate
+                      AND CreatedDate < @EndDate
+                      AND Incharge_Approval = 'Approved'
+                      AND BillingCode = @BillingCode
+                    ORDER BY CreatedDate DESC";
+                    BindGrid(CmdString2, billingParams);
                 }
                 else if (DDL_JobStatus.SelectedValue == "7")
                 {
-                    string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and Incharge_Approval='Returned' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' order by CreatedDate desc";
-                    BindGrid(CmdString2);
+                    string CmdString2 = @"
+                    SELECT *
+                    FROM tbl_jobs
+                    WHERE JOB_InchargeWrk = @Workman
+                      AND JOB_Status = 'Out-Punch Done'
+                      AND EntryExit = 'Exit'
+                      AND CreatedDate >= @StartDate
+                      AND CreatedDate < @EndDate
+                      AND Incharge_Approval = 'Returned'
+                      AND BillingCode = @BillingCode
+                    ORDER BY CreatedDate DESC";
+                    BindGrid(CmdString2, billingParams);
                 }
                 else if (DDL_JobStatus.SelectedValue == "8")
                 {
-                    string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and Incharge_Approval='Rejected' and BillingCode='" + DDL_BillingType.SelectedValue.ToString() + "' order by CreatedDate desc";
-                    BindGrid(CmdString2);
+                    string CmdString2 = @"
+                    SELECT *
+                    FROM tbl_jobs
+                    WHERE JOB_InchargeWrk = @Workman
+                      AND JOB_Status = 'Out-Punch Done'
+                      AND EntryExit = 'Exit'
+                      AND CreatedDate >= @StartDate
+                      AND CreatedDate < @EndDate
+                      AND Incharge_Approval = 'Rejected'
+                      AND BillingCode = @BillingCode
+                    ORDER BY CreatedDate DESC";
+                    BindGrid(CmdString2, billingParams);
                 }
             }
         }
 
         protected void btn_reset_Click(object sender, EventArgs e)
         {
-            string CmdString2 = "select * from tbl_jobs where JOB_InchargeWrk='" + Session["WORKMAN"].ToString() + "' and JOB_Status='Out-Punch Done' and EntryExit='Exit' and YEAR(CreatedDate)='" + DateTime.Now.Year.ToString() + "' and MONTH(CreatedDate)='" + DateTime.Now.Month.ToString() + "' order by CreatedDate desc";
-            BindGrid(CmdString2);
+            DateTime now = DateTime.Now;
+            DateTime startDate = new DateTime(now.Year, now.Month, 1);
+            DateTime endDate = startDate.AddMonths(1);
+
+            string CmdString2 = @"
+                SELECT *
+                FROM tbl_jobs
+                WHERE JOB_InchargeWrk = @Workman
+                  AND JOB_Status = 'Out-Punch Done'
+                  AND EntryExit = 'Exit'
+                  AND CreatedDate >= @StartDate
+                  AND CreatedDate < @EndDate
+                ORDER BY CreatedDate DESC";
+
+            SqlParameter[] parameters = {
+                new SqlParameter("@Workman", Session["WORKMAN"].ToString()),
+                new SqlParameter("@StartDate", startDate),
+                new SqlParameter("@EndDate", endDate)
+            };
+
+            BindGrid(CmdString2, parameters);
         }
 
         protected void btn_submit_Click(object sender, EventArgs e)
