@@ -27,7 +27,7 @@ namespace WebApplication1.bussiness.production
         public static string dbid = string.Empty;
         public static string supv = string.Empty;
 
-        static string message = "";
+        string message = "";
 
         // Default folder
         static readonly string rootFolder = @"C:\atswork.in\wwwroot\erp_images\Permits";
@@ -43,8 +43,6 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-                    message = "";
-                    message = message + "Today's JOB Details," + "\r\n\r\n";
                     ViewState["RefUrl"] = Request.UrlReferrer.ToString();
                     jobid = Request.QueryString["JOBID"];
                     dbid = Request.QueryString["dbid"];
@@ -109,7 +107,8 @@ namespace WebApplication1.bussiness.production
                 {
                     //txt_jobdate.Text = dt.Rows[0]["CreatedDate"].ToString();
                     HF_Msg.Value = "";
-                    //message = "";
+                    message = "";
+                    message = message + "Today's JOB Details," + "\r\n\r\n";
 
                     message = message + "JOBID : " + "*"+ jobid + "*" + "\r\n\r\n";
 
