@@ -17,7 +17,6 @@ namespace WebApplication1.bussiness.production
         Payroll_OH4Y PayRoll = new Payroll_OH4Y();
 
         public static decimal GorssBreaker_KPO = 18500;
-        public static decimal GorssBreaker_AGL = 18500;
 
         public static Int32 minday = 0;
         public static Int32 maxday = 0;
@@ -49,7 +48,6 @@ namespace WebApplication1.bussiness.production
         public static string ESKILL = "";
         public static decimal BW = .0m;
 
-        public static decimal GorssBreaker = 0;
         public static Decimal Allow_Multi = .05m; //5%
         public static decimal Allowances_Allow = 12000;
 
@@ -70,12 +68,10 @@ namespace WebApplication1.bussiness.production
                 if (Session["REGION"].ToString() == "KPO")
                 {
                     CheckforUser();
-                    GorssBreaker = 18500;
                 }
                 else if (Session["REGION"].ToString() == "AGL")
                 {
                     CheckforUser();
-                    GorssBreaker = 20500;
                 }
             }
         }

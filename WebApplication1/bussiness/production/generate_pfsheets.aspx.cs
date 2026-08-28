@@ -18,7 +18,6 @@ namespace WebApplication1.bussiness.production
         public static string state = string.Empty;
         public static string region = string.Empty;
         public static string comp = string.Empty;
-        public static string datalock = string.Empty;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -36,7 +35,6 @@ namespace WebApplication1.bussiness.production
                         region = retrievedArray[1].ToString();
                         comp = retrievedArray[2].ToString();
                         state = retrievedArray[0].ToString();
-                        datalock = retrievedArray[3].ToString();
                         Session["Changer"] = null;
                         Session["Changer"] = retrievedArray;
                     }
@@ -45,7 +43,6 @@ namespace WebApplication1.bussiness.production
                         region = Session["REGION"].ToString();
                         comp = Session["COMPANY_CODE"].ToString();
                         state = Session["STATE"].ToString();
-                        datalock = "0";
                         string[] Bindervalue = { state, region, comp, "1" };
                         Session["Changer"] = null;
                         Session["Changer"] = Bindervalue;

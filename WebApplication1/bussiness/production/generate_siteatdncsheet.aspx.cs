@@ -24,7 +24,6 @@ namespace WebApplication1.bussiness.production
         DataTable dt_emps = new DataTable();
         DataTable dt_present = new DataTable();
         DataTable dt_ot = new DataTable();
-        DataTable dt_presentot = new DataTable();
 
         public static string state = string.Empty;
         public static string region = string.Empty;
