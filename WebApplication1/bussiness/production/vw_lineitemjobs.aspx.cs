@@ -31,17 +31,44 @@ namespace WebApplication1.bussiness.production
                     lbl_monthcode.Text = DateTime.Now.Month.ToString();
                     lbl_month.Text = now.ToString("MMMM");
 
-                    string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + DateTime.Now.Year.ToString() + "' and JOBID_Status='Blocked' and MONTH(CreatedDate)='" + DateTime.Now.Month.ToString() + "' and JOBID_Status='Blocked' and EntryExit='Exit' and FinalUpldStatus='Yes' and Incharge_Approval='Approved' and BillingCode='LI' order by CreatedDate desc";
-                    BindGrid(CmdString2);
+                    DateTime startDate = new DateTime(now.Year, now.Month, 1);
+                    DateTime endDate = startDate.AddMonths(1);
+
+                    string CmdString2 = @"
+                        SELECT *
+                        FROM tbl_jobs
+                        WHERE Creator_Workman = @Workman
+                          AND Creator_Name = @Username
+                          AND CreatedDate >= @StartDate
+                          AND CreatedDate < @EndDate
+                          AND JOBID_Status = 'Blocked'
+                          AND EntryExit = 'Exit'
+                          AND FinalUpldStatus = 'Yes'
+                          AND Incharge_Approval = 'Approved'
+                          AND BillingCode = 'LI'
+                        ORDER BY CreatedDate DESC";
+
+                    SqlParameter[] parameters = {
+                        new SqlParameter("@Workman", Session["WORKMAN"].ToString()),
+                        new SqlParameter("@Username", Session["USERNAME"].ToString()),
+                        new SqlParameter("@StartDate", startDate),
+                        new SqlParameter("@EndDate", endDate)
+                    };
+
+                    BindGrid(CmdString2, parameters);
                 }
             }
         }
 
-        private void BindGrid(string cmdString)
+        private void BindGrid(string cmdString, SqlParameter[] parameters = null)
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
+            if (parameters != null)
+            {
+                cmd.Parameters.AddRange(parameters);
+            }
             SqlDataAdapter ad = new SqlDataAdapter(cmd);
             DataSet ds = new DataSet();
             ad.Fill(ds);
@@ -125,8 +152,33 @@ namespace WebApplication1.bussiness.production
             lbl_year.Text = Year;
             lbl_monthcode.Text = Month;
 
-            string CmdString2 = "select * from tbl_jobs where Creator_Workman='" + Session["WORKMAN"].ToString() + "' and Creator_Name='" + Session["USERNAME"].ToString() + "' and YEAR(CreatedDate)='" + Year + "' and MONTH(CreatedDate)='" + Month + "' and JOBID_Status='Blocked' and EntryExit='Exit' and FinalUpldStatus='Yes' and Incharge_Approval='Approved' and BillingCode='LI' order by CreatedDate desc";
-            BindGrid(CmdString2);
+            int year = Convert.ToInt32(Year);
+            int month = Convert.ToInt32(Month);
+            DateTime startDate = new DateTime(year, month, 1);
+            DateTime endDate = startDate.AddMonths(1);
+
+            string CmdString2 = @"
+                        SELECT *
+                        FROM tbl_jobs
+                        WHERE Creator_Workman = @Workman
+                          AND Creator_Name = @Username
+                          AND CreatedDate >= @StartDate
+                          AND CreatedDate < @EndDate
+                          AND JOBID_Status = 'Blocked'
+                          AND EntryExit = 'Exit'
+                          AND FinalUpldStatus = 'Yes'
+                          AND Incharge_Approval = 'Approved'
+                          AND BillingCode = 'LI'
+                        ORDER BY CreatedDate DESC";
+
+            SqlParameter[] parameters = {
+                new SqlParameter("@Workman", Session["WORKMAN"].ToString()),
+                new SqlParameter("@Username", Session["USERNAME"].ToString()),
+                new SqlParameter("@StartDate", startDate),
+                new SqlParameter("@EndDate", endDate)
+            };
+
+            BindGrid(CmdString2, parameters);
         }
 
         protected void GridView1_RowDataBound(object sender, GridViewRowEventArgs e)
