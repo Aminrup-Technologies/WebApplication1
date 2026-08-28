@@ -40,6 +40,7 @@ namespace WebApplication1.bussiness.production
                     SUM(CASE WHEN BillingCode = 'MS' AND MONTH(CreatedDate) = MONTH(GETDATE()) AND YEAR(CreatedDate) = YEAR(GETDATE()) THEN 1 ELSE 0 END) as SupplyJobs,
                     SUM(CASE WHEN BillingCode = 'LI' AND MONTH(CreatedDate) = MONTH(GETDATE()) AND YEAR(CreatedDate) = YEAR(GETDATE()) THEN 1 ELSE 0 END) as LineItemJobs
                 FROM tbl_jobs 
+                WHERE Creator_Workman = @Workman";
 
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
