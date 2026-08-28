@@ -171,11 +171,19 @@ namespace WebApplication1.bussiness.production
                     }
 
                     // Enforce Soft Delete Query Filters
-                    string CmdString2 = "select TOP 100 Id, JOBID, Name, TimeStamp from tbl_jobspermit where JOBID='" + jobid + "' and Submitter_Wrk='" + supv + "' AND ISNULL(DeleteStatus, 0) = 0 order by Id desc";
-                    BindGrid(CmdString2);
+                    string CmdString2 = "select Id, JOBID, Name, TimeStamp from tbl_jobspermit where JOBID=@JOBID and Submitter_Wrk=@Creator_Workman AND ISNULL(DeleteStatus, 0) = 0 order by Id desc";
+                    SqlParameter[] permitParams = {
+                        new SqlParameter("@JOBID", jobid),
+                        new SqlParameter("@Creator_Workman", supv)
+                    };
+                    BindGrid(CmdString2, permitParams);
 
-                    string CmdString3 = "select TOP 100 Id, JOBID, JOB_Region, CreatedDate, EmployeeWrk, EmployeeName, EmpDesignation, WourkHours, Inpunch_Time, Outpunch_Time, LunchFactor, ProvidedOT, AttendanceStatus, AttendanceCode from tbl_attendance where JOBID='" + jobid + "' and Creator_Workman='" + supv + "' and DeleteStatus=0 order by Id desc";
-                    BindGrid2(CmdString3);
+                    string CmdString3 = "select Id, JOBID, JOB_Region, CreatedDate, EmployeeWrk, EmployeeName, EmpDesignation, WourkHours, Inpunch_Time, Outpunch_Time, LunchFactor, ProvidedOT, AttendanceStatus, AttendanceCode from tbl_attendance where JOBID=@JOBID and Creator_Workman=@Creator_Workman and DeleteStatus=0 order by Id desc";
+                    SqlParameter[] attendanceParams = {
+                        new SqlParameter("@JOBID", jobid),
+                        new SqlParameter("@Creator_Workman", supv)
+                    };
+                    BindGrid2(CmdString3, attendanceParams);
                 }
             }
             catch (Exception ex)
@@ -184,11 +192,15 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-        private void BindGrid(string cmdString)
+        private void BindGrid(string cmdString, SqlParameter[] parameters = null)
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
+            if (parameters != null)
+            {
+                cmd.Parameters.AddRange(parameters);
+            }
             SqlDataAdapter ad = new SqlDataAdapter(cmd);
             DataSet ds = new DataSet();
             ad.Fill(ds);
@@ -197,11 +209,15 @@ namespace WebApplication1.bussiness.production
             dbcl.Conn.Close();
         }
 
-        private void BindGrid2(string cmdString)
+        private void BindGrid2(string cmdString, SqlParameter[] parameters = null)
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
+            if (parameters != null)
+            {
+                cmd.Parameters.AddRange(parameters);
+            }
             SqlDataAdapter ad = new SqlDataAdapter(cmd);
             DataTable dt = new DataTable();
             ad.Fill(dt);
