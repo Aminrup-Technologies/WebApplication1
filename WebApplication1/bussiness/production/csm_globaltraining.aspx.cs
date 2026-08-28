@@ -12,7 +12,6 @@ namespace WebApplication1.bussiness.production
     public partial class csm_globaltraining : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
-        CountChecker CC = new CountChecker();
         DataTable dt = new DataTable();
 
         public static string trntype = string.Empty;
