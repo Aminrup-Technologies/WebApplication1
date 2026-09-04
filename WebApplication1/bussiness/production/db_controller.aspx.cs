@@ -874,11 +874,6 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-        protected string BoolTo01(object value)
-        {
-            return MfaAuthHelper.IsEnabled(value) ? "1" : "0";
-        }
-
         private void BindTriggerSettings()
         {
             List<NotificationTriggerHelper.TriggerRow> rows;
@@ -919,8 +914,8 @@ namespace WebApplication1.bussiness.production
 
             if (portal != null)
             {
-                ddl_portal_email.SelectedValue = portal.EmailEnabled ? "1" : "0";
-                ddl_portal_whatsapp.SelectedValue = portal.WhatsAppEnabled ? "1" : "0";
+                chk_portal_email.Checked = portal.EmailEnabled;
+                chk_portal_whatsapp.Checked = portal.WhatsAppEnabled;
             }
 
             gv_TriggerAuth.DataSource = authRows;
@@ -929,60 +924,62 @@ namespace WebApplication1.bussiness.production
             gv_TriggerModules.DataBind();
         }
 
-        protected void btn_SaveTriggers_Click(object sender, EventArgs e)
+        protected void chk_Portal_CheckedChanged(object sender, EventArgs e)
         {
-            string updatedBy = Session["USERID"] != null ? Session["USERID"].ToString() : "";
+            SavePortalTriggers();
+        }
+
+        protected void chk_TriggerRow_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox chk = sender as CheckBox;
+            GridViewRow row = chk != null ? chk.NamingContainer as GridViewRow : null;
+            GridView grid = row != null ? row.NamingContainer as GridView : null;
+            if (grid == null || row.RowIndex < 0 || grid.DataKeys[row.RowIndex] == null)
+            {
+                ShowNotification(upTriggers, "Save failed", "Could not identify the trigger row.", "error");
+                ShowTriggerTab();
+                return;
+            }
+
+            string key = grid.DataKeys[row.RowIndex].Value.ToString();
+            CheckBox chkEmail = row.FindControl("chk_row_email") as CheckBox;
+            CheckBox chkWa = row.FindControl("chk_row_whatsapp") as CheckBox;
+            bool emailOn = chkEmail != null && chkEmail.Checked;
+            bool waOn = chkWa != null && chkWa.Checked;
+
             string error;
-
-            if (!NotificationTriggerHelper.TrySaveRow(
-                NotificationTriggerHelper.KeyPortal,
-                ddl_portal_email.SelectedValue == "1",
-                ddl_portal_whatsapp.SelectedValue == "1",
-                updatedBy,
-                out error))
+            string updatedBy = Session["USERID"] != null ? Session["USERID"].ToString() : "";
+            if (!NotificationTriggerHelper.TrySaveRow(key, emailOn, waOn, updatedBy, out error))
             {
-                ShowNotification(btn_SaveTriggers, "Save failed", string.IsNullOrEmpty(error) ? "Could not save portal triggers." : error, "error");
-                ShowTriggerTab();
-                return;
-            }
-
-            if (!SaveTriggerGrid(gv_TriggerAuth, updatedBy, out error))
-            {
-                ShowNotification(btn_SaveTriggers, "Save failed", error, "error");
-                ShowTriggerTab();
-                return;
-            }
-
-            if (!SaveTriggerGrid(gv_TriggerModules, updatedBy, out error))
-            {
-                ShowNotification(btn_SaveTriggers, "Save failed", error, "error");
+                ShowNotification(upTriggers, "Save failed", string.IsNullOrEmpty(error) ? "Could not save trigger." : error, "error");
                 ShowTriggerTab();
                 return;
             }
 
             BindTriggerSettings();
-            ShowNotification(btn_SaveTriggers, "Saved", "Portal, authentication OTP, and notification triggers were updated.", "success");
+            ShowNotification(upTriggers, "Saved", "Trigger updated.", "success");
             ShowTriggerTab();
         }
 
-        private bool SaveTriggerGrid(GridView grid, string updatedBy, out string error)
+        private void SavePortalTriggers()
         {
-            error = "";
-            for (int i = 0; i < grid.Rows.Count; i++)
+            string error;
+            string updatedBy = Session["USERID"] != null ? Session["USERID"].ToString() : "";
+            if (!NotificationTriggerHelper.TrySaveRow(
+                NotificationTriggerHelper.KeyPortal,
+                chk_portal_email.Checked,
+                chk_portal_whatsapp.Checked,
+                updatedBy,
+                out error))
             {
-                GridViewRow row = grid.Rows[i];
-                string key = grid.DataKeys[i].Value.ToString();
-                DropDownList ddlEmail = row.FindControl("ddl_row_email") as DropDownList;
-                DropDownList ddlWa = row.FindControl("ddl_row_whatsapp") as DropDownList;
-                bool emailOn = ddlEmail != null && ddlEmail.SelectedValue == "1";
-                bool waOn = ddlWa != null && ddlWa.SelectedValue == "1";
-                if (!NotificationTriggerHelper.TrySaveRow(key, emailOn, waOn, updatedBy, out error))
-                {
-                    error = "Could not save " + key + ". " + error;
-                    return false;
-                }
+                ShowNotification(upTriggers, "Save failed", string.IsNullOrEmpty(error) ? "Could not save portal triggers." : error, "error");
+                ShowTriggerTab();
+                return;
             }
-            return true;
+
+            BindTriggerSettings();
+            ShowNotification(upTriggers, "Saved", "Portal Email/WhatsApp updated.", "success");
+            ShowTriggerTab();
         }
 
         private void ShowTriggerTab()

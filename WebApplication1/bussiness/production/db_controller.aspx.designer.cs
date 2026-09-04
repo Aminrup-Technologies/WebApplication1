@@ -400,22 +400,22 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl pnl_triggers_ready;
         
         /// <summary>
-        /// ddl_portal_email control.
+        /// chk_portal_email control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddl_portal_email;
+        protected global::System.Web.UI.WebControls.CheckBox chk_portal_email;
         
         /// <summary>
-        /// ddl_portal_whatsapp control.
+        /// chk_portal_whatsapp control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddl_portal_whatsapp;
+        protected global::System.Web.UI.WebControls.CheckBox chk_portal_whatsapp;
         
         /// <summary>
         /// gv_TriggerAuth control.
@@ -434,14 +434,5 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView gv_TriggerModules;
-        
-        /// <summary>
-        /// btn_SaveTriggers control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btn_SaveTriggers;
     }
 }
