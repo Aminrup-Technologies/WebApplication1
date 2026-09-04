@@ -922,11 +922,64 @@ namespace WebApplication1.bussiness.production
             gv_TriggerAuth.DataBind();
             gv_TriggerModules.DataSource = modules;
             gv_TriggerModules.DataBind();
+            SyncColumnHeaderChecks(gv_TriggerAuth);
+            SyncColumnHeaderChecks(gv_TriggerModules);
         }
 
         protected void chk_Portal_CheckedChanged(object sender, EventArgs e)
         {
             SavePortalTriggers();
+        }
+
+        protected void lnk_PortalCheckAll_Click(object sender, EventArgs e)
+        {
+            chk_portal_email.Checked = true;
+            chk_portal_whatsapp.Checked = true;
+            SavePortalTriggers();
+        }
+
+        protected void lnk_PortalUncheckAll_Click(object sender, EventArgs e)
+        {
+            chk_portal_email.Checked = false;
+            chk_portal_whatsapp.Checked = false;
+            SavePortalTriggers();
+        }
+
+        protected void lnk_AuthCheckAll_Click(object sender, EventArgs e)
+        {
+            ApplyGridChecks(gv_TriggerAuth, "all", true, "Authentication OTP checked.");
+        }
+
+        protected void lnk_AuthUncheckAll_Click(object sender, EventArgs e)
+        {
+            ApplyGridChecks(gv_TriggerAuth, "all", false, "Authentication OTP unchecked.");
+        }
+
+        protected void lnk_ModCheckAll_Click(object sender, EventArgs e)
+        {
+            ApplyGridChecks(gv_TriggerModules, "all", true, "Notification modules checked.");
+        }
+
+        protected void lnk_ModUncheckAll_Click(object sender, EventArgs e)
+        {
+            ApplyGridChecks(gv_TriggerModules, "all", false, "Notification modules unchecked.");
+        }
+
+        protected void chk_TriggerColumnAll_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox hdr = sender as CheckBox;
+            GridViewRow headerRow = hdr != null ? hdr.NamingContainer as GridViewRow : null;
+            GridView grid = headerRow != null ? headerRow.NamingContainer as GridView : null;
+            if (hdr == null || grid == null)
+            {
+                ShowNotification(upTriggers, "Save failed", "Could not identify the trigger column.", "error");
+                ShowTriggerTab();
+                return;
+            }
+
+            string channel = hdr.ID == "chk_col_whatsapp_all" ? "whatsapp" : "email";
+            string label = channel == "whatsapp" ? "WhatsApp" : "Email";
+            ApplyGridChecks(grid, channel, hdr.Checked, label + (hdr.Checked ? " checked for all rows." : " unchecked for all rows."));
         }
 
         protected void chk_TriggerRow_CheckedChanged(object sender, EventArgs e)
@@ -941,15 +994,8 @@ namespace WebApplication1.bussiness.production
                 return;
             }
 
-            string key = grid.DataKeys[row.RowIndex].Value.ToString();
-            CheckBox chkEmail = row.FindControl("chk_row_email") as CheckBox;
-            CheckBox chkWa = row.FindControl("chk_row_whatsapp") as CheckBox;
-            bool emailOn = chkEmail != null && chkEmail.Checked;
-            bool waOn = chkWa != null && chkWa.Checked;
-
             string error;
-            string updatedBy = Session["USERID"] != null ? Session["USERID"].ToString() : "";
-            if (!NotificationTriggerHelper.TrySaveRow(key, emailOn, waOn, updatedBy, out error))
+            if (!SaveGridRow(grid, row, out error))
             {
                 ShowNotification(upTriggers, "Save failed", string.IsNullOrEmpty(error) ? "Could not save trigger." : error, "error");
                 ShowTriggerTab();
@@ -961,10 +1007,78 @@ namespace WebApplication1.bussiness.production
             ShowTriggerTab();
         }
 
+        private void ApplyGridChecks(GridView grid, string channel, bool value, string successMessage)
+        {
+            string error;
+            for (int i = 0; i < grid.Rows.Count; i++)
+            {
+                GridViewRow row = grid.Rows[i];
+                CheckBox chkEmail = row.FindControl("chk_row_email") as CheckBox;
+                CheckBox chkWa = row.FindControl("chk_row_whatsapp") as CheckBox;
+                if (channel == "email" || channel == "all")
+                {
+                    if (chkEmail != null) chkEmail.Checked = value;
+                }
+                if (channel == "whatsapp" || channel == "all")
+                {
+                    if (chkWa != null) chkWa.Checked = value;
+                }
+                if (!SaveGridRow(grid, row, out error))
+                {
+                    ShowNotification(upTriggers, "Save failed", string.IsNullOrEmpty(error) ? "Could not save triggers." : error, "error");
+                    ShowTriggerTab();
+                    return;
+                }
+            }
+
+            BindTriggerSettings();
+            ShowNotification(upTriggers, "Saved", successMessage, "success");
+            ShowTriggerTab();
+        }
+
+        private bool SaveGridRow(GridView grid, GridViewRow row, out string error)
+        {
+            error = "";
+            if (grid.DataKeys[row.RowIndex] == null)
+            {
+                error = "Missing trigger key.";
+                return false;
+            }
+            string key = grid.DataKeys[row.RowIndex].Value.ToString();
+            CheckBox chkEmail = row.FindControl("chk_row_email") as CheckBox;
+            CheckBox chkWa = row.FindControl("chk_row_whatsapp") as CheckBox;
+            bool emailOn = chkEmail != null && chkEmail.Checked;
+            bool waOn = chkWa != null && chkWa.Checked;
+            return NotificationTriggerHelper.TrySaveRow(key, emailOn, waOn, CurrentUserId(), out error);
+        }
+
+        private void SyncColumnHeaderChecks(GridView grid)
+        {
+            if (grid.HeaderRow == null) return;
+            CheckBox hdrEmail = grid.HeaderRow.FindControl("chk_col_email_all") as CheckBox;
+            CheckBox hdrWa = grid.HeaderRow.FindControl("chk_col_whatsapp_all") as CheckBox;
+            bool allEmail = grid.Rows.Count > 0;
+            bool allWa = grid.Rows.Count > 0;
+            for (int i = 0; i < grid.Rows.Count; i++)
+            {
+                CheckBox chkEmail = grid.Rows[i].FindControl("chk_row_email") as CheckBox;
+                CheckBox chkWa = grid.Rows[i].FindControl("chk_row_whatsapp") as CheckBox;
+                if (chkEmail == null || !chkEmail.Checked) allEmail = false;
+                if (chkWa == null || !chkWa.Checked) allWa = false;
+            }
+            if (hdrEmail != null) hdrEmail.Checked = allEmail;
+            if (hdrWa != null) hdrWa.Checked = allWa;
+        }
+
+        private string CurrentUserId()
+        {
+            return Session["USERID"] != null ? Session["USERID"].ToString() : "";
+        }
+
         private void SavePortalTriggers()
         {
             string error;
-            string updatedBy = Session["USERID"] != null ? Session["USERID"].ToString() : "";
+            string updatedBy = CurrentUserId();
             if (!NotificationTriggerHelper.TrySaveRow(
                 NotificationTriggerHelper.KeyPortal,
                 chk_portal_email.Checked,

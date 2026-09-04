@@ -191,6 +191,7 @@ def main():
     check("chk_portal_email" in controller and "chk_row_email" in controller, "triggers use checkboxes")
     check("ddl_portal_email" not in controller and "ddl_row_email" not in controller, "triggers no longer use dropdowns")
     check("chk_TriggerRow_CheckedChanged" in controller, "trigger checkboxes have change event")
+    check("lnk_auth_check_all" in controller and "chk_col_email_all" in controller, "triggers have check/uncheck all")
     check("IsAuthenticationOtp" in trigger, "auth OTP helper exists")
     check("KeyPortal" in trigger and "ModuleJobAlert" in trigger, "portal and module trigger keys exist")
 

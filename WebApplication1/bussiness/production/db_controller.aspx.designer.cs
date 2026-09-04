@@ -418,6 +418,60 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.CheckBox chk_portal_whatsapp;
         
         /// <summary>
+        /// lnk_portal_check_all control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton lnk_portal_check_all;
+        
+        /// <summary>
+        /// lnk_portal_uncheck_all control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton lnk_portal_uncheck_all;
+        
+        /// <summary>
+        /// lnk_auth_check_all control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton lnk_auth_check_all;
+        
+        /// <summary>
+        /// lnk_auth_uncheck_all control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton lnk_auth_uncheck_all;
+        
+        /// <summary>
+        /// lnk_mod_check_all control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton lnk_mod_check_all;
+        
+        /// <summary>
+        /// lnk_mod_uncheck_all control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton lnk_mod_uncheck_all;
+        
+        /// <summary>
         /// gv_TriggerAuth control.
         /// </summary>
         /// <remarks>
