@@ -3,6 +3,8 @@
 
     Run on each ATS ERP database. Safe to re-run: creates the table if needed
     and inserts missing module rows. Existing Enabled flags are not reset.
+    Authentication OTP rows (LOGIN_MFA, PASSWORD_RESET, PROFILE_OTP) stay
+    Enabled by default and are not turned off by the portal kill switch.
 */
 
 IF OBJECT_ID(N'dbo.tbl_Notification_Triggers', N'U') IS NULL
@@ -25,9 +27,9 @@ GO
 MERGE dbo.tbl_Notification_Triggers AS t
 USING (VALUES
     ('PORTAL',          'Portal (all modules)',                 'Portal', 0),
-    ('LOGIN_MFA',       'Login MFA OTP',                        'Module', 10),
-    ('PASSWORD_RESET',  'Login password reset OTP',             'Module', 20),
-    ('PROFILE_OTP',     'Profile / email verification OTP',     'Module', 30),
+    ('LOGIN_MFA',       'Login MFA OTP',                        'Auth',   10),
+    ('PASSWORD_RESET',  'Login password reset OTP',             'Auth',   20),
+    ('PROFILE_OTP',     'Profile / email verification OTP',     'Auth',   30),
     ('JOB_ALERT',       'Job out-punch / share alerts',         'Module', 40),
     ('JOB_INPUNCH',     'Job in-punch alerts',                  'Module', 50),
     ('HELPDESK',        'Helpdesk tickets',                     'Module', 60),

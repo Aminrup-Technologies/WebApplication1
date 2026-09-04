@@ -418,6 +418,15 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.DropDownList ddl_portal_whatsapp;
         
         /// <summary>
+        /// gv_TriggerAuth control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView gv_TriggerAuth;
+        
+        /// <summary>
         /// gv_TriggerModules control.
         /// </summary>
         /// <remarks>

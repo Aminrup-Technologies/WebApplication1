@@ -899,12 +899,17 @@ namespace WebApplication1.bussiness.production
             pnl_triggers_ready.Visible = true;
 
             NotificationTriggerHelper.TriggerRow portal = null;
+            List<NotificationTriggerHelper.TriggerRow> authRows = new List<NotificationTriggerHelper.TriggerRow>();
             List<NotificationTriggerHelper.TriggerRow> modules = new List<NotificationTriggerHelper.TriggerRow>();
             for (int i = 0; i < rows.Count; i++)
             {
                 if (string.Equals(rows[i].TriggerKey, NotificationTriggerHelper.KeyPortal, StringComparison.OrdinalIgnoreCase))
                 {
                     portal = rows[i];
+                }
+                else if (NotificationTriggerHelper.IsAuthenticationOtp(rows[i].TriggerKey))
+                {
+                    authRows.Add(rows[i]);
                 }
                 else
                 {
@@ -918,6 +923,8 @@ namespace WebApplication1.bussiness.production
                 ddl_portal_whatsapp.SelectedValue = portal.WhatsAppEnabled ? "1" : "0";
             }
 
+            gv_TriggerAuth.DataSource = authRows;
+            gv_TriggerAuth.DataBind();
             gv_TriggerModules.DataSource = modules;
             gv_TriggerModules.DataBind();
         }
@@ -939,25 +946,43 @@ namespace WebApplication1.bussiness.production
                 return;
             }
 
-            for (int i = 0; i < gv_TriggerModules.Rows.Count; i++)
+            if (!SaveTriggerGrid(gv_TriggerAuth, updatedBy, out error))
             {
-                GridViewRow row = gv_TriggerModules.Rows[i];
-                string key = gv_TriggerModules.DataKeys[i].Value.ToString();
+                ShowNotification(btn_SaveTriggers, "Save failed", error, "error");
+                ShowTriggerTab();
+                return;
+            }
+
+            if (!SaveTriggerGrid(gv_TriggerModules, updatedBy, out error))
+            {
+                ShowNotification(btn_SaveTriggers, "Save failed", error, "error");
+                ShowTriggerTab();
+                return;
+            }
+
+            BindTriggerSettings();
+            ShowNotification(btn_SaveTriggers, "Saved", "Portal, authentication OTP, and notification triggers were updated.", "success");
+            ShowTriggerTab();
+        }
+
+        private bool SaveTriggerGrid(GridView grid, string updatedBy, out string error)
+        {
+            error = "";
+            for (int i = 0; i < grid.Rows.Count; i++)
+            {
+                GridViewRow row = grid.Rows[i];
+                string key = grid.DataKeys[i].Value.ToString();
                 DropDownList ddlEmail = row.FindControl("ddl_row_email") as DropDownList;
                 DropDownList ddlWa = row.FindControl("ddl_row_whatsapp") as DropDownList;
                 bool emailOn = ddlEmail != null && ddlEmail.SelectedValue == "1";
                 bool waOn = ddlWa != null && ddlWa.SelectedValue == "1";
                 if (!NotificationTriggerHelper.TrySaveRow(key, emailOn, waOn, updatedBy, out error))
                 {
-                    ShowNotification(btn_SaveTriggers, "Save failed", "Could not save module " + key + ". " + error, "error");
-                    ShowTriggerTab();
-                    return;
+                    error = "Could not save " + key + ". " + error;
+                    return false;
                 }
             }
-
-            BindTriggerSettings();
-            ShowNotification(btn_SaveTriggers, "Saved", "Portal and module Email/WhatsApp triggers were updated.", "success");
-            ShowTriggerTab();
+            return true;
         }
 
         private void ShowTriggerTab()

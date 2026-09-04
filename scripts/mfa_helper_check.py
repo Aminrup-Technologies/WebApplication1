@@ -162,15 +162,19 @@ def main():
     check(totp_code(rfc_key, 1) == "287082", "RFC 6238 TOTP timestep 1")
     check(totp_code(from_base32(encoded), 1) == "287082", "TOTP from Base32 secret")
 
-    def effective_enabled(portal_on, module_on, table_missing):
+    def effective_enabled(portal_on, module_on, table_missing, is_auth=False):
         if table_missing:
             return True
+        if is_auth:
+            return bool(module_on)
         return bool(portal_on) and bool(module_on)
 
     check(effective_enabled(True, True, False) is True, "portal+module on")
     check(effective_enabled(False, True, False) is False, "portal off blocks module")
     check(effective_enabled(True, False, False) is False, "module off blocks send")
     check(effective_enabled(False, False, True) is True, "missing table fails open")
+    check(effective_enabled(False, True, False, True) is True, "auth OTP ignores portal off")
+    check(effective_enabled(False, False, False, True) is False, "auth OTP can still be module-off")
 
     root = Path(__file__).resolve().parents[1]
     helper = (root / "WebApplication1/bussiness/production/Msg91WhatsAppHelper.cs").read_text()
@@ -183,6 +187,8 @@ def main():
     check("SendMfaOtpWhatsApp" in login, "login delivers OTP over WhatsApp")
     check("IsWhatsAppEnabled" in helper and "ModuleLoginMfa" in helper, "WhatsApp OTP respects trigger switch")
     check("tab_triggers" in controller, "DB Controller has notification trigger tab")
+    check("gv_TriggerAuth" in controller, "DB Controller has authentication OTP grid")
+    check("IsAuthenticationOtp" in trigger, "auth OTP helper exists")
     check("KeyPortal" in trigger and "ModuleJobAlert" in trigger, "portal and module trigger keys exist")
 
     if errors:

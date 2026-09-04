@@ -8,13 +8,16 @@ namespace WebApplication1.bussiness.production
 {
     /// <summary>
     /// Portal + module switches for Email and WhatsApp sends.
-    /// A send is allowed only when the portal channel AND the module channel are both on.
+    /// Notification modules require portal AND module to be on.
+    /// Authentication OTPs (login MFA, password reset, profile verification) stay
+    /// active by default and ignore the portal kill switch.
     /// Missing table: fail open (current production behavior).
     /// </summary>
     public static class NotificationTriggerHelper
     {
         public const string ScopePortal = "Portal";
         public const string ScopeModule = "Module";
+        public const string ScopeAuth = "Auth";
 
         public const string KeyPortal = "PORTAL";
         public const string ModuleLoginMfa = "LOGIN_MFA";
@@ -50,9 +53,9 @@ namespace WebApplication1.bussiness.production
         static readonly TriggerRow[] Defaults = new TriggerRow[]
         {
             new TriggerRow { TriggerKey = KeyPortal, DisplayName = "Portal (all modules)", Scope = ScopePortal, SortOrder = 0 },
-            new TriggerRow { TriggerKey = ModuleLoginMfa, DisplayName = "Login MFA OTP", Scope = ScopeModule, SortOrder = 10 },
-            new TriggerRow { TriggerKey = ModulePasswordReset, DisplayName = "Login password reset OTP", Scope = ScopeModule, SortOrder = 20 },
-            new TriggerRow { TriggerKey = ModuleProfileOtp, DisplayName = "Profile / email verification OTP", Scope = ScopeModule, SortOrder = 30 },
+            new TriggerRow { TriggerKey = ModuleLoginMfa, DisplayName = "Login MFA OTP", Scope = ScopeAuth, SortOrder = 10 },
+            new TriggerRow { TriggerKey = ModulePasswordReset, DisplayName = "Login password reset OTP", Scope = ScopeAuth, SortOrder = 20 },
+            new TriggerRow { TriggerKey = ModuleProfileOtp, DisplayName = "Profile / email verification OTP", Scope = ScopeAuth, SortOrder = 30 },
             new TriggerRow { TriggerKey = ModuleJobAlert, DisplayName = "Job out-punch / share alerts", Scope = ScopeModule, SortOrder = 40 },
             new TriggerRow { TriggerKey = ModuleJobInpunch, DisplayName = "Job in-punch alerts", Scope = ScopeModule, SortOrder = 50 },
             new TriggerRow { TriggerKey = ModuleHelpdesk, DisplayName = "Helpdesk tickets", Scope = ScopeModule, SortOrder = 60 },
@@ -62,9 +65,18 @@ namespace WebApplication1.bussiness.production
             new TriggerRow { TriggerKey = ModuleSystem, DisplayName = "System / utility emails", Scope = ScopeModule, SortOrder = 100 }
         };
 
-        public static bool EffectiveEnabled(bool portalOn, bool moduleOn, bool tableMissing)
+        public static bool IsAuthenticationOtp(string moduleKey)
+        {
+            if (string.IsNullOrWhiteSpace(moduleKey)) return false;
+            return moduleKey.Equals(ModuleLoginMfa, StringComparison.OrdinalIgnoreCase)
+                || moduleKey.Equals(ModulePasswordReset, StringComparison.OrdinalIgnoreCase)
+                || moduleKey.Equals(ModuleProfileOtp, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static bool EffectiveEnabled(bool portalOn, bool moduleOn, bool tableMissing, bool isAuthOtp)
         {
             if (tableMissing) return true;
+            if (isAuthOtp) return moduleOn;
             return portalOn && moduleOn;
         }
 
@@ -72,14 +84,16 @@ namespace WebApplication1.bussiness.production
         {
             Dictionary<string, ChannelFlags> map;
             if (!TryLoadMap(out map)) return true;
-            return EffectiveEnabled(GetFlags(map, KeyPortal).Email, GetFlags(map, moduleKey).Email, false);
+            bool isAuth = IsAuthenticationOtp(moduleKey);
+            return EffectiveEnabled(GetFlags(map, KeyPortal).Email, GetFlags(map, moduleKey).Email, false, isAuth);
         }
 
         public static bool IsWhatsAppEnabled(string moduleKey)
         {
             Dictionary<string, ChannelFlags> map;
             if (!TryLoadMap(out map)) return true;
-            return EffectiveEnabled(GetFlags(map, KeyPortal).WhatsApp, GetFlags(map, moduleKey).WhatsApp, false);
+            bool isAuth = IsAuthenticationOtp(moduleKey);
+            return EffectiveEnabled(GetFlags(map, KeyPortal).WhatsApp, GetFlags(map, moduleKey).WhatsApp, false, isAuth);
         }
 
         public static bool IsMissingTableException(Exception ex)

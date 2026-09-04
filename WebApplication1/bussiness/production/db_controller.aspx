@@ -592,7 +592,7 @@
                                         <div id="pnl_triggers_ready" runat="server" visible="false">
                                             <div class="control-panel" style="background-color: #f0f9f6; border: 1px solid #c8e6c9;">
                                                 <h5 style="color: #1ABB9C; font-weight: 600; margin-bottom: 8px;"><i class="fa fa-globe mr-2"></i>Portal level</h5>
-                                                <p class="small text-muted mb-3">Portal Off turns off that channel for every module, even if the module is Enabled.</p>
+                                                <p class="small text-muted mb-3">Portal Off turns off notification channels (jobs, helpdesk, payroll, and similar). Authentication OTPs stay active unless you disable those modules below.</p>
                                                 <div class="row align-items-end">
                                                     <div class="col-md-3 col-sm-6 form-group mb-md-0">
                                                         <label class="top-label">Email</label>
@@ -612,8 +612,41 @@
                                             </div>
 
                                             <div class="control-panel">
-                                                <h5 style="color: #2a3f54; font-weight: 600; margin-bottom: 8px;"><i class="fa fa-cubes mr-2"></i>Module level</h5>
-                                                <p class="small text-muted mb-3">A send goes out only when Portal and the module are both Enabled for that channel.</p>
+                                                <h5 style="color: #2a3f54; font-weight: 600; margin-bottom: 8px;"><i class="fa fa-lock mr-2"></i>Authentication OTP</h5>
+                                                <p class="small text-muted mb-3">Active by default. Login MFA, password reset, and profile verification codes are not turned off by Portal Off.</p>
+                                                <div class="modern-grid-container">
+                                                    <div class="modern-table-wrapper">
+                                                        <asp:GridView ID="gv_TriggerAuth" runat="server" AutoGenerateColumns="False" CssClass="table table-striped table-bordered table-sm mb-0" GridLines="Both" DataKeyNames="TriggerKey">
+                                                            <Columns>
+                                                                <asp:BoundField DataField="DisplayName" HeaderText="OTP" ItemStyle-Font-Bold="true" />
+                                                                <asp:TemplateField HeaderText="Email" ItemStyle-Width="18%">
+                                                                    <ItemTemplate>
+                                                                        <asp:DropDownList ID="ddl_row_email" runat="server" CssClass="form-control modern-input" SelectedValue='<%# BoolTo01(Eval("EmailEnabled")) %>'>
+                                                                            <asp:ListItem Text="Enabled" Value="1" />
+                                                                            <asp:ListItem Text="Disabled" Value="0" />
+                                                                        </asp:DropDownList>
+                                                                    </ItemTemplate>
+                                                                </asp:TemplateField>
+                                                                <asp:TemplateField HeaderText="WhatsApp" ItemStyle-Width="18%">
+                                                                    <ItemTemplate>
+                                                                        <asp:DropDownList ID="ddl_row_whatsapp" runat="server" CssClass="form-control modern-input" SelectedValue='<%# BoolTo01(Eval("WhatsAppEnabled")) %>'>
+                                                                            <asp:ListItem Text="Enabled" Value="1" />
+                                                                            <asp:ListItem Text="Disabled" Value="0" />
+                                                                        </asp:DropDownList>
+                                                                    </ItemTemplate>
+                                                                </asp:TemplateField>
+                                                            </Columns>
+                                                            <EmptyDataTemplate>
+                                                                <div class="alert alert-info text-center m-3">No authentication OTP rows found.</div>
+                                                            </EmptyDataTemplate>
+                                                        </asp:GridView>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="control-panel">
+                                                <h5 style="color: #2a3f54; font-weight: 600; margin-bottom: 8px;"><i class="fa fa-cubes mr-2"></i>Notification modules</h5>
+                                                <p class="small text-muted mb-3">A notification send goes out only when Portal and the module are both Enabled for that channel.</p>
                                                 <div class="modern-grid-container">
                                                     <div class="modern-table-wrapper">
                                                         <asp:GridView ID="gv_TriggerModules" runat="server" AutoGenerateColumns="False" CssClass="table table-striped table-bordered table-sm mb-0" GridLines="Both" DataKeyNames="TriggerKey">
