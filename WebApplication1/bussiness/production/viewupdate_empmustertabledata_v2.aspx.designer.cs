@@ -1183,6 +1183,24 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.TextBox txt_MFALastVerified;
         
         /// <summary>
+        /// txt_MFAEnrollment control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txt_MFAEnrollment;
+        
+        /// <summary>
+        /// btn_ResetAuthenticator control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btn_ResetAuthenticator;
+        
+        /// <summary>
         /// lbl_CurrentStatus control.
         /// </summary>
         /// <remarks>

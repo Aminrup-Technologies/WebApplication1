@@ -45,5 +45,8 @@ namespace WebApplication1.bussiness.production
         public const string MfaOtpEmail = "MFA_OTP_EMAIL";
         public const string MfaRemember = "MFA_REMEMBER";
         public const string MfaResendAt = "MFA_RESEND_AT";
+        public const string MfaMethod = "MFA_METHOD";
+        public const string MfaTotpEnroll = "MFA_TOTP_ENROLL";
+        public const string MfaTotpSecret = "MFA_TOTP_SECRET";
     }
 }

@@ -4,11 +4,12 @@ namespace WebApplication1.bussiness.production
 {
     /// <summary>
     /// Shared MFA helpers for login challenge and admin configuration.
-    /// Phase 1 method is Email OTP; TOTP is reserved for a later phase.
+    /// Methods: Email OTP and Authenticator (TOTP).
     /// </summary>
     public static class MfaAuthHelper
     {
         public const string MethodEmailOtp = "EmailOTP";
+        public const string MethodAuthenticator = "Authenticator";
         public const int OtpLifetimeMinutes = 5;
         public const int MaxOtpAttempts = 3;
         public const int ResendCooldownSeconds = 60;
@@ -64,9 +65,25 @@ namespace WebApplication1.bussiness.production
         {
             if (ex == null) return false;
             string msg = ex.Message ?? "";
-            return msg.IndexOf("Invalid column name", StringComparison.OrdinalIgnoreCase) >= 0
-                || msg.IndexOf("MFAEnabled", StringComparison.OrdinalIgnoreCase) >= 0
-                   && msg.IndexOf("Invalid column", StringComparison.OrdinalIgnoreCase) >= 0;
+            return msg.IndexOf("Invalid column name", StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        public static string NormalizeMethod(string method)
+        {
+            if (string.IsNullOrWhiteSpace(method)) return MethodEmailOtp;
+            string value = method.Trim();
+            if (value.Equals(MethodAuthenticator, StringComparison.OrdinalIgnoreCase)
+                || value.Equals("TOTP", StringComparison.OrdinalIgnoreCase)
+                || value.Equals("AuthenticatorApp", StringComparison.OrdinalIgnoreCase))
+            {
+                return MethodAuthenticator;
+            }
+            return MethodEmailOtp;
+        }
+
+        public static bool IsAuthenticator(string method)
+        {
+            return NormalizeMethod(method) == MethodAuthenticator;
         }
     }
 }

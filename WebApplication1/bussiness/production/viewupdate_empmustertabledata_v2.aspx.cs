@@ -305,6 +305,12 @@ namespace WebApplication1.bussiness.production
                     txt_MFALastVerified.Text = (dr.Table.Columns.Contains("MFALastVerified") && dr["MFALastVerified"] != DBNull.Value)
                         ? Convert.ToDateTime(dr["MFALastVerified"]).ToString("yyyy-MM-dd HH:mm:ss") : "Never";
 
+                    bool totpEnrolled = dr.Table.Columns.Contains("MFATotpEnrolled") && MfaAuthHelper.IsEnabled(dr["MFATotpEnrolled"]);
+                    bool hasTotpSecret = dr.Table.Columns.Contains("MFATotpSecret") && dr["MFATotpSecret"] != DBNull.Value
+                        && !string.IsNullOrWhiteSpace(dr["MFATotpSecret"].ToString());
+                    txt_MFAEnrollment.Text = totpEnrolled ? "Enrolled" : "Not enrolled";
+                    btn_ResetAuthenticator.Enabled = totpEnrolled || hasTotpSecret;
+
                     string status = dr["WorkStatus"].ToString();
                     lbl_CurrentStatus.Text = status;
                     SetDDLByText(DDL_AdminStatus, status);
@@ -582,6 +588,42 @@ namespace WebApplication1.bussiness.production
             finally { dbcl.DisconnectDb(); }
         }
 
+        protected void btn_ResetAuthenticator_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(lbl_EmpID.Text))
+            {
+                ShowPopup("Error", "No employee is loaded.");
+                return;
+            }
+
+            try
+            {
+                dbcl.Sqlconnection();
+                if (dbcl.Conn.State == ConnectionState.Closed) dbcl.ConnectDb();
+
+                string query = @"UPDATE tbl_Employee_Mustertable
+                                 SET MFATotpSecret = NULL, MFATotpEnrolled = 0
+                                 WHERE WorkmanSL = @ID";
+                SqlCommand cmd = new SqlCommand(query, dbcl.Conn);
+                cmd.Parameters.AddWithValue("@ID", lbl_EmpID.Text);
+                cmd.ExecuteNonQuery();
+
+                string adminId = Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "SYSTEM";
+                LogAudit(lbl_EmpID.Text, "MFA_TOTP_RESET", "Authenticator enrollment cleared by " + adminId + ". User must scan a new QR code on next login.");
+                ShowPopup("Authenticator reset", "The user will be asked to enroll a new authenticator app on the next login.");
+                LoadEmployeeData(lbl_EmpID.Text);
+                LoadAuditLogs(lbl_EmpID.Text);
+            }
+            catch (Exception ex)
+            {
+                ShowPopup("Error", "Could not reset authenticator. Run the TOTP database script if this is the first time. " + ex.Message);
+            }
+            finally
+            {
+                dbcl.DisconnectDb();
+            }
+        }
+
         protected void btn_SaveAll_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(txt_AdminReason.Text.Trim()))
@@ -591,9 +633,10 @@ namespace WebApplication1.bussiness.production
             }
 
             bool mfaOn = DDL_MFAEnabled.SelectedValue == "1";
-            if (mfaOn && !MfaAuthHelper.HasEmail(txt_email.Text))
+            string mfaMethod = MfaAuthHelper.NormalizeMethod(DDL_MFAMethod.SelectedValue);
+            if (mfaOn && !MfaAuthHelper.IsAuthenticator(mfaMethod) && !MfaAuthHelper.HasEmail(txt_email.Text))
             {
-                ShowPopup("MFA Requires Email", "A registered Email on the Personal tab is required before MFA can be enabled for this user.");
+                ShowPopup("MFA Requires Email", "A registered Email on the Personal tab is required before Email OTP MFA can be enabled for this user.");
                 return;
             }
 
@@ -727,7 +770,7 @@ namespace WebApplication1.bussiness.production
                 cmd.Parameters.AddWithValue("@STAT", status);
                 cmd.Parameters.AddWithValue("@LOGIN", DDL_LoginAccess.SelectedValue);
                 cmd.Parameters.AddWithValue("@MFA", mfaOn ? 1 : 0);
-                cmd.Parameters.AddWithValue("@MFAMETHOD", MfaAuthHelper.MethodEmailOtp);
+                cmd.Parameters.AddWithValue("@MFAMETHOD", mfaMethod);
 
                 string safeUserWrk = Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "SYSTEM";
                 string safeUserName = Session["USERNAME"] != null ? Session["USERNAME"].ToString() : "SYSTEM";
@@ -874,6 +917,7 @@ namespace WebApplication1.bussiness.production
             original["WorkStatus"] = DDL_AdminStatus.SelectedValue;
             original["LoginStatus"] = DDL_LoginAccess.SelectedValue;
             original["MFAEnabled"] = DDL_MFAEnabled.SelectedValue;
+            original["MFAMethod"] = DDL_MFAMethod.SelectedValue;
 
             original["StatusReason"] = hfSavedReason.Value;
             original["DOR"] = txt_DOR.Text;
@@ -946,6 +990,7 @@ namespace WebApplication1.bussiness.production
             CompareValue(changes, original, "WorkStatus", DDL_AdminStatus.SelectedValue);
             CompareValue(changes, original, "LoginStatus", DDL_LoginAccess.SelectedValue);
             CompareValue(changes, original, "MFAEnabled", DDL_MFAEnabled.SelectedValue);
+            CompareValue(changes, original, "MFAMethod", DDL_MFAMethod.SelectedValue);
 
             string savedReason = Request.Form[hfSavedReason.UniqueID] ?? hfSavedReason.Value;
             CompareValue(changes, original, "StatusReason", savedReason);

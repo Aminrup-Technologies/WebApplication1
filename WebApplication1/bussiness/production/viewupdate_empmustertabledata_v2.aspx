@@ -650,19 +650,20 @@
                                 </div>
 
                                 <h4 class="section-header mt-3"><i class="fa fa-shield"></i>Multi-Factor Authentication</h4>
-                                <p class="small text-muted">When MFA is required, the user must enter an email OTP after a successful password. A registered Email on the Personal tab is mandatory.</p>
+                                <p class="small text-muted">MFA is per user. Email OTP sends a code after password. Authenticator uses Google Authenticator / Microsoft Authenticator. Email is required only for Email OTP. If a user loses their phone, reset the authenticator so they can enroll again.</p>
                                 <div class="row">
                                     <div class="col-md-3 form-group">
                                         <label>MFA Required</label>
                                         <asp:DropDownList ID="DDL_MFAEnabled" runat="server" CssClass="form-control">
                                             <asp:ListItem Text="No (password only)" Value="0" />
-                                            <asp:ListItem Text="Yes (Email OTP)" Value="1" />
+                                            <asp:ListItem Text="Yes" Value="1" />
                                         </asp:DropDownList>
                                     </div>
                                     <div class="col-md-3 form-group">
                                         <label>MFA Method</label>
-                                        <asp:DropDownList ID="DDL_MFAMethod" runat="server" CssClass="form-control" Enabled="false">
+                                        <asp:DropDownList ID="DDL_MFAMethod" runat="server" CssClass="form-control">
                                             <asp:ListItem Text="Email OTP" Value="EmailOTP" />
+                                            <asp:ListItem Text="Authenticator app" Value="Authenticator" />
                                         </asp:DropDownList>
                                     </div>
                                     <div class="col-md-3 form-group">
@@ -678,6 +679,14 @@
                                     <div class="col-md-3 form-group">
                                         <label>Last MFA Verified</label>
                                         <asp:TextBox ID="txt_MFALastVerified" runat="server" CssClass="form-control readonly-text" ReadOnly="true" />
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label>Authenticator Status</label>
+                                        <asp:TextBox ID="txt_MFAEnrollment" runat="server" CssClass="form-control readonly-text" ReadOnly="true" />
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label>&nbsp;</label>
+                                        <asp:Button ID="btn_ResetAuthenticator" runat="server" Text="Reset authenticator" CssClass="btn btn-warning btn-block" Enabled="false" OnClick="btn_ResetAuthenticator_Click" OnClientClick="return confirm('Reset this users authenticator app? They will scan a new QR code on next login.');" />
                                     </div>
                                 </div>
 

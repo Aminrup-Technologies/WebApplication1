@@ -220,6 +220,33 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.Label lbl_mfa_hint;
         
         /// <summary>
+        /// ph_mfa_enroll control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.PlaceHolder ph_mfa_enroll;
+        
+        /// <summary>
+        /// hf_mfa_otpauth control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hf_mfa_otpauth;
+        
+        /// <summary>
+        /// lbl_mfa_manual control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_mfa_manual;
+        
+        /// <summary>
         /// txt_mfa_otp control.
         /// </summary>
         /// <remarks>

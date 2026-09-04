@@ -58,6 +58,7 @@ namespace WebApplication1.bussiness.production
                 pane_forgot.Attributes["class"] = "tab-pane fade";
                 pane_mfa.Visible = true;
                 pane_mfa.Attributes["class"] = "tab-pane fade show active";
+                ApplyMfaPaneState();
                 return;
             }
 
@@ -184,9 +185,26 @@ namespace WebApplication1.bussiness.production
                 return;
             }
 
-            bool mfaEnabled = TryReadMfaEnabled(id);
+            bool mfaEnabled = false;
+            string mfaMethod = MfaAuthHelper.MethodEmailOtp;
+            bool totpEnrolled = false;
+            TryReadMfaSettings(id, ref mfaEnabled, ref mfaMethod, ref totpEnrolled);
             if (mfaEnabled)
             {
+                if (MfaAuthHelper.IsAuthenticator(mfaMethod))
+                {
+                    if (totpEnrolled)
+                    {
+                        StartTotpChallenge(id, workmanSL, chk_remember.Checked);
+                    }
+                    else
+                    {
+                        StartTotpEnroll(id, workmanSL, chk_remember.Checked);
+                    }
+                    LogLoginTiming("mfaChallenge", sw, id);
+                    return;
+                }
+
                 string email = row["Email"] != DBNull.Value ? row["Email"].ToString() : "";
                 if (!MfaAuthHelper.HasEmail(email))
                 {
@@ -202,6 +220,49 @@ namespace WebApplication1.bussiness.production
 
             GrantAuthenticatedSession(row, chk_remember.Checked, "SUCCESS", false);
             LogLoginTiming("total", sw, id);
+        }
+
+        private void TryReadMfaSettings(string loginId, ref bool enabled, ref string method, ref bool totpEnrolled)
+        {
+            enabled = false;
+            method = MfaAuthHelper.MethodEmailOtp;
+            totpEnrolled = false;
+            try
+            {
+                DataTable dt = dbcl.SPreturn_dt(
+                    @"SELECT ISNULL(MFAEnabled, 0) AS MFAEnabled,
+                             ISNULL(MFAMethod, 'EmailOTP') AS MFAMethod,
+                             ISNULL(MFATotpEnrolled, 0) AS MFATotpEnrolled
+                      FROM tbl_Employee_Mustertable WHERE LoginID=@LoginID",
+                    new SqlParameter[] { new SqlParameter("@LoginID", loginId) });
+                if (dt.Rows.Count == 0) return;
+                enabled = MfaAuthHelper.IsEnabled(dt.Rows[0]["MFAEnabled"]);
+                method = MfaAuthHelper.NormalizeMethod(dt.Rows[0]["MFAMethod"].ToString());
+                totpEnrolled = MfaAuthHelper.IsEnabled(dt.Rows[0]["MFATotpEnrolled"]);
+            }
+            catch (Exception ex)
+            {
+                if (!MfaAuthHelper.IsMissingColumnException(ex)) throw;
+                try
+                {
+                    DataTable fallback = dbcl.SPreturn_dt(
+                        @"SELECT ISNULL(MFAEnabled, 0) AS MFAEnabled,
+                                 ISNULL(MFAMethod, 'EmailOTP') AS MFAMethod
+                          FROM tbl_Employee_Mustertable WHERE LoginID=@LoginID",
+                        new SqlParameter[] { new SqlParameter("@LoginID", loginId) });
+                    if (fallback.Rows.Count == 0) return;
+                    enabled = MfaAuthHelper.IsEnabled(fallback.Rows[0]["MFAEnabled"]);
+                    method = MfaAuthHelper.NormalizeMethod(fallback.Rows[0]["MFAMethod"].ToString());
+                    totpEnrolled = false;
+                }
+                catch (Exception inner)
+                {
+                    if (!MfaAuthHelper.IsMissingColumnException(inner)) throw;
+                    enabled = TryReadMfaEnabled(loginId);
+                    method = MfaAuthHelper.MethodEmailOtp;
+                    totpEnrolled = false;
+                }
+            }
         }
 
         private bool TryReadMfaEnabled(string loginId)
@@ -237,6 +298,8 @@ namespace WebApplication1.bussiness.production
             Session[SessionKeys.MfaOtpEmail] = email.Trim();
             Session[SessionKeys.MfaRemember] = rememberMe;
             Session[SessionKeys.MfaResendAt] = DateTime.Now.AddSeconds(MfaAuthHelper.ResendCooldownSeconds);
+            Session[SessionKeys.MfaMethod] = MfaAuthHelper.MethodEmailOtp;
+            Session[SessionKeys.MfaTotpEnroll] = false;
 
             InsertLoginAudit(loginId, workmanSL, "MFA_CHALLENGE", null);
 
@@ -256,9 +319,78 @@ namespace WebApplication1.bussiness.production
 
         private void RefreshMfaHint()
         {
+            if (MfaAuthHelper.IsAuthenticator(Session[SessionKeys.MfaMethod] as string))
+            {
+                if (Session[SessionKeys.MfaTotpEnroll] is bool && (bool)Session[SessionKeys.MfaTotpEnroll])
+                {
+                    lbl_mfa_hint.Text = "Scan the QR code with Google Authenticator or Microsoft Authenticator, then enter the 6-digit code.";
+                }
+                else
+                {
+                    lbl_mfa_hint.Text = "Enter the 6-digit code from your authenticator app. Codes refresh every 30 seconds.";
+                }
+                return;
+            }
+
             string email = Session[SessionKeys.MfaOtpEmail] as string;
             lbl_mfa_hint.Text = "Enter the 6-digit code sent to " + MfaAuthHelper.MaskEmail(email) + ". The code expires in "
                 + MfaAuthHelper.OtpLifetimeMinutes + " minutes.";
+        }
+
+        private void ApplyMfaPaneState()
+        {
+            bool totp = MfaAuthHelper.IsAuthenticator(Session[SessionKeys.MfaMethod] as string);
+            bool enroll = totp && Session[SessionKeys.MfaTotpEnroll] is bool && (bool)Session[SessionKeys.MfaTotpEnroll];
+            btn_mfa_resend.Visible = !totp;
+            ph_mfa_enroll.Visible = enroll;
+            if (enroll)
+            {
+                string secret = Session[SessionKeys.MfaTotpSecret] as string;
+                string loginId = Session[SessionKeys.MfaPendingLoginId] as string;
+                hf_mfa_otpauth.Value = MfaTotpHelper.BuildOtpAuthUri(loginId, secret);
+                lbl_mfa_manual.Text = secret ?? "";
+                ScriptManager.RegisterStartupScript(this, GetType(), "mfaqr",
+                    "window.setTimeout(function(){ if (window.renderMfaQr) { renderMfaQr(); } }, 50);", true);
+            }
+            else
+            {
+                hf_mfa_otpauth.Value = "";
+                lbl_mfa_manual.Text = "";
+            }
+            RefreshMfaHint();
+        }
+
+        private void StartTotpChallenge(string loginId, string workmanSL, bool rememberMe)
+        {
+            ClearMfaSession();
+            Session[SessionKeys.MfaPendingLoginId] = loginId;
+            Session[SessionKeys.MfaRemember] = rememberMe;
+            Session[SessionKeys.MfaMethod] = MfaAuthHelper.MethodAuthenticator;
+            Session[SessionKeys.MfaTotpEnroll] = false;
+            Session[SessionKeys.MfaOtpTry] = 0;
+            Session[SessionKeys.MfaOtpExp] = DateTime.Now.AddMinutes(10);
+            InsertLoginAudit(loginId, workmanSL, "MFA_CHALLENGE", "Totp");
+            ViewState["MfaMode"] = true;
+            ViewState["ForgotMode"] = false;
+            RefreshMfaHint();
+            Notify("Authenticator", "Enter the code from your authenticator app.", "info");
+        }
+
+        private void StartTotpEnroll(string loginId, string workmanSL, bool rememberMe)
+        {
+            ClearMfaSession();
+            Session[SessionKeys.MfaPendingLoginId] = loginId;
+            Session[SessionKeys.MfaRemember] = rememberMe;
+            Session[SessionKeys.MfaMethod] = MfaAuthHelper.MethodAuthenticator;
+            Session[SessionKeys.MfaTotpEnroll] = true;
+            Session[SessionKeys.MfaTotpSecret] = MfaTotpHelper.GenerateSecret();
+            Session[SessionKeys.MfaOtpTry] = 0;
+            Session[SessionKeys.MfaOtpExp] = DateTime.Now.AddMinutes(10);
+            InsertLoginAudit(loginId, workmanSL, "MFA_CHALLENGE", "TotpEnroll");
+            ViewState["MfaMode"] = true;
+            ViewState["ForgotMode"] = false;
+            RefreshMfaHint();
+            Notify("Set up authenticator", "Scan the QR code, then enter the 6-digit code to finish setup.", "info");
         }
 
         protected void btn_mfa_verify_Click(object sender, EventArgs e)
@@ -276,6 +408,12 @@ namespace WebApplication1.bussiness.production
         private void VerifyMfaAndCompleteLogin()
         {
             ViewState["MfaMode"] = true;
+
+            if (MfaAuthHelper.IsAuthenticator(Session[SessionKeys.MfaMethod] as string))
+            {
+                VerifyTotpAndCompleteLogin();
+                return;
+            }
 
             string pendingId = Session[SessionKeys.MfaPendingLoginId] as string;
             if (string.IsNullOrEmpty(pendingId) || Session[SessionKeys.MfaOtpHash] == null || Session[SessionKeys.MfaOtpExp] == null)
@@ -336,6 +474,119 @@ namespace WebApplication1.bussiness.production
             GrantAuthenticatedSession(row, rememberMe, "SUCCESS_MFA", true);
         }
 
+        private void VerifyTotpAndCompleteLogin()
+        {
+            string pendingId = Session[SessionKeys.MfaPendingLoginId] as string;
+            if (string.IsNullOrEmpty(pendingId) || Session[SessionKeys.MfaOtpExp] == null)
+            {
+                ClearMfaSession();
+                ViewState["MfaMode"] = false;
+                Notify("Expired", "Verification session expired. Please log in again.", "error");
+                return;
+            }
+
+            if (DateTime.Now > (DateTime)Session[SessionKeys.MfaOtpExp])
+            {
+                InsertLoginAudit(pendingId, null, "MFA_EXPIRED", "TotpSessionExpired");
+                ClearMfaSession();
+                ViewState["MfaMode"] = false;
+                Notify("Expired", "Verification session expired. Please log in again.", "error");
+                return;
+            }
+
+            Session[SessionKeys.MfaOtpTry] = (int)(Session[SessionKeys.MfaOtpTry] ?? 0) + 1;
+            if ((int)Session[SessionKeys.MfaOtpTry] > MfaAuthHelper.MaxOtpAttempts)
+            {
+                InsertLoginAudit(pendingId, null, "MFA_FAILED", "TooManyAttempts");
+                ClearMfaSession();
+                ViewState["MfaMode"] = false;
+                Notify("Blocked", "Too many attempts. Please log in again.", "error");
+                return;
+            }
+
+            bool enroll = Session[SessionKeys.MfaTotpEnroll] is bool && (bool)Session[SessionKeys.MfaTotpEnroll];
+            string secret = enroll
+                ? (Session[SessionKeys.MfaTotpSecret] as string)
+                : ReadStoredTotpSecret(pendingId);
+
+            if (string.IsNullOrEmpty(secret) || !MfaTotpHelper.ValidateCode(secret, txt_mfa_otp.Text))
+            {
+                InsertLoginAudit(pendingId, null, "MFA_FAILED", enroll ? "InvalidTotpEnroll" : "InvalidTotp");
+                Notify("Invalid", "Wrong authenticator code.", "error");
+                return;
+            }
+
+            DataTable dt = FetchLoginUser(pendingId);
+            if (dt.Rows.Count == 0)
+            {
+                ClearMfaSession();
+                ViewState["MfaMode"] = false;
+                Notify("Failed", "Account was not found. Please log in again.", "error");
+                return;
+            }
+
+            DataRow row = dt.Rows[0];
+            if (row["WorkStatus"].ToString() != "Active")
+            {
+                InsertLoginAudit(pendingId, row["WorkmanSL"].ToString(), "BLOCKED", "Inactive");
+                ClearMfaSession();
+                ViewState["MfaMode"] = false;
+                Notify("Denied", "Account is inactive.", "error");
+                return;
+            }
+
+            if (enroll && !PersistTotpEnrollment(pendingId, secret))
+            {
+                Notify("Error", "Could not save authenticator setup. Ask an administrator to run the TOTP database script.", "error");
+                return;
+            }
+
+            bool rememberMe = Session[SessionKeys.MfaRemember] is bool && (bool)Session[SessionKeys.MfaRemember];
+            ClearMfaSession();
+            ViewState["MfaMode"] = false;
+            GrantAuthenticatedSession(row, rememberMe, "SUCCESS_MFA", true);
+        }
+
+        private string ReadStoredTotpSecret(string loginId)
+        {
+            try
+            {
+                DataTable dt = dbcl.SPreturn_dt(
+                    "SELECT MFATotpSecret FROM tbl_Employee_Mustertable WHERE LoginID=@LoginID",
+                    new SqlParameter[] { new SqlParameter("@LoginID", loginId) });
+                if (dt.Rows.Count == 0 || dt.Rows[0]["MFATotpSecret"] == DBNull.Value) return "";
+                return dt.Rows[0]["MFATotpSecret"].ToString().Trim();
+            }
+            catch (Exception ex)
+            {
+                if (MfaAuthHelper.IsMissingColumnException(ex)) return "";
+                throw;
+            }
+        }
+
+        private bool PersistTotpEnrollment(string loginId, string secret)
+        {
+            try
+            {
+                dbcl.SPreturn_dt(
+                    @"UPDATE tbl_Employee_Mustertable
+                      SET MFATotpSecret=@Secret, MFATotpEnrolled=1, MFAMethod=@Method
+                      WHERE LoginID=@LoginID",
+                    new SqlParameter[]
+                    {
+                        new SqlParameter("@Secret", secret),
+                        new SqlParameter("@Method", MfaAuthHelper.MethodAuthenticator),
+                        new SqlParameter("@LoginID", loginId)
+                    });
+                return true;
+            }
+            catch (Exception ex)
+            {
+                dbcl.WriteToFile("TOTP enrollment persist failed: " + ex);
+                return false;
+            }
+        }
+
         protected void btn_mfa_resend_Click(object sender, EventArgs e)
         {
             try { ResendMfaOtp(); }
@@ -350,6 +601,11 @@ namespace WebApplication1.bussiness.production
         private void ResendMfaOtp()
         {
             ViewState["MfaMode"] = true;
+            if (MfaAuthHelper.IsAuthenticator(Session[SessionKeys.MfaMethod] as string))
+            {
+                Notify("Authenticator", "Authenticator codes refresh every 30 seconds. Wait for the next code.", "notice");
+                return;
+            }
             string pendingId = Session[SessionKeys.MfaPendingLoginId] as string;
             if (string.IsNullOrEmpty(pendingId))
             {
@@ -408,6 +664,9 @@ namespace WebApplication1.bussiness.production
             Session.Remove(SessionKeys.MfaOtpEmail);
             Session.Remove(SessionKeys.MfaRemember);
             Session.Remove(SessionKeys.MfaResendAt);
+            Session.Remove(SessionKeys.MfaMethod);
+            Session.Remove(SessionKeys.MfaTotpEnroll);
+            Session.Remove(SessionKeys.MfaTotpSecret);
         }
 
         private void GrantAuthenticatedSession(DataRow row, bool rememberMe, string auditResult, bool markMfaVerified)
