@@ -60,6 +60,10 @@ namespace WebApplication1.bussiness.production
 
         public void SendEmail(string hlpdskid, string createdByWorkman, string createdByName, string creatorRegion, string creatorComp, string root1Value, string root2Value, string root3Value, string priorityLevel, string description)
         {
+            if (!NotificationTriggerHelper.IsEmailEnabled(NotificationTriggerHelper.ModuleHelpdesk))
+            {
+                return;
+            }
             string smtpServer = "smtp.zoho.in";
             int smtpPort = 587;
             string smtpUsername = System.Configuration.ConfigurationManager.AppSettings["SmtpUser"] ?? "";

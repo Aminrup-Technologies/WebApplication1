@@ -166,6 +166,7 @@
                             <li><a href="#tab_doc_master" data-toggle="tab"><i class="fa fa-file-text-o text-success mr-1"></i>Document Master</a></li>
                             <li><a href="#tab_smart_calendar" data-toggle="tab"><i class="fa fa-calendar text-info mr-1"></i>Smart Calendar</a></li>
                             <li><a href="#tab_backdate" data-toggle="tab"><i class="fa fa-history text-danger mr-1"></i>Backdate Exceptions</a></li>
+                            <li><a href="#tab_triggers" data-toggle="tab"><i class="fa fa-bell text-success mr-1"></i>Notification Triggers</a></li>
                         </ul>
 
                         <div class="tab-content">
@@ -580,6 +581,76 @@
                                 </asp:UpdatePanel>
                             </div>
 
+                            <div class="tab-pane" id="tab_triggers">
+                                <asp:UpdatePanel ID="upTriggers" runat="server">
+                                    <ContentTemplate>
+                                        <div class="alert alert-warning" id="pnl_triggers_missing" runat="server" visible="false">
+                                            <i class="fa fa-warning mr-1"></i>
+                                            Notification trigger table was not found. Run <code>scripts/add_notification_triggers.sql</code> on this database, then reload this page.
+                                        </div>
+
+                                        <div id="pnl_triggers_ready" runat="server" visible="false">
+                                            <div class="control-panel" style="background-color: #f0f9f6; border: 1px solid #c8e6c9;">
+                                                <h5 style="color: #1ABB9C; font-weight: 600; margin-bottom: 8px;"><i class="fa fa-globe mr-2"></i>Portal level</h5>
+                                                <p class="small text-muted mb-3">Portal Off turns off that channel for every module, even if the module is Enabled.</p>
+                                                <div class="row align-items-end">
+                                                    <div class="col-md-3 col-sm-6 form-group mb-md-0">
+                                                        <label class="top-label">Email</label>
+                                                        <asp:DropDownList ID="ddl_portal_email" runat="server" CssClass="form-control modern-input">
+                                                            <asp:ListItem Text="Enabled" Value="1" />
+                                                            <asp:ListItem Text="Disabled" Value="0" />
+                                                        </asp:DropDownList>
+                                                    </div>
+                                                    <div class="col-md-3 col-sm-6 form-group mb-md-0">
+                                                        <label class="top-label">WhatsApp</label>
+                                                        <asp:DropDownList ID="ddl_portal_whatsapp" runat="server" CssClass="form-control modern-input">
+                                                            <asp:ListItem Text="Enabled" Value="1" />
+                                                            <asp:ListItem Text="Disabled" Value="0" />
+                                                        </asp:DropDownList>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="control-panel">
+                                                <h5 style="color: #2a3f54; font-weight: 600; margin-bottom: 8px;"><i class="fa fa-cubes mr-2"></i>Module level</h5>
+                                                <p class="small text-muted mb-3">A send goes out only when Portal and the module are both Enabled for that channel.</p>
+                                                <div class="modern-grid-container">
+                                                    <div class="modern-table-wrapper">
+                                                        <asp:GridView ID="gv_TriggerModules" runat="server" AutoGenerateColumns="False" CssClass="table table-striped table-bordered table-sm mb-0" GridLines="Both" DataKeyNames="TriggerKey">
+                                                            <Columns>
+                                                                <asp:BoundField DataField="DisplayName" HeaderText="Module" ItemStyle-Font-Bold="true" />
+                                                                <asp:TemplateField HeaderText="Email" ItemStyle-Width="18%">
+                                                                    <ItemTemplate>
+                                                                        <asp:DropDownList ID="ddl_row_email" runat="server" CssClass="form-control modern-input" SelectedValue='<%# BoolTo01(Eval("EmailEnabled")) %>'>
+                                                                            <asp:ListItem Text="Enabled" Value="1" />
+                                                                            <asp:ListItem Text="Disabled" Value="0" />
+                                                                        </asp:DropDownList>
+                                                                    </ItemTemplate>
+                                                                </asp:TemplateField>
+                                                                <asp:TemplateField HeaderText="WhatsApp" ItemStyle-Width="18%">
+                                                                    <ItemTemplate>
+                                                                        <asp:DropDownList ID="ddl_row_whatsapp" runat="server" CssClass="form-control modern-input" SelectedValue='<%# BoolTo01(Eval("WhatsAppEnabled")) %>'>
+                                                                            <asp:ListItem Text="Enabled" Value="1" />
+                                                                            <asp:ListItem Text="Disabled" Value="0" />
+                                                                        </asp:DropDownList>
+                                                                    </ItemTemplate>
+                                                                </asp:TemplateField>
+                                                            </Columns>
+                                                            <EmptyDataTemplate>
+                                                                <div class="alert alert-info text-center m-3">No module trigger rows found.</div>
+                                                            </EmptyDataTemplate>
+                                                        </asp:GridView>
+                                                    </div>
+                                                </div>
+                                                <div class="text-right border-top pt-3 mt-3">
+                                                    <asp:Button ID="btn_SaveTriggers" runat="server" Text="Save Notification Triggers" CssClass="btn btn-success btn-modern" OnClick="btn_SaveTriggers_Click" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ContentTemplate>
+                                </asp:UpdatePanel>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -590,6 +661,13 @@
     <script type="text/javascript">
         function showPNotify(title, text, type) {
             new PNotify({ title: title, text: text, type: type, styling: 'bootstrap3', delay: 4000 });
+        }
+
+        function showTriggerTab() {
+            var tab = document.querySelector('.nav-tabs a[href="#tab_triggers"]');
+            if (tab) {
+                $(tab).tab('show');
+            }
         }
 
         var calendar; // Global calendar object

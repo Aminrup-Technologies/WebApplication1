@@ -805,6 +805,11 @@ namespace WebApplication1.bussiness.production
 
         private bool SendMfaOtpEmail(string to, string otp, string name)
         {
+            if (!NotificationTriggerHelper.IsEmailEnabled(NotificationTriggerHelper.ModuleLoginMfa))
+            {
+                dbcl.WriteToFile("MFA OTP email skipped: Email trigger disabled for LOGIN_MFA.");
+                return false;
+            }
             try
             {
                 MailMessage mm = new MailMessage("it.support@aminruptechnologies.co.in", to);
@@ -940,6 +945,11 @@ namespace WebApplication1.bussiness.production
 
         private bool SendOTPEmail(string to, string otp, string name)
         {
+            if (!NotificationTriggerHelper.IsEmailEnabled(NotificationTriggerHelper.ModulePasswordReset))
+            {
+                dbcl.WriteToFile("Password reset OTP email skipped: Email trigger disabled for PASSWORD_RESET.");
+                return false;
+            }
             try
             {
                 MailMessage mm = new MailMessage("it.support@aminruptechnologies.co.in", to);

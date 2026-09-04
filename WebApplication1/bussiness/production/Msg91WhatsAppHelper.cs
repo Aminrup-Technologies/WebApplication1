@@ -53,6 +53,11 @@ namespace WebApplication1.bussiness.production
         public static bool SendOtp(string mobile, string otp, out string error)
         {
             error = "";
+            if (!NotificationTriggerHelper.IsWhatsAppEnabled(NotificationTriggerHelper.ModuleLoginMfa))
+            {
+                error = "WhatsApp notifications are disabled at portal or login-module level.";
+                return false;
+            }
             string authKey = (ConfigurationManager.AppSettings["Msg91AuthKey"] ?? "").Trim();
             string integratedNumber = (ConfigurationManager.AppSettings["Msg91IntegratedNumber"] ?? "").Trim();
             string templateName = (ConfigurationManager.AppSettings["Msg91MfaTemplateName"] ?? "").Trim();

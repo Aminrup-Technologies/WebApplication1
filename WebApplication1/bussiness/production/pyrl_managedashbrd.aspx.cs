@@ -717,7 +717,7 @@ namespace WebApplication1.bussiness.production
                 {
                     string msg = "User : " + Session["USERNAME"].ToString() + " [" + Session["WORKMAN"].ToString() + "]" + " Cleared " + rowsAffected + " records from Region = " + region + ", Company = " + comp + ". Thank You";
                     dbcl.WriteToFile(msg);
-                    dbcl.SendEmailCC("hr@atswork.in", "office@atswork.in", "ATS - Payroll Module : Manual Deduction Clear", msg);
+                    dbcl.SendEmailCC("hr@atswork.in", "office@atswork.in", "ATS - Payroll Module : Manual Deduction Clear", msg, NotificationTriggerHelper.ModulePayroll);
 
                     string title = "Notifications : Success ";
                     string body = "Please note, That Total [" +rowsAffected + "] deductions records has been cleared...!!";

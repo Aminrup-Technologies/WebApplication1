@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Web.UI;
@@ -94,6 +95,8 @@ namespace WebApplication1.bussiness.production
             {
                 dbcl.DisconnectDb();
             }
+
+            BindTriggerSettings();
         }
 
         // APPLIED BUG FIX: Safely escape messages for UpdatePanel callbacks
@@ -869,6 +872,97 @@ namespace WebApplication1.bussiness.production
             {
                 if (closeConnection) dbcl.DisconnectDb();
             }
+        }
+
+        protected string BoolTo01(object value)
+        {
+            return MfaAuthHelper.IsEnabled(value) ? "1" : "0";
+        }
+
+        private void BindTriggerSettings()
+        {
+            List<NotificationTriggerHelper.TriggerRow> rows;
+            string error;
+            if (!NotificationTriggerHelper.TryLoadRows(out rows, out error))
+            {
+                bool missingTable = NotificationTriggerHelper.IsMissingTableException(new Exception(error ?? ""));
+                pnl_triggers_missing.Visible = missingTable;
+                pnl_triggers_ready.Visible = false;
+                if (!missingTable)
+                {
+                    ShowNotification(this, "Triggers", string.IsNullOrEmpty(error) ? "Could not load notification triggers." : error, "error");
+                }
+                return;
+            }
+
+            pnl_triggers_missing.Visible = false;
+            pnl_triggers_ready.Visible = true;
+
+            NotificationTriggerHelper.TriggerRow portal = null;
+            List<NotificationTriggerHelper.TriggerRow> modules = new List<NotificationTriggerHelper.TriggerRow>();
+            for (int i = 0; i < rows.Count; i++)
+            {
+                if (string.Equals(rows[i].TriggerKey, NotificationTriggerHelper.KeyPortal, StringComparison.OrdinalIgnoreCase))
+                {
+                    portal = rows[i];
+                }
+                else
+                {
+                    modules.Add(rows[i]);
+                }
+            }
+
+            if (portal != null)
+            {
+                ddl_portal_email.SelectedValue = portal.EmailEnabled ? "1" : "0";
+                ddl_portal_whatsapp.SelectedValue = portal.WhatsAppEnabled ? "1" : "0";
+            }
+
+            gv_TriggerModules.DataSource = modules;
+            gv_TriggerModules.DataBind();
+        }
+
+        protected void btn_SaveTriggers_Click(object sender, EventArgs e)
+        {
+            string updatedBy = Session["USERID"] != null ? Session["USERID"].ToString() : "";
+            string error;
+
+            if (!NotificationTriggerHelper.TrySaveRow(
+                NotificationTriggerHelper.KeyPortal,
+                ddl_portal_email.SelectedValue == "1",
+                ddl_portal_whatsapp.SelectedValue == "1",
+                updatedBy,
+                out error))
+            {
+                ShowNotification(btn_SaveTriggers, "Save failed", string.IsNullOrEmpty(error) ? "Could not save portal triggers." : error, "error");
+                ShowTriggerTab();
+                return;
+            }
+
+            for (int i = 0; i < gv_TriggerModules.Rows.Count; i++)
+            {
+                GridViewRow row = gv_TriggerModules.Rows[i];
+                string key = gv_TriggerModules.DataKeys[i].Value.ToString();
+                DropDownList ddlEmail = row.FindControl("ddl_row_email") as DropDownList;
+                DropDownList ddlWa = row.FindControl("ddl_row_whatsapp") as DropDownList;
+                bool emailOn = ddlEmail != null && ddlEmail.SelectedValue == "1";
+                bool waOn = ddlWa != null && ddlWa.SelectedValue == "1";
+                if (!NotificationTriggerHelper.TrySaveRow(key, emailOn, waOn, updatedBy, out error))
+                {
+                    ShowNotification(btn_SaveTriggers, "Save failed", "Could not save module " + key + ". " + error, "error");
+                    ShowTriggerTab();
+                    return;
+                }
+            }
+
+            BindTriggerSettings();
+            ShowNotification(btn_SaveTriggers, "Saved", "Portal and module Email/WhatsApp triggers were updated.", "success");
+            ShowTriggerTab();
+        }
+
+        private void ShowTriggerTab()
+        {
+            ScriptManager.RegisterStartupScript(this, GetType(), "showTriggerTab", "showTriggerTab();", true);
         }
     }
 }

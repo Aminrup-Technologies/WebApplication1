@@ -753,7 +753,14 @@ namespace WebApplication1.bussiness.production
 
                 if (!string.IsNullOrEmpty(mobileNo) && mobileNo.Length >= 10)
                 {
-                    await SendWhatsAppMsg91Async(mobileNo, inchargeName, supv, jobid, shift, jobDateStr, title, site, loc, dept, wo, permit, waManpowerList);
+                    if (!NotificationTriggerHelper.IsWhatsAppEnabled(NotificationTriggerHelper.ModuleJobAlert))
+                    {
+                        LogSystemEvent("WhatsApp", "SKIPPED", "WhatsApp trigger disabled for JOB_ALERT.");
+                    }
+                    else
+                    {
+                        await SendWhatsAppMsg91Async(mobileNo, inchargeName, supv, jobid, shift, jobDateStr, title, site, loc, dept, wo, permit, waManpowerList);
+                    }
                 }
                 else
                 {
@@ -762,7 +769,14 @@ namespace WebApplication1.bussiness.production
 
                 if (!string.IsNullOrEmpty(emailAddress) && emailAddress.Contains("@"))
                 {
-                    SendEmailAlert(emailAddress, inchargeName, supv, jobid, shift, jobDateStr, title, site, loc, dept, wo, permit, emailManpowerList);
+                    if (!NotificationTriggerHelper.IsEmailEnabled(NotificationTriggerHelper.ModuleJobAlert))
+                    {
+                        LogSystemEvent("ShareAPI", "SKIPPED", "Email trigger disabled for JOB_ALERT.");
+                    }
+                    else
+                    {
+                        SendEmailAlert(emailAddress, inchargeName, supv, jobid, shift, jobDateStr, title, site, loc, dept, wo, permit, emailManpowerList);
+                    }
                 }
                 else
                 {
@@ -781,6 +795,11 @@ namespace WebApplication1.bussiness.production
 
         private async Task SendWhatsAppMsg91Async(string mobileNo, string inchargeName, string supv, string jobid, string shift, string jobDateStr, string title, string site, string loc, string dept, string wo, string permit, string manpowerList)
         {
+            if (!NotificationTriggerHelper.IsWhatsAppEnabled(NotificationTriggerHelper.ModuleJobAlert))
+            {
+                LogSystemEvent("WhatsApp", "SKIPPED", "WhatsApp trigger disabled for JOB_ALERT.");
+                return;
+            }
             try
             {
                 string authKey = ConfigurationManager.AppSettings["Msg91AuthKey"]?.Trim();

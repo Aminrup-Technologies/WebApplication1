@@ -162,13 +162,28 @@ def main():
     check(totp_code(rfc_key, 1) == "287082", "RFC 6238 TOTP timestep 1")
     check(totp_code(from_base32(encoded), 1) == "287082", "TOTP from Base32 secret")
 
+    def effective_enabled(portal_on, module_on, table_missing):
+        if table_missing:
+            return True
+        return bool(portal_on) and bool(module_on)
+
+    check(effective_enabled(True, True, False) is True, "portal+module on")
+    check(effective_enabled(False, True, False) is False, "portal off blocks module")
+    check(effective_enabled(True, False, False) is False, "module off blocks send")
+    check(effective_enabled(False, False, True) is True, "missing table fails open")
+
     root = Path(__file__).resolve().parents[1]
     helper = (root / "WebApplication1/bussiness/production/Msg91WhatsAppHelper.cs").read_text()
     login = (root / "WebApplication1/Login.aspx.cs").read_text()
+    trigger = (root / "WebApplication1/bussiness/production/NotificationTriggerHelper.cs").read_text()
+    controller = (root / "WebApplication1/bussiness/production/db_controller.aspx").read_text()
     check("job_daily_details" not in helper, "WhatsApp MFA must not reuse job_daily_details")
     check("Msg91MfaTemplateName" in helper, "WhatsApp MFA template comes from config")
     check("GenerateOTP" in login and "MethodWhatsAppOtp" in login, "login WhatsApp reuses GenerateOTP challenge")
     check("SendMfaOtpWhatsApp" in login, "login delivers OTP over WhatsApp")
+    check("IsWhatsAppEnabled" in helper and "ModuleLoginMfa" in helper, "WhatsApp OTP respects trigger switch")
+    check("tab_triggers" in controller, "DB Controller has notification trigger tab")
+    check("KeyPortal" in trigger and "ModuleJobAlert" in trigger, "portal and module trigger keys exist")
 
     if errors:
         print("FAIL:")

@@ -1691,6 +1691,10 @@ namespace WebApplication1.bussiness.production
 
         public void SendOTPByEmail(string email, string otp)
         {
+            if (!NotificationTriggerHelper.IsEmailEnabled(NotificationTriggerHelper.ModuleProfileOtp))
+            {
+                return;
+            }
             string smtpServer = "smtp.zoho.in";
             int smtpPort = 587;
             string smtpUsername = System.Configuration.ConfigurationManager.AppSettings["SmtpUser"] ?? "";
@@ -1774,6 +1778,10 @@ namespace WebApplication1.bussiness.production
 
         protected void SendOTPEmail(string recipientEmail, string otp)
         {
+            if (!NotificationTriggerHelper.IsEmailEnabled(NotificationTriggerHelper.ModuleProfileOtp))
+            {
+                return;
+            }
             string smtpServer = "smtp.zoho.in";
             int smtpPort = 587;
             string smtpUsername = System.Configuration.ConfigurationManager.AppSettings["SmtpUser"] ?? "";
