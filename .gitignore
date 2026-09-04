@@ -380,5 +380,3 @@ FodyWeavers.xsd
 
 # Local secret overrides - NEVER commit this file
 /WebApplication1/appsettings.secrets.config
-WebApplication1/connections.config
-WebApplication1/connections.config
