@@ -36,5 +36,14 @@ namespace WebApplication1.bussiness.production
         public const string GeneratedOTP = "GeneratedOTP";
         public const string RecipientEmail = "RecipientEmail";
         public const string BaseQRData = "BaseQRData";
+
+        // Login MFA pending challenge (set only after password succeeds; USERID is not set yet)
+        public const string MfaPendingLoginId = "MFA_PENDING_LOGINID";
+        public const string MfaOtpHash = "MFA_OTP_HASH";
+        public const string MfaOtpExp = "MFA_OTP_EXP";
+        public const string MfaOtpTry = "MFA_OTP_TRY";
+        public const string MfaOtpEmail = "MFA_OTP_EMAIL";
+        public const string MfaRemember = "MFA_REMEMBER";
+        public const string MfaResendAt = "MFA_RESEND_AT";
     }
 }

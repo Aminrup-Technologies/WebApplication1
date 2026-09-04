@@ -288,6 +288,23 @@ namespace WebApplication1.bussiness.production
                     txt_PassUpdByName.Text = dr["PassUpdatedByName"].ToString();
                     txt_PassUpdByWrk.Text = dr["PassUpdatedByWrk"].ToString();
 
+                    bool mfaOn = dr.Table.Columns.Contains("MFAEnabled") && MfaAuthHelper.IsEnabled(dr["MFAEnabled"]);
+                    SetDDL(DDL_MFAEnabled, mfaOn ? "1" : "0");
+                    if (dr.Table.Columns.Contains("MFAMethod") && dr["MFAMethod"] != DBNull.Value && !string.IsNullOrWhiteSpace(dr["MFAMethod"].ToString()))
+                    {
+                        SetDDL(DDL_MFAMethod, dr["MFAMethod"].ToString().Trim());
+                    }
+                    else
+                    {
+                        SetDDL(DDL_MFAMethod, MfaAuthHelper.MethodEmailOtp);
+                    }
+                    txt_MFAEnforcedOn.Text = (dr.Table.Columns.Contains("MFAEnforcedOn") && dr["MFAEnforcedOn"] != DBNull.Value)
+                        ? Convert.ToDateTime(dr["MFAEnforcedOn"]).ToString("yyyy-MM-dd HH:mm:ss") : "N/A";
+                    txt_MFAEnforcedBy.Text = (dr.Table.Columns.Contains("MFAEnforcedBy") && dr["MFAEnforcedBy"] != DBNull.Value)
+                        ? dr["MFAEnforcedBy"].ToString() : "N/A";
+                    txt_MFALastVerified.Text = (dr.Table.Columns.Contains("MFALastVerified") && dr["MFALastVerified"] != DBNull.Value)
+                        ? Convert.ToDateTime(dr["MFALastVerified"]).ToString("yyyy-MM-dd HH:mm:ss") : "Never";
+
                     string status = dr["WorkStatus"].ToString();
                     lbl_CurrentStatus.Text = status;
                     SetDDLByText(DDL_AdminStatus, status);
@@ -573,6 +590,13 @@ namespace WebApplication1.bussiness.production
                 return;
             }
 
+            bool mfaOn = DDL_MFAEnabled.SelectedValue == "1";
+            if (mfaOn && !MfaAuthHelper.HasEmail(txt_email.Text))
+            {
+                ShowPopup("MFA Requires Email", "A registered Email on the Personal tab is required before MFA can be enabled for this user.");
+                return;
+            }
+
             string changes = GetAllFieldChanges();
             if (string.IsNullOrEmpty(changes))
             {
@@ -582,13 +606,22 @@ namespace WebApplication1.bussiness.production
 
             string status = DDL_AdminStatus.SelectedValue;
             string savedReason = hfSavedReason.Value;
+            bool wasMfaOn = false;
+            Dictionary<string, string> originalMfa = ViewState["ORIGINAL_DATA"] as Dictionary<string, string>;
+            if (originalMfa != null && originalMfa.ContainsKey("MFAEnabled") && originalMfa["MFAEnabled"] == "1")
+            {
+                wasMfaOn = true;
+            }
+            string mfaEnforceSql = (mfaOn && !wasMfaOn)
+                ? ", MFAEnforcedOn=GETDATE(), MFAEnforcedBy=@MFAADMIN"
+                : "";
 
             try
             {
                 dbcl.Sqlconnection();
                 if (dbcl.Conn.State == ConnectionState.Closed) dbcl.ConnectDb();
 
-                string query = @"UPDATE tbl_Employee_Mustertable SET 
+                string query = string.Format(@"UPDATE tbl_Employee_Mustertable SET 
                     FirstName=@FN, MiddleName=@MN, LastName=@LN, FullName=@FULL,
                     Fathername=@DAD, DOB=@DOB, BloodGroup=@BG, MobileNo=@MOB, Email=@EMAIL,
                     
@@ -612,6 +645,7 @@ namespace WebApplication1.bussiness.production
                     
                     SQ1=@SQ1, SQAns1=@SQA1, SQ2=@SQ2, SQAns2=@SQA2, LoginPassword_Plain=@LPP,
                     WorkStatus=@STAT, LoginStatus=@LOGIN, 
+                    MFAEnabled=@MFA, MFAMethod=@MFAMETHOD{0},
                     
                     StatusChangeType=@SCTYPE, StatusChangeReason=@SCREAS, StatusRemarks=@SCREM,
                     StatusChangedByWrk=@SCWRK, StatusChangedDate=GETDATE(),
@@ -619,7 +653,7 @@ namespace WebApplication1.bussiness.production
                     DOR=@DOR, DOE=@DOE, DO_Relief=@DORELIEF, ExitType=@ETYPE, ExitInitiatedByWrk=@EINIT,
 
                     LastModifiedDate=GETDATE(), LastModifiedByName=@MODBY, LastModifiedByWrk=@MODWRK
-                    WHERE WorkmanSL=@ID";
+                    WHERE WorkmanSL=@ID", mfaEnforceSql);
 
                 SqlCommand cmd = new SqlCommand(query, dbcl.Conn);
 
@@ -692,9 +726,15 @@ namespace WebApplication1.bussiness.production
 
                 cmd.Parameters.AddWithValue("@STAT", status);
                 cmd.Parameters.AddWithValue("@LOGIN", DDL_LoginAccess.SelectedValue);
+                cmd.Parameters.AddWithValue("@MFA", mfaOn ? 1 : 0);
+                cmd.Parameters.AddWithValue("@MFAMETHOD", MfaAuthHelper.MethodEmailOtp);
 
                 string safeUserWrk = Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "SYSTEM";
                 string safeUserName = Session["USERNAME"] != null ? Session["USERNAME"].ToString() : "SYSTEM";
+                if (mfaOn && !wasMfaOn)
+                {
+                    cmd.Parameters.AddWithValue("@MFAADMIN", safeUserWrk);
+                }
 
                 if (status == "InActive")
                 {
@@ -833,6 +873,7 @@ namespace WebApplication1.bussiness.production
             original["LoginPassword_Plain"] = txt_plain_pass.Text;
             original["WorkStatus"] = DDL_AdminStatus.SelectedValue;
             original["LoginStatus"] = DDL_LoginAccess.SelectedValue;
+            original["MFAEnabled"] = DDL_MFAEnabled.SelectedValue;
 
             original["StatusReason"] = hfSavedReason.Value;
             original["DOR"] = txt_DOR.Text;
@@ -904,6 +945,7 @@ namespace WebApplication1.bussiness.production
             CompareValue(changes, original, "LoginPassword_Plain", txt_plain_pass.Text);
             CompareValue(changes, original, "WorkStatus", DDL_AdminStatus.SelectedValue);
             CompareValue(changes, original, "LoginStatus", DDL_LoginAccess.SelectedValue);
+            CompareValue(changes, original, "MFAEnabled", DDL_MFAEnabled.SelectedValue);
 
             string savedReason = Request.Form[hfSavedReason.UniqueID] ?? hfSavedReason.Value;
             CompareValue(changes, original, "StatusReason", savedReason);

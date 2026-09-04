@@ -1138,6 +1138,51 @@ namespace WebApplication1.bussiness.production {
         protected global::System.Web.UI.WebControls.TextBox txt_PassUpdByWrk;
         
         /// <summary>
+        /// DDL_MFAEnabled control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList DDL_MFAEnabled;
+        
+        /// <summary>
+        /// DDL_MFAMethod control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList DDL_MFAMethod;
+        
+        /// <summary>
+        /// txt_MFAEnforcedOn control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txt_MFAEnforcedOn;
+        
+        /// <summary>
+        /// txt_MFAEnforcedBy control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txt_MFAEnforcedBy;
+        
+        /// <summary>
+        /// txt_MFALastVerified control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txt_MFALastVerified;
+        
+        /// <summary>
         /// lbl_CurrentStatus control.
         /// </summary>
         /// <remarks>

@@ -36,12 +36,35 @@ namespace WebApplication1.bussiness.production
                     chk_remember.Checked = true;
                 }
                 ViewState["ForgotMode"] = false;
+                ViewState["MfaMode"] = Session[SessionKeys.MfaPendingLoginId] != null;
+                if ((bool)ViewState["MfaMode"])
+                {
+                    RefreshMfaHint();
+                }
             }
         }
 
         // --- NEW FIX: Server-side Tab Control ---
         protected void Page_PreRender(object sender, EventArgs e)
         {
+            bool mfaMode = (ViewState["MfaMode"] != null && (bool)ViewState["MfaMode"])
+                || Session[SessionKeys.MfaPendingLoginId] != null;
+
+            if (mfaMode)
+            {
+                ViewState["MfaMode"] = true;
+                loginTabs.Visible = false;
+                pane_login.Attributes["class"] = "tab-pane fade";
+                pane_forgot.Attributes["class"] = "tab-pane fade";
+                pane_mfa.Visible = true;
+                pane_mfa.Attributes["class"] = "tab-pane fade show active";
+                return;
+            }
+
+            loginTabs.Visible = true;
+            pane_mfa.Visible = false;
+            pane_mfa.Attributes["class"] = "tab-pane fade";
+
             if (ViewState["ForgotMode"] != null && (bool)ViewState["ForgotMode"])
             {
                 // Deactivate Login Tab
@@ -100,19 +123,24 @@ namespace WebApplication1.bussiness.production
             }
         }
 
+        private DataTable FetchLoginUser(string id)
+        {
+            string query = @"
+                SELECT TOP 1 
+                    LoginID, LoginPassword, WorkStatus, DOR, PasswordExpiry, WorkmanSL, FirstName, FullName,
+                    User_RoleType, UserRoleDB, RolePermissionDB, WorkRegion, WorkState, WorkCompany,
+                    WorkSite, Worksite_Code, SkillDesignation, SkillCategory, PrfPicFile, Email
+                FROM tbl_Employee_Mustertable WHERE LoginID = @LoginID";
+
+            return dbcl.SPreturn_dt(query, new SqlParameter[] { new SqlParameter("@LoginID", id) });
+        }
+
         private void PerformLogin(string id, string pass)
         {
             Stopwatch sw = Stopwatch.StartNew();
 
             string inputHashedPass = HashPassword(pass);
-            string query = @"
-                SELECT TOP 1 
-                    LoginID, LoginPassword, WorkStatus, DOR, PasswordExpiry, WorkmanSL, FirstName, FullName,
-                    User_RoleType, UserRoleDB, RolePermissionDB, WorkRegion, WorkState, WorkCompany,
-                    WorkSite, Worksite_Code, SkillDesignation, SkillCategory, PrfPicFile
-                FROM tbl_Employee_Mustertable WHERE LoginID = @LoginID";
-
-            DataTable dt = dbcl.SPreturn_dt(query, new SqlParameter[] { new SqlParameter("@LoginID", id) });
+            DataTable dt = FetchLoginUser(id);
             LogLoginTiming("fetchUser", sw, id);
 
             if (dt.Rows.Count == 0)
@@ -156,35 +184,275 @@ namespace WebApplication1.bussiness.production
                 return;
             }
 
-            // --- ALL VALIDATIONS PASSED: PROCEED WITH LOGIN ---
+            bool mfaEnabled = TryReadMfaEnabled(id);
+            if (mfaEnabled)
+            {
+                string email = row["Email"] != DBNull.Value ? row["Email"].ToString() : "";
+                if (!MfaAuthHelper.HasEmail(email))
+                {
+                    InsertLoginAudit(id, workmanSL, "MFA_NO_EMAIL", "MfaEmailMissing");
+                    Notify("MFA Required", "MFA is enabled for this account but no email is registered. Contact your administrator.", "error");
+                    return;
+                }
 
-            // Single batched post-auth write: audit entry + LastLogin/LoginStatus update.
-            // One round-trip instead of two. (Legacy password migration runs separately above.)
+                StartMfaChallenge(id, workmanSL, email, row["FullName"].ToString(), chk_remember.Checked);
+                LogLoginTiming("mfaChallenge", sw, id);
+                return;
+            }
+
+            GrantAuthenticatedSession(row, chk_remember.Checked, "SUCCESS", false);
+            LogLoginTiming("total", sw, id);
+        }
+
+        private bool TryReadMfaEnabled(string loginId)
+        {
+            try
+            {
+                DataTable dt = dbcl.SPreturn_dt(
+                    "SELECT ISNULL(MFAEnabled, 0) AS MFAEnabled FROM tbl_Employee_Mustertable WHERE LoginID=@LoginID",
+                    new SqlParameter[] { new SqlParameter("@LoginID", loginId) });
+                if (dt.Rows.Count == 0) return false;
+                return MfaAuthHelper.IsEnabled(dt.Rows[0]["MFAEnabled"]);
+            }
+            catch (Exception ex)
+            {
+                if (MfaAuthHelper.IsMissingColumnException(ex))
+                {
+                    dbcl.WriteToFile("MFA columns not present; treating MFA as disabled for " + loginId);
+                    return false;
+                }
+                throw;
+            }
+        }
+
+        private void StartMfaChallenge(string loginId, string workmanSL, string email, string fullName, bool rememberMe)
+        {
+            ClearMfaSession();
+
+            string otp = GenerateOTP();
+            Session[SessionKeys.MfaPendingLoginId] = loginId;
+            Session[SessionKeys.MfaOtpHash] = HashPassword(otp);
+            Session[SessionKeys.MfaOtpExp] = DateTime.Now.AddMinutes(MfaAuthHelper.OtpLifetimeMinutes);
+            Session[SessionKeys.MfaOtpTry] = 0;
+            Session[SessionKeys.MfaOtpEmail] = email.Trim();
+            Session[SessionKeys.MfaRemember] = rememberMe;
+            Session[SessionKeys.MfaResendAt] = DateTime.Now.AddSeconds(MfaAuthHelper.ResendCooldownSeconds);
+
+            InsertLoginAudit(loginId, workmanSL, "MFA_CHALLENGE", null);
+
+            ViewState["MfaMode"] = true;
+            ViewState["ForgotMode"] = false;
+            RefreshMfaHint();
+
+            if (!SendMfaOtpEmail(email.Trim(), otp, fullName))
+            {
+                Session[SessionKeys.MfaResendAt] = DateTime.Now;
+                Notify("Error", "Could not send the verification code. Use Resend Code, or contact support.", "error");
+                return;
+            }
+
+            Notify("Code Sent", "A verification code was sent to " + MfaAuthHelper.MaskEmail(email) + ".", "success");
+        }
+
+        private void RefreshMfaHint()
+        {
+            string email = Session[SessionKeys.MfaOtpEmail] as string;
+            lbl_mfa_hint.Text = "Enter the 6-digit code sent to " + MfaAuthHelper.MaskEmail(email) + ". The code expires in "
+                + MfaAuthHelper.OtpLifetimeMinutes + " minutes.";
+        }
+
+        protected void btn_mfa_verify_Click(object sender, EventArgs e)
+        {
+            try { VerifyMfaAndCompleteLogin(); }
+            catch (System.Threading.ThreadAbortException) { }
+            catch (Exception ex)
+            {
+                ViewState["MfaMode"] = true;
+                Notify("Error", "Unexpected error occurred.", "error");
+                dbcl.WriteToFile(ex.ToString());
+            }
+        }
+
+        private void VerifyMfaAndCompleteLogin()
+        {
+            ViewState["MfaMode"] = true;
+
+            string pendingId = Session[SessionKeys.MfaPendingLoginId] as string;
+            if (string.IsNullOrEmpty(pendingId) || Session[SessionKeys.MfaOtpHash] == null || Session[SessionKeys.MfaOtpExp] == null)
+            {
+                ClearMfaSession();
+                ViewState["MfaMode"] = false;
+                Notify("Expired", "Verification session expired. Please log in again.", "error");
+                return;
+            }
+
+            if (DateTime.Now > (DateTime)Session[SessionKeys.MfaOtpExp])
+            {
+                InsertLoginAudit(pendingId, null, "MFA_EXPIRED", "OtpExpired");
+                Notify("Expired", "Verification code expired. Use Resend Code.", "error");
+                return;
+            }
+
+            Session[SessionKeys.MfaOtpTry] = (int)(Session[SessionKeys.MfaOtpTry] ?? 0) + 1;
+            if ((int)Session[SessionKeys.MfaOtpTry] > MfaAuthHelper.MaxOtpAttempts)
+            {
+                InsertLoginAudit(pendingId, null, "MFA_FAILED", "TooManyAttempts");
+                ClearMfaSession();
+                ViewState["MfaMode"] = false;
+                Notify("Blocked", "Too many attempts. Please log in again.", "error");
+                return;
+            }
+
+            string enteredHash = HashPassword((txt_mfa_otp.Text ?? "").Trim());
+            if (!MfaAuthHelper.SlowEquals(enteredHash, Session[SessionKeys.MfaOtpHash].ToString()))
+            {
+                InsertLoginAudit(pendingId, null, "MFA_FAILED", "InvalidOtp");
+                Notify("Invalid", "Wrong verification code.", "error");
+                return;
+            }
+
+            bool rememberMe = Session[SessionKeys.MfaRemember] is bool && (bool)Session[SessionKeys.MfaRemember];
+            DataTable dt = FetchLoginUser(pendingId);
+            if (dt.Rows.Count == 0)
+            {
+                ClearMfaSession();
+                ViewState["MfaMode"] = false;
+                Notify("Failed", "Account was not found. Please log in again.", "error");
+                return;
+            }
+
+            DataRow row = dt.Rows[0];
+            if (row["WorkStatus"].ToString() != "Active")
+            {
+                InsertLoginAudit(pendingId, row["WorkmanSL"].ToString(), "BLOCKED", "Inactive");
+                ClearMfaSession();
+                ViewState["MfaMode"] = false;
+                Notify("Denied", "Account is inactive.", "error");
+                return;
+            }
+
+            ClearMfaSession();
+            ViewState["MfaMode"] = false;
+            GrantAuthenticatedSession(row, rememberMe, "SUCCESS_MFA", true);
+        }
+
+        protected void btn_mfa_resend_Click(object sender, EventArgs e)
+        {
+            try { ResendMfaOtp(); }
+            catch (Exception ex)
+            {
+                ViewState["MfaMode"] = true;
+                Notify("Error", "Unexpected error occurred.", "error");
+                dbcl.WriteToFile(ex.ToString());
+            }
+        }
+
+        private void ResendMfaOtp()
+        {
+            ViewState["MfaMode"] = true;
+            string pendingId = Session[SessionKeys.MfaPendingLoginId] as string;
+            if (string.IsNullOrEmpty(pendingId))
+            {
+                ViewState["MfaMode"] = false;
+                Notify("Expired", "Verification session expired. Please log in again.", "error");
+                return;
+            }
+
+            if (Session[SessionKeys.MfaResendAt] != null)
+            {
+                DateTime resendAt = (DateTime)Session[SessionKeys.MfaResendAt];
+                if (DateTime.Now < resendAt)
+                {
+                    int wait = Math.Max(1, (int)Math.Ceiling((resendAt - DateTime.Now).TotalSeconds));
+                    Notify("Wait", "Please wait " + wait + " seconds before requesting another code.", "notice");
+                    return;
+                }
+            }
+
+            DataTable dt = FetchLoginUser(pendingId);
+            if (dt.Rows.Count == 0)
+            {
+                ClearMfaSession();
+                ViewState["MfaMode"] = false;
+                Notify("Failed", "Account was not found. Please log in again.", "error");
+                return;
+            }
+
+            DataRow row = dt.Rows[0];
+            string email = row["Email"] != DBNull.Value ? row["Email"].ToString() : "";
+            if (!MfaAuthHelper.HasEmail(email))
+            {
+                InsertLoginAudit(pendingId, row["WorkmanSL"].ToString(), "MFA_NO_EMAIL", "MfaEmailMissing");
+                Notify("MFA Required", "MFA is enabled for this account but no email is registered. Contact your administrator.", "error");
+                return;
+            }
+
+            bool rememberMe = Session[SessionKeys.MfaRemember] is bool && (bool)Session[SessionKeys.MfaRemember];
+            StartMfaChallenge(pendingId, row["WorkmanSL"].ToString(), email, row["FullName"].ToString(), rememberMe);
+        }
+
+        protected void btn_mfa_back_Click(object sender, EventArgs e)
+        {
+            ClearMfaSession();
+            ViewState["MfaMode"] = false;
+            txt_mfa_otp.Text = "";
+            Notify("Login", "Verification cancelled. Enter your password again.", "info");
+        }
+
+        private void ClearMfaSession()
+        {
+            Session.Remove(SessionKeys.MfaPendingLoginId);
+            Session.Remove(SessionKeys.MfaOtpHash);
+            Session.Remove(SessionKeys.MfaOtpExp);
+            Session.Remove(SessionKeys.MfaOtpTry);
+            Session.Remove(SessionKeys.MfaOtpEmail);
+            Session.Remove(SessionKeys.MfaRemember);
+            Session.Remove(SessionKeys.MfaResendAt);
+        }
+
+        private void GrantAuthenticatedSession(DataRow row, bool rememberMe, string auditResult, bool markMfaVerified)
+        {
+            string id = row["LoginID"].ToString();
+            string workmanSL = row["WorkmanSL"].ToString();
+
             string postAuthSql = @"
                 INSERT INTO tbl_UserLoginAudit (LoginID, WorkmanSL, LoginTime, LoginResult, FailureReason, IPAddress, UserAgent, SessionID)
-                VALUES (@LoginID, @WorkmanSL, GETDATE(), 'SUCCESS', NULL, @IP, @Agent, @SessionID);
+                VALUES (@LoginID, @WorkmanSL, GETDATE(), @Result, NULL, @IP, @Agent, @SessionID);
                 UPDATE tbl_Employee_Mustertable SET LastLogin = GETDATE(), LoginStatus = 1 WHERE LoginID = @LoginID;";
 
             List<SqlParameter> postAuthParams = new List<SqlParameter>
             {
                 new SqlParameter("@LoginID", id),
                 new SqlParameter("@WorkmanSL", (object)workmanSL ?? DBNull.Value),
+                new SqlParameter("@Result", auditResult),
                 new SqlParameter("@IP", Request.UserHostAddress ?? ""),
                 new SqlParameter("@Agent", Request.UserAgent ?? ""),
                 new SqlParameter("@SessionID", Session.SessionID)
             };
 
             dbcl.SPreturn_dt(postAuthSql, postAuthParams.ToArray());
-            LogLoginTiming("postAuthWrite", sw, id);
 
-            // Handle 'Remember Me' Cookie
-            if (chk_remember.Checked) { Response.Cookies.Add(new HttpCookie("ATS_SavedID", id) { Expires = DateTime.Now.AddDays(15) }); }
+            if (markMfaVerified)
+            {
+                try
+                {
+                    dbcl.SPreturn_dt(
+                        "UPDATE tbl_Employee_Mustertable SET MFALastVerified = GETDATE() WHERE LoginID = @LoginID",
+                        new SqlParameter[] { new SqlParameter("@LoginID", id) });
+                }
+                catch (Exception ex)
+                {
+                    if (!MfaAuthHelper.IsMissingColumnException(ex))
+                    {
+                        dbcl.WriteToFile("MFALastVerified update failed: " + ex);
+                    }
+                }
+            }
+
+            if (rememberMe) { Response.Cookies.Add(new HttpCookie("ATS_SavedID", id) { Expires = DateTime.Now.AddDays(15) }); }
             else if (Request.Cookies["ATS_SavedID"] != null) { Response.Cookies["ATS_SavedID"].Expires = DateTime.Now.AddDays(-1); }
 
-            string loginID = row["LoginID"].ToString();
-
-            // Assign Session Variables using the strongly-typed SessionKeys class
-            Session[SessionKeys.UserID] = loginID;
+            Session[SessionKeys.UserID] = id;
             Session[SessionKeys.WorkmanSL] = workmanSL;
             Session[SessionKeys.UserFirstName] = row["FirstName"].ToString();
             Session[SessionKeys.UserName] = row["FullName"].ToString();
@@ -198,19 +466,37 @@ namespace WebApplication1.bussiness.production
             Session[SessionKeys.SiteCode] = row["Worksite_Code"].ToString();
             Session[SessionKeys.Designation] = row["SkillDesignation"].ToString();
             Session[SessionKeys.Skill] = row["SkillCategory"].ToString();
-            LogLoginTiming("sessionSet", sw, id);
 
-            // Handle Profile Picture securely
             string photo = row["PrfPicFile"].ToString();
             Session[SessionKeys.UserPhoto] = (!string.IsNullOrEmpty(photo) && Directory.Exists(rootFolder) && File.Exists(Path.Combine(rootFolder, photo)))
                                             ? photo
                                             : "No_Image.jpg";
 
-            LogLoginTiming("total", sw, id);
-
-            // Redirect to new optimized dashboard
             Response.Redirect("~/bussiness/production/homepage_v2.aspx", false);
             Context.ApplicationInstance.CompleteRequest();
+        }
+
+        private bool SendMfaOtpEmail(string to, string otp, string name)
+        {
+            try
+            {
+                MailMessage mm = new MailMessage("it.support@aminruptechnologies.co.in", to);
+                mm.Subject = "ATS Login Verification OTP";
+                mm.Body = "Hi " + name + ",\n\nYour login verification code is: " + otp
+                    + "\nThis code is valid for " + MfaAuthHelper.OtpLifetimeMinutes + " minutes.\n\nIf you did not try to sign in, contact IT support.";
+                string smtpUser = System.Configuration.ConfigurationManager.AppSettings["SmtpUser"] ?? "";
+                string smtpPass = System.Configuration.ConfigurationManager.AppSettings["SmtpPass"] ?? "";
+
+                if (string.IsNullOrEmpty(smtpUser) || string.IsNullOrEmpty(smtpPass))
+                {
+                    dbcl.WriteToFile("MFA OTP email skipped: SMTP credentials not configured (SmtpUser/SmtpPass).");
+                    return false;
+                }
+
+                SmtpClient smtp = new SmtpClient("smtp.zoho.in", 587) { EnableSsl = true, Credentials = new NetworkCredential(smtpUser, smtpPass) };
+                smtp.Send(mm); return true;
+            }
+            catch (Exception ex) { dbcl.WriteToFile(ex.ToString()); return false; }
         }
 
         /* ================= FORGOT PASSWORD ================= */

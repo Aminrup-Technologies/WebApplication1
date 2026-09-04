@@ -5785,6 +5785,7 @@
       <DependentUpon>testing.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\SecurityDAL.cs" />
+    <Compile Include="bussiness\production\MfaAuthHelper.cs" />
     <Compile Include="bussiness\production\SessionKeys.cs" />
     <Compile Include="bussiness\production\Startup.cs" />
     <Compile Include="bussiness\production\str\strdshbrd.aspx.cs">

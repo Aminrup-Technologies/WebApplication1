@@ -649,6 +649,38 @@
                                         <label>Pass Updated By (ID)</label><asp:TextBox ID="txt_PassUpdByWrk" runat="server" CssClass="form-control readonly-text" ReadOnly="true" /></div>
                                 </div>
 
+                                <h4 class="section-header mt-3"><i class="fa fa-shield"></i>Multi-Factor Authentication</h4>
+                                <p class="small text-muted">When MFA is required, the user must enter an email OTP after a successful password. A registered Email on the Personal tab is mandatory.</p>
+                                <div class="row">
+                                    <div class="col-md-3 form-group">
+                                        <label>MFA Required</label>
+                                        <asp:DropDownList ID="DDL_MFAEnabled" runat="server" CssClass="form-control">
+                                            <asp:ListItem Text="No (password only)" Value="0" />
+                                            <asp:ListItem Text="Yes (Email OTP)" Value="1" />
+                                        </asp:DropDownList>
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label>MFA Method</label>
+                                        <asp:DropDownList ID="DDL_MFAMethod" runat="server" CssClass="form-control" Enabled="false">
+                                            <asp:ListItem Text="Email OTP" Value="EmailOTP" />
+                                        </asp:DropDownList>
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label>Enforced On</label>
+                                        <asp:TextBox ID="txt_MFAEnforcedOn" runat="server" CssClass="form-control readonly-text" ReadOnly="true" />
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label>Enforced By</label>
+                                        <asp:TextBox ID="txt_MFAEnforcedBy" runat="server" CssClass="form-control readonly-text" ReadOnly="true" />
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-3 form-group">
+                                        <label>Last MFA Verified</label>
+                                        <asp:TextBox ID="txt_MFALastVerified" runat="server" CssClass="form-control readonly-text" ReadOnly="true" />
+                                    </div>
+                                </div>
+
                                 <div class="admin-alert mt-4">
                                     <h4 class="text-danger section-header mb-2" style="background: transparent;"><i class="fa fa-exclamation-triangle"></i>Account & Exit Management</h4>
                                     <div class="row">
