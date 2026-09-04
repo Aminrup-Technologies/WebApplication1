@@ -130,7 +130,7 @@ namespace WebApplication1.bussiness.production
                 SELECT TOP 1 
                     LoginID, LoginPassword, WorkStatus, DOR, PasswordExpiry, WorkmanSL, FirstName, FullName,
                     User_RoleType, UserRoleDB, RolePermissionDB, WorkRegion, WorkState, WorkCompany,
-                    WorkSite, Worksite_Code, SkillDesignation, SkillCategory, PrfPicFile, Email
+                    WorkSite, Worksite_Code, SkillDesignation, SkillCategory, PrfPicFile, Email, MobileNo
                 FROM tbl_Employee_Mustertable WHERE LoginID = @LoginID";
 
             return dbcl.SPreturn_dt(query, new SqlParameter[] { new SqlParameter("@LoginID", id) });
@@ -205,6 +205,21 @@ namespace WebApplication1.bussiness.production
                     return;
                 }
 
+                if (MfaAuthHelper.IsWhatsAppOtp(mfaMethod))
+                {
+                    string mobile = ReadRowText(row, "MobileNo");
+                    if (!MfaAuthHelper.HasMobile(mobile))
+                    {
+                        InsertLoginAudit(id, workmanSL, "MFA_NO_MOBILE", "MfaMobileMissing");
+                        Notify("MFA Required", "MFA is enabled for this account but no mobile number is registered. Contact your administrator.", "error");
+                        return;
+                    }
+
+                    StartMfaChallenge(id, workmanSL, mobile, row["FullName"].ToString(), chk_remember.Checked, MfaAuthHelper.MethodWhatsAppOtp);
+                    LogLoginTiming("mfaChallenge", sw, id);
+                    return;
+                }
+
                 string email = row["Email"] != DBNull.Value ? row["Email"].ToString() : "";
                 if (!MfaAuthHelper.HasEmail(email))
                 {
@@ -213,7 +228,7 @@ namespace WebApplication1.bussiness.production
                     return;
                 }
 
-                StartMfaChallenge(id, workmanSL, email, row["FullName"].ToString(), chk_remember.Checked);
+                StartMfaChallenge(id, workmanSL, email, row["FullName"].ToString(), chk_remember.Checked, MfaAuthHelper.MethodEmailOtp);
                 LogLoginTiming("mfaChallenge", sw, id);
                 return;
             }
@@ -286,35 +301,48 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-        private void StartMfaChallenge(string loginId, string workmanSL, string email, string fullName, bool rememberMe)
+        private void StartMfaChallenge(string loginId, string workmanSL, string destination, string fullName, bool rememberMe, string method)
         {
             ClearMfaSession();
 
+            bool whatsapp = MfaAuthHelper.IsWhatsAppOtp(method);
             string otp = GenerateOTP();
             Session[SessionKeys.MfaPendingLoginId] = loginId;
             Session[SessionKeys.MfaOtpHash] = HashPassword(otp);
             Session[SessionKeys.MfaOtpExp] = DateTime.Now.AddMinutes(MfaAuthHelper.OtpLifetimeMinutes);
             Session[SessionKeys.MfaOtpTry] = 0;
-            Session[SessionKeys.MfaOtpEmail] = email.Trim();
             Session[SessionKeys.MfaRemember] = rememberMe;
             Session[SessionKeys.MfaResendAt] = DateTime.Now.AddSeconds(MfaAuthHelper.ResendCooldownSeconds);
-            Session[SessionKeys.MfaMethod] = MfaAuthHelper.MethodEmailOtp;
+            Session[SessionKeys.MfaMethod] = whatsapp ? MfaAuthHelper.MethodWhatsAppOtp : MfaAuthHelper.MethodEmailOtp;
             Session[SessionKeys.MfaTotpEnroll] = false;
+            if (whatsapp)
+            {
+                Session[SessionKeys.MfaOtpMobile] = destination.Trim();
+            }
+            else
+            {
+                Session[SessionKeys.MfaOtpEmail] = destination.Trim();
+            }
 
-            InsertLoginAudit(loginId, workmanSL, "MFA_CHALLENGE", null);
+            InsertLoginAudit(loginId, workmanSL, "MFA_CHALLENGE", whatsapp ? "WhatsAppOtp" : "EmailOtp");
 
             ViewState["MfaMode"] = true;
             ViewState["ForgotMode"] = false;
             RefreshMfaHint();
 
-            if (!SendMfaOtpEmail(email.Trim(), otp, fullName))
+            bool sent = whatsapp
+                ? SendMfaOtpWhatsApp(destination, otp)
+                : SendMfaOtpEmail(destination.Trim(), otp, fullName);
+
+            if (!sent)
             {
                 Session[SessionKeys.MfaResendAt] = DateTime.Now;
                 Notify("Error", "Could not send the verification code. Use Resend Code, or contact support.", "error");
                 return;
             }
 
-            Notify("Code Sent", "A verification code was sent to " + MfaAuthHelper.MaskEmail(email) + ".", "success");
+            string masked = whatsapp ? MfaAuthHelper.MaskMobile(destination) : MfaAuthHelper.MaskEmail(destination);
+            Notify("Code Sent", "A verification code was sent to " + masked + ".", "success");
         }
 
         private void RefreshMfaHint()
@@ -329,6 +357,14 @@ namespace WebApplication1.bussiness.production
                 {
                     lbl_mfa_hint.Text = "Enter the 6-digit code from your authenticator app. Codes refresh every 30 seconds.";
                 }
+                return;
+            }
+
+            if (MfaAuthHelper.IsWhatsAppOtp(Session[SessionKeys.MfaMethod] as string))
+            {
+                string mobile = Session[SessionKeys.MfaOtpMobile] as string;
+                lbl_mfa_hint.Text = "Enter the 6-digit code sent to WhatsApp " + MfaAuthHelper.MaskMobile(mobile) + ". The code expires in "
+                    + MfaAuthHelper.OtpLifetimeMinutes + " minutes.";
                 return;
             }
 
@@ -635,6 +671,21 @@ namespace WebApplication1.bussiness.production
             }
 
             DataRow row = dt.Rows[0];
+            bool rememberMe = Session[SessionKeys.MfaRemember] is bool && (bool)Session[SessionKeys.MfaRemember];
+            string pendingMethod = Session[SessionKeys.MfaMethod] as string;
+            if (MfaAuthHelper.IsWhatsAppOtp(pendingMethod))
+            {
+                string mobile = ReadRowText(row, "MobileNo");
+                if (!MfaAuthHelper.HasMobile(mobile))
+                {
+                    InsertLoginAudit(pendingId, row["WorkmanSL"].ToString(), "MFA_NO_MOBILE", "MfaMobileMissing");
+                    Notify("MFA Required", "MFA is enabled for this account but no mobile number is registered. Contact your administrator.", "error");
+                    return;
+                }
+                StartMfaChallenge(pendingId, row["WorkmanSL"].ToString(), mobile, row["FullName"].ToString(), rememberMe, MfaAuthHelper.MethodWhatsAppOtp);
+                return;
+            }
+
             string email = row["Email"] != DBNull.Value ? row["Email"].ToString() : "";
             if (!MfaAuthHelper.HasEmail(email))
             {
@@ -643,8 +694,7 @@ namespace WebApplication1.bussiness.production
                 return;
             }
 
-            bool rememberMe = Session[SessionKeys.MfaRemember] is bool && (bool)Session[SessionKeys.MfaRemember];
-            StartMfaChallenge(pendingId, row["WorkmanSL"].ToString(), email, row["FullName"].ToString(), rememberMe);
+            StartMfaChallenge(pendingId, row["WorkmanSL"].ToString(), email, row["FullName"].ToString(), rememberMe, MfaAuthHelper.MethodEmailOtp);
         }
 
         protected void btn_mfa_back_Click(object sender, EventArgs e)
@@ -662,6 +712,7 @@ namespace WebApplication1.bussiness.production
             Session.Remove(SessionKeys.MfaOtpExp);
             Session.Remove(SessionKeys.MfaOtpTry);
             Session.Remove(SessionKeys.MfaOtpEmail);
+            Session.Remove(SessionKeys.MfaOtpMobile);
             Session.Remove(SessionKeys.MfaRemember);
             Session.Remove(SessionKeys.MfaResendAt);
             Session.Remove(SessionKeys.MfaMethod);
@@ -733,6 +784,23 @@ namespace WebApplication1.bussiness.production
 
             Response.Redirect("~/bussiness/production/homepage_v2.aspx", false);
             Context.ApplicationInstance.CompleteRequest();
+        }
+
+        private string ReadRowText(DataRow row, string column)
+        {
+            if (row == null || !row.Table.Columns.Contains(column) || row[column] == DBNull.Value) return "";
+            return row[column].ToString();
+        }
+
+        private bool SendMfaOtpWhatsApp(string mobile, string otp)
+        {
+            string error;
+            bool sent = Msg91WhatsAppHelper.SendOtp(MfaAuthHelper.NormalizeMobile(mobile), otp, out error);
+            if (!sent)
+            {
+                dbcl.WriteToFile("MFA WhatsApp OTP send failed: " + error);
+            }
+            return sent;
         }
 
         private bool SendMfaOtpEmail(string to, string otp, string name)

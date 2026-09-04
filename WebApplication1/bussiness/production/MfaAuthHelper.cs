@@ -1,14 +1,16 @@
 using System;
+using System.Text;
 
 namespace WebApplication1.bussiness.production
 {
     /// <summary>
     /// Shared MFA helpers for login challenge and admin configuration.
-    /// Methods: Email OTP and Authenticator (TOTP).
+    /// Methods: Email OTP, WhatsApp OTP (same login OTP, different delivery), Authenticator (TOTP).
     /// </summary>
     public static class MfaAuthHelper
     {
         public const string MethodEmailOtp = "EmailOTP";
+        public const string MethodWhatsAppOtp = "WhatsAppOTP";
         public const string MethodAuthenticator = "Authenticator";
         public const int OtpLifetimeMinutes = 5;
         public const int MaxOtpAttempts = 3;
@@ -50,6 +52,40 @@ namespace WebApplication1.bussiness.production
             return local.Substring(0, 1) + "***" + domain;
         }
 
+        public static string DigitsOnly(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value)) return "";
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < value.Length; i++)
+            {
+                char c = value[i];
+                if (c >= '0' && c <= '9') sb.Append(c);
+            }
+            return sb.ToString();
+        }
+
+        public static string NormalizeMobile(string mobile)
+        {
+            string digits = DigitsOnly(mobile);
+            if (digits.StartsWith("91") && digits.Length == 12) return digits;
+            if (digits.Length == 10) return "91" + digits;
+            if (digits.StartsWith("0") && digits.Length == 11) return "91" + digits.Substring(1);
+            return digits;
+        }
+
+        public static bool HasMobile(string mobile)
+        {
+            string normalized = NormalizeMobile(mobile);
+            return normalized.Length == 12 && normalized.StartsWith("91");
+        }
+
+        public static string MaskMobile(string mobile)
+        {
+            if (!HasMobile(mobile)) return "(no mobile)";
+            string normalized = NormalizeMobile(mobile);
+            return "+91******" + normalized.Substring(normalized.Length - 4);
+        }
+
         public static bool SlowEquals(string a, string b)
         {
             if (a == null || b == null || a.Length != b.Length) return false;
@@ -78,12 +114,29 @@ namespace WebApplication1.bussiness.production
             {
                 return MethodAuthenticator;
             }
+            if (value.Equals(MethodWhatsAppOtp, StringComparison.OrdinalIgnoreCase)
+                || value.Equals("WhatsApp", StringComparison.OrdinalIgnoreCase)
+                || value.Equals("WA", StringComparison.OrdinalIgnoreCase)
+                || value.Equals("WhatsAppOtp", StringComparison.OrdinalIgnoreCase))
+            {
+                return MethodWhatsAppOtp;
+            }
             return MethodEmailOtp;
         }
 
         public static bool IsAuthenticator(string method)
         {
             return NormalizeMethod(method) == MethodAuthenticator;
+        }
+
+        public static bool IsWhatsAppOtp(string method)
+        {
+            return NormalizeMethod(method) == MethodWhatsAppOtp;
+        }
+
+        public static bool IsEmailOtp(string method)
+        {
+            return NormalizeMethod(method) == MethodEmailOtp;
         }
     }
 }

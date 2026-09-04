@@ -292,7 +292,7 @@ namespace WebApplication1.bussiness.production
                     SetDDL(DDL_MFAEnabled, mfaOn ? "1" : "0");
                     if (dr.Table.Columns.Contains("MFAMethod") && dr["MFAMethod"] != DBNull.Value && !string.IsNullOrWhiteSpace(dr["MFAMethod"].ToString()))
                     {
-                        SetDDL(DDL_MFAMethod, dr["MFAMethod"].ToString().Trim());
+                        SetDDL(DDL_MFAMethod, MfaAuthHelper.NormalizeMethod(dr["MFAMethod"].ToString()));
                     }
                     else
                     {
@@ -634,7 +634,12 @@ namespace WebApplication1.bussiness.production
 
             bool mfaOn = DDL_MFAEnabled.SelectedValue == "1";
             string mfaMethod = MfaAuthHelper.NormalizeMethod(DDL_MFAMethod.SelectedValue);
-            if (mfaOn && !MfaAuthHelper.IsAuthenticator(mfaMethod) && !MfaAuthHelper.HasEmail(txt_email.Text))
+            if (mfaOn && MfaAuthHelper.IsWhatsAppOtp(mfaMethod) && !MfaAuthHelper.HasMobile(txt_mobile.Text))
+            {
+                ShowPopup("MFA Requires Mobile", "A registered Mobile Number on the Personal tab is required before WhatsApp OTP MFA can be enabled for this user.");
+                return;
+            }
+            if (mfaOn && MfaAuthHelper.IsEmailOtp(mfaMethod) && !MfaAuthHelper.HasEmail(txt_email.Text))
             {
                 ShowPopup("MFA Requires Email", "A registered Email on the Personal tab is required before Email OTP MFA can be enabled for this user.");
                 return;

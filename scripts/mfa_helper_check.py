@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Logic checks for MfaAuthHelper (mirrors C# helpers used by login MFA)."""
+from pathlib import Path
 import sys
 
 def is_enabled(value):
@@ -82,12 +83,39 @@ def totp_code(secret_bytes: bytes, timestep: int) -> str:
     binary = ((digest[offset] & 0x7F) << 24) | (digest[offset + 1] << 16) | (digest[offset + 2] << 8) | digest[offset + 3]
     return f"{binary % 1000000:06d}"
 
+def digits_only(value):
+    if value is None:
+        return ""
+    return "".join(ch for ch in str(value) if "0" <= ch <= "9")
+
+def normalize_mobile(mobile):
+    digits = digits_only(mobile)
+    if digits.startswith("91") and len(digits) == 12:
+        return digits
+    if len(digits) == 10:
+        return "91" + digits
+    if digits.startswith("0") and len(digits) == 11:
+        return "91" + digits[1:]
+    return digits
+
+def has_mobile(mobile):
+    normalized = normalize_mobile(mobile)
+    return len(normalized) == 12 and normalized.startswith("91")
+
+def mask_mobile(mobile):
+    if not has_mobile(mobile):
+        return "(no mobile)"
+    normalized = normalize_mobile(mobile)
+    return "+91******" + normalized[-4:]
+
 def normalize_method(method):
     if not method or not str(method).strip():
         return "EmailOTP"
     value = str(method).strip()
     if value.lower() in ("authenticator", "totp", "authenticatorapp"):
         return "Authenticator"
+    if value.lower() in ("whatsappotp", "whatsapp", "wa"):
+        return "WhatsAppOTP"
     return "EmailOTP"
 
 def main():
@@ -115,12 +143,32 @@ def main():
     check(slow_equals("abc", "ab") is False, "length mismatch")
     check(normalize_method("Authenticator") == "Authenticator", "normalize authenticator")
     check(normalize_method("EmailOTP") == "EmailOTP", "normalize email")
+    check(normalize_method("WhatsAppOTP") == "WhatsAppOTP", "normalize whatsapp")
+    check(normalize_method("WhatsApp") == "WhatsAppOTP", "normalize whatsapp alias")
+    check(normalize_method("WA") == "WhatsAppOTP", "normalize wa alias")
     check(normalize_method("") == "EmailOTP", "normalize empty")
+    check(has_mobile("9876543210") is True, "10-digit mobile")
+    check(has_mobile("919876543210") is True, "12-digit mobile")
+    check(has_mobile("+91 98765 43210") is True, "formatted mobile")
+    check(has_mobile("09876543210") is True, "leading-zero mobile")
+    check(has_mobile("12345") is False, "short mobile")
+    check(has_mobile("") is False, "empty mobile")
+    check(normalize_mobile("9876543210") == "919876543210", "normalize 10-digit")
+    check(mask_mobile("9876543210") == "+91******3210", "mask mobile")
+    check(mask_mobile("") == "(no mobile)", "mask empty mobile")
     rfc_key = b"12345678901234567890"
     encoded = to_base32(rfc_key)
     check(from_base32(encoded)[:20] == rfc_key, "base32 roundtrip RFC key")
     check(totp_code(rfc_key, 1) == "287082", "RFC 6238 TOTP timestep 1")
     check(totp_code(from_base32(encoded), 1) == "287082", "TOTP from Base32 secret")
+
+    root = Path(__file__).resolve().parents[1]
+    helper = (root / "WebApplication1/bussiness/production/Msg91WhatsAppHelper.cs").read_text()
+    login = (root / "WebApplication1/Login.aspx.cs").read_text()
+    check("job_daily_details" not in helper, "WhatsApp MFA must not reuse job_daily_details")
+    check("Msg91MfaTemplateName" in helper, "WhatsApp MFA template comes from config")
+    check("GenerateOTP" in login and "MethodWhatsAppOtp" in login, "login WhatsApp reuses GenerateOTP challenge")
+    check("SendMfaOtpWhatsApp" in login, "login delivers OTP over WhatsApp")
 
     if errors:
         print("FAIL:")

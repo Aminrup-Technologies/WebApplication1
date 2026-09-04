@@ -43,6 +43,7 @@ namespace WebApplication1.bussiness.production
         public const string MfaOtpExp = "MFA_OTP_EXP";
         public const string MfaOtpTry = "MFA_OTP_TRY";
         public const string MfaOtpEmail = "MFA_OTP_EMAIL";
+        public const string MfaOtpMobile = "MFA_OTP_MOBILE";
         public const string MfaRemember = "MFA_REMEMBER";
         public const string MfaResendAt = "MFA_RESEND_AT";
         public const string MfaMethod = "MFA_METHOD";
