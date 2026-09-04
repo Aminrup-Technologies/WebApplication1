@@ -39,7 +39,7 @@
             <asp:Image ID="Image1" runat="server" ImageUrl="~/erp_images/ats_translogo.png" Height="80" Width="80" CssClass="brand-logo" />
             <h1 class="h5 text-center fw-bold mb-4">ATS Cloud ERP</h1>
 
-            <ul class="nav nav-pills nav-justified mb-4" id="loginTabs" role="tablist">
+            <ul runat="server" class="nav nav-pills nav-justified mb-4" id="loginTabs" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button runat="server" id="tab_login_btn" class="nav-link active" data-bs-toggle="pill" data-bs-target="#pane_login" type="button" role="tab" aria-selected="true">Login</button>
                 </li>
@@ -92,6 +92,20 @@
                         <asp:TextBox ID="txt_new_pass" runat="server" CssClass="form-control mb-3" TextMode="Password" placeholder="New Password"></asp:TextBox>
                         <asp:Button ID="btn_verify_reset" runat="server" Text="VERIFY & RESET" CssClass="btn btn-success w-100 mb-2" OnClick="btn_verify_reset_Click" />
                     </asp:PlaceHolder>
+                </div>
+
+                <div runat="server" id="pane_mfa" class="tab-pane fade" role="tabpanel" visible="false" ClientIDMode="Static">
+                    <p class="text-center fw-bold mb-2">Two-step verification</p>
+                    <p class="small text-muted text-center mb-3">
+                        <asp:Label ID="lbl_mfa_hint" runat="server" Text="Enter the 6-digit code sent to your registered email."></asp:Label>
+                    </p>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">VERIFICATION CODE</label>
+                        <asp:TextBox ID="txt_mfa_otp" runat="server" CssClass="form-control" MaxLength="6" placeholder="6-Digit OTP" autocomplete="one-time-code"></asp:TextBox>
+                    </div>
+                    <asp:Button ID="btn_mfa_verify" runat="server" Text="VERIFY & CONTINUE" CssClass="btn btn-success w-100 mb-2" OnClick="btn_mfa_verify_Click" />
+                    <asp:Button ID="btn_mfa_resend" runat="server" Text="RESEND CODE" CssClass="btn btn-outline-secondary w-100 mb-2" OnClick="btn_mfa_resend_Click" CausesValidation="false" />
+                    <asp:Button ID="btn_mfa_back" runat="server" Text="BACK TO LOGIN" CssClass="btn btn-link w-100 text-muted" OnClick="btn_mfa_back_Click" CausesValidation="false" />
                 </div>
             </div>
 
