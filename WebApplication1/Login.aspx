@@ -24,6 +24,8 @@
         .footer-text { font-size: 0.8rem; text-align: center; margin-top: 2.5rem; color: #6c757d; border-top: 1px solid #e9ecef; padding-top: 1rem; }
         .footer-text a { color: #198754; transition: color 0.2s; }
         .footer-text a:hover { color: #146c43; text-decoration: underline !important; }
+        .mfa-qr { display: flex; justify-content: center; margin: 0 auto 0.75rem; }
+        .mfa-manual { font-family: ui-monospace, Consolas, monospace; letter-spacing: 0.08em; word-break: break-all; }
     </style>
 
     <script type="text/javascript">
@@ -97,11 +99,19 @@
                 <div runat="server" id="pane_mfa" class="tab-pane fade" role="tabpanel" visible="false" ClientIDMode="Static">
                     <p class="text-center fw-bold mb-2">Two-step verification</p>
                     <p class="small text-muted text-center mb-3">
-                        <asp:Label ID="lbl_mfa_hint" runat="server" Text="Enter the 6-digit code sent to your registered email."></asp:Label>
+                        <asp:Label ID="lbl_mfa_hint" runat="server" Text="Enter the 6-digit verification code."></asp:Label>
                     </p>
+                    <asp:PlaceHolder ID="ph_mfa_enroll" runat="server" Visible="false">
+                        <div id="mfaQrBox" class="mfa-qr"></div>
+                        <asp:HiddenField ID="hf_mfa_otpauth" runat="server" />
+                        <p class="small text-muted text-center mb-1">Can't scan? Enter this key in your authenticator app:</p>
+                        <p class="small text-center fw-bold mfa-manual mb-3">
+                            <asp:Label ID="lbl_mfa_manual" runat="server"></asp:Label>
+                        </p>
+                    </asp:PlaceHolder>
                     <div class="mb-3">
                         <label class="form-label small fw-bold text-muted">VERIFICATION CODE</label>
-                        <asp:TextBox ID="txt_mfa_otp" runat="server" CssClass="form-control" MaxLength="6" placeholder="6-Digit OTP" autocomplete="one-time-code"></asp:TextBox>
+                        <asp:TextBox ID="txt_mfa_otp" runat="server" CssClass="form-control" MaxLength="6" placeholder="6-Digit code" autocomplete="one-time-code"></asp:TextBox>
                     </div>
                     <asp:Button ID="btn_mfa_verify" runat="server" Text="VERIFY & CONTINUE" CssClass="btn btn-success w-100 mb-2" OnClick="btn_mfa_verify_Click" />
                     <asp:Button ID="btn_mfa_resend" runat="server" Text="RESEND CODE" CssClass="btn btn-outline-secondary w-100 mb-2" OnClick="btn_mfa_resend_Click" CausesValidation="false" />
@@ -125,6 +135,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@pnotify/core@5.2.0/dist/PNotify.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
         window.notify = function (title, text, type) {
             if (typeof PNotify === "undefined") {
@@ -154,7 +165,16 @@
                     icon.classList.toggle('fa-eye-slash');
                 });
             }
+            renderMfaQr();
         });
+
+        function renderMfaQr() {
+            const box = document.getElementById('mfaQrBox');
+            const uriField = document.getElementById('<%= hf_mfa_otpauth.ClientID %>');
+            if (!box || !uriField || !uriField.value || typeof QRCode === 'undefined') return;
+            box.innerHTML = '';
+            new QRCode(box, { text: uriField.value, width: 176, height: 176, correctLevel: QRCode.CorrectLevel.M });
+        }
     </script>
 </body>
 </html>

@@ -41,6 +41,55 @@ def slow_equals(a, b):
         diff |= ord(ch) ^ ord(b[i])
     return diff == 0
 
+ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
+
+def to_base32(data: bytes) -> str:
+    output = []
+    bit_buffer = 0
+    bits = 0
+    for b in data:
+        bit_buffer = (bit_buffer << 8) | b
+        bits += 8
+        while bits >= 5:
+            bits -= 5
+            output.append(ALPHABET[(bit_buffer >> bits) & 31])
+    if bits > 0:
+        output.append(ALPHABET[(bit_buffer << (5 - bits)) & 31])
+    return "".join(output)
+
+def from_base32(text: str) -> bytes:
+    s = (text or "").strip().replace(" ", "").replace("=", "").upper()
+    output = bytearray()
+    bit_buffer = 0
+    bits = 0
+    for ch in s:
+        val = ALPHABET.find(ch)
+        if val < 0:
+            continue
+        bit_buffer = (bit_buffer << 5) | val
+        bits += 5
+        if bits >= 8:
+            bits -= 8
+            output.append((bit_buffer >> bits) & 0xFF)
+    return bytes(output)
+
+def totp_code(secret_bytes: bytes, timestep: int) -> str:
+    import hmac
+    import hashlib
+    import struct
+    digest = hmac.new(secret_bytes, struct.pack(">Q", timestep), hashlib.sha1).digest()
+    offset = digest[-1] & 0x0F
+    binary = ((digest[offset] & 0x7F) << 24) | (digest[offset + 1] << 16) | (digest[offset + 2] << 8) | digest[offset + 3]
+    return f"{binary % 1000000:06d}"
+
+def normalize_method(method):
+    if not method or not str(method).strip():
+        return "EmailOTP"
+    value = str(method).strip()
+    if value.lower() in ("authenticator", "totp", "authenticatorapp"):
+        return "Authenticator"
+    return "EmailOTP"
+
 def main():
     errors = []
 
@@ -64,6 +113,14 @@ def main():
     check(slow_equals("abc", "abc") is True, "equal hashes")
     check(slow_equals("abc", "abd") is False, "different hashes")
     check(slow_equals("abc", "ab") is False, "length mismatch")
+    check(normalize_method("Authenticator") == "Authenticator", "normalize authenticator")
+    check(normalize_method("EmailOTP") == "EmailOTP", "normalize email")
+    check(normalize_method("") == "EmailOTP", "normalize empty")
+    rfc_key = b"12345678901234567890"
+    encoded = to_base32(rfc_key)
+    check(from_base32(encoded)[:20] == rfc_key, "base32 roundtrip RFC key")
+    check(totp_code(rfc_key, 1) == "287082", "RFC 6238 TOTP timestep 1")
+    check(totp_code(from_base32(encoded), 1) == "287082", "TOTP from Base32 secret")
 
     if errors:
         print("FAIL:")
