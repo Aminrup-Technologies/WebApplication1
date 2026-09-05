@@ -12,6 +12,36 @@ namespace WebApplication1.bussiness.production
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
 
+        protected string TabLiClass(string href)
+        {
+            return IsCurrentTab(href) ? "active" : "";
+        }
+
+        protected string TabPaneClass(string href)
+        {
+            return IsCurrentTab(href) ? "tab-pane active" : "tab-pane";
+        }
+
+        private bool IsCurrentTab(string href)
+        {
+            string current = hfActiveTab != null ? hfActiveTab.Value : "";
+            if (current != "#tab_region_safety" && current != "#tab_wo_config" && current != "#tab_wo_matrix"
+                && current != "#tab_doc_master" && current != "#tab_smart_calendar" && current != "#tab_backdate"
+                && current != "#tab_triggers")
+            {
+                current = "#tab_region_safety";
+            }
+            return string.Equals(current, href, StringComparison.OrdinalIgnoreCase);
+        }
+
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            if (IsPostBack)
+            {
+                upTabs.Update();
+            }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -1099,6 +1129,7 @@ namespace WebApplication1.bussiness.production
         private void ShowTriggerTab()
         {
             hfActiveTab.Value = "#tab_triggers";
+            upTabs.Update();
             ScriptManager.RegisterStartupScript(upTriggers, upTriggers.GetType(), "showTriggerTab", "showTriggerTab();", true);
         }
     }

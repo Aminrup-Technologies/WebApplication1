@@ -19,7 +19,7 @@
             box-shadow: none;
         }
 
-            .nav-tabs-custom > .nav-tabs {
+            .nav-tabs-custom .nav-tabs {
                 border-bottom-color: #e9ecef;
                 display: flex;
                 flex-wrap: wrap;
@@ -28,11 +28,11 @@
                 padding: 10px 10px 0 10px;
             }
 
-                .nav-tabs-custom > .nav-tabs > li {
+                .nav-tabs-custom .nav-tabs > li {
                     margin-bottom: -1px;
                 }
 
-                    .nav-tabs-custom > .nav-tabs > li > a {
+                    .nav-tabs-custom .nav-tabs > li > a {
                         color: #5A738E;
                         font-weight: 600;
                         border-radius: 6px 6px 0 0;
@@ -42,15 +42,15 @@
                         transition: all 0.2s ease;
                     }
 
-                        .nav-tabs-custom > .nav-tabs > li > a:hover {
+                        .nav-tabs-custom .nav-tabs > li > a:hover {
                             color: #2a3f54;
                             background-color: #f8f9fa;
                             border-color: #e9ecef #e9ecef #ddd;
                         }
 
-                    .nav-tabs-custom > .nav-tabs > li.active > a,
-                    .nav-tabs-custom > .nav-tabs > li.active > a:hover,
-                    .nav-tabs-custom > .nav-tabs > li.active > a:focus {
+                    .nav-tabs-custom .nav-tabs > li.active > a,
+                    .nav-tabs-custom .nav-tabs > li.active > a:hover,
+                    .nav-tabs-custom .nav-tabs > li.active > a:focus {
                         color: #1ABB9C;
                         background-color: #fff;
                         border-color: #e9ecef #e9ecef transparent;
@@ -171,19 +171,23 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="nav-tabs-custom">
-                        <ul class="nav nav-tabs">
-                            <li class="active"><a href="#tab_region_safety" data-toggle="tab"><i class="fa fa-shield text-danger mr-1"></i>Work Region</a></li>
-                            <li><a href="#tab_wo_config" data-toggle="tab"><i class="fa fa-briefcase text-primary mr-1"></i>WO/PO Controller</a></li>
-                            <li><a href="#tab_wo_matrix" data-toggle="tab"><i class="fa fa-cogs text-warning mr-1"></i>WO Rule Matrix</a></li>
-                            <li><a href="#tab_doc_master" data-toggle="tab"><i class="fa fa-file-text-o text-success mr-1"></i>Document Master</a></li>
-                            <li><a href="#tab_smart_calendar" data-toggle="tab"><i class="fa fa-calendar text-info mr-1"></i>Smart Calendar</a></li>
-                            <li><a href="#tab_backdate" data-toggle="tab"><i class="fa fa-history text-danger mr-1"></i>Backdate Exceptions</a></li>
-                            <li><a href="#tab_triggers" data-toggle="tab"><i class="fa fa-bell text-success mr-1"></i>Notification Triggers</a></li>
-                        </ul>
+                        <asp:UpdatePanel ID="upTabs" runat="server" UpdateMode="Conditional">
+                            <ContentTemplate>
+                                <ul class="nav nav-tabs" id="dbControllerTabs">
+                                    <li class="<%= TabLiClass("#tab_region_safety") %>"><a href="#tab_region_safety" data-toggle="tab"><i class="fa fa-shield text-danger mr-1"></i>Work Region</a></li>
+                                    <li class="<%= TabLiClass("#tab_wo_config") %>"><a href="#tab_wo_config" data-toggle="tab"><i class="fa fa-briefcase text-primary mr-1"></i>WO/PO Controller</a></li>
+                                    <li class="<%= TabLiClass("#tab_wo_matrix") %>"><a href="#tab_wo_matrix" data-toggle="tab"><i class="fa fa-cogs text-warning mr-1"></i>WO Rule Matrix</a></li>
+                                    <li class="<%= TabLiClass("#tab_doc_master") %>"><a href="#tab_doc_master" data-toggle="tab"><i class="fa fa-file-text-o text-success mr-1"></i>Document Master</a></li>
+                                    <li class="<%= TabLiClass("#tab_smart_calendar") %>"><a href="#tab_smart_calendar" data-toggle="tab"><i class="fa fa-calendar text-info mr-1"></i>Smart Calendar</a></li>
+                                    <li class="<%= TabLiClass("#tab_backdate") %>"><a href="#tab_backdate" data-toggle="tab"><i class="fa fa-history text-danger mr-1"></i>Backdate Exceptions</a></li>
+                                    <li class="<%= TabLiClass("#tab_triggers") %>"><a href="#tab_triggers" data-toggle="tab"><i class="fa fa-bell text-success mr-1"></i>Notification Triggers</a></li>
+                                </ul>
+                            </ContentTemplate>
+                        </asp:UpdatePanel>
 
                         <div class="tab-content">
 
-                            <div class="tab-pane active" id="tab_region_safety">
+                            <div class="<%= TabPaneClass("#tab_region_safety") %>" id="tab_region_safety">
                                 <asp:UpdatePanel ID="upRegion" runat="server">
                                     <ContentTemplate>
                                         <div class="row">
@@ -230,7 +234,7 @@
                                 </asp:UpdatePanel>
                             </div>
 
-                            <div class="tab-pane" id="tab_wo_config">
+                            <div class="<%= TabPaneClass("#tab_wo_config") %>" id="tab_wo_config">
                                 <asp:UpdatePanel ID="upWO" runat="server">
                                     <ContentTemplate>
                                         <div class="control-panel">
@@ -316,7 +320,7 @@
                                 </asp:UpdatePanel>
                             </div>
 
-                            <div class="tab-pane" id="tab_wo_matrix">
+                            <div class="<%= TabPaneClass("#tab_wo_matrix") %>" id="tab_wo_matrix">
                                 <asp:UpdatePanel ID="upMatrix" runat="server">
                                     <ContentTemplate>
                                         <div class="control-panel">
@@ -427,7 +431,7 @@
                                 </asp:UpdatePanel>
                             </div>
 
-                            <div class="tab-pane" id="tab_doc_master">
+                            <div class="<%= TabPaneClass("#tab_doc_master") %>" id="tab_doc_master">
                                 <asp:UpdatePanel ID="upDoc" runat="server">
                                     <ContentTemplate>
                                         <div class="control-panel">
@@ -476,7 +480,7 @@
                                 </asp:UpdatePanel>
                             </div>
 
-                            <div class="tab-pane" id="tab_smart_calendar">
+                            <div class="<%= TabPaneClass("#tab_smart_calendar") %>" id="tab_smart_calendar">
                                 <div class="row mb-3">
                                     <div class="col-md-4 col-sm-6">
                                         <label class="top-label">1. Select Company to Manage</label>
@@ -514,7 +518,7 @@
                                 </div>
                             </div>
 
-                            <div class="tab-pane" id="tab_backdate">
+                            <div class="<%= TabPaneClass("#tab_backdate") %>" id="tab_backdate">
                                 <asp:UpdatePanel ID="upBackdate" runat="server">
                                     <ContentTemplate>
                                         <div class="control-panel">
@@ -593,7 +597,7 @@
                                 </asp:UpdatePanel>
                             </div>
 
-                            <div class="tab-pane" id="tab_triggers">
+                            <div class="<%= TabPaneClass("#tab_triggers") %>" id="tab_triggers">
                                 <asp:UpdatePanel ID="upTriggers" runat="server">
                                     <ContentTemplate>
                                         <div class="alert alert-warning" id="pnl_triggers_missing" runat="server" visible="false">
@@ -734,14 +738,9 @@
             return document.getElementById('<%= hfActiveTab.ClientID %>');
         }
 
-        function persistActiveTab(tabHref) {
-            var hf = getActiveTabField();
-            if (hf && tabHref) {
-                hf.value = tabHref;
-            }
-        }
-
-        function restoreActiveTab() {
+        function normalizeTabHref(raw) {
+            if (!raw) return '';
+            var href = raw.indexOf('#') >= 0 ? raw.substring(raw.indexOf('#')) : raw;
             var allowed = {
                 '#tab_region_safety': true,
                 '#tab_wo_config': true,
@@ -751,15 +750,27 @@
                 '#tab_backdate': true,
                 '#tab_triggers': true
             };
+            return allowed[href] ? href : '';
+        }
+
+        function persistActiveTab(tabHref) {
+            var href = normalizeTabHref(tabHref);
             var hf = getActiveTabField();
-            var href = (hf && allowed[hf.value]) ? hf.value : '#tab_region_safety';
-            var tabLink = document.querySelector('.nav-tabs a[href="' + href + '"]');
+            if (hf && href) {
+                hf.value = href;
+            }
+        }
+
+        function restoreActiveTab() {
+            var hf = getActiveTabField();
+            var href = normalizeTabHref(hf ? hf.value : '') || '#tab_region_safety';
+            var tabLink = document.querySelector('.nav-tabs-custom a[href="' + href + '"]');
             if (!tabLink) {
                 href = '#tab_region_safety';
-                tabLink = document.querySelector('.nav-tabs a[href="' + href + '"]');
+                tabLink = document.querySelector('.nav-tabs-custom a[href="' + href + '"]');
             }
-            $('.nav-tabs-custom > .nav-tabs > li').removeClass('active');
-            $('.tab-content > .tab-pane').removeClass('active in show');
+            $('.nav-tabs-custom .nav-tabs > li').removeClass('active');
+            $('.nav-tabs-custom .tab-content > .tab-pane').removeClass('active in show');
             if (tabLink) {
                 $(tabLink).parent('li').addClass('active');
                 $(href).addClass('active in show');
@@ -912,8 +923,8 @@
 
         $(document).ready(function () {
             restoreActiveTab();
-            $('.nav-tabs a[data-toggle="tab"]').on('click shown.bs.tab', function (e) {
-                persistActiveTab($(e.currentTarget).attr('href'));
+            $(document).on('click shown.bs.tab', '.nav-tabs-custom a[data-toggle="tab"]', function (e) {
+                persistActiveTab($(this).attr('href'));
             });
             if (window.Sys && Sys.WebForms && Sys.WebForms.PageRequestManager) {
                 Sys.WebForms.PageRequestManager.getInstance().add_endRequest(function () {
