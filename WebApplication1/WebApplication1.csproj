@@ -4117,6 +4117,7 @@
     <Content Include="bussiness\vendors\validator\index.html" />
     <Content Include="bussiness\vendors\validator\multifield.js" />
     <Content Include="bussiness\vendors\validator\validator.js" />
+    <Content Include="connections.config" />
     <Content Include="login.aspx" />
     <Content Include="packages.config">
       <SubType>Designer</SubType>
@@ -5204,8 +5205,10 @@
     <Content Include="bussiness\vendors\validator\.gitignore" />
     <Content Include="bussiness\vendors\validator\package.json" />
     <Content Include="bussiness\vendors\validator\README.md" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="connections.config.example" />
-    <Content Include="connections.config" Condition="Exists('connections.config')" />
     <None Include="Properties\PublishProfiles\atsuat.aminruptechnologies.co.in - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\atswork.co.in - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\ats_live.pubxml" />
@@ -5266,9 +5269,6 @@
     <Content Include="Scripts\jquery.signalR-2.4.3.js" />
     <Content Include="Scripts\jquery.signalR-2.4.3.min.js" />
     <None Include="Web.config.example" />
-    <Content Include="Web.config" Condition="Exists('Web.config')">
-      <SubType>Designer</SubType>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="bussiness\production\add_expenses.aspx.cs">
@@ -6384,10 +6384,9 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Removed stale Analyzer: Microsoft Chart Controls was never a NuGet package, the folder does not exist on clean clones, and System.Web.DataVisualization is unused in code. -->
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="bussiness\production\Logs\" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <TypeScriptCompile Include="bussiness\vendors\devbridge-autocomplete\src\jquery.autocomplete.d.ts" />
     <TypeScriptCompile Include="bussiness\vendors\moment\moment.d.ts" />
