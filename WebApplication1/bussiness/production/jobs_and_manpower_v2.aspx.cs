@@ -29,12 +29,12 @@ namespace WebApplication1.bussiness.production
         {
             string workman = Session["WORKMAN"].ToString();
 
-            // KPI CASE expressions follow the restored Create → IN → Permit → OUT → Close lifecycle.
-            // Pending IN / Permit use EntryExit (page inboxes). Pending OUT is unchanged (code 3 + Entry).
+            // Pending Permit = outstanding permit work (FinalUpldStatus='No'), not the permit inbox.
+            // Pending IN uses EntryExit='Created'. Pending OUT is unchanged (code 3 + Entry).
             string query = @"
                 SELECT 
                     SUM(CASE WHEN JOBID_Status = 'Active' AND CreatedDate >= DATEADD(DAY, -3, GETDATE()) THEN 1 ELSE 0 END) as ActiveJobs,
-                    SUM(CASE WHEN EntryExit = 'Entry' AND JOBID_Status = 'Active' AND CreatedDate >= DATEADD(DAY, -3, GETDATE()) THEN 1 ELSE 0 END) as PendingPermits,
+                    SUM(CASE WHEN EntryExit = 'Entry' AND FinalUpldStatus = 'No' AND JOBID_Status = 'Active' AND CreatedDate >= DATEADD(DAY, -3, GETDATE()) THEN 1 ELSE 0 END) as PendingPermits,
                     SUM(CASE WHEN EntryExit = 'Created' AND JOBID_Status = 'Active' AND CreatedDate >= DATEADD(DAY, -3, GETDATE()) THEN 1 ELSE 0 END) as PendingInPunch,
                     SUM(CASE WHEN MasterStatusCode = '3' AND EntryExit = 'Entry' AND JOBID_Status = 'Active' AND CreatedDate >= DATEADD(DAY, -3, GETDATE()) THEN 1 ELSE 0 END) as PendingOutPunch,
                     SUM(CASE WHEN BillingCode = 'MS' AND MONTH(CreatedDate) = MONTH(GETDATE()) AND YEAR(CreatedDate) = YEAR(GETDATE()) THEN 1 ELSE 0 END) as SupplyJobs,

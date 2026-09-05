@@ -129,18 +129,18 @@ No executable code was changed to record this milestone.
 - `docs/JOBID_LIFECYCLE_FUNCTIONAL_AUDIT.md`
 
 **Methods changed:**
-- `LoadDashboardStats()` — Pending Permit and Pending IN CASE expressions; Pending OUT / Active / MS / LI unchanged
+- `LoadDashboardStats()` — Pending Permit = outstanding permit work (`EntryExit='Entry'` AND `FinalUpldStatus='No'`); Pending IN = `EntryExit='Created'`; Pending OUT / Active / MS / LI unchanged
 
-**Methods unchanged:** `Page_Load()` auth gate; V1 `jobs_and_manpower.aspx.cs`; IN/OUT/permit/create/JOB360 pages; `Span1` (still unassigned).
+**Methods unchanged:** `Page_Load()` auth gate; V1 `jobs_and_manpower.aspx.cs`; IN/OUT/permit/create/JOB360 pages (PR #64 inbox remains `EntryExit='Entry'` only); `Span1` (still unassigned).
 
 **Finding resolved:**
-V2 hub KPIs still used pre-IN `MasterStatusCode` gates (`PendingPermits='1'`, `PendingInPunch='3'+Created`). After M1–M5, permit-required jobs are IN-eligible at create, and the permit inbox is `EntryExit='Entry'`. The dashboard counts now follow EntryExit for those two badges so they match the restored Create → IN → Permit → OUT → Close lifecycle.
+V2 hub Pending Permit used `MasterStatusCode='1'` (pre-IN), then briefly reused the permit *inbox* predicate (`EntryExit='Entry'`), which counted completed and skip-permit jobs. The badge now means **outstanding permit work**: Active, last 3 days, creator, `EntryExit='Entry'`, `FinalUpldStatus='No'`. Pending IN counts `EntryExit='Created'` (includes code-1 jobs). Permit inbox (PR #64) is unchanged.
 
 **UAT:**
 - UAT-004 — Close & Send (`code 4` / `EntryExit='Exit'`): Pending OUT CASE no longer matches; count drops immediately
-- UAT-005 — Pending Permit = Active + `EntryExit='Entry'` (same predicates as permit inbox)
+- UAT-005 — Pending Permit = outstanding work only (`EntryExit='Entry'` AND `FinalUpldStatus='No'`). Not the permit inbox.
 - UAT-035 — after Close & Send, Pending OUT decreases on dashboard refresh
-- UAT-035A — first permit upload does not change `EntryExit`; Pending Permit stays
+- UAT-035A — first permit upload sets `FinalUpldStatus='Yes'`; Pending Permit **drops**. Additional files remain available via the PR #64 inbox (`EntryExit='Entry'`).
 - UAT-035B — approval queue is `JOB_Status='Out-Punch Done' AND EntryExit='Exit'` on `view_jobsforapproval`; hub has no approval badge; jobs stay in Pending OUT until Close & Send
 
 **Regression:** PR #59–#64 workflow files are not in this diff. V1 hub SQL is unchanged.
@@ -779,7 +779,7 @@ None. Dead control: “Switch to OLD Version” `href="#"` (`jobs_and_manpower_v
 ### Validation / Business Rules / Database
 `LoadDashboardStats()` (UAT-004 / UAT-005 / UAT-035): parameterized SELECT `tbl_jobs` where `Creator_Workman=@Workman`:
 - Active: `JOBID_Status='Active'` last 3 days (unchanged)
-- Pending permits: `EntryExit='Entry'` + Active + 3 days (matches permit inbox; was `MasterStatusCode='1'`)
+- Pending permits: `EntryExit='Entry'` AND `FinalUpldStatus='No'` + Active + 3 days (**outstanding permit work**; not the permit inbox, which stays `EntryExit='Entry'` only)
 - Pending IN: `EntryExit='Created'` + Active + 3 days (includes code-1 jobs eligible immediately after create; was `MasterStatusCode='3'` AND Created)
 - Pending OUT: `MasterStatusCode='3'` + `EntryExit='Entry'` + Active + 3 days (**unchanged**; Close & Send removes the job)
 - Supply / Line-item: `BillingCode` `MS`/`LI` current calendar month (unchanged)
@@ -1063,7 +1063,7 @@ Result labels used only: PRESERVED | CHANGED | ADDED | REMOVED | REGRESSION | SE
 | Capability | Legacy | V2 | Result |
 |---|---|---|---|
 | Auth gate (6 session keys) | Yes | Yes | PRESERVED |
-| KPI SQL / 3-day window | Pre-IN code gates | Permit=`Entry`; IN=`Created`; OUT=code 3+`Entry` (UAT-004 / UAT-005) | CHANGED |
+| KPI SQL / 3-day window | Pre-IN code gates | Permit=`Entry`+`FinalUpldStatus='No'` (outstanding work); IN=`Created`; OUT=code 3+`Entry` (UAT-004 / UAT-005) | CHANGED |
 | Links to create/permit/in/out | V1 pages | V2 pages | CHANGED |
 | Manage JOBID tile | Absent | `manage_jobid_v2.aspx` | ADDED |
 | Switch to other version | Works → V2 | `href="#"` dead | REGRESSION |
@@ -1515,7 +1515,7 @@ No classic open-redirect found on V2 success paths (relative known pages). Legac
 **Resolved (UAT-029 / UAT-040 / UAT-035 / UAT-040A / UAT-040B).** Last OUT shows a confirmation modal. Close & Send reuses `UpdateJOBTable1` (`JOB_Status='Out-Punch Done'`, `MasterStatusCode='4'`, `EntryExit='Exit'`). Second click or refresh of the close POST skips the write if already closed and still shows the success modal. The job matches the approval inbox immediately and leaves the pending-OUT dashboard count. Finalize Shift is not a required extra step.
 
 ### R3. Cross-version inbox mismatch
-**Inbox half resolved (UAT-006 / UAT-005).** V2 IN-Punch lists V1-created Active 3-day jobs (no code-3 filter). V2 hub Pending Permit now counts `EntryExit='Entry'` (M6), matching the restored permit inbox meaning. Permit *page* `ActiveJOB_Checker` filter is M5 (PR #64).
+**Inbox half resolved (UAT-006 / UAT-005).** V2 IN-Punch lists V1-created Active 3-day jobs (no code-3 filter). V2 hub Pending Permit counts outstanding work (`EntryExit='Entry'` AND `FinalUpldStatus='No'`). Permit *page* inbox remains `EntryExit='Entry'` (M5 / PR #64) so additional files can still be added after the KPI drops.
 
 ## High
 
