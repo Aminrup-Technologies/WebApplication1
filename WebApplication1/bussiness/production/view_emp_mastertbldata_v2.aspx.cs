@@ -618,6 +618,11 @@ namespace WebApplication1.bussiness.production
 
         private void SendPasswordEmail(string toEmail, string name, string empCode, string password)
         {
+            if (!NotificationTriggerHelper.IsEmailEnabled(NotificationTriggerHelper.ModuleEmployeeMaster))
+            {
+                dbcl.WriteToFile("Password reset email skipped: Email trigger disabled for EMPLOYEE_MASTER.");
+                return;
+            }
             try
             {
                 using (MailMessage mail = new MailMessage())
@@ -668,6 +673,11 @@ namespace WebApplication1.bussiness.production
 
         private void SendOTPEmail(string toEmail, string name, string otp)
         {
+            if (!NotificationTriggerHelper.IsEmailEnabled(NotificationTriggerHelper.ModuleEmployeeMaster))
+            {
+                dbcl.WriteToFile("Employee master OTP email skipped: Email trigger disabled for EMPLOYEE_MASTER.");
+                return;
+            }
             using (MailMessage mail = new MailMessage())
             using (SmtpClient SmtpServer = new SmtpClient("smtp.zoho.in"))
             {

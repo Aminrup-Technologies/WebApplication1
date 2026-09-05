@@ -139,6 +139,17 @@
             padding: 10px 8px !important;
             border: 1px solid #e9ecef !important;
         }
+
+        .trigger-check {
+            font-weight: 600;
+            color: #2a3f54;
+        }
+
+        .trigger-check input[type="checkbox"] {
+            margin-right: 6px;
+            transform: scale(1.2);
+            vertical-align: middle;
+        }
     </style>
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
@@ -166,6 +177,7 @@
                             <li><a href="#tab_doc_master" data-toggle="tab"><i class="fa fa-file-text-o text-success mr-1"></i>Document Master</a></li>
                             <li><a href="#tab_smart_calendar" data-toggle="tab"><i class="fa fa-calendar text-info mr-1"></i>Smart Calendar</a></li>
                             <li><a href="#tab_backdate" data-toggle="tab"><i class="fa fa-history text-danger mr-1"></i>Backdate Exceptions</a></li>
+                            <li><a href="#tab_triggers" data-toggle="tab"><i class="fa fa-bell text-success mr-1"></i>Notification Triggers</a></li>
                         </ul>
 
                         <div class="tab-content">
@@ -580,6 +592,131 @@
                                 </asp:UpdatePanel>
                             </div>
 
+                            <div class="tab-pane" id="tab_triggers">
+                                <asp:UpdatePanel ID="upTriggers" runat="server">
+                                    <ContentTemplate>
+                                        <div class="alert alert-warning" id="pnl_triggers_missing" runat="server" visible="false">
+                                            <i class="fa fa-warning mr-1"></i>
+                                            Notification trigger table was not found. Run <code>scripts/add_notification_triggers.sql</code> on this database, then reload this page.
+                                        </div>
+
+                                        <div id="pnl_triggers_ready" runat="server" visible="false">
+                                            <div class="control-panel" style="background-color: #f0f9f6; border: 1px solid #c8e6c9;">
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <h5 style="color: #1ABB9C; font-weight: 600; margin-bottom: 8px;"><i class="fa fa-globe mr-2"></i>Portal level</h5>
+                                                        <p class="small text-muted mb-0">Portal Off turns off notification channels (jobs, helpdesk, payroll, and similar). Authentication OTPs stay active unless you disable those modules below. Changes save when you tick or untick a box.</p>
+                                                    </div>
+                                                    <div class="col-md-4 text-right" style="padding-top: 4px;">
+                                                        <asp:LinkButton ID="lnk_portal_check_all" runat="server" CssClass="small" Font-Bold="true" CausesValidation="false" OnClick="lnk_PortalCheckAll_Click">Check all</asp:LinkButton>
+                                                        <span class="text-muted">|</span>
+                                                        <asp:LinkButton ID="lnk_portal_uncheck_all" runat="server" CssClass="small" Font-Bold="true" CausesValidation="false" OnClick="lnk_PortalUncheckAll_Click">Uncheck all</asp:LinkButton>
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="margin-top: 12px;">
+                                                    <div class="col-md-3 col-sm-6 form-group mb-md-0">
+                                                        <label class="top-label">Email</label>
+                                                        <asp:CheckBox ID="chk_portal_email" runat="server" Text=" Enabled" CssClass="trigger-check" AutoPostBack="true" OnCheckedChanged="chk_Portal_CheckedChanged" />
+                                                    </div>
+                                                    <div class="col-md-3 col-sm-6 form-group mb-md-0">
+                                                        <label class="top-label">WhatsApp</label>
+                                                        <asp:CheckBox ID="chk_portal_whatsapp" runat="server" Text=" Enabled" CssClass="trigger-check" AutoPostBack="true" OnCheckedChanged="chk_Portal_CheckedChanged" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="control-panel">
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <h5 style="color: #2a3f54; font-weight: 600; margin-bottom: 8px;"><i class="fa fa-lock mr-2"></i>Authentication OTP</h5>
+                                                        <p class="small text-muted mb-0">Active by default. Login MFA, password reset, and profile verification codes are not turned off by Portal Off. Changes save when you tick or untick a box.</p>
+                                                    </div>
+                                                    <div class="col-md-4 text-right" style="padding-top: 4px;">
+                                                        <asp:LinkButton ID="lnk_auth_check_all" runat="server" CssClass="small" Font-Bold="true" CausesValidation="false" OnClick="lnk_AuthCheckAll_Click">Check all</asp:LinkButton>
+                                                        <span class="text-muted">|</span>
+                                                        <asp:LinkButton ID="lnk_auth_uncheck_all" runat="server" CssClass="small" Font-Bold="true" CausesValidation="false" OnClick="lnk_AuthUncheckAll_Click">Uncheck all</asp:LinkButton>
+                                                    </div>
+                                                </div>
+                                                <div class="modern-grid-container">
+                                                    <div class="modern-table-wrapper">
+                                                        <asp:GridView ID="gv_TriggerAuth" runat="server" AutoGenerateColumns="False" CssClass="table table-striped table-bordered table-sm mb-0" GridLines="Both" DataKeyNames="TriggerKey">
+                                                            <Columns>
+                                                                <asp:BoundField DataField="DisplayName" HeaderText="OTP" ItemStyle-Font-Bold="true" />
+                                                                <asp:TemplateField ItemStyle-Width="18%" ItemStyle-HorizontalAlign="Center" HeaderStyle-CssClass="text-center">
+                                                                    <HeaderTemplate>
+                                                                        Email<br />
+                                                                        <asp:CheckBox ID="chk_col_email_all" runat="server" CssClass="trigger-check" ToolTip="Check / uncheck all Email" AutoPostBack="true" OnCheckedChanged="chk_TriggerColumnAll_CheckedChanged" />
+                                                                    </HeaderTemplate>
+                                                                    <ItemTemplate>
+                                                                        <asp:CheckBox ID="chk_row_email" runat="server" CssClass="trigger-check" AutoPostBack="true" OnCheckedChanged="chk_TriggerRow_CheckedChanged" Checked='<%# Convert.ToBoolean(Eval("EmailEnabled")) %>' />
+                                                                    </ItemTemplate>
+                                                                </asp:TemplateField>
+                                                                <asp:TemplateField ItemStyle-Width="18%" ItemStyle-HorizontalAlign="Center" HeaderStyle-CssClass="text-center">
+                                                                    <HeaderTemplate>
+                                                                        WhatsApp<br />
+                                                                        <asp:CheckBox ID="chk_col_whatsapp_all" runat="server" CssClass="trigger-check" ToolTip="Check / uncheck all WhatsApp" AutoPostBack="true" OnCheckedChanged="chk_TriggerColumnAll_CheckedChanged" />
+                                                                    </HeaderTemplate>
+                                                                    <ItemTemplate>
+                                                                        <asp:CheckBox ID="chk_row_whatsapp" runat="server" CssClass="trigger-check" AutoPostBack="true" OnCheckedChanged="chk_TriggerRow_CheckedChanged" Checked='<%# Convert.ToBoolean(Eval("WhatsAppEnabled")) %>' />
+                                                                    </ItemTemplate>
+                                                                </asp:TemplateField>
+                                                            </Columns>
+                                                            <EmptyDataTemplate>
+                                                                <div class="alert alert-info text-center m-3">No authentication OTP rows found.</div>
+                                                            </EmptyDataTemplate>
+                                                        </asp:GridView>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="control-panel">
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <h5 style="color: #2a3f54; font-weight: 600; margin-bottom: 8px;"><i class="fa fa-cubes mr-2"></i>Notification modules</h5>
+                                                        <p class="small text-muted mb-0">A notification send goes out only when Portal and the module are both Enabled for that channel. Changes save when you tick or untick a box.</p>
+                                                    </div>
+                                                    <div class="col-md-4 text-right" style="padding-top: 4px;">
+                                                        <asp:LinkButton ID="lnk_mod_check_all" runat="server" CssClass="small" Font-Bold="true" CausesValidation="false" OnClick="lnk_ModCheckAll_Click">Check all</asp:LinkButton>
+                                                        <span class="text-muted">|</span>
+                                                        <asp:LinkButton ID="lnk_mod_uncheck_all" runat="server" CssClass="small" Font-Bold="true" CausesValidation="false" OnClick="lnk_ModUncheckAll_Click">Uncheck all</asp:LinkButton>
+                                                    </div>
+                                                </div>
+                                                <div class="modern-grid-container">
+                                                    <div class="modern-table-wrapper">
+                                                        <asp:GridView ID="gv_TriggerModules" runat="server" AutoGenerateColumns="False" CssClass="table table-striped table-bordered table-sm mb-0" GridLines="Both" DataKeyNames="TriggerKey">
+                                                            <Columns>
+                                                                <asp:BoundField DataField="DisplayName" HeaderText="Module" ItemStyle-Font-Bold="true" />
+                                                                <asp:TemplateField ItemStyle-Width="18%" ItemStyle-HorizontalAlign="Center" HeaderStyle-CssClass="text-center">
+                                                                    <HeaderTemplate>
+                                                                        Email<br />
+                                                                        <asp:CheckBox ID="chk_col_email_all" runat="server" CssClass="trigger-check" ToolTip="Check / uncheck all Email" AutoPostBack="true" OnCheckedChanged="chk_TriggerColumnAll_CheckedChanged" />
+                                                                    </HeaderTemplate>
+                                                                    <ItemTemplate>
+                                                                        <asp:CheckBox ID="chk_row_email" runat="server" CssClass="trigger-check" AutoPostBack="true" OnCheckedChanged="chk_TriggerRow_CheckedChanged" Checked='<%# Convert.ToBoolean(Eval("EmailEnabled")) %>' />
+                                                                    </ItemTemplate>
+                                                                </asp:TemplateField>
+                                                                <asp:TemplateField ItemStyle-Width="18%" ItemStyle-HorizontalAlign="Center" HeaderStyle-CssClass="text-center">
+                                                                    <HeaderTemplate>
+                                                                        WhatsApp<br />
+                                                                        <asp:CheckBox ID="chk_col_whatsapp_all" runat="server" CssClass="trigger-check" ToolTip="Check / uncheck all WhatsApp" AutoPostBack="true" OnCheckedChanged="chk_TriggerColumnAll_CheckedChanged" />
+                                                                    </HeaderTemplate>
+                                                                    <ItemTemplate>
+                                                                        <asp:CheckBox ID="chk_row_whatsapp" runat="server" CssClass="trigger-check" AutoPostBack="true" OnCheckedChanged="chk_TriggerRow_CheckedChanged" Checked='<%# Convert.ToBoolean(Eval("WhatsAppEnabled")) %>' />
+                                                                    </ItemTemplate>
+                                                                </asp:TemplateField>
+                                                            </Columns>
+                                                            <EmptyDataTemplate>
+                                                                <div class="alert alert-info text-center m-3">No module trigger rows found.</div>
+                                                            </EmptyDataTemplate>
+                                                        </asp:GridView>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ContentTemplate>
+                                </asp:UpdatePanel>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -590,6 +727,13 @@
     <script type="text/javascript">
         function showPNotify(title, text, type) {
             new PNotify({ title: title, text: text, type: type, styling: 'bootstrap3', delay: 4000 });
+        }
+
+        function showTriggerTab() {
+            var tab = document.querySelector('.nav-tabs a[href="#tab_triggers"]');
+            if (tab) {
+                $(tab).tab('show');
+            }
         }
 
         var calendar; // Global calendar object

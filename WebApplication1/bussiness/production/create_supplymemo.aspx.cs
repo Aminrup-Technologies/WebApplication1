@@ -350,7 +350,7 @@ namespace WebApplication1.bussiness.production
                 else
                 {
                     string body = "No Line Items data found for PO : " + wo_number + "";
-                    dbcl.SendEmailCC("hr@atswork.in", "office@atswork.in", "PO Details", body);
+                    dbcl.SendEmailCC("hr@atswork.in", "office@atswork.in", "PO Details", body, NotificationTriggerHelper.ModuleSupplyMemo);
                     DataTable dt6 = new DataTable();
                     GridView3.DataSource = dt6;
                     GridView3.DataBind();
@@ -537,13 +537,13 @@ namespace WebApplication1.bussiness.production
                             }
                             else
                             {
-                                dbcl.SendEmail("hr@atswork.in", "Supply Memo Creation", "Failed to update the Manpower Details");
+                                dbcl.SendEmail("hr@atswork.in", "Supply Memo Creation", "Failed to update the Manpower Details", NotificationTriggerHelper.ModuleSupplyMemo);
                             }
                             dbcl.DisconnectDb();
                         }
                         catch (Exception ex)
                         {
-                            dbcl.SendEmail("hr@atswork.in", "Supply Memo Creation", "Failed to load or update the Manpower Details :: " + ex.Message + ".");
+                            dbcl.SendEmail("hr@atswork.in", "Supply Memo Creation", "Failed to load or update the Manpower Details :: " + ex.Message + ".", NotificationTriggerHelper.ModuleSupplyMemo);
 
                             throw;
                         }
@@ -581,7 +581,7 @@ namespace WebApplication1.bussiness.production
             }
             catch (Exception)
             {
-                dbcl.SendEmail("hr@atswork.in", "Supply Memo Creation", "Failed to load or update the Manpower Details");
+                dbcl.SendEmail("hr@atswork.in", "Supply Memo Creation", "Failed to load or update the Manpower Details", NotificationTriggerHelper.ModuleSupplyMemo);
                 string title = "Error :";
                 string body = "Manpower details cannot be loaded...!!";
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);

@@ -143,6 +143,16 @@ namespace WebApplication1.bussiness.production
 
         public void SendEmail(string recipientEmail, string mailSubject, string emailBody)
         {
+            SendEmail(recipientEmail, mailSubject, emailBody, NotificationTriggerHelper.ModuleSystem);
+        }
+
+        public void SendEmail(string recipientEmail, string mailSubject, string emailBody, string moduleKey)
+        {
+            if (!NotificationTriggerHelper.IsEmailEnabled(string.IsNullOrWhiteSpace(moduleKey) ? NotificationTriggerHelper.ModuleSystem : moduleKey))
+            {
+                WriteToFile("Mailer skipped: Email trigger disabled for " + moduleKey);
+                return;
+            }
             string smtpServer = "smtp.zoho.in";
             int smtpPort = 587;
             string smtpUsername = System.Configuration.ConfigurationManager.AppSettings["SmtpUser"] ?? "";
@@ -181,6 +191,16 @@ namespace WebApplication1.bussiness.production
 
         public void SendEmailCC(string recipientEmail, string ccEmail, string mailSubject, string emailBody)
         {
+            SendEmailCC(recipientEmail, ccEmail, mailSubject, emailBody, NotificationTriggerHelper.ModuleSystem);
+        }
+
+        public void SendEmailCC(string recipientEmail, string ccEmail, string mailSubject, string emailBody, string moduleKey)
+        {
+            if (!NotificationTriggerHelper.IsEmailEnabled(string.IsNullOrWhiteSpace(moduleKey) ? NotificationTriggerHelper.ModuleSystem : moduleKey))
+            {
+                WriteToFile("Mailer skipped: Email trigger disabled for " + moduleKey);
+                return;
+            }
             string smtpServer = "smtp.zoho.in";
             int smtpPort = 587;
             string smtpUsername = System.Configuration.ConfigurationManager.AppSettings["SmtpUser"] ?? "";

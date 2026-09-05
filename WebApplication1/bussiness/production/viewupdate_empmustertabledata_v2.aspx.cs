@@ -288,6 +288,29 @@ namespace WebApplication1.bussiness.production
                     txt_PassUpdByName.Text = dr["PassUpdatedByName"].ToString();
                     txt_PassUpdByWrk.Text = dr["PassUpdatedByWrk"].ToString();
 
+                    bool mfaOn = dr.Table.Columns.Contains("MFAEnabled") && MfaAuthHelper.IsEnabled(dr["MFAEnabled"]);
+                    SetDDL(DDL_MFAEnabled, mfaOn ? "1" : "0");
+                    if (dr.Table.Columns.Contains("MFAMethod") && dr["MFAMethod"] != DBNull.Value && !string.IsNullOrWhiteSpace(dr["MFAMethod"].ToString()))
+                    {
+                        SetDDL(DDL_MFAMethod, MfaAuthHelper.NormalizeMethod(dr["MFAMethod"].ToString()));
+                    }
+                    else
+                    {
+                        SetDDL(DDL_MFAMethod, MfaAuthHelper.MethodEmailOtp);
+                    }
+                    txt_MFAEnforcedOn.Text = (dr.Table.Columns.Contains("MFAEnforcedOn") && dr["MFAEnforcedOn"] != DBNull.Value)
+                        ? Convert.ToDateTime(dr["MFAEnforcedOn"]).ToString("yyyy-MM-dd HH:mm:ss") : "N/A";
+                    txt_MFAEnforcedBy.Text = (dr.Table.Columns.Contains("MFAEnforcedBy") && dr["MFAEnforcedBy"] != DBNull.Value)
+                        ? dr["MFAEnforcedBy"].ToString() : "N/A";
+                    txt_MFALastVerified.Text = (dr.Table.Columns.Contains("MFALastVerified") && dr["MFALastVerified"] != DBNull.Value)
+                        ? Convert.ToDateTime(dr["MFALastVerified"]).ToString("yyyy-MM-dd HH:mm:ss") : "Never";
+
+                    bool totpEnrolled = dr.Table.Columns.Contains("MFATotpEnrolled") && MfaAuthHelper.IsEnabled(dr["MFATotpEnrolled"]);
+                    bool hasTotpSecret = dr.Table.Columns.Contains("MFATotpSecret") && dr["MFATotpSecret"] != DBNull.Value
+                        && !string.IsNullOrWhiteSpace(dr["MFATotpSecret"].ToString());
+                    txt_MFAEnrollment.Text = totpEnrolled ? "Enrolled" : "Not enrolled";
+                    btn_ResetAuthenticator.Enabled = totpEnrolled || hasTotpSecret;
+
                     string status = dr["WorkStatus"].ToString();
                     lbl_CurrentStatus.Text = status;
                     SetDDLByText(DDL_AdminStatus, status);
@@ -565,11 +588,60 @@ namespace WebApplication1.bussiness.production
             finally { dbcl.DisconnectDb(); }
         }
 
+        protected void btn_ResetAuthenticator_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(lbl_EmpID.Text))
+            {
+                ShowPopup("Error", "No employee is loaded.");
+                return;
+            }
+
+            try
+            {
+                dbcl.Sqlconnection();
+                if (dbcl.Conn.State == ConnectionState.Closed) dbcl.ConnectDb();
+
+                string query = @"UPDATE tbl_Employee_Mustertable
+                                 SET MFATotpSecret = NULL, MFATotpEnrolled = 0
+                                 WHERE WorkmanSL = @ID";
+                SqlCommand cmd = new SqlCommand(query, dbcl.Conn);
+                cmd.Parameters.AddWithValue("@ID", lbl_EmpID.Text);
+                cmd.ExecuteNonQuery();
+
+                string adminId = Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "SYSTEM";
+                LogAudit(lbl_EmpID.Text, "MFA_TOTP_RESET", "Authenticator enrollment cleared by " + adminId + ". User must scan a new QR code on next login.");
+                ShowPopup("Authenticator reset", "The user will be asked to enroll a new authenticator app on the next login.");
+                LoadEmployeeData(lbl_EmpID.Text);
+                LoadAuditLogs(lbl_EmpID.Text);
+            }
+            catch (Exception ex)
+            {
+                ShowPopup("Error", "Could not reset authenticator. Run the TOTP database script if this is the first time. " + ex.Message);
+            }
+            finally
+            {
+                dbcl.DisconnectDb();
+            }
+        }
+
         protected void btn_SaveAll_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(txt_AdminReason.Text.Trim()))
             {
                 ShowPopup("Audit Required", "Please enter an Audit Log Entry reason in the Admin Tab to save changes.");
+                return;
+            }
+
+            bool mfaOn = DDL_MFAEnabled.SelectedValue == "1";
+            string mfaMethod = MfaAuthHelper.NormalizeMethod(DDL_MFAMethod.SelectedValue);
+            if (mfaOn && MfaAuthHelper.IsWhatsAppOtp(mfaMethod) && !MfaAuthHelper.HasMobile(txt_mobile.Text))
+            {
+                ShowPopup("MFA Requires Mobile", "A registered Mobile Number on the Personal tab is required before WhatsApp OTP MFA can be enabled for this user.");
+                return;
+            }
+            if (mfaOn && MfaAuthHelper.IsEmailOtp(mfaMethod) && !MfaAuthHelper.HasEmail(txt_email.Text))
+            {
+                ShowPopup("MFA Requires Email", "A registered Email on the Personal tab is required before Email OTP MFA can be enabled for this user.");
                 return;
             }
 
@@ -582,13 +654,22 @@ namespace WebApplication1.bussiness.production
 
             string status = DDL_AdminStatus.SelectedValue;
             string savedReason = hfSavedReason.Value;
+            bool wasMfaOn = false;
+            Dictionary<string, string> originalMfa = ViewState["ORIGINAL_DATA"] as Dictionary<string, string>;
+            if (originalMfa != null && originalMfa.ContainsKey("MFAEnabled") && originalMfa["MFAEnabled"] == "1")
+            {
+                wasMfaOn = true;
+            }
+            string mfaEnforceSql = (mfaOn && !wasMfaOn)
+                ? ", MFAEnforcedOn=GETDATE(), MFAEnforcedBy=@MFAADMIN"
+                : "";
 
             try
             {
                 dbcl.Sqlconnection();
                 if (dbcl.Conn.State == ConnectionState.Closed) dbcl.ConnectDb();
 
-                string query = @"UPDATE tbl_Employee_Mustertable SET 
+                string query = string.Format(@"UPDATE tbl_Employee_Mustertable SET 
                     FirstName=@FN, MiddleName=@MN, LastName=@LN, FullName=@FULL,
                     Fathername=@DAD, DOB=@DOB, BloodGroup=@BG, MobileNo=@MOB, Email=@EMAIL,
                     
@@ -612,6 +693,7 @@ namespace WebApplication1.bussiness.production
                     
                     SQ1=@SQ1, SQAns1=@SQA1, SQ2=@SQ2, SQAns2=@SQA2, LoginPassword_Plain=@LPP,
                     WorkStatus=@STAT, LoginStatus=@LOGIN, 
+                    MFAEnabled=@MFA, MFAMethod=@MFAMETHOD{0},
                     
                     StatusChangeType=@SCTYPE, StatusChangeReason=@SCREAS, StatusRemarks=@SCREM,
                     StatusChangedByWrk=@SCWRK, StatusChangedDate=GETDATE(),
@@ -619,7 +701,7 @@ namespace WebApplication1.bussiness.production
                     DOR=@DOR, DOE=@DOE, DO_Relief=@DORELIEF, ExitType=@ETYPE, ExitInitiatedByWrk=@EINIT,
 
                     LastModifiedDate=GETDATE(), LastModifiedByName=@MODBY, LastModifiedByWrk=@MODWRK
-                    WHERE WorkmanSL=@ID";
+                    WHERE WorkmanSL=@ID", mfaEnforceSql);
 
                 SqlCommand cmd = new SqlCommand(query, dbcl.Conn);
 
@@ -692,9 +774,15 @@ namespace WebApplication1.bussiness.production
 
                 cmd.Parameters.AddWithValue("@STAT", status);
                 cmd.Parameters.AddWithValue("@LOGIN", DDL_LoginAccess.SelectedValue);
+                cmd.Parameters.AddWithValue("@MFA", mfaOn ? 1 : 0);
+                cmd.Parameters.AddWithValue("@MFAMETHOD", mfaMethod);
 
                 string safeUserWrk = Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "SYSTEM";
                 string safeUserName = Session["USERNAME"] != null ? Session["USERNAME"].ToString() : "SYSTEM";
+                if (mfaOn && !wasMfaOn)
+                {
+                    cmd.Parameters.AddWithValue("@MFAADMIN", safeUserWrk);
+                }
 
                 if (status == "InActive")
                 {
@@ -833,6 +921,8 @@ namespace WebApplication1.bussiness.production
             original["LoginPassword_Plain"] = txt_plain_pass.Text;
             original["WorkStatus"] = DDL_AdminStatus.SelectedValue;
             original["LoginStatus"] = DDL_LoginAccess.SelectedValue;
+            original["MFAEnabled"] = DDL_MFAEnabled.SelectedValue;
+            original["MFAMethod"] = DDL_MFAMethod.SelectedValue;
 
             original["StatusReason"] = hfSavedReason.Value;
             original["DOR"] = txt_DOR.Text;
@@ -904,6 +994,8 @@ namespace WebApplication1.bussiness.production
             CompareValue(changes, original, "LoginPassword_Plain", txt_plain_pass.Text);
             CompareValue(changes, original, "WorkStatus", DDL_AdminStatus.SelectedValue);
             CompareValue(changes, original, "LoginStatus", DDL_LoginAccess.SelectedValue);
+            CompareValue(changes, original, "MFAEnabled", DDL_MFAEnabled.SelectedValue);
+            CompareValue(changes, original, "MFAMethod", DDL_MFAMethod.SelectedValue);
 
             string savedReason = Request.Form[hfSavedReason.UniqueID] ?? hfSavedReason.Value;
             CompareValue(changes, original, "StatusReason", savedReason);

@@ -810,22 +810,22 @@ namespace WebApplication1.bussiness.production
                     if (lbl_jobrgn.Text.ToString() == "JSR")
                     {
                         string Subject = "Missing PO and Skill Category Mapping : Region='" + lbl_jobrgn.Text.ToString() + "' || Company= '" + lbl_jobcompay.Text.ToString() + "' || Workorder='" + lbl_wrkordr.Text.ToString() + "' || JOBID='" + lbl_jobid.Text.ToString() + "'";
-                        dbcl.SendEmail("hr@atswork.in", Subject, emailBody);
+                        dbcl.SendEmail("hr@atswork.in", Subject, emailBody, NotificationTriggerHelper.ModuleJobInpunch);
                     }
                     else if (lbl_jobrgn.Text.ToString() == "KPO")
                     {
                         string Subject = "Missing PO and Skill Category Mapping : Region='" + lbl_jobrgn.Text.ToString() + "' || Company= '" + lbl_jobcompay.Text.ToString() + "' || Workorder='" + lbl_wrkordr.Text.ToString() + "' || JOBID='" + lbl_jobid.Text.ToString() + "'";
-                        dbcl.SendEmail("hr@atswork.in", Subject, emailBody);
+                        dbcl.SendEmail("hr@atswork.in", Subject, emailBody, NotificationTriggerHelper.ModuleJobInpunch);
                     }
                     else if (lbl_jobrgn.Text.ToString() == "NINL")
                     {
                         string Subject = "Missing PO and Skill Category Mapping : Region='" + lbl_jobrgn.Text.ToString() + "' || Company= '" + lbl_jobcompay.Text.ToString() + "' || Workorder='" + lbl_wrkordr.Text.ToString() + "' || JOBID='" + lbl_jobid.Text.ToString() + "'";
-                        dbcl.SendEmail("hr@atswork.in", Subject, emailBody);
+                        dbcl.SendEmail("hr@atswork.in", Subject, emailBody, NotificationTriggerHelper.ModuleJobInpunch);
                     }
                     else if (lbl_jobrgn.Text.ToString() == "AGL")
                     {
                         string Subject = "Missing PO and Skill Category Mapping : Region='" + lbl_jobrgn.Text.ToString() + "' || Company= '" + lbl_jobcompay.Text.ToString() + "' || Workorder='" + lbl_wrkordr.Text.ToString() + "' || JOBID='" + lbl_jobid.Text.ToString() + "'";
-                        dbcl.SendEmail("hr@atswork.in", Subject, emailBody);
+                        dbcl.SendEmail("hr@atswork.in", Subject, emailBody, NotificationTriggerHelper.ModuleJobInpunch);
                     }
                 }
 
@@ -869,6 +869,10 @@ namespace WebApplication1.bussiness.production
 
         static void SendEmail(string body)
         {
+            if (!NotificationTriggerHelper.IsEmailEnabled(NotificationTriggerHelper.ModuleJobInpunch))
+            {
+                return;
+            }
             // Sends job details email using configured SMTP credentials (appSettings SmtpUser/SmtpPass)
             using (MailMessage mail = new MailMessage())
             {

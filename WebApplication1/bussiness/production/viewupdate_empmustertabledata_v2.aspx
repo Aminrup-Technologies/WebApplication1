@@ -649,6 +649,48 @@
                                         <label>Pass Updated By (ID)</label><asp:TextBox ID="txt_PassUpdByWrk" runat="server" CssClass="form-control readonly-text" ReadOnly="true" /></div>
                                 </div>
 
+                                <h4 class="section-header mt-3"><i class="fa fa-shield"></i>Multi-Factor Authentication</h4>
+                                <p class="small text-muted">MFA is per user. Email OTP and WhatsApp OTP reuse the same login verification code (6 digits, 5 minutes, 3 tries). Email OTP sends it by email; WhatsApp OTP sends it by MSG91 WhatsApp. Authenticator uses Google Authenticator / Microsoft Authenticator. Email is required only for Email OTP. Mobile number on the Personal tab is required for WhatsApp OTP. If a user loses their phone, reset the authenticator so they can enroll again.</p>
+                                <div class="row">
+                                    <div class="col-md-3 form-group">
+                                        <label>MFA Required</label>
+                                        <asp:DropDownList ID="DDL_MFAEnabled" runat="server" CssClass="form-control">
+                                            <asp:ListItem Text="No (password only)" Value="0" />
+                                            <asp:ListItem Text="Yes" Value="1" />
+                                        </asp:DropDownList>
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label>MFA Method</label>
+                                        <asp:DropDownList ID="DDL_MFAMethod" runat="server" CssClass="form-control">
+                                            <asp:ListItem Text="Email OTP" Value="EmailOTP" />
+                                            <asp:ListItem Text="WhatsApp OTP" Value="WhatsAppOTP" />
+                                            <asp:ListItem Text="Authenticator app" Value="Authenticator" />
+                                        </asp:DropDownList>
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label>Enforced On</label>
+                                        <asp:TextBox ID="txt_MFAEnforcedOn" runat="server" CssClass="form-control readonly-text" ReadOnly="true" />
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label>Enforced By</label>
+                                        <asp:TextBox ID="txt_MFAEnforcedBy" runat="server" CssClass="form-control readonly-text" ReadOnly="true" />
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-3 form-group">
+                                        <label>Last MFA Verified</label>
+                                        <asp:TextBox ID="txt_MFALastVerified" runat="server" CssClass="form-control readonly-text" ReadOnly="true" />
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label>Authenticator Status</label>
+                                        <asp:TextBox ID="txt_MFAEnrollment" runat="server" CssClass="form-control readonly-text" ReadOnly="true" />
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label>&nbsp;</label>
+                                        <asp:Button ID="btn_ResetAuthenticator" runat="server" Text="Reset authenticator" CssClass="btn btn-warning btn-block" Enabled="false" OnClick="btn_ResetAuthenticator_Click" OnClientClick="return confirm('Reset this users authenticator app? They will scan a new QR code on next login.');" />
+                                    </div>
+                                </div>
+
                                 <div class="admin-alert mt-4">
                                     <h4 class="text-danger section-header mb-2" style="background: transparent;"><i class="fa fa-exclamation-triangle"></i>Account & Exit Management</h4>
                                     <div class="row">
