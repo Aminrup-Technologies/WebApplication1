@@ -6,6 +6,8 @@ Why: Maintained strictly to align with the V2 UI modernization phase. No core da
 What: Preserved existing C# logic behind the modernized `.aspx` presentation layer.
 When: 05-Sep-2026
 Why: UAT-013 / UAT-018 / UAT-019 — restore legacy JOB_Status and PermitUpload writes on permit upload/delete without reintroducing permit-before-IN. FileCount, FinalUpldStatus, and parameterized SQL are preserved. MasterStatusCode is not rolled back after IN.
+When: 05-Sep-2026
+Why: UAT-014 / UAT-015 / UAT-015A / UAT-015B — restore permit inbox continuity after first upload. Inbox matches legacy EntryExit='Entry' (not MasterStatusCode='1'). UpdatePermitStatus writes are unchanged.
 ======================================================================================
 */
 
@@ -100,8 +102,11 @@ namespace WebApplication1.bussiness.production
         // =================================================================================
         private void ActiveJOB_Checker()
         {
-            // Bypass the old CountChecker (CC) class and use the exact same logic as the Dashboard!
-            string query = "SELECT CONCAT(JOBID, ' : ', CONVERT(VARCHAR, CreatedDate, 105)) AS DisplayText, JOBID as ValueField FROM tbl_jobs WHERE [CreatedDate] >= DATEADD(DAY, -3, GETDATE()) AND Creator_Workman=@Workman AND JOBID_Status='Active' AND MasterStatusCode='1' ORDER BY CreatedDate DESC";
+            // Legacy parity with job_permitupload.aspx.cs ActiveJOB_Checker() / CountChecker.Find_PendingPermitUpload():
+            // Active, last 3 days, creator, EntryExit='Entry'. Do not require MasterStatusCode='1'.
+            // First permit upload sets MasterStatusCode='3' (UpdatePermitStatus) and would drop the JOB
+            // from a code-1 inbox. Close & Send sets EntryExit='Exit', so closed jobs stay excluded.
+            string query = "SELECT CONCAT(JOBID, ' : ', CONVERT(VARCHAR, CreatedDate, 105)) AS DisplayText, JOBID as ValueField FROM tbl_jobs WHERE [CreatedDate] >= DATEADD(DAY, -3, GETDATE()) AND Creator_Workman=@Workman AND JOBID_Status='Active' AND EntryExit='Entry' ORDER BY CreatedDate DESC";
 
             dbcl.Sqlconnection();
             dbcl.ConnectDb();

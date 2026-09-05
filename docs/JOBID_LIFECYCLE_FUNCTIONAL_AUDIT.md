@@ -116,10 +116,36 @@ Merged 05-Sep-2026 into `Jul_to_Sep_2026_Suport_N_Dev_Works`.
 **Remaining Work:**
 - PR #62 — JOB360 Navigation Contract
 - PR #63 — Work Order Nature Persistence
-- PR #64 — Permit Inbox Continuity
 - PR #65 — Dashboard Alignment
 
 No executable code was changed to record this milestone.
+
+---
+
+### Milestone M5 — Permit Inbox Continuity
+
+**Files changed:**
+- `WebApplication1/bussiness/production/job_permitupload_v2.aspx.cs`
+- `docs/JOBID_LIFECYCLE_FUNCTIONAL_AUDIT.md`
+
+**Methods changed:**
+- `ActiveJOB_Checker()` — inbox SQL uses `EntryExit='Entry'` (legacy) instead of `MasterStatusCode='1'`
+
+**Methods unchanged:** `UpdatePermitStatus()`, `ReadPermitJobState()`, `InsertIntoDB()`, `Bind_JOBIDDetails()`, `Page_Load()` QueryString fallback, IN/OUT/create/JOB360 pages.
+
+**Finding resolved:**
+After the first permit upload, `UpdatePermitStatus()` sets `MasterStatusCode='3'`. The V2 inbox required `'1'`, so the JOB disappeared and supervisors could not return to add more files. Inbox now matches legacy (`EntryExit='Entry'`), so the JOB remains selectable until Close & Send sets `EntryExit='Exit'`.
+
+**UAT:**
+- UAT-014 — Create → IN → first permit → leave → return: JOB still in inbox
+- UAT-015 — second permit: FileCount increments; JOB remains available
+- UAT-015A — upload → leave → return, repeated: continuation while Active + Entry
+- UAT-015B — after Close & Send (`EntryExit='Exit'`): JOB no longer in inbox
+
+**Regression:** PR #59, #60, #61, #62, and #63 files/behavior are unchanged (this PR only edits the permit inbox filter). M2 permit *writes* are unchanged.
+
+**Remaining Work:**
+- PR #65 — Dashboard Alignment
 
 ---
 
@@ -217,7 +243,7 @@ create_jobid_v2.aspx
     └── else (typically "1")
             ↓
         job_permitupload_v2.aspx?jobid={masked}
-            │  inbox: Active + last 3 days + MasterStatusCode='1'  ← BEFORE in-punch
+            │  inbox: Active + last 3 days + creator + EntryExit='Entry'  ← UAT-014 (after IN; survives first upload)
             │  FileCount>0 → MasterStatusCode=3, FinalUpldStatus=Yes, PermitUpload=Yes, JOB_Status=Permit Uploaded (UAT-013 / UAT-018 / UAT-019)
             │  does not overwrite Out-Punch Done; does not roll MasterStatusCode back after IN
             └── btn_inpunch_Click()
@@ -822,12 +848,12 @@ Region change rebinds WO but not billing types (first bind uses Session REGION).
 ## job_permitupload_v2.aspx
 
 ### Purpose
-Step 2: upload permits for `MasterStatusCode='1'` jobs, then route to IN-punch.
+Step 2: upload permits for in-punch jobs (`EntryExit='Entry'`), then continue IN or further uploads.
 
 ### Entry Conditions
 `USERID`+`WORKMAN` only. QueryString `jobid` decoded then selected if in inbox; **else inserted into dropdown and bound anyway**. Methods: `Page_Load()`, `DecodeJobID()`, `ActiveJOB_Checker()`, `Bind_JOBIDDetails()`.
 
-Inbox SQL: last 3 days, creator, Active, **`MasterStatusCode='1'`**.
+Inbox SQL: last 3 days, creator, Active, **`EntryExit='Entry'`** (UAT-014 / UAT-015; same as `job_permitupload.aspx.cs` / `CountChecker.Find_PendingPermitUpload`). Closed jobs (`EntryExit='Exit'`) are excluded (UAT-015B).
 
 ### Inputs
 JOB dropdown, upload type, file. Hidden job labels.
@@ -1072,7 +1098,7 @@ Result labels used only: PRESERVED | CHANGED | ADDED | REMOVED | REGRESSION | SE
 | Capability | Legacy | V2 | Result |
 |---|---|---|---|
 | Auth | 6 keys | USERID+WORKMAN | CHANGED |
-| Inbox predicate | `EntryExit='Entry'` | `MasterStatusCode='1'` | CHANGED |
+| Inbox predicate | `EntryExit='Entry'` | `EntryExit='Entry'` (UAT-014; was `MasterStatusCode='1'`) | PRESERVED |
 | QueryString JOB | No | Base64 `jobid`; can bind JOB not in inbox | CHANGED |
 | Next step | OUT-punch | IN-punch (masked) | CHANGED |
 | Sets JOB_Status=Permit Uploaded | Yes | Yes unless already Out-Punch Done (UAT-013 / UAT-019) | PRESERVED |
@@ -1183,7 +1209,7 @@ Evidence: `create_jobid_v2.aspx.cs` `Find_DBCode()`, `Insert_JOBData()`.
 **Old Logic:** `if (DB_WOType == "ARC")` → code 1 / FinalUpldStatus No; else code 3 / Yes. UI after create **always IN-punch**. Permit inbox is jobs already `EntryExit='Entry'`.  
 Evidence: `create_jobid.aspx.cs` `Insert_JOBData()`; `create_jobid.aspx` btn_upload Visible=false; `job_permitupload.aspx.cs` `ActiveJOB_Checker()`; `jobstatus_flow.ascx` steps 2 then 3.
 
-**New Logic:** Matrix `Default_MasterStatusCode`. `"3"` → create redirects to IN-punch; else create still redirects to permit. Permit inbox remains `MasterStatusCode='1'`. **IN-punch inbox no longer requires code 3** (UAT-006 / UAT-021): same Active 3-day creator predicates as legacy.  
+**New Logic:** Matrix `Default_MasterStatusCode`. `"3"` → create redirects to IN-punch; else create still redirects to permit. Permit inbox lists Active 3-day creator jobs with `EntryExit='Entry'` (UAT-014 / UAT-015), matching legacy — first upload no longer drops the JOB. **IN-punch inbox no longer requires code 3** (UAT-006 / UAT-021): same Active 3-day creator predicates as legacy.  
 Evidence: `create_jobid_v2.aspx.cs` `btn_submit_Click()`, `Insert_JOBData()`; `job_permitupload_v2.aspx.cs` `ActiveJOB_Checker()`; `job_inpunch_v2.aspx.cs` `ActiveJOB_Checker()`.
 
 **Impact:** Post-create auto-redirect still prefers permit for matrix code `1`, but a newly created permit-required job **appears in IN-Punch immediately**.  
@@ -1484,7 +1510,7 @@ No classic open-redirect found on V2 success paths (relative known pages). Legac
 **Resolved (UAT-029 / UAT-040 / UAT-035 / UAT-040A / UAT-040B).** Last OUT shows a confirmation modal. Close & Send reuses `UpdateJOBTable1` (`JOB_Status='Out-Punch Done'`, `MasterStatusCode='4'`, `EntryExit='Exit'`). Second click or refresh of the close POST skips the write if already closed and still shows the success modal. The job matches the approval inbox immediately and leaves the pending-OUT dashboard count. Finalize Shift is not a required extra step.
 
 ### R3. Cross-version inbox mismatch
-**Inbox half resolved (UAT-006).** V2 IN-Punch now lists V1-created Active 3-day jobs (no code-3 filter). Dual-run can still mix permit pages (V2 permit inbox remains `MasterStatusCode='1'`).
+**Inbox half resolved (UAT-006 / UAT-014).** V2 IN-Punch lists V1-created Active 3-day jobs (no code-3 filter). V2 permit inbox now matches legacy `EntryExit='Entry'` (no `MasterStatusCode='1'` gate). Dashboard pending-permit KPI may still use `MasterStatusCode='1'` (PR #65).
 
 ## High
 
