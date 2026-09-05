@@ -6,12 +6,14 @@ Verifies the fixes from the credentials-hardening pass stay in place:
 
   1. No known-leaked credential values exist in any TRACKED file.
   2. No hardcoded SMTP / connection-string credentials in tracked C#/config sources.
-  3. Web.config and the config-source files are well-formed XML.
+  3. Tracked example config files are well-formed XML.
   4. Tracking invariants:
-       - WebApplication1/connections.config is TRACKED (boot-safe placeholder;
-         Web.config uses configSource, so a missing file crashes the app at startup).
-       - WebApplication1/appsettings.secrets.config is GITIGNORED (holds SMTP/Msg91
-         secrets on the server and must never be committed).
+       - WebApplication1/connections.config, Web.config, and
+         appsettings.secrets.config are GITIGNORED so local IDE commits
+         do not pick up machine credentials.
+       - WebApplication1/connections.config.example and Web.config.example
+         are TRACKED commit-safe templates (copied to the real names on
+         first build).
 
 Run from the repo root:   python3 scripts/security-check.py
 Exit code 0 = pass, 1 = fail.
@@ -58,8 +60,8 @@ SCAN_EXTENSIONS = (".cs", ".config", ".csproj", ".aspx", ".ascx", ".js", ".sql",
 CODE_EXTENSIONS = (".cs", ".vb")
 
 XML_FILES = [
-    "WebApplication1/Web.config",
-    "WebApplication1/connections.config",
+    "WebApplication1/Web.config.example",
+    "WebApplication1/connections.config.example",
     "WebApplication1/WebApplication1.csproj",
     "WebApplication1/Web.Debug.config",
     "WebApplication1/Web.Release.config",
@@ -112,22 +114,32 @@ def main():
             errors.append(f"Invalid XML in {rel}: {e}")
 
     # ---------------------------------------------------- tracking invariants
-    conn_placeholder = os.path.join(ROOT, "WebApplication1", "connections.config")
-    if not os.path.exists(conn_placeholder):
-        errors.append(
-            "connections.config is MISSING - Web.config uses configSource which requires "
-            "the file, so the app will fail to boot. Commit the placeholder."
-        )
-    elif git("check-ignore", "WebApplication1/connections.config").returncode == 0:
-        errors.append(
-            "connections.config is gitignored - it must stay tracked as the boot-safe "
-            "placeholder. Remove it from .gitignore."
-        )
-    if git("check-ignore", "WebApplication1/appsettings.secrets.config").returncode != 0:
-        errors.append(
-            "appsettings.secrets.config is NOT gitignored - secrets would be committed. "
-            "Add '/WebApplication1/appsettings.secrets.config' to .gitignore."
-        )
+    ignored_secrets = [
+        "WebApplication1/connections.config",
+        "WebApplication1/Web.config",
+        "WebApplication1/appsettings.secrets.config",
+    ]
+    for rel in ignored_secrets:
+        if git("check-ignore", rel).returncode != 0:
+            errors.append(
+                "%s is NOT gitignored - local credentials would be staged in the IDE. "
+                "Add it to .gitignore." % rel
+            )
+        if rel in tracked:
+            errors.append(
+                "%s is still TRACKED - gitignore will not hide local edits in the IDE. "
+                "Run: git rm --cached %s" % (rel, rel)
+            )
+
+    tracked_examples = [
+        "WebApplication1/connections.config.example",
+        "WebApplication1/Web.config.example",
+    ]
+    for rel in tracked_examples:
+        if rel not in tracked:
+            errors.append(
+                "%s must be tracked as the commit-safe template for fresh clones." % rel
+            )
 
     # ------------------------------------------------------------- reporting
     if errors:
