@@ -40,13 +40,24 @@ namespace WebApplication1.bussiness.production
                 if (Request.QueryString["jobid"] != null)
                 {
                     string maskedId = Request.QueryString["jobid"].ToString();
-                    string realJobId = DecodeJobID(maskedId);
-
-                    ListItem item = DDL_JOBID.Items.FindByValue(realJobId);
-                    if (item != null)
+                    string realJobId = "";
+                    try
                     {
-                        DDL_JOBID.SelectedValue = realJobId;
-                        TriggerJobSelection(realJobId);
+                        realJobId = DecodeJobID(maskedId);
+                    }
+                    catch (FormatException)
+                    {
+                        realJobId = "";
+                    }
+
+                    if (!string.IsNullOrEmpty(realJobId))
+                    {
+                        ListItem item = DDL_JOBID.Items.FindByValue(realJobId);
+                        if (item != null)
+                        {
+                            DDL_JOBID.SelectedValue = realJobId;
+                            TriggerJobSelection(realJobId);
+                        }
                     }
                 }
             }

@@ -7,6 +7,8 @@ What: Preserved existing C# logic behind the modernized `.aspx` presentation lay
 When: 05-Sep-2026
 Why: UAT-013 / UAT-018 / UAT-019 — restore legacy JOB_Status and PermitUpload writes on permit upload/delete without reintroducing permit-before-IN. FileCount, FinalUpldStatus, and parameterized SQL are preserved. MasterStatusCode is not rolled back after IN.
 When: 05-Sep-2026
+Why: UAT-046 / UAT-047 / UAT-048 / UAT-049 — Page_Load catches FormatException from DecodeJobID so invalid jobid tokens do not 500. Decode algorithm and permit fallback for successfully decoded IDs are unchanged.
+When: 05-Sep-2026
 Why: UAT-014 / UAT-015 / UAT-015A / UAT-015B — restore permit inbox continuity after first upload. Inbox matches legacy EntryExit='Entry' (not MasterStatusCode='1'). UpdatePermitStatus writes are unchanged.
 ======================================================================================
 */
@@ -38,26 +40,37 @@ namespace WebApplication1.bussiness.production
                     return;
                 }
 
-                // SMART ROUTING: Check if arriving directly from Step 1 with a masked JOBID
+                // SMART ROUTING: masked JOBID (URL-safe Base64). Invalid tokens fail closed; DecodeJobID is unchanged.
                 if (Request.QueryString["jobid"] != null)
                 {
                     string maskedId = Request.QueryString["jobid"].ToString();
-                    string realJobId = DecodeJobID(maskedId);
+                    string realJobId = "";
+                    try
+                    {
+                        realJobId = DecodeJobID(maskedId);
+                    }
+                    catch (FormatException)
+                    {
+                        realJobId = "";
+                    }
 
                     ActiveJOB_Checker();
 
-                    ListItem item = DDL_JOBID.Items.FindByValue(realJobId);
-                    if (item != null)
+                    if (!string.IsNullOrEmpty(realJobId))
                     {
-                        DDL_JOBID.SelectedValue = realJobId;
-                        Bind_JOBIDDetails(realJobId);
-                    }
-                    else
-                    {
-                        // Fallback if not found 
-                        DDL_JOBID.Items.Insert(0, new ListItem(realJobId, realJobId));
-                        DDL_JOBID.SelectedIndex = 0;
-                        Bind_JOBIDDetails(realJobId);
+                        ListItem item = DDL_JOBID.Items.FindByValue(realJobId);
+                        if (item != null)
+                        {
+                            DDL_JOBID.SelectedValue = realJobId;
+                            Bind_JOBIDDetails(realJobId);
+                        }
+                        else
+                        {
+                            // Fallback if not found (successfully decoded JOBID only)
+                            DDL_JOBID.Items.Insert(0, new ListItem(realJobId, realJobId));
+                            DDL_JOBID.SelectedIndex = 0;
+                            Bind_JOBIDDetails(realJobId);
+                        }
                     }
                 }
                 else
