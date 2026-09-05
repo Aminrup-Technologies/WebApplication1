@@ -6,6 +6,8 @@ Why: Updated alongside the V2 UI modernization phase. Business logic, duplicate 
 What: Preserved existing C# logic behind the modernized `.aspx` presentation layer.
 When: 05-Sep-2026
 Why: UAT-006 / UAT-021 — restore legacy IN-Punch inbox eligibility so permit-required (ARC, MasterStatusCode='1') jobs appear immediately after create. Duplicate Entry checks and parameterized SQL are unchanged.
+When: 05-Sep-2026
+Why: UAT-046 / UAT-047 / UAT-048 / UAT-049 — Page_Load catches FormatException from DecodeJobID so invalid jobid tokens do not 500. Decode algorithm and inbox authorization are unchanged.
 ======================================================================================
 */
 
@@ -56,17 +58,28 @@ namespace WebApplication1.bussiness.production
                 //dtMail.Columns.Add("EmployeeCategory", typeof(string));
                 //MailDataTable = dtMail;
 
-                // SMART ROUTING: Check for Masked JOBID in URL
+                // SMART ROUTING: Check for Masked JOBID in URL (URL-safe Base64; invalid tokens fail closed)
                 if (Request.QueryString["jobid"] != null)
                 {
                     string maskedId = Request.QueryString["jobid"].ToString();
-                    string realJobId = DecodeJobID(maskedId);
-
-                    ListItem item = DDL_JOBID.Items.FindByValue(realJobId);
-                    if (item != null)
+                    string realJobId = "";
+                    try
                     {
-                        DDL_JOBID.SelectedValue = realJobId;
-                        TriggerJobSelection(realJobId);
+                        realJobId = DecodeJobID(maskedId);
+                    }
+                    catch (FormatException)
+                    {
+                        realJobId = "";
+                    }
+
+                    if (!string.IsNullOrEmpty(realJobId))
+                    {
+                        ListItem item = DDL_JOBID.Items.FindByValue(realJobId);
+                        if (item != null)
+                        {
+                            DDL_JOBID.SelectedValue = realJobId;
+                            TriggerJobSelection(realJobId);
+                        }
                     }
                 }
             }
