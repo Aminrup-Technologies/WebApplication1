@@ -728,8 +728,12 @@ namespace WebApplication1.bussiness.production
                     cmd.Parameters.AddWithValue("@AttendanceCode", DDL_AttenCode.SelectedValue);
 
                     // =========================================================
-                    // V2 DYNAMIC DB INSERT LOGIC 
-                    // (Driven entirely by the Matrix, no hardcoded "If Non-Billing")
+                    // V2 DYNAMIC DB INSERT LOGIC
+                    // Legacy Insert_JOBData() split:
+                    //   ARC     → MasterStatusCode=1, FinalUpldStatus=No  (permit still required)
+                    //   non-ARC → MasterStatusCode=3, FinalUpldStatus=Yes (permit skipped)
+                    // Matrix Default_MasterStatusCode='3' preserves that skip-permit write.
+                    // IN-Punch eligibility is NOT gated on code 3 (see job_inpunch_v2 ActiveJOB_Checker).
                     // =========================================================
                     cmd.Parameters.AddWithValue("@MasterStatusCode", WO_MasterStatusCode);
                     cmd.Parameters.AddWithValue("@FileCount", 0);
@@ -737,14 +741,14 @@ namespace WebApplication1.bussiness.production
 
                     if (WO_MasterStatusCode == "3")
                     {
-                        // Direct to In-Punch Configuration
+                        // Non-ARC / skip-permit: same writes as legacy non-ARC Insert_JOBData()
                         cmd.Parameters.AddWithValue("@JOB_Status", "Permit Uploaded");
                         cmd.Parameters.AddWithValue("@FinalUpldStatus", "Yes");
                         cmd.Parameters.AddWithValue("@PermitUpload", "N/A");
                     }
                     else
                     {
-                        // Standard Permit Upload Configuration
+                        // Permit-required: same writes as legacy ARC Insert_JOBData() (code 1, no upload yet)
                         cmd.Parameters.AddWithValue("@JOB_Status", "Created");
                         cmd.Parameters.AddWithValue("@FinalUpldStatus", "No");
                         cmd.Parameters.AddWithValue("@PermitUpload", "No");
