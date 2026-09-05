@@ -5,17 +5,14 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
-using System.IO;
 using System.Net;
 using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web;
-using System.Web.Hosting;
 using System.Web.UI;
 using WebApplication1.bussiness.production;
 
@@ -24,7 +21,6 @@ namespace WebApplication1.bussiness.production
     public partial class login : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
-        static readonly string rootFolder = HostingEnvironment.MapPath("~/erp_images/ProfilePhoto");
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -49,6 +45,8 @@ namespace WebApplication1.bussiness.production
         // --- NEW FIX: Server-side Tab Control ---
         protected void Page_PreRender(object sender, EventArgs e)
         {
+            if (Response.IsRequestBeingRedirected) return;
+
             bool mfaMode = (ViewState["MfaMode"] != null && (bool)ViewState["MfaMode"])
                 || Session[SessionKeys.MfaPendingLoginId] != null;
 
@@ -126,16 +124,32 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-        private DataTable FetchLoginUser(string id)
-        {
-            string query = @"
+        private const string HomePageUrl = "~/bussiness/production/homepage_v2.aspx";
+
+        private static readonly string LoginUserSelectCore = @"
                 SELECT TOP 1 
                     LoginID, LoginPassword, WorkStatus, DOR, PasswordExpiry, WorkmanSL, FirstName, FullName,
                     User_RoleType, UserRoleDB, RolePermissionDB, WorkRegion, WorkState, WorkCompany,
-                    WorkSite, Worksite_Code, SkillDesignation, SkillCategory, PrfPicFile, Email, MobileNo
-                FROM tbl_Employee_Mustertable WHERE LoginID = @LoginID";
+                    WorkSite, Worksite_Code, SkillDesignation, SkillCategory, PrfPicFile, Email, MobileNo";
 
-            return dbcl.SPreturn_dt(query, new SqlParameter[] { new SqlParameter("@LoginID", id) });
+        private DataTable FetchLoginUser(string id)
+        {
+            SqlParameter[] idParam = new SqlParameter[] { new SqlParameter("@LoginID", id) };
+            try
+            {
+                return dbcl.SPreturn_dt(
+                    LoginUserSelectCore + @",
+                    MFAEnabled, MFAMethod, MFATotpEnrolled
+                FROM tbl_Employee_Mustertable WHERE LoginID = @LoginID", idParam);
+            }
+            catch (Exception ex)
+            {
+                if (!MfaAuthHelper.IsMissingColumnException(ex)) throw;
+                return dbcl.SPreturn_dt(
+                    LoginUserSelectCore + @"
+                FROM tbl_Employee_Mustertable WHERE LoginID = @LoginID",
+                    new SqlParameter[] { new SqlParameter("@LoginID", id) });
+            }
         }
 
         private void PerformLogin(string id, string pass)
@@ -190,7 +204,7 @@ namespace WebApplication1.bussiness.production
             bool mfaEnabled = false;
             string mfaMethod = MfaAuthHelper.MethodEmailOtp;
             bool totpEnrolled = false;
-            TryReadMfaSettings(id, ref mfaEnabled, ref mfaMethod, ref totpEnrolled);
+            ReadMfaSettings(row, id, ref mfaEnabled, ref mfaMethod, ref totpEnrolled);
             if (mfaEnabled)
             {
                 if (MfaAuthHelper.IsAuthenticator(mfaMethod))
@@ -237,6 +251,27 @@ namespace WebApplication1.bussiness.production
 
             GrantAuthenticatedSession(row, chk_remember.Checked, "SUCCESS", false);
             LogLoginTiming("total", sw, id);
+        }
+
+        private void ReadMfaSettings(DataRow row, string loginId, ref bool enabled, ref string method, ref bool totpEnrolled)
+        {
+            enabled = false;
+            method = MfaAuthHelper.MethodEmailOtp;
+            totpEnrolled = false;
+            if (row != null && row.Table.Columns.Contains("MFAEnabled"))
+            {
+                enabled = MfaAuthHelper.IsEnabled(row["MFAEnabled"]);
+                if (row.Table.Columns.Contains("MFAMethod") && row["MFAMethod"] != DBNull.Value)
+                {
+                    method = MfaAuthHelper.NormalizeMethod(row["MFAMethod"].ToString());
+                }
+                if (row.Table.Columns.Contains("MFATotpEnrolled"))
+                {
+                    totpEnrolled = MfaAuthHelper.IsEnabled(row["MFATotpEnrolled"]);
+                }
+                return;
+            }
+            TryReadMfaSettings(loginId, ref enabled, ref method, ref totpEnrolled);
         }
 
         private void TryReadMfaSettings(string loginId, ref bool enabled, ref string method, ref bool totpEnrolled)
@@ -724,42 +759,12 @@ namespace WebApplication1.bussiness.production
 
         private void GrantAuthenticatedSession(DataRow row, bool rememberMe, string auditResult, bool markMfaVerified)
         {
+            Stopwatch sw = Stopwatch.StartNew();
             string id = row["LoginID"].ToString();
             string workmanSL = row["WorkmanSL"].ToString();
 
-            string postAuthSql = @"
-                INSERT INTO tbl_UserLoginAudit (LoginID, WorkmanSL, LoginTime, LoginResult, FailureReason, IPAddress, UserAgent, SessionID)
-                VALUES (@LoginID, @WorkmanSL, GETDATE(), @Result, NULL, @IP, @Agent, @SessionID);
-                UPDATE tbl_Employee_Mustertable SET LastLogin = GETDATE(), LoginStatus = 1 WHERE LoginID = @LoginID;";
-
-            List<SqlParameter> postAuthParams = new List<SqlParameter>
-            {
-                new SqlParameter("@LoginID", id),
-                new SqlParameter("@WorkmanSL", (object)workmanSL ?? DBNull.Value),
-                new SqlParameter("@Result", auditResult),
-                new SqlParameter("@IP", Request.UserHostAddress ?? ""),
-                new SqlParameter("@Agent", Request.UserAgent ?? ""),
-                new SqlParameter("@SessionID", Session.SessionID)
-            };
-
-            dbcl.SPreturn_dt(postAuthSql, postAuthParams.ToArray());
-
-            if (markMfaVerified)
-            {
-                try
-                {
-                    dbcl.SPreturn_dt(
-                        "UPDATE tbl_Employee_Mustertable SET MFALastVerified = GETDATE() WHERE LoginID = @LoginID",
-                        new SqlParameter[] { new SqlParameter("@LoginID", id) });
-                }
-                catch (Exception ex)
-                {
-                    if (!MfaAuthHelper.IsMissingColumnException(ex))
-                    {
-                        dbcl.WriteToFile("MFALastVerified update failed: " + ex);
-                    }
-                }
-            }
+            WritePostAuthRecord(id, workmanSL, auditResult, markMfaVerified);
+            LogLoginTiming("postAuthWrite", sw, id);
 
             if (rememberMe) { Response.Cookies.Add(new HttpCookie("ATS_SavedID", id) { Expires = DateTime.Now.AddDays(15) }); }
             else if (Request.Cookies["ATS_SavedID"] != null) { Response.Cookies["ATS_SavedID"].Expires = DateTime.Now.AddDays(-1); }
@@ -779,12 +784,53 @@ namespace WebApplication1.bussiness.production
             Session[SessionKeys.Designation] = row["SkillDesignation"].ToString();
             Session[SessionKeys.Skill] = row["SkillCategory"].ToString();
 
-            string photo = row["PrfPicFile"].ToString();
-            Session[SessionKeys.UserPhoto] = (!string.IsNullOrEmpty(photo) && Directory.Exists(rootFolder) && File.Exists(Path.Combine(rootFolder, photo)))
-                                            ? photo
-                                            : "No_Image.jpg";
+            string photo = row["PrfPicFile"] != DBNull.Value ? row["PrfPicFile"].ToString() : "";
+            Session[SessionKeys.UserPhoto] = string.IsNullOrWhiteSpace(photo) ? "No_Image.jpg" : photo;
 
-            Response.Redirect("~/bussiness/production/homepage_v2.aspx", false);
+            RedirectToHome(id, sw);
+        }
+
+        private void WritePostAuthRecord(string id, string workmanSL, string auditResult, bool markMfaVerified)
+        {
+            string mfaSet = markMfaVerified ? ", MFALastVerified = GETDATE()" : "";
+            string postAuthSql = @"
+                INSERT INTO tbl_UserLoginAudit (LoginID, WorkmanSL, LoginTime, LoginResult, FailureReason, IPAddress, UserAgent, SessionID)
+                VALUES (@LoginID, @WorkmanSL, GETDATE(), @Result, NULL, @IP, @Agent, @SessionID);
+                UPDATE tbl_Employee_Mustertable SET LastLogin = GETDATE(), LoginStatus = 1" + mfaSet + @" WHERE LoginID = @LoginID;";
+
+            SqlParameter[] postAuthParams = BuildPostAuthParams(id, workmanSL, auditResult);
+            try
+            {
+                dbcl.SPreturn_dt(postAuthSql, postAuthParams);
+            }
+            catch (Exception ex)
+            {
+                if (!markMfaVerified || !MfaAuthHelper.IsMissingColumnException(ex)) throw;
+                dbcl.SPreturn_dt(@"
+                INSERT INTO tbl_UserLoginAudit (LoginID, WorkmanSL, LoginTime, LoginResult, FailureReason, IPAddress, UserAgent, SessionID)
+                VALUES (@LoginID, @WorkmanSL, GETDATE(), @Result, NULL, @IP, @Agent, @SessionID);
+                UPDATE tbl_Employee_Mustertable SET LastLogin = GETDATE(), LoginStatus = 1 WHERE LoginID = @LoginID;",
+                    BuildPostAuthParams(id, workmanSL, auditResult));
+            }
+        }
+
+        private SqlParameter[] BuildPostAuthParams(string id, string workmanSL, string auditResult)
+        {
+            return new SqlParameter[]
+            {
+                new SqlParameter("@LoginID", id),
+                new SqlParameter("@WorkmanSL", (object)workmanSL ?? DBNull.Value),
+                new SqlParameter("@Result", auditResult),
+                new SqlParameter("@IP", Request.UserHostAddress ?? ""),
+                new SqlParameter("@Agent", Request.UserAgent ?? ""),
+                new SqlParameter("@SessionID", Session.SessionID)
+            };
+        }
+
+        private void RedirectToHome(string loginId, Stopwatch sw)
+        {
+            LogLoginTiming("redirectHome", sw, loginId);
+            Response.Redirect(HomePageUrl, false);
             Context.ApplicationInstance.CompleteRequest();
         }
 
