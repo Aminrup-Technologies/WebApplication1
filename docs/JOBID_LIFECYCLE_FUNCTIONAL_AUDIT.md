@@ -113,8 +113,7 @@ Merged 05-Sep-2026 into `Jul_to_Sep_2026_Suport_N_Dev_Works`.
 - UAT-018A ✅ (final permit delete after IN: `PermitUpload='No'`, `FinalUpldStatus='No'`, `MasterStatusCode` stays `3`, OUT inbox predicates intact)
 - UAT-019 ✅
 
-**Remaining Work (after M2; M3 and M4 recorded below):**
-- PR #64 — Permit Inbox Continuity
+**Remaining Work (after M2; M3–M5 recorded below):**
 - PR #65 — Dashboard Alignment
 
 No executable code was changed to record this milestone.
@@ -140,7 +139,7 @@ No executable code was changed to record this milestone.
 - `job_outpunch_v2.aspx.cs` `Page_Load()` — same
 - `job_permitupload_v2.aspx.cs` `Page_Load()` — same; inbox insert fallback still runs only for a successfully decoded non-empty JOBID
 
-**Methods unchanged:** `DecodeJobID()` algorithm; `EncodeJobID()` algorithm; `ActiveJOB_Checker()` (IN/OUT/permit); `UpdatePermitStatus()`; `UpdateJOBTable1()`; `CheckPendingOUT()`; `btn_FinalizeShift_Click()`; V1 pages; JOB360 inbound raw `jobid`; JOB360 AddDocs/SwapDate raw links.
+**Methods unchanged:** `DecodeJobID()` algorithm; `EncodeJobID()` algorithm; `ActiveJOB_Checker()` (IN/OUT at M3); `UpdatePermitStatus()`; `UpdateJOBTable1()`; `CheckPendingOUT()`; `btn_FinalizeShift_Click()`; V1 pages; JOB360 inbound raw `jobid`; JOB360 AddDocs/SwapDate raw links.
 
 **Finding resolved:**
 JOB360 raw JOBID was incompatible with V2 Base64 decoding.
@@ -153,8 +152,7 @@ JOB360 raw JOBID was incompatible with V2 Base64 decoding.
 
 **Regression:** PR #59 (IN-Punch eligibility), PR #60 (shift closure), and PR #61 (permit state writes) are unchanged.
 
-**Remaining Work (after M3; M4 recorded below):**
-- PR #64 — Permit Inbox Continuity
+**Remaining Work (after M3; M4 and M5 recorded below):**
 - PR #65 — Dashboard Alignment
 
 ---
@@ -162,7 +160,7 @@ JOB360 raw JOBID was incompatible with V2 Base64 decoding.
 ### Milestone M4 — Work Order Nature Persistence
 
 **PR:** #63 (`cursor/wo-nature-persistence-6c97`)
-**Status:** Approved for squash merge
+**Status:** Merged `111a986` 2026-09-05
 **UAT closed:** UAT-010, UAT-011, UAT-012
 
 **Files changed:**
@@ -185,11 +183,39 @@ JOB360 raw JOBID was incompatible with V2 Base64 decoding.
 
 **Regression:** PR #59, #60, #61, and #62 (`aaea92e`) files/behavior are unchanged (this PR only edits create V2 nature persistence).
 
-**Remaining Work:**
-- PR #64 — Permit Inbox Continuity
+**Remaining Work (after M4; M5 recorded below):**
 - PR #65 — Dashboard Alignment
 
 ---
+
+### Milestone M5 — Permit Inbox Continuity
+
+**PR:** #64 (`cursor/permit-inbox-continuity-6c97`)
+**Status:** Approved for squash merge
+**UAT closed:** UAT-014, UAT-015, UAT-015A, UAT-015B
+
+**Files changed:**
+- `WebApplication1/bussiness/production/job_permitupload_v2.aspx.cs`
+- `docs/JOBID_LIFECYCLE_FUNCTIONAL_AUDIT.md`
+
+**Methods changed:**
+- `ActiveJOB_Checker()` — inbox SQL uses `EntryExit='Entry'` (legacy) instead of `MasterStatusCode='1'`
+
+**Methods unchanged:** `UpdatePermitStatus()`, `ReadPermitJobState()`, `InsertIntoDB()`, `Bind_JOBIDDetails()`, `Page_Load()` FormatException catch and QueryString fallback (M3), IN/OUT/create/JOB360 pages.
+
+**Finding resolved:**
+After the first permit upload, `UpdatePermitStatus()` sets `MasterStatusCode='3'`. The V2 inbox required `'1'`, so the JOB disappeared and supervisors could not return to add more files. Inbox now matches legacy (`EntryExit='Entry'`), so the JOB remains selectable until Close & Send sets `EntryExit='Exit'`.
+
+**UAT:**
+- UAT-014 — Create → IN → first permit → leave → return: JOB still in inbox
+- UAT-015 — second permit: FileCount increments; JOB remains available
+- UAT-015A — upload → leave → return, repeated: continuation while Active + Entry
+- UAT-015B — after Close & Send (`EntryExit='Exit'`): JOB no longer in inbox
+
+**Regression:** PR #59, #60, #61, #62 (`aaea92e`), and #63 (`111a986`) files/behavior are unchanged except this inbox filter. M2 permit *writes* are unchanged. M3 decode handling is unchanged.
+
+**Remaining Work:**
+- PR #65 — Dashboard Alignment
 
 # PHASE 1 — JOBID Dependency Graph
 
@@ -285,7 +311,7 @@ create_jobid_v2.aspx
     └── else (typically "1")
             ↓
         job_permitupload_v2.aspx?jobid={masked}
-            │  inbox: Active + last 3 days + MasterStatusCode='1'  ← BEFORE in-punch
+            │  inbox: Active + last 3 days + creator + EntryExit='Entry'  ← UAT-014 (after IN; survives first upload)
             │  FileCount>0 → MasterStatusCode=3, FinalUpldStatus=Yes, PermitUpload=Yes, JOB_Status=Permit Uploaded (UAT-013 / UAT-018 / UAT-019)
             │  does not overwrite Out-Punch Done; does not roll MasterStatusCode back after IN
             └── btn_inpunch_Click()
@@ -890,12 +916,12 @@ Region change rebinds WO and clears `WO_BillingNature`/`WO_ContractNature` until
 ## job_permitupload_v2.aspx
 
 ### Purpose
-Step 2: upload permits for `MasterStatusCode='1'` jobs, then route to IN-punch.
+Step 2: upload permits for in-punch jobs (`EntryExit='Entry'`), then continue IN or further uploads.
 
 ### Entry Conditions
 `USERID`+`WORKMAN` only. QueryString `jobid` decoded (`FormatException` → empty, no 500) then selected if in inbox; **else inserted into dropdown and bound anyway** when decode succeeded and value is non-empty. Methods: `Page_Load()`, `DecodeJobID()`, `ActiveJOB_Checker()`, `Bind_JOBIDDetails()`.
 
-Inbox SQL: last 3 days, creator, Active, **`MasterStatusCode='1'`**.
+Inbox SQL: last 3 days, creator, Active, **`EntryExit='Entry'`** (UAT-014 / UAT-015; same as `job_permitupload.aspx.cs` / `CountChecker.Find_PendingPermitUpload`). Closed jobs (`EntryExit='Exit'`) are excluded (UAT-015B).
 
 ### Inputs
 JOB dropdown, upload type, file. Hidden job labels.
@@ -1140,7 +1166,7 @@ Result labels used only: PRESERVED | CHANGED | ADDED | REMOVED | REGRESSION | SE
 | Capability | Legacy | V2 | Result |
 |---|---|---|---|
 | Auth | 6 keys | USERID+WORKMAN | CHANGED |
-| Inbox predicate | `EntryExit='Entry'` | `MasterStatusCode='1'` | CHANGED |
+| Inbox predicate | `EntryExit='Entry'` | `EntryExit='Entry'` (UAT-014; was `MasterStatusCode='1'`) | PRESERVED |
 | QueryString JOB | No | Base64 `jobid`; can bind JOB not in inbox | CHANGED |
 | Next step | OUT-punch | IN-punch (masked) | CHANGED |
 | Sets JOB_Status=Permit Uploaded | Yes | Yes unless already Out-Punch Done (UAT-013 / UAT-019) | PRESERVED |
@@ -1251,7 +1277,7 @@ Evidence: `create_jobid_v2.aspx.cs` `Find_DBCode()`, `Insert_JOBData()`.
 **Old Logic:** `if (DB_WOType == "ARC")` → code 1 / FinalUpldStatus No; else code 3 / Yes. UI after create **always IN-punch**. Permit inbox is jobs already `EntryExit='Entry'`.  
 Evidence: `create_jobid.aspx.cs` `Insert_JOBData()`; `create_jobid.aspx` btn_upload Visible=false; `job_permitupload.aspx.cs` `ActiveJOB_Checker()`; `jobstatus_flow.ascx` steps 2 then 3.
 
-**New Logic:** Matrix `Default_MasterStatusCode`. `"3"` → create redirects to IN-punch; else create still redirects to permit. Permit inbox remains `MasterStatusCode='1'`. **IN-punch inbox no longer requires code 3** (UAT-006 / UAT-021): same Active 3-day creator predicates as legacy.  
+**New Logic:** Matrix `Default_MasterStatusCode`. `"3"` → create redirects to IN-punch; else create still redirects to permit. Permit inbox lists Active 3-day creator jobs with `EntryExit='Entry'` (UAT-014 / UAT-015), matching legacy — first upload no longer drops the JOB. **IN-punch inbox no longer requires code 3** (UAT-006 / UAT-021): same Active 3-day creator predicates as legacy.  
 Evidence: `create_jobid_v2.aspx.cs` `btn_submit_Click()`, `Insert_JOBData()`; `job_permitupload_v2.aspx.cs` `ActiveJOB_Checker()`; `job_inpunch_v2.aspx.cs` `ActiveJOB_Checker()`.
 
 **Impact:** Post-create auto-redirect still prefers permit for matrix code `1`, but a newly created permit-required job **appears in IN-Punch immediately**.  
@@ -1552,7 +1578,7 @@ No classic open-redirect found on V2 success paths (relative known pages). Legac
 **Resolved (UAT-029 / UAT-040 / UAT-035 / UAT-040A / UAT-040B).** Last OUT shows a confirmation modal. Close & Send reuses `UpdateJOBTable1` (`JOB_Status='Out-Punch Done'`, `MasterStatusCode='4'`, `EntryExit='Exit'`). Second click or refresh of the close POST skips the write if already closed and still shows the success modal. The job matches the approval inbox immediately and leaves the pending-OUT dashboard count. Finalize Shift is not a required extra step.
 
 ### R3. Cross-version inbox mismatch
-**Inbox half resolved (UAT-006).** V2 IN-Punch now lists V1-created Active 3-day jobs (no code-3 filter). Dual-run can still mix permit pages (V2 permit inbox remains `MasterStatusCode='1'`).
+**Inbox half resolved (UAT-006 / UAT-014).** V2 IN-Punch lists V1-created Active 3-day jobs (no code-3 filter). V2 permit inbox now matches legacy `EntryExit='Entry'` (no `MasterStatusCode='1'` gate). Dashboard pending-permit KPI may still use `MasterStatusCode='1'` (PR #65).
 
 ## High
 
@@ -1629,7 +1655,7 @@ Unchanged on V1; V2 mostly ViewState.
 - **Code movement:** Dashboard SQL copied V1→V2. Create rewritten around `tlb_WO_Rule_Matrix`, calendar, GPS, documents. Permit/IN/OUT rewritten with Base64 `jobid`, PNotify, `JobWorkflowLogger`. Manage/view parameterized; delete became soft+transactional.
 - **New dependencies:** `tlb_WO_Rule_Matrix`, `tlb_Company_Calendar`, `tlb_Backdate_Exceptions`, `tlb_DocumentMaster`, `tlb_Region_Documents`, `tlb_System_Logs`, `tbl_Version_Switch_Log`, `NotificationTemplates`/`NotificationQueue`, `NotificationTriggerHelper`, MSG91/SMTP on close/share, filesystem logs under `~/Logs/`.
 - **Unchanged SPs (call-level):** `SP_InsertInto_JOBSTable`, `SP_InsertInto_AttendanceTable`, `SP_Update_AttendancePunchOUT`. Bodies not in repo.
-- **Known implementation defects in V2:** duplicated create redirects; dead hub switch-to-old link; permit QueryString IDOR bind. (Permit `JOB_Status`/`PermitUpload` restored in M2; 360→V2 jobid encoding restored in M3; `WO_BillingNature`/`WO_ContractNature` assigned in M4.)
+- **Known implementation defects in V2:** duplicated create redirects; dead hub switch-to-old link; permit QueryString IDOR bind. (Permit `JOB_Status`/`PermitUpload` restored in M2; 360→V2 jobid encoding restored in M3; `WO_BillingNature`/`WO_ContractNature` assigned in M4; permit inbox `EntryExit='Entry'` restored in M5.)
 
 ## Client Business Summary
 
