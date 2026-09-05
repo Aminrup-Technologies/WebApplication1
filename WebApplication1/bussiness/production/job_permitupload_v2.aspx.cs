@@ -4,6 +4,8 @@ File_Name: job_permitupload_v2_aspx_cs
 When: April 12, 2026
 Why: Maintained strictly to align with the V2 UI modernization phase. No core data processing, routing, or database transaction logic has been altered. Parameterized DB calls and file compression remain fully intact to ensure system stability.
 What: Preserved existing C# logic behind the modernized `.aspx` presentation layer.
+When: 05-Sep-2026
+Why: UAT-013 / UAT-018 / UAT-019 — restore legacy JOB_Status and PermitUpload writes on permit upload/delete without reintroducing permit-before-IN. FileCount, FinalUpldStatus, and parameterized SQL are preserved. MasterStatusCode is not rolled back after IN.
 ======================================================================================
 */
 
@@ -325,26 +327,92 @@ namespace WebApplication1.bussiness.production
             int newCount = currentCount + countModifier;
             if (newCount < 0) newCount = 0;
 
-            string uploadStatus = newCount > 0 ? "Yes" : "No";
-            string masterCode = newCount > 0 ? "3" : "1"; // 3 = Ready for Entry, 1 = Needs Permit
+            string finalUpldStatus = newCount > 0 ? "Yes" : "No";
+            string permitUpload = newCount > 0 ? "Yes" : "No";
 
-            // REMOVED PermitUpload=@PermitUpload from the query!
-            // We only update the FileCount, the FinalUpldStatus (Fulfillment), and the MasterStatusCode (State Machine)
-            string query = @"UPDATE tbl_jobs 
-                     SET FileCount=@FileCount, 
-                         FinalUpldStatus=@FinalUpldStatus, 
-                         MasterStatusCode=@MasterStatusCode, 
-                         PermitUploadDate=@Date 
+            string currentJobStatus;
+            string currentMaster;
+            string entryExit;
+            ReadPermitJobState(jobid, out currentJobStatus, out currentMaster, out entryExit);
+
+            // MasterStatusCode: legacy upload sets 3; last-file delete sets 1.
+            // After IN (Entry/Exit) or close (4/5), do not regress — preserves IN-before-Permit and approval.
+            string masterCode;
+            if (currentMaster == "4" || currentMaster == "5")
+            {
+                masterCode = currentMaster;
+            }
+            else if (newCount > 0)
+            {
+                masterCode = "3";
+            }
+            else if (entryExit == "Created")
+            {
+                masterCode = "1";
+            }
+            else
+            {
+                masterCode = string.IsNullOrEmpty(currentMaster) ? "1" : currentMaster;
+            }
+
+            // JOB_Status: legacy upload sets Permit Uploaded. Do not overwrite Out-Punch Done.
+            // Last-file delete may revert to Created only when IN has not happened.
+            string jobStatus;
+            if (currentJobStatus == "Out-Punch Done")
+            {
+                jobStatus = currentJobStatus;
+            }
+            else if (newCount > 0)
+            {
+                jobStatus = "Permit Uploaded";
+            }
+            else if (entryExit == "Created")
+            {
+                jobStatus = "Created";
+            }
+            else
+            {
+                jobStatus = string.IsNullOrEmpty(currentJobStatus) ? "Created" : currentJobStatus;
+            }
+
+            string query = @"UPDATE tbl_jobs
+                     SET FileCount=@FileCount,
+                         FinalUpldStatus=@FinalUpldStatus,
+                         PermitUpload=@PermitUpload,
+                         JOB_Status=@JOB_Status,
+                         MasterStatusCode=@MasterStatusCode,
+                         PermitUploadDate=@Date
                      WHERE JOBID=@JOBID";
 
             using (SqlCommand cmd = new SqlCommand(query, dbcl.Conn))
             {
                 cmd.Parameters.AddWithValue("@JOBID", jobid);
                 cmd.Parameters.AddWithValue("@FileCount", newCount);
-                cmd.Parameters.AddWithValue("@FinalUpldStatus", uploadStatus);
+                cmd.Parameters.AddWithValue("@FinalUpldStatus", finalUpldStatus);
+                cmd.Parameters.AddWithValue("@PermitUpload", permitUpload);
+                cmd.Parameters.AddWithValue("@JOB_Status", jobStatus);
                 cmd.Parameters.AddWithValue("@MasterStatusCode", masterCode);
                 cmd.Parameters.AddWithValue("@Date", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt"));
                 cmd.ExecuteNonQuery();
+            }
+        }
+
+        private void ReadPermitJobState(string jobid, out string jobStatus, out string masterCode, out string entryExit)
+        {
+            jobStatus = "";
+            masterCode = "";
+            entryExit = "";
+            string qry = "SELECT JOB_Status, MasterStatusCode, EntryExit FROM tbl_jobs WHERE JOBID=@JOBID";
+            using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
+            {
+                cmd.Parameters.AddWithValue("@JOBID", jobid);
+                using (SqlDataReader rdr = cmd.ExecuteReader())
+                {
+                    if (!rdr.Read()) return;
+                    jobStatus = rdr["JOB_Status"] == DBNull.Value ? "" : rdr["JOB_Status"].ToString();
+                    masterCode = rdr["MasterStatusCode"] == DBNull.Value ? "" : rdr["MasterStatusCode"].ToString();
+                    entryExit = rdr["EntryExit"] == DBNull.Value ? "" : rdr["EntryExit"].ToString();
+                }
             }
         }
 

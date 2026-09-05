@@ -86,7 +86,7 @@ Merged 05-Sep-2026 into `Jul_to_Sep_2026_Suport_N_Dev_Works`.
 - UAT-040B ✅
 - UAT-035 ✅
 
-**Remaining High-Priority Work:**
+**Remaining High-Priority Work (at M1):**
 - PR #61 — Permit State Consistency
 - PR #62 — JOB360 Navigation
 - PR #63 — Work Order Nature Persistence
@@ -94,6 +94,33 @@ Merged 05-Sep-2026 into `Jul_to_Sep_2026_Suport_N_Dev_Works`.
 - PR #65 — Dashboard Alignment
 
 No executable code was changed to record this milestone.
+
+---
+
+### Milestone M2 — Permit State Consistency
+
+Restore legacy-compatible permit completion fields on V2 upload/delete without reintroducing permit-before-IN.
+
+| Field | Value |
+|---|---|
+| **Files changed** | `WebApplication1/bussiness/production/job_permitupload_v2.aspx.cs` only |
+| **Methods changed** | `UpdatePermitStatus()`; `ReadPermitJobState()` (new) |
+| **Finding resolved** | V2 permit wrote FileCount / FinalUpldStatus / MasterStatusCode but omitted `JOB_Status='Permit Uploaded'` and `PermitUpload`. Reports and mixed V1/V2 filters missed V2 permit-path jobs. |
+| **Mapped UAT** | `UAT-013`, `UAT-018`, `UAT-019` |
+| **Unchanged pages** | `job_inpunch_v2.aspx.cs`, `job_outpunch_v2.aspx.cs`, `create_jobid_v2.aspx.cs`, `job_permitupload_v2.aspx` |
+
+**Writes after this fix (parameterized)**
+
+- `PermitUpload` = Yes when FileCount>0, else No.
+- `JOB_Status` = Permit Uploaded when files exist, unless already Out-Punch Done (approval KEEP). Last-file delete reverts to Created only while `EntryExit='Created'` (IN has not happened).
+- `FinalUpldStatus` / `FileCount` unchanged in meaning (Yes/No from count; ±1).
+- `MasterStatusCode` still becomes 3 on first file. Last-file delete rolls back to 1 only before IN. After Entry/Exit or code 4/5, code is not regressed.
+
+**Remaining after M2:**
+- PR #62 — JOB360 Navigation
+- PR #63 — Work Order Nature Persistence
+- PR #64 — Permit Inbox Continuity
+- PR #65 — Dashboard Alignment
 
 ---
 
@@ -192,8 +219,8 @@ create_jobid_v2.aspx
             ↓
         job_permitupload_v2.aspx?jobid={masked}
             │  inbox: Active + last 3 days + MasterStatusCode='1'  ← BEFORE in-punch
-            │  FileCount>0 → MasterStatusCode=3, FinalUpldStatus=Yes
-            │  DOES NOT set JOB_Status='Permit Uploaded'
+            │  FileCount>0 → MasterStatusCode=3, FinalUpldStatus=Yes, PermitUpload=Yes, JOB_Status=Permit Uploaded (UAT-013 / UAT-018 / UAT-019)
+            │  does not overwrite Out-Punch Done; does not roll MasterStatusCode back after IN
             └── btn_inpunch_Click()
                     ↓
                 job_inpunch_v2.aspx?jobid={masked}
@@ -812,7 +839,7 @@ HasFile; extension PDF or jpg/jpeg/png. No size/signature. Unique disk name `{JO
 ### Business Rules
 - Proceed iff `FileCount>0` (shows `btn_inpunch`). No matrix document completeness. Method: `Bind_JOBIDDetails()`.
 - `btn_inpunch_Click()` does not re-check count; logs and redirects masked IN-punch.
-- `UpdatePermitStatus`: FileCount ±1; `FinalUpldStatus` Yes if count>0 else No; `MasterStatusCode` 3 or 1; sets `PermitUploadDate`. **Does not update `JOB_Status` or `PermitUpload`.** Method: `UpdatePermitStatus()`.
+- `UpdatePermitStatus`: FileCount ±1; `FinalUpldStatus` Yes if count>0 else No; `PermitUpload` Yes/No; `JOB_Status='Permit Uploaded'` when files exist unless already Out-Punch Done; `MasterStatusCode` 3 on files, 1 on last delete only while `EntryExit='Created'`; sets `PermitUploadDate`. Method: `UpdatePermitStatus()`.
 - Delete: parameterized DELETE permit + decrement + physical file under `~/erp_images/Permits/`.
 - Download: SELECT Name BY Id only (no JOB/user scope).
 
@@ -1049,10 +1076,10 @@ Result labels used only: PRESERVED | CHANGED | ADDED | REMOVED | REGRESSION | SE
 | Inbox predicate | `EntryExit='Entry'` | `MasterStatusCode='1'` | CHANGED |
 | QueryString JOB | No | Base64 `jobid`; can bind JOB not in inbox | CHANGED |
 | Next step | OUT-punch | IN-punch (masked) | CHANGED |
-| Sets JOB_Status=Permit Uploaded | Yes | No | REGRESSION |
-| Sets PermitUpload Yes/No | Yes | No | REGRESSION |
+| Sets JOB_Status=Permit Uploaded | Yes | Yes unless already Out-Punch Done (UAT-013 / UAT-019) | PRESERVED |
+| Sets PermitUpload Yes/No | Yes | Yes (UAT-013 / UAT-018) | PRESERVED |
 | Sets FinalUpldStatus + MasterStatusCode | Yes | Yes | PRESERVED |
-| Last-file rollback to code 1 | Yes | Yes (FinalUpldStatus/code only) | CHANGED |
+| Last-file rollback to code 1 | Yes | Only while EntryExit='Created' (not after IN) | CHANGED |
 | DB blob `@Data` | Dummy `{0}` | Actual file bytes | SECURITY IMPROVEMENT |
 | SQL concat vs params | Concat dropdown/grid/delete | Parameterized delete/insert | SECURITY IMPROVEMENT |
 | Unique file name | Original name | `{JOBID}-{ticks}` | UX IMPROVEMENT |
@@ -1177,7 +1204,7 @@ Evidence: `job_inpunch_v2.aspx.cs` `ActiveJOB_Checker()`, `CheckDuplicateEntry()
 ## 5. Status transitions
 
 See Phase 7. Material deltas:
-- V2 permit does not set `JOB_Status='Permit Uploaded'` or `PermitUpload`. Evidence: `job_permitupload_v2.aspx.cs` `UpdatePermitStatus()`.
+- V2 permit sets `JOB_Status='Permit Uploaded'` and `PermitUpload` Yes/No again (UAT-013 / UAT-018 / UAT-019). Does not overwrite Out-Punch Done; does not roll MasterStatusCode to 1 after IN. Evidence: `job_permitupload_v2.aspx.cs` `UpdatePermitStatus()`.
 - V2 IN healing always sets Entry even if zero new rows. Evidence: `job_inpunch_v2.aspx.cs` `btn_finalsubmit_Click()`.
 - V2 OUT last-punch close restored: confirmation modal then `UpdateJOBTable1` (UAT-029 / UAT-040). Evidence: `job_outpunch_v2.aspx.cs` `CheckPendingOUT()`, `btn_FinalizeShift_Click()`.
 
@@ -1377,7 +1404,7 @@ PREVIOUS RESTRICTION REMOVED:
 
 - **New states:** `App_Version=V2`; soft-deleted (`DeleteStatus=1`). The prior “closed-on-finalize-only” waiting state is removed (UAT-029).
 - **Removed states:** none of 1/3/4/5 removed; `JOB_Status='Permit Uploaded'` often **never entered** on V2 permit path.
-- **Changed transitions:** IN-punch inbox restored to legacy (no code-3 gate, UAT-006); create redirect still may send code-1 jobs to permit first; last OUT prompts confirmation then `UpdateJOBTable1` (UAT-029 / UAT-040); permit upload no longer writes JOB_Status/PermitUpload.
+- **Changed transitions:** IN-punch inbox restored to legacy (no code-3 gate, UAT-006); create redirect still may send code-1 jobs to permit first; last OUT prompts confirmation then `UpdateJOBTable1` (UAT-029 / UAT-040); V2 permit writes `JOB_Status`/`PermitUpload` again (UAT-013 / UAT-018 / UAT-019).
 - **Invalid now allowed:** Non-Billing insert with blank billing if dropdown hidden (ViewState bug).
 - **Previous restrictions removed:** yesterday-only backdate; ARC-only permit rule (now matrix); WhatsApp-only share.
 
@@ -1463,8 +1490,7 @@ No classic open-redirect found on V2 success paths (relative known pages). Legac
 ## High
 
 ### R4. JOB_Status not set to Permit Uploaded on V2 permit
-**Disappeared write.** Filters/reports on `JOB_Status='Permit Uploaded'` skip V2 permit-path jobs until IN-punch overwrites to In-Punch Done.  
-**Repro:** Upload permit on V2; query `tbl_jobs.JOB_Status` — still `Created`. `PermitUpload` still `No`.
+**Resolved (UAT-013 / UAT-018 / UAT-019).** `UpdatePermitStatus()` writes `JOB_Status='Permit Uploaded'` and `PermitUpload` Yes/No with FileCount. Out-Punch Done is not overwritten. Last-file delete does not revert IN/OUT/close state.
 
 ### R5. WO_BillingNature / WO_ContractNature never stored
 **Works differently.** Non-Billing WO may insert blank billing; location SQL uses non-ARC binder.  
