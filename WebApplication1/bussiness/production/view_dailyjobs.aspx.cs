@@ -18,7 +18,6 @@ namespace WebApplication1.bussiness.production
         public static string state = string.Empty;
         public static string region = string.Empty;
         public static string comp = string.Empty;
-        public static string datalock = string.Empty;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -38,7 +37,6 @@ namespace WebApplication1.bussiness.production
                         region = retrievedArray[1].ToString();
                         comp = retrievedArray[2].ToString();
                         state = retrievedArray[0].ToString();
-                        datalock = retrievedArray[3].ToString();
                         //Session["Changer"]= null;
                     }
                     else
@@ -46,7 +44,6 @@ namespace WebApplication1.bussiness.production
                         region = Session["REGION"].ToString();
                         comp = Session["COMPANY_CODE"].ToString();
                         state = Session["STATE"].ToString();
-                        datalock = "0";
                     }
 
                     string Date = Request.QueryString["Date"];
@@ -181,13 +178,10 @@ namespace WebApplication1.bussiness.production
                 Label lbl_Creator_Name = (Label)GridView1.Rows[i].FindControl("lbl_Creator_Name");
                 Label lbl_EntryExit = (Label)GridView1.Rows[i].FindControl("lbl_EntryExit");
 
-                string jobidstatus = lbl_JOBID_Status.Text.ToString();
                 string approvalstatus = lbl_Incharge_Approval.Text.ToString();
 
-                string prmtno = lbl_JOB_PermitNo.Text.ToString();
                 string lblupldstatus = lbl_FinalUpldStatus.Text.ToString();
 
-                string supvname = lbl_Creator_Name.Text.ToString();
                 string entryexit = lbl_EntryExit.Text.ToString();
 
 

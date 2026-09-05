@@ -70,7 +70,6 @@ namespace WebApplication1.bussiness.production
 
             // 1. Build Base Query
             string query = @"SELECT * FROM tbl_jobs 
-                             WHERE JOB_InchargeWrk = @Workman 
                              AND Incharge_Approval = 'Approved' 
                              AND YEAR(CreatedDate) = @Year 
                              AND MONTH(CreatedDate) = @Month ";

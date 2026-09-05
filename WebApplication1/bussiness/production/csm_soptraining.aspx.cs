@@ -463,7 +463,6 @@ namespace WebApplication1.bussiness.production
         {
             string sopnum = txt_sopno.Text.ToString();
             string soptitle = txt_sopdesc.Text.ToString();
-            string sopduration = txt_duration.Text.ToString() != "" ? txt_duration.Text.ToString() : "25";
 
 
             if (sopnum != "" && soptitle!= "")

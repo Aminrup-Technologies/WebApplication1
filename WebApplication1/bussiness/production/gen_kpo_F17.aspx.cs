@@ -415,7 +415,6 @@ namespace WebApplication1.bussiness.production
                 decimal otpay = 0.0m;
                 decimal actualgross = 0.0m;
 
-                decimal wrkhrs = Convert.ToDecimal(lbl_WorkHours.Text.ToString());
 
                 decimal otdiv = Convert.ToDecimal(lbl_OT_Divisibility.Text.ToString());  //Added on 29-11-2021
 
@@ -905,7 +904,6 @@ namespace WebApplication1.bussiness.production
                 }
                 catch (Exception ex)
                 {
-                    string msg = ex.Message;
                     //throw;
                 }
             }

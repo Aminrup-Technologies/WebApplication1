@@ -608,7 +608,7 @@ namespace WebApplication1.bussiness.production
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Handle logging
             }

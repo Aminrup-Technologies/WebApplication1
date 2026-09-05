@@ -16,8 +16,6 @@ namespace WebApplication1.bussiness.production
 
         public static string state = string.Empty;
         public static string region = string.Empty;
-        public static string comp = string.Empty;
-        public static string datalock = string.Empty;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -33,8 +31,6 @@ namespace WebApplication1.bussiness.production
                     dbcl.CalDateCombo1(DDL_Day, DDL_Month, DDL_Year);
 
                     DateTime d = DateTime.Now;
-                    string month = d.Month.ToString();
-                    string year = d.Year.ToString();
                     //string region = Session["REGION"].ToString();
 
                     //if (Session["WORKMAN"].ToString() == "J8")
@@ -43,17 +39,13 @@ namespace WebApplication1.bussiness.production
                         {
                             string[] retrievedArray = (string[])Session["Changer"];
                             region = retrievedArray[1].ToString();
-                            comp = retrievedArray[2].ToString();
                             state = retrievedArray[0].ToString();
-                            datalock = retrievedArray[3].ToString();
                             //Session["Changer"]= null;
                         }
                         else
                         {
                             region = Session["REGION"].ToString();
-                            comp = Session["COMPANY_CODE"].ToString();
                             state = Session["STATE"].ToString();
-                            datalock = "0";
                         }
 
                         //string CmdString2 = "select Category_Type, Category_DB from tlb_payroll_category where Country_Code = 'IN' and State_Code='" + state + "' and WorkRegion_Code='" + region + "' and Company_Code='" + comp + "' order by Id desc";
@@ -263,7 +255,7 @@ namespace WebApplication1.bussiness.production
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Handle and log the exception
                 // You can replace Console.WriteLine with an appropriate logging mechanism

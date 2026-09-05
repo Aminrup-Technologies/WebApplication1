@@ -11,7 +11,6 @@ namespace WebApplication1.bussiness.production
 {
     public partial class csms_mainview : System.Web.UI.Page
     {
-        DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)

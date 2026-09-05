@@ -87,7 +87,7 @@ namespace WebApplication1.bussiness.production
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Failsafe: hide alert if DB errors out
                 divRejectionAlert.Visible = false;
@@ -473,7 +473,7 @@ namespace WebApplication1.bussiness.production
                             ScriptManager.RegisterStartupScript(this, GetType(), "showalert", $"alert('{successMessage}');", true);
                             LoadPANDetails(); // reload data
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
                             try { tx.Rollback(); } catch { /* ignore rollback errors */ }
                             throw; // will be caught in outer catch
@@ -972,7 +972,6 @@ namespace WebApplication1.bussiness.production
                         int tenFlag = (saved10 != null && saved10 != "NA") ? 1 : 0;
                         int twelveFlag = (saved12 != null && saved12 != "NA") ? 1 : 0;
                         int gradFlag = (savedUG != null && savedUG != "NA") ? 1 : 0;
-                        int pgFlag = (savedPG != null && savedPG != "NA") ? 1 : 0;
 
                         // Update docs table (nullable-aware)
                         UpdateEducationDocs(con, tx,

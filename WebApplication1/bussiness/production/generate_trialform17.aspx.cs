@@ -17,7 +17,6 @@ namespace WebApplication1.bussiness.production
         Payroll_OH4Y PayRoll = new Payroll_OH4Y();
 
         public static decimal GorssBreaker_KPO = 18500;
-        public static decimal GorssBreaker_AGL = 18500;
 
         public static Int32 minday = 0;
         public static Int32 maxday = 0;
@@ -49,7 +48,6 @@ namespace WebApplication1.bussiness.production
         public static string ESKILL = "";
         public static decimal BW = .0m;
 
-        public static decimal GorssBreaker = 0;
         public static Decimal Allow_Multi = .05m; //5%
         public static decimal Allowances_Allow = 12000;
 
@@ -70,12 +68,10 @@ namespace WebApplication1.bussiness.production
                 if (Session["REGION"].ToString() == "KPO")
                 {
                     CheckforUser();
-                    GorssBreaker = 18500;
                 }
                 else if (Session["REGION"].ToString() == "AGL")
                 {
                     CheckforUser();
-                    GorssBreaker = 20500;
                 }
             }
         }
@@ -351,14 +347,6 @@ namespace WebApplication1.bussiness.production
                 FixedSalary_YesNo = lbl_FixedSalary_YesNo.Text.ToString();
                 FixedAmount = Convert.ToDecimal(lbl_FixedAmount.Text.ToString());
 
-                decimal DaVdaAmount = Convert.ToDecimal(lbl_DA_VDA.Text.ToString());
-                decimal HRAAmount = Convert.ToDecimal(lbl_HRA.Text.ToString());
-                decimal ConvAmount = Convert.ToDecimal(lbl_Conv_Allowance.Text.ToString());
-                decimal MedAmount = Convert.ToDecimal(lbl_Medical_Allowance.Text.ToString());
-                decimal WashAmount = Convert.ToDecimal(lbl_Washing_Allowance.Text.ToString());
-                decimal AttAmount = Convert.ToDecimal(lbl_ATT_Allowance.Text.ToString());
-                decimal SPCLAmount = Convert.ToDecimal(lbl_SPCL_Allowance.Text.ToString());
-                decimal MiscAmount = Convert.ToDecimal(lbl_Misc_Earnings.Text.ToString());
 
                 int AdvanceAmt = Convert.ToInt32(lbl_Cur_Advance.Text.ToString());
                 int FinesAmt = Convert.ToInt32(lbl_Cur_Fines.Text.ToString());
@@ -889,7 +877,6 @@ namespace WebApplication1.bussiness.production
                 }
                 catch (Exception ex)
                 {
-                    string msg = ex.Message;
                     //throw;
                 }
             }

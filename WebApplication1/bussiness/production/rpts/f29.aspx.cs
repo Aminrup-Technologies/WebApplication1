@@ -290,8 +290,6 @@ namespace WebApplication1.bussiness.production.rpts
                     //decimal ded = Convert.ToDecimal(re["ttl_deductions"].ToString());
                     //decimal ded = .0m;
 
-                    decimal gross1 = basicsal + basicotpay + otherspay;
-                    decimal gross2 = netpay + esi + pf + ded;
 
                     str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + basicsal + "</td>";
                     str = str + "<td width='2%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>-</td>";

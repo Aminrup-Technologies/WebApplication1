@@ -15,10 +15,8 @@ namespace WebApplication1.bussiness.production
     public partial class add_workorders : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
-        public static string state = string.Empty;
         public static string region = string.Empty;
         public static string comp = string.Empty;
-        public static string datalock = string.Empty;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -36,16 +34,12 @@ namespace WebApplication1.bussiness.production
                         string[] retrievedArray = (string[])Session["Changer"];
                         region = retrievedArray[1].ToString();
                         comp = retrievedArray[2].ToString();
-                        state = retrievedArray[0].ToString();
-                        datalock = retrievedArray[3].ToString();
                         //Session["Changer"]= null;
                     }
                     else
                     {
                         region = Session["REGION"].ToString();
                         comp = Session["COMPANY_CODE"].ToString();
-                        state = Session["STATE"].ToString();
-                        datalock = "0";
                     }
 
 
@@ -137,7 +131,6 @@ namespace WebApplication1.bussiness.production
 
         protected void DDL_WorkRegion_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string DDL_String = DDL_WorkRegion.SelectedItem.Text.ToString();
             string DDL_Value = DDL_WorkRegion.SelectedValue.ToString();
 
             string CmdString2 = "select Company_Name, Company_Code from tlb_workregion_company where Work_Region_Code='" + DDL_Value + "' order by Id";
@@ -164,10 +157,8 @@ namespace WebApplication1.bussiness.production
 
         protected void DDL_Company_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string DDL_RegionName = DDL_WorkRegion.SelectedItem.Text.ToString();
             string DDL_RegionValue = DDL_WorkRegion.SelectedValue.ToString();
 
-            string DDL_CompanyName = DDL_Company.SelectedItem.Text.ToString();
             string DDL_CompanyValue = DDL_Company.SelectedValue.ToString();
 
             string CmdString3 = "select Company_Department, DB_Code from tlb_workregion_compdept where Work_Region_Code='" + DDL_RegionValue + "' and Company_Code='" + DDL_CompanyValue + "' order by Id";
@@ -331,7 +322,7 @@ namespace WebApplication1.bussiness.production
                 string body = "Data Updated Successfully";
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 throw;
@@ -360,7 +351,7 @@ namespace WebApplication1.bussiness.production
                 cmd.ExecuteNonQuery();
                 dbcl.Conn.Close();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 throw;

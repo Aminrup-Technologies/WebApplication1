@@ -29,7 +29,6 @@ namespace WebApplication1.bussiness.production.rpts
             ds = GetData(EmployeeID, Month);
             if (ds != null && ds.Tables.Count == 5 && ds.Tables[0].Rows.Count > 0 && ds.Tables[1].Rows.Count > 0)
             {
-                Panel pnlPrintControl = new Panel();
                 Document doc = new Document(PageSize.A4, 36f, 36f, 36f, 36f);//36f, 36f, 90f, 100f);
                 PdfWriter.GetInstance(doc, Response.OutputStream);
                 doc.Open();

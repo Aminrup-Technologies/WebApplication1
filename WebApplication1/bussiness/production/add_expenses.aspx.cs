@@ -17,7 +17,6 @@ namespace WebApplication1.bussiness.production
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
         DataTable dt1 = new DataTable();
-        Boolean FileFlag = false;
         string EXPID = "";
         string Server_FileName = String.Empty;
         string Server_FilePath = String.Empty;
@@ -184,7 +183,6 @@ namespace WebApplication1.bussiness.production
                 lblMessage.Text = "Please Select File"; //if file uploader has no file selected
 
                 lbl_fileyesno.Text = "No";
-                FileFlag = false;
             }
             else
             if (FileUpload1.HasFile)
@@ -239,7 +237,6 @@ namespace WebApplication1.bussiness.production
                         //btnUpload.Text = "Uploaded";
                         lblMessage.Text = "File Uploaded Successfully";
 
-                        FileFlag = true;
                         lbl_fileyesno.Text = "Yes";
 
                         //InsertIntoDB(Server_FileName, FileType, ext, bytes);
@@ -257,7 +254,6 @@ namespace WebApplication1.bussiness.production
                         lblMessage.ForeColor = System.Drawing.Color.Red;
                         lblMessage.Text = "Select Only PDF File having extension (.pdf) ";
 
-                        FileFlag = false;
                         lbl_fileyesno.Text = "No";
                     }
                 }
@@ -267,7 +263,6 @@ namespace WebApplication1.bussiness.production
                     lblMessage.ForeColor = System.Drawing.Color.Red;
                     lblMessage.Text = "Error: " + ex.Message.ToString();
 
-                    FileFlag = false;
                     lbl_fileyesno.Text = "No";
                 }
             }
@@ -302,13 +297,10 @@ namespace WebApplication1.bussiness.production
 
             lbl_expid.Text = EXPID;
             string rgn_code = DDL_Region.SelectedValue.ToString();
-            string rgn_name = DDL_Region.SelectedItem.ToString();
 
             string comp_code = DDL_Company.SelectedValue.ToString();
-            string comp_name = DDL_Company.SelectedItem.ToString();
 
             string compdept_code = DDL_CompDept.SelectedValue.ToString();
-            string compdept_name = DDL_CompDept.SelectedItem.ToString();
 
             //Code to Insert values into the DB goes here
             int flag = 0;
@@ -369,7 +361,6 @@ namespace WebApplication1.bussiness.production
                 comp_row2.Visible = true;
 
                 string rgn_code = DDL_Region.SelectedValue.ToString();
-                string rgn_name = DDL_Region.SelectedItem.ToString();
 
                 string CmdString3 = "select Company_Name, Company_Code from tlb_workregion_company where Country_Code = 'IN' and State_Code ='" + Session["USTATE"].ToString() + "' and Work_Region_Code = '" + rgn_code + "' order by Id ";
                 BindCompany(CmdString3);
@@ -403,10 +394,8 @@ namespace WebApplication1.bussiness.production
                 dept_row2.Visible = true;
 
                 string rgn_code = DDL_Region.SelectedValue.ToString();
-                string rgn_name = DDL_Region.SelectedItem.ToString();
 
                 string comp_code = DDL_Company.SelectedValue.ToString();
-                string comp_name = DDL_Company.SelectedItem.ToString();
 
                 string CmdString3 = "select Company_Department, DB_Code from tlb_workregion_compdept where Country_Code = 'IN' and State_Code ='" + Session["USTATE"].ToString() + "' and Work_Region_Code = '" + rgn_code + "' and Company_Code = '" + comp_code + "'  order by Id ";
                 BindCompanyDept(CmdString3);
@@ -443,13 +432,10 @@ namespace WebApplication1.bussiness.production
                 loc_row2.Visible = true;
 
                 string rgn_code = DDL_Region.SelectedValue.ToString();
-                string rgn_name = DDL_Region.SelectedItem.ToString();
 
                 string comp_code = DDL_Company.SelectedValue.ToString();
-                string comp_name = DDL_Company.SelectedItem.ToString();
 
                 string compdept_code = DDL_CompDept.SelectedValue.ToString();
-                string compdept_name = DDL_CompDept.SelectedItem.ToString();
 
                 string CmdString2 = "select WO_Number, DB_Code from tlb_WO_Data where Work_Region_Code = '" + rgn_code + "' and Company_Code = '" + comp_code + "' and Dept_DBCode='" + compdept_code + "' and WO_Status='Active' order by WO_Type";
                 BindWorkorder(CmdString2);
@@ -500,13 +486,10 @@ namespace WebApplication1.bussiness.production
             if (DDL_Location.SelectedIndex != 0)
             {
                 string rgn_code = DDL_Region.SelectedValue.ToString();
-                string rgn_name = DDL_Region.SelectedItem.ToString();
 
                 string comp_code = DDL_Company.SelectedValue.ToString();
-                string comp_name = DDL_Company.SelectedItem.ToString();
 
                 string compdept_code = DDL_CompDept.SelectedValue.ToString();
-                string compdept_name = DDL_CompDept.SelectedItem.ToString();
 
                 string CmdString2 = "select Worksite_Name, DB_Code from tlb_atsworksites where WorkRegion_Code='" + rgn_code + "' and Company_Code = '" + comp_code + "' and Dept_DBCode='" + compdept_code + "' order by Id";
                 BindWorkSites(CmdString2);

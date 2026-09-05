@@ -12,10 +12,8 @@ namespace WebApplication1.bussiness.production
     public partial class workorder_line_litems : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
-        public static string state = string.Empty;
         public static string region = string.Empty;
         public static string comp = string.Empty;
-        public static string datalock = string.Empty;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -33,16 +31,12 @@ namespace WebApplication1.bussiness.production
                         string[] retrievedArray = (string[])Session["Changer"];
                         region = retrievedArray[1].ToString();
                         comp = retrievedArray[2].ToString();
-                        state = retrievedArray[0].ToString();
-                        datalock = retrievedArray[3].ToString();
                         //Session["Changer"]= null;
                     }
                     else
                     {
                         region = Session["REGION"].ToString();
                         comp = Session["COMPANY_CODE"].ToString();
-                        state = Session["STATE"].ToString();
-                        datalock = "0";
                     }
 
                     string CmdString1 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region order by Id";
@@ -104,7 +98,6 @@ namespace WebApplication1.bussiness.production
 
         protected void DDL_WorkRegion_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string DDL_String = DDL_WorkRegion.SelectedItem.Text.ToString();
             string DDL_Value = DDL_WorkRegion.SelectedValue.ToString();
 
             string CmdString2 = "select Company_Name, Company_Code from tlb_workregion_company where Work_Region_Code='" + DDL_Value + "' order by Id";
@@ -129,17 +122,12 @@ namespace WebApplication1.bussiness.production
         {
             Int32 flagvalue = Inser_WorkorderLineItems();
 
-            string DDL_RegionName = DDL_WorkRegion.SelectedItem.Text.ToString();
             string DDL_RegionValue = DDL_WorkRegion.SelectedValue.ToString();
 
-            string DDL_CompanyName = DDL_Company.SelectedItem.Text.ToString();
             string DDL_CompanyValue = DDL_Company.SelectedValue.ToString();
 
-            string DDL_WODNo = DDL_Workorder.SelectedItem.Text.ToString();
             string DDL_WODID = DDL_Workorder.SelectedValue.ToString();
 
-            string DDL_WOIText = DDL_Workorder.SelectedItem.Text.ToString();
-            string DDL_WOIValue = DDL_Workorder.SelectedValue.ToString();
 
             if (flagvalue != 0)
             {
@@ -245,10 +233,8 @@ namespace WebApplication1.bussiness.production
 
         protected void DDL_Company_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string DDL_String = DDL_WorkRegion.SelectedItem.Text.ToString();
             string DDL_Value = DDL_WorkRegion.SelectedValue.ToString();
 
-            string DDL_CompText = DDL_Company.SelectedItem.Text.ToString();
             string DDL_CompValue = DDL_Company.SelectedValue.ToString();
 
             string CmdString2 = "select Company_Department, DB_Code from tlb_workregion_compdept where Work_Region_Code='" + DDL_Value + "' and Company_Code = '" + DDL_CompValue + "' order by Id";
@@ -271,13 +257,10 @@ namespace WebApplication1.bussiness.production
 
         protected void DDL_Departments_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string DDL_String = DDL_WorkRegion.SelectedItem.Text.ToString();
             string DDL_Value = DDL_WorkRegion.SelectedValue.ToString();
 
-            string DDL_CompText = DDL_Company.SelectedItem.Text.ToString();
             string DDL_CompValue = DDL_Company.SelectedValue.ToString();
 
-            string DDL_DeptText = DDL_Departments.SelectedItem.Text.ToString();
             string DDL_DeptValue = DDL_Departments.SelectedValue.ToString();
 
             string CmdString2 = "select WO_Number, DB_Code from tlb_WO_Data where Work_Region_Code='" + DDL_Value + "' and Company_Code = '" + DDL_CompValue + "' and Dept_DBCode = '" + DDL_DeptValue+ "' and WO_Status='Active' order by Id";
@@ -300,16 +283,12 @@ namespace WebApplication1.bussiness.production
 
         protected void DDL_Workorder_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string DDL_String = DDL_WorkRegion.SelectedItem.Text.ToString();
             string DDL_Value = DDL_WorkRegion.SelectedValue.ToString();
 
-            string DDL_CompText = DDL_Company.SelectedItem.Text.ToString();
             string DDL_CompValue = DDL_Company.SelectedValue.ToString();
 
-            string DDL_DeptText = DDL_Departments.SelectedItem.Text.ToString();
             string DDL_DeptValue = DDL_Departments.SelectedValue.ToString();
 
-            string DDL_WOText = DDL_Workorder.SelectedItem.Text.ToString();
             string DDL_WOValue = DDL_Workorder.SelectedValue.ToString();
 
             string CmdString2 = "select * from tlb_WO_LineItems_Data where Work_Region_Code='" + DDL_Value + "' and Company_Code = '" + DDL_CompValue + "' and Department_Code = '" + DDL_DeptValue + "' and WODB_Code='" + DDL_WOValue+"' order by Id";

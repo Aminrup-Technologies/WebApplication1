@@ -27,7 +27,6 @@ namespace WebApplication1.bussiness.production
                         if (result != null && result.Length > 0)
                         {
                             string[] splittedval = result.Split('/');
-                            string jobid  = splittedval[0];
                             string mastercode = splittedval[1];
 
                             if (mastercode =="1")

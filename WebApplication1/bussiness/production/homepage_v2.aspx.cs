@@ -570,8 +570,6 @@ namespace WebApplication1.bussiness.production
                                 bool aadhaarStatus = reader["AadhaarYesNo"] != DBNull.Value && Convert.ToInt32(reader["AadhaarYesNo"]) == 1;
                                 bool bankStatus = reader["BankYesNo"] != DBNull.Value && Convert.ToInt32(reader["BankYesNo"]) == 1;
                                 bool panStatus = reader["PanYesNo"] != DBNull.Value && Convert.ToInt32(reader["PanYesNo"]) == 1;
-                                bool tenStatus = reader["TenYesNo"] != DBNull.Value && Convert.ToInt32(reader["TenYesNo"]) == 1;
-                                bool twelveStatus = reader["TwelveYesNo"] != DBNull.Value && Convert.ToInt32(reader["TwelveYesNo"]) == 1;
 
                                 bool isBypassed = reader["IsBypassed"] != DBNull.Value && Convert.ToInt32(reader["IsBypassed"]) == 1;
 
@@ -657,15 +655,11 @@ namespace WebApplication1.bussiness.production
                         Session["USTATE"] = state;
                         lbl_state.Text = state;
 
-                        string User_FirstName = row["FirstName"].ToString();
                         string User_FullName = row["FullName"].ToString();
-                        string User_Type = row["User_RoleType"].ToString();
-                        string User_Permission = row["Role_Permission"].ToString();
 
                         string User_Worksite = row["WorkSite"].ToString();
                         lbl_wrksite.Text = User_Worksite;
 
-                        string User_WRKSTCode = row["Worksite_Code"].ToString();
 
                         string User_Skill = row["SkillCategory"].ToString();
                         Session["SKIL"] = User_Skill;
@@ -1053,9 +1047,6 @@ namespace WebApplication1.bussiness.production
                 }
             }
             int Days = Now.Subtract(PastYearDate.AddMonths(Months)).Days;
-            int Hours = Now.Subtract(PastYearDate).Hours;
-            int Minutes = Now.Subtract(PastYearDate).Minutes;
-            int Seconds = Now.Subtract(PastYearDate).Seconds;
             return String.Format("{0} Year(s) {1} Month(s) {2} Day(s)", Years, Months, Days);
         }
 

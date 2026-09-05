@@ -208,7 +208,6 @@ namespace WebApplication1.bussiness.production
             //{ new Activity(new DateTime(2023,2,18,9,0,0), "John Doe", "Volunteer at the downtown soup kitchen, three hours"),
             //  new Activity(new DateTime(2023,2,16,8,0,0), "Jane Doe", "Referee youth soccer at the Y, until noon") };
 
-            DataTable dt2 = new DataTable();
             _monthActivities = new List<Activity>();
             if (ViewState["EmpAtten"] != null)
             {

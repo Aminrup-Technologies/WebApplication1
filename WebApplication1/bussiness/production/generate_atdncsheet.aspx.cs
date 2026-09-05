@@ -21,11 +21,9 @@ namespace WebApplication1.bussiness.production
         public static string date2 = string.Empty;
         DataTable dt_present = new DataTable();
         DataTable dt_ot = new DataTable();
-        DataTable dt_presentot = new DataTable();
 
         public static string state = string.Empty;
         public static string region = string.Empty;
-        public static string comp = string.Empty;
 
 
         protected void Page_Load(object sender, EventArgs e)
@@ -42,7 +40,6 @@ namespace WebApplication1.bussiness.production
                     {
                         string[] retrievedArray = (string[])Session["Changer"];
                         region = retrievedArray[1].ToString();
-                        comp = retrievedArray[2].ToString();
                         state = retrievedArray[0].ToString();
 
                         Session["Changer"] = null;
@@ -50,7 +47,6 @@ namespace WebApplication1.bussiness.production
                     else
                     {
                         region = Session["REGION"].ToString();
-                        comp = Session["COMPANY_CODE"].ToString();
                         state = Session["STATE"].ToString();
                     }
 
@@ -213,7 +209,6 @@ namespace WebApplication1.bussiness.production
                     decimal ttlot = 0;
                     string wrkman = re["WorkmanSL"].ToString();
                     string emp_name = re["FullName"].ToString();
-                    string emp_desg = re["SkillDesignation"].ToString();
                     str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='5%' style='background-color:white; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + Sl + "</td>";
                     str = str + "<td width='5%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + wrkman + "</td>";
                     str = str + "<td width='18%' style='background-color: white; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + emp_name + "</td>";

@@ -13,16 +13,12 @@ namespace WebApplication1.bussiness.production
     public partial class job_create_summary : System.Web.UI.Page
     {
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
-        CountChecker CC = new CountChecker();
         public static string region = string.Empty;
         public static string viewertype = string.Empty;
         public static string billingtype = string.Empty;
         public static string query1 = string.Empty;
 
-        public static string JobidArray = "";
-        public static string PermitnoArray = "";
         StringBuilder tempJobidArray = new StringBuilder();
-        StringBuilder tempPermitnoArray = new StringBuilder();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -257,7 +253,6 @@ namespace WebApplication1.bussiness.production
                 if (chk != null && chk.Checked)
                 {
                     tempJobidArray.Append(lbl_JOBID.Text + ",");
-                    JobidArray = tempJobidArray.ToString().TrimEnd(',');
                 }
             }
         }

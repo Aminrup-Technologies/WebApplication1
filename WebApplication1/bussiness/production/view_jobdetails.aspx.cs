@@ -23,11 +23,11 @@ namespace WebApplication1.bussiness.production
         CountChecker CC = new CountChecker();
         DataTable dt = new DataTable();
 
-        public static string jobid = string.Empty;
-        public static string dbid = string.Empty;
-        public static string supv = string.Empty;
+        public string jobid = string.Empty;
+        public string dbid = string.Empty;
+        public string supv = string.Empty;
 
-        static string message = "";
+        string message = "";
 
         // Default folder
         static readonly string rootFolder = @"C:\atswork.in\wwwroot\erp_images\Permits";
@@ -35,6 +35,10 @@ namespace WebApplication1.bussiness.production
         //static readonly string rootFolder = @"D:\OH4Y Works\OH4Y_2021\Demo\WebApplication1\WebApplication1\erp_images\Permits";
         protected void Page_Load(object sender, EventArgs e)
         {
+            jobid = Request.QueryString["JOBID"];
+            dbid = Request.QueryString["dbid"];
+            supv = Request.QueryString["supv"];
+
             if (!IsPostBack)
             {
                 if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
@@ -43,12 +47,7 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-                    message = "";
-                    message = message + "Today's JOB Details," + "\r\n\r\n";
                     ViewState["RefUrl"] = Request.UrlReferrer.ToString();
-                    jobid = Request.QueryString["JOBID"];
-                    dbid = Request.QueryString["dbid"];
-                    supv = Request.QueryString["supv"];
 
                     Bind_JOBIDDetails(jobid, dbid, supv);
                     Checker();
@@ -109,7 +108,8 @@ namespace WebApplication1.bussiness.production
                 {
                     //txt_jobdate.Text = dt.Rows[0]["CreatedDate"].ToString();
                     HF_Msg.Value = "";
-                    //message = "";
+                    message = "";
+                    message = message + "Today's JOB Details," + "\r\n\r\n";
 
                     message = message + "JOBID : " + "*"+ jobid + "*" + "\r\n\r\n";
 
@@ -242,11 +242,19 @@ namespace WebApplication1.bussiness.production
                     //txt_approverrmrks.Text = dt.Rows[0]["JOB_Title"].ToString();
                     txt_approverrmrks.Text = "N/A";
 
-                    string CmdString2 = "select TOP 100 Id, JOBID, Name, TimeStamp from tbl_jobspermit where JOBID='" + jobid + "' and Submitter_Wrk='"+ supv + "' order by Id desc";
-                    BindGrid(CmdString2);
+                    string CmdString2 = "select Id, JOBID, Name, TimeStamp from tbl_jobspermit where JOBID=@JOBID and Submitter_Wrk=@Creator_Workman order by Id desc";
+                    SqlParameter[] permitParams = {
+                        new SqlParameter("@JOBID", jobid),
+                        new SqlParameter("@Creator_Workman", supv)
+                    };
+                    BindGrid(CmdString2, permitParams);
 
-                    string CmdString3 = "select TOP 100 Id, JOBID, JOB_Region, CreatedDate, EmployeeWrk, EmployeeName, EmpDesignation, WourkHours, Inpunch_Time, Outpunch_Time, LunchFactor, ProvidedOT, AttendanceStatus, AttendanceCode from tbl_attendance where JOBID='" + jobid + "' and Creator_Workman='" + supv + "' order by Id desc";
-                    BindGrid2(CmdString3);
+                    string CmdString3 = "select Id, JOBID, JOB_Region, CreatedDate, EmployeeWrk, EmployeeName, EmpDesignation, WourkHours, Inpunch_Time, Outpunch_Time, LunchFactor, ProvidedOT, AttendanceStatus, AttendanceCode from tbl_attendance where JOBID=@JOBID and Creator_Workman=@Creator_Workman order by Id desc";
+                    SqlParameter[] attendanceParams = {
+                        new SqlParameter("@JOBID", jobid),
+                        new SqlParameter("@Creator_Workman", supv)
+                    };
+                    BindGrid2(CmdString3, attendanceParams);
 
                     message = message + "\r\n";
                     message = message + "_This message is sent from ATS Web Portal( http://atswork.co.in/ )_" + "\r\n\r\n";
@@ -320,11 +328,15 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-        private void BindGrid(string cmdString)
+        private void BindGrid(string cmdString, SqlParameter[] parameters = null)
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
+            if (parameters != null)
+            {
+                cmd.Parameters.AddRange(parameters);
+            }
             SqlDataAdapter ad = new SqlDataAdapter(cmd);
             DataSet ds = new DataSet();
             ad.Fill(ds);
@@ -333,11 +345,15 @@ namespace WebApplication1.bussiness.production
             dbcl.Conn.Close();
         }
 
-        private void BindGrid2(string cmdString)
+        private void BindGrid2(string cmdString, SqlParameter[] parameters = null)
         {
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
+            if (parameters != null)
+            {
+                cmd.Parameters.AddRange(parameters);
+            }
             SqlDataAdapter ad = new SqlDataAdapter(cmd);
             //DataSet ds = new DataSet();
             DataTable dt = new DataTable();
@@ -964,7 +980,6 @@ namespace WebApplication1.bussiness.production
 
                 //Standard PDF setup, iText doesn't care what type of stream we're using
                 var doc = new iTextSharp.text.Document();
-                var writer = iTextSharp.text.pdf.PdfWriter.GetInstance(doc, MS);
                 doc.Open();
                 doc.Add(new iTextSharp.text.Paragraph("Work Order No :      " + ""+ txt_workorderno.Text + ""));
                 PdfPTable table = new PdfPTable(3);

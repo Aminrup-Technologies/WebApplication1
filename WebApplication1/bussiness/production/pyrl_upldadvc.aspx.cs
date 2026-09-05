@@ -16,7 +16,6 @@ namespace WebApplication1.bussiness.production
 {
     public partial class pyrl_upldadvc : System.Web.UI.Page
     {
-        DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
 
         public static string state = string.Empty;
         public static string region = string.Empty;
