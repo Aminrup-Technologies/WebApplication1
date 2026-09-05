@@ -31,6 +31,40 @@ Restore legacy-compatible IN-Punch eligibility for permit-required jobs. V2 no l
 
 ---
 
+## Post-audit fix — UAT-029 / UAT-040 / UAT-035 (05-Sep-2026)
+
+Restore legacy automatic shift-close semantics on V2 OUT-Punch, with a confirmation modal instead of a mandatory Finalize Shift step.
+
+| Field | Value |
+|---|---|
+| **UAT IDs** | `UAT-029`, `UAT-040`, `UAT-035` |
+| **Finding resolved** | Critical: V2 last OUT did not close the job. Close required `btn_FinalizeShift_Click()`. Forgotten Finalize left `MasterStatusCode='3'` / `EntryExit='Entry'` forever, so the job never appeared in approval (`JOB_Status='Out-Punch Done' AND EntryExit='Exit'`) and stayed on the pending-OUT dashboard. |
+| **Files changed** | `WebApplication1/bussiness/production/job_outpunch_v2.aspx`; `WebApplication1/bussiness/production/job_outpunch_v2.aspx.cs` |
+| **Methods changed** | `CheckPendingOUT()` (prompt confirmation when `CheckforPendingOUT==0`); `PromptCloseConfirmation()` (new); `ShowShiftClosedPopup()` (success modal); `btn_FinalizeShift_Click()` (Close & Send → existing `UpdateJOBTable1`) |
+| **Methods unchanged** | `UpdateJOBTable1()` parameterized close (`JOBID_Status`, `JOB_Status='Out-Punch Done'`, `MasterStatusCode='4'`, `EntryExit='Exit'`); `CountChecker.CheckforPendingOUT` / `CheckforPendingPermit`; Blocked vs Active rule |
+
+**Close flow after this fix**
+
+1. Last OUT (or last Entry delete) → `CheckPendingOUT()` sees `CheckforPendingOUT==0` → confirmation modal.
+2. **Review Again** dismisses the modal only (grid remains for review; no DB write).
+3. **Close & Send** runs the same `UpdateJOBTable1(Blocked|Active, "Out-Punch Done", "4", "Exit")` as legacy.
+4. Success modal confirms submission. Job matches approval inbox predicates immediately. Dashboard pending-OUT (`MasterStatusCode='3' AND EntryExit='Entry'`) drops the job. No new columns/states.
+
+**Hardening (UAT-040A / UAT-040B)**
+
+| Field | Value |
+|---|---|
+| **UAT IDs** | `UAT-040A` Double-click protection; `UAT-040B` Refresh during close |
+| **Finding resolved** | Close & Send could be posted twice (double-click or browser refresh of the close POST). Second write is skipped; success modal still opens. |
+| **Files changed** | `job_outpunch_v2.aspx`; `job_outpunch_v2.aspx.cs` |
+| **Methods changed** | `btn_FinalizeShift_Click()` (idempotent Close & Send — control ID not renamed); `UpdateJOBTable1()` WHERE still-open; `TryReadJobCloseState()` / `IsAlreadyClosed()` / `ShowCloseSuccessUi()` (new); client `lockCloseAndSend()` |
+| **Behavior unchanged** | First eligible close still writes `JOB_Status='Out-Punch Done'`, `MasterStatusCode='4'`, `EntryExit='Exit'`. No new columns/states. Notifications fire only when this request actually updated a row. |
+
+- **UAT-040A:** `lockCloseAndSend()` disables Close & Send, Review Again, and shows the loader on first click. A second click returns false and does not post.
+- **UAT-040B:** Before `UpdateJOBTable1()`, verify `MasterStatusCode='3'`, `EntryExit='Entry'`, and `CheckforPendingOUT()==0`. If already `Out-Punch Done` / `4` / `Exit`, skip the update and reopen the success modal. The UPDATE itself is `WHERE JOBID=@JOBID AND MasterStatusCode='3' AND EntryExit='Entry'`.
+
+---
+
 # PHASE 1 — JOBID Dependency Graph
 
 ## Menu / Hub entry
@@ -140,11 +174,11 @@ job_outpunch_v2.aspx  [?jobid=masked]
     │  inbox: Active + MasterStatusCode='3' + EntryExit='Entry'
     │  also requires FinalUpldStatus='Yes' on selection
     │  individual SP_Update_AttendancePunchOUT
-    │  DOES NOT auto-close
-    └── btn_FinalizeShift_Click()
+    │  last OUT → CheckPendingOUT==0 → confirmation modal (UAT-029)
+    └── Close & Send → UpdateJOBTable1 (legacy writes)
             │  JOB_Status=Out-Punch Done, MasterStatusCode=4, EntryExit=Exit
             │  WhatsApp/email to Site In-Charge (fire-and-forget)
-            └── popup → job_360_view.aspx?jobid={RAW} | jobs_and_manpower_v2.aspx
+            └── success modal → job_360_view.aspx?jobid={RAW} | jobs_and_manpower_v2.aspx
 
 manage_jobid_v2.aspx
     └── view_jobdetails_v2.aspx?JOBID=&dbid=&supv=
@@ -821,7 +855,7 @@ Workflow logs (scan reject, batch, GP, error, downgrade). NotificationQueue. No 
 ## job_outpunch_v2.aspx
 
 ### Purpose
-Step 4: individual OUT, optional hard-delete, **explicit Finalize Shift**.
+Step 4: individual OUT, optional hard-delete, **last-OUT confirmation then legacy `UpdateJOBTable1()` close**.
 
 ### Entry Conditions
 USERID+WORKMAN. Inbox: Active, 3 days, creator, `MasterStatusCode='3'`, `EntryExit='Entry'`. Selection also requires `FinalUpldStatus='Yes'`. Methods: `ActiveJOB_Checker()`, `Pull_PermitStatus()`. QueryString Base64, must exist in dropdown.
@@ -834,18 +868,17 @@ Client OT 0–16 and no future datetime. Server timeout same Now−IN vs config/
 
 ### Business Rules
 CSM_Documents=Yes → TBT and SOP required. Method: `Bind_JOBIDDetails()`.  
-Individual `SP_Update_AttendancePunchOUT`. After punch, `CheckPendingOUT()` only shows `NoPenidngPunch` — **does not update job**.  
-Close only via `btn_FinalizeShift_Click()`: pending OUT must be 0; then Blocked vs Active by `CheckforPendingPermit`; `JOB_Status=Out-Punch Done`, code `4`, `EntryExit=Exit`; fire-and-forget WhatsApp/email to in-charge.  
-Delete: hard DELETE by Id only; no ManpowerCount update.
+Individual `SP_Update_AttendancePunchOUT`. After punch/delete, `CheckPendingOUT()`: if `CheckforPendingOUT==0`, show confirmation modal (UAT-029). **Review Again** dismisses only. **Close & Send** (`btn_FinalizeShift_Click` — control ID unchanged) reuses `UpdateJOBTable1`: Blocked vs Active by `CheckforPendingPermit`; `JOB_Status=Out-Punch Done`, code `4`, `EntryExit=Exit`; fire-and-forget WhatsApp/email to in-charge; success modal (UAT-040 / UAT-035). Idempotent (UAT-040A / UAT-040B): requires still-open code 3 / Entry and zero pending OUT; already-closed jobs skip the UPDATE and reopen the success modal. Client lock disables the button after first click.  
+Delete: hard DELETE by Id only; no ManpowerCount update. Last Entry delete also prompts the close modal.
 
 ### Database Operations
-SELECT jobs/attendance/codes/employee contact. SP punch. UPDATE jobs on finalize. DELETE attendance.
+SELECT jobs/attendance/codes/employee contact. SP punch. UPDATE jobs on Close & Send via `UpdateJOBTable1` (same four columns as legacy; WHERE still-open code 3 / Entry). DELETE attendance.
 
 ### Session Variables
 Read: WORKMAN, REGION. Written: none.
 
 ### Navigation
-Success popup links `job_360_view.aspx?jobid={raw}` and hub. V1: plain `job_outpunch.aspx`.
+Success modal links `job_360_view.aspx?jobid={raw}` and hub. V1: plain `job_outpunch.aspx`.
 
 ### Error Handling
 PNotify. Parse/config/`REGION` before try. Notification failures logged, not shown (`Task.Run`).
@@ -1025,7 +1058,7 @@ Result labels used only: PRESERVED | CHANGED | ADDED | REMOVED | REGRESSION | SE
 | Inbox Entry + FinalUpldStatus Yes | Yes | Yes (+ MasterStatusCode=3) | CHANGED |
 | CSM TBT/SOP gate | Yes | Yes | PRESERVED |
 | Individual SP_Update_AttendancePunchOUT | Yes | Yes | PRESERVED |
-| Auto-close when last Entry gone | Yes `CheckPendingOUT` | **No** — Finalize button required | CHANGED |
+| Auto-close when last Entry gone | Yes `CheckPendingOUT` | Confirmation modal then same `UpdateJOBTable1` (UAT-029 / UAT-040) | PRESERVED |
 | Approver WhatsApp/email on close | No | Yes (async) | ADDED |
 | Timeout Now−IN vs config | Yes | Yes | PRESERVED |
 | Hard delete attendance | Concat Id | Param Id, no job scope | CHANGED |
@@ -1114,20 +1147,20 @@ Evidence: `job_inpunch_v2.aspx.cs` `ActiveJOB_Checker()`, `CheckDuplicateEntry()
 See Phase 7. Material deltas:
 - V2 permit does not set `JOB_Status='Permit Uploaded'` or `PermitUpload`. Evidence: `job_permitupload_v2.aspx.cs` `UpdatePermitStatus()`.
 - V2 IN healing always sets Entry even if zero new rows. Evidence: `job_inpunch_v2.aspx.cs` `btn_finalsubmit_Click()`.
-- V2 OUT does not auto-transition to code 4. Evidence: `job_outpunch_v2.aspx.cs` `CheckPendingOUT()` vs `btn_FinalizeShift_Click()`.
+- V2 OUT last-punch close restored: confirmation modal then `UpdateJOBTable1` (UAT-029 / UAT-040). Evidence: `job_outpunch_v2.aspx.cs` `CheckPendingOUT()`, `btn_FinalizeShift_Click()`.
 
-**Impact:** Jobs can sit at Entry forever if supervisor never clicks Finalize; approver list (`JOB_Status='Out-Punch Done' AND EntryExit='Exit'`) will not see them.  
-**Risk:** **Critical**.
+**Impact:** Close is no longer a forgotten extra step. Approver list (`JOB_Status='Out-Punch Done' AND EntryExit='Exit'`) sees the job after Close & Send. Review Again can still delay close until the supervisor confirms.  
+**Risk:** Low remaining — only if the supervisor dismisses the modal and never Close & Send.
 
 ## 6. Close conditions
 
 **Old Logic:** Auto when `CheckforPendingOUT==0`; Blocked if `CheckforPendingPermit==0` else Active.  
 Evidence: `job_outpunch.aspx.cs` `CheckPendingOUT()`.
 
-**New Logic:** Same Blocked/Active rule, but only on Finalize. Does not write `Incharge_Approval` (still Pending from create). Adds notifications.  
-Evidence: `job_outpunch_v2.aspx.cs` `btn_FinalizeShift_Click()`.
+**New Logic (UAT-029 / UAT-040 / UAT-035):** Same Blocked/Active rule and same `UpdateJOBTable1` writes, triggered from Close & Send after last-OUT confirmation modal. Does not write `Incharge_Approval` (still Pending from create). Adds notifications. No new DB states.  
+Evidence: `job_outpunch_v2.aspx.cs` `CheckPendingOUT()`, `UpdateJOBTable1()`, `btn_FinalizeShift_Click()`.
 
-**Risk:** High — incomplete close is a new user action; forgotten Finalize = payroll/approval stall.
+**Risk:** Low — confirmation is required UX; close writes match legacy so approval and dashboard update immediately.
 
 ## 7. Reopen / cancel / delete
 
@@ -1275,8 +1308,8 @@ Evidence: `create_jobid_v2.aspx.cs` lines 25–26, 319–321, 726–727.
   (or remains "Created" if permit ran first)
   PermitUpload remains "No"             ← NEW / CHANGED (V2 permit omit)
         │
-        │  last OUT does NOT close                     ← CHANGED
-        │  supervisor must Finalize Shift
+        │  last OUT → confirmation modal (UAT-029)
+        │  Close & Send → UpdateJOBTable1 (legacy writes)
         ↓
   JOB_Status=Out-Punch Done
   MasterStatusCode=4
@@ -1289,17 +1322,17 @@ Evidence: `create_jobid_v2.aspx.cs` lines 25–26, 319–321, 726–727.
 [Create matrix code 3]
   JOB_Status=Permit Uploaded, FinalUpldStatus=Yes, PermitUpload=N/A
   skip permit inbox
-        → IN → Finalize OUT → Approve
+        → IN → last OUT confirm close → Approve
 
 [Missing matrix]
   defaults to code 1 (permit path), strict flags on
 
 NEW states/fields: App_Version=V2, GPS_*, Required_Documents, DeleteStatus/ViewStatus on job/attendance/permit.
 
-REMOVED transition: auto Created/Entry → Exit on last punch.
+REMOVED transition: none — last OUT again closes via `UpdateJOBTable1` after confirmation (UAT-029).
 
 INVALID NOW ALLOWED:
-  - Finalize never clicked → remain Entry indefinitely while all workers Exit.
+  - Review Again dismisses the close modal without writing (temporary until Close & Send).
   - QueryString bind of another creator’s JOB on permit V2 if masked ID known.
 
 PREVIOUS RESTRICTION REMOVED:
@@ -1310,10 +1343,10 @@ PREVIOUS RESTRICTION REMOVED:
 
 ### Transition diff marks
 
-- **New states:** `App_Version=V2`; soft-deleted (`DeleteStatus=1`); “closed-on-finalize-only” waiting state (all Exit punches, job still Entry/code 3).
+- **New states:** `App_Version=V2`; soft-deleted (`DeleteStatus=1`). The prior “closed-on-finalize-only” waiting state is removed (UAT-029).
 - **Removed states:** none of 1/3/4/5 removed; `JOB_Status='Permit Uploaded'` often **never entered** on V2 permit path.
-- **Changed transitions:** IN-punch inbox restored to legacy (no code-3 gate, UAT-006); create redirect still may send code-1 jobs to permit first; no auto-close; permit upload no longer writes JOB_Status/PermitUpload.
-- **Invalid now allowed:** stay in code 3 Entry after all workers out; Non-Billing insert with blank billing if dropdown hidden (ViewState bug).
+- **Changed transitions:** IN-punch inbox restored to legacy (no code-3 gate, UAT-006); create redirect still may send code-1 jobs to permit first; last OUT prompts confirmation then `UpdateJOBTable1` (UAT-029 / UAT-040); permit upload no longer writes JOB_Status/PermitUpload.
+- **Invalid now allowed:** Non-Billing insert with blank billing if dropdown hidden (ViewState bug).
 - **Previous restrictions removed:** yesterday-only backdate; ARC-only permit rule (now matrix); WhatsApp-only share.
 
 ---
@@ -1390,13 +1423,7 @@ No classic open-redirect found on V2 success paths (relative known pages). Legac
 **Remaining difference:** post-create auto-redirect still prefers permit for matrix code `1`; hub navigation to IN-Punch lists the job without a file upload.
 
 ### R2. OUT no longer auto-closes the JOB
-**Works differently / could break existing users.** Approver inbox needs `JOB_Status='Out-Punch Done' AND EntryExit='Exit'`.  
-**Repro:**
-1. V2 OUT-punch all workers.
-2. Do not click Finalize Shift.
-3. Confirm `tbl_jobs.MasterStatusCode` still 3 / EntryExit Entry.
-4. Open jobs-for-approval: JOB missing.
-5. Repeat on V1: last punch auto-closes.
+**Resolved (UAT-029 / UAT-040 / UAT-035 / UAT-040A / UAT-040B).** Last OUT shows a confirmation modal. Close & Send reuses `UpdateJOBTable1` (`JOB_Status='Out-Punch Done'`, `MasterStatusCode='4'`, `EntryExit='Exit'`). Second click or refresh of the close POST skips the write if already closed and still shows the success modal. The job matches the approval inbox immediately and leaves the pending-OUT dashboard count. Finalize Shift is not a required extra step.
 
 ### R3. Cross-version inbox mismatch
 **Inbox half resolved (UAT-006).** V2 IN-Punch now lists V1-created Active 3-day jobs (no code-3 filter). Dual-run can still mix permit pages (V2 permit inbox remains `MasterStatusCode='1'`).
@@ -1494,7 +1521,7 @@ Written for the client SPOC.
 
 **What changes in daily work**
 1. **Permit timing.** On the old screens, people normally IN-punched first and uploaded the permit afterwards. Create V2 still auto-redirects permit-required jobs to permit upload. **IN-Punch inbox listing is restored (UAT-006):** a newly created permit-required job appears in IN-Punch immediately (no `MasterStatusCode='3'` gate). Duplicate Entry protection is unchanged (UAT-021).
-2. **Closing the shift is now a separate click.** Previously, punching OUT the last person closed the job automatically and it appeared for approval. Now the supervisor must press **Finalize Shift**. If they forget, the In-Charge will not see the job.
+2. **Closing the shift (UAT-029 / UAT-040 / UAT-035).** After the last OUT, a confirmation modal appears. **Close & Send** writes the same status as the old automatic close (Out-Punch Done / code 4 / Exit) and shows a success modal. **Review Again** only closes the modal so the supervisor can re-check punches.
 3. **The menu opens the new screens.** “Create JOBID” goes to the new dashboard. The new dashboard’s “Switch to OLD Version” button does not actually go back.
 4. **New create rules.** Job title must be more than three words. Some regions require sharing GPS at submit. Some work orders auto-fill the title or hide billing. Dates can go back two days by default (old screen: yesterday only), unless an exception allows more.
 5. **Site staff cannot change work region** on the new create screen.
@@ -1509,7 +1536,7 @@ Written for the client SPOC.
 
 **Operational impact**
 - Retrain permit-required gangs: create may still land on permit, but IN-Punch lists the job immediately (UAT-006).
-- Retrain OUT: **Finalize Shift** is mandatory for approval.
+- Retrain OUT: last OUT prompts **Close & Send**; that is the legacy close, not an extra Finalize step.
 - Do not mix old and new screens for the same job during rollout; inboxes filter differently and can skip or bypass steps.
 - Confirm with Admin that each work order’s rule matrix (permit yes/no, CSM yes/no, skip-to-IN) matches how that contract is supposed to run. A missing matrix currently forces permit + CSM + attendance.
 - Confirm Non-Billing work orders still store billing type correctly before month-end memo runs (technical defect in the new create save path).
@@ -1528,7 +1555,7 @@ Written for the client SPOC.
 | IN V1 | `job_inpunch.aspx.cs` | `ActiveJOB_Checker`, `txt_empworkman_TextChanged`, `InsertIntoAttendanceTable`, `UpdateJOBTableStatus` |
 | IN V2 | `job_inpunch_v2.aspx.cs` | `ActiveJOB_Checker`, `btn_finalsubmit_Click`, `CheckDuplicateEntry` |
 | OUT V1 | `job_outpunch.aspx.cs` | `ActiveJOB_Checker`, `CheckPendingOUT`, `UpdateAttendanceTable` |
-| OUT V2 | `job_outpunch_v2.aspx.cs` | `CheckPendingOUT`, `btn_FinalizeShift_Click`, `CanPunchOutWithin32Hours` |
+| OUT V2 | `job_outpunch_v2.aspx.cs` | `CheckPendingOUT`, `UpdateJOBTable1`, `btn_FinalizeShift_Click` (Close & Send), `CanPunchOutWithin32Hours` |
 | Manage | `manage_jobid.aspx.cs`, `_v2.aspx.cs` | `GridView1_RowCommand`, `JOBID_Delete`, `JOBID_Status_Swaper` |
 | View | `view_jobdetails.aspx.cs`, `_v2.aspx.cs` | `Bind_JOBIDDetails`, `UpdateBasicJOBData`, resend, attach |
 | Helpers | `CountChecker.cs`, `JobWorkflowLogger.cs`, `DB_Utility_OH4Y.cs` | pending OUT/permit, FileCount, manpower count |

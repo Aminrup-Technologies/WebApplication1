@@ -58,26 +58,11 @@ namespace WebApplication1.bussiness.production
             ScriptManager.RegisterStartupScript(this, this.GetType(), "PNotify", script, true);
         }
 
-        // Shift-closure popup with navigation buttons (no blind redirect).
-        // Reuses the PNotify pop-up (insert_brs:false renders HTML buttons).
+        // Shift-closure success modal (UAT-029 / UAT-040). Same states as legacy UpdateJOBTable1.
         private void ShowShiftClosedPopup(string jobid)
         {
             string safeJobId = (jobid ?? "").Replace("\\", "\\\\").Replace("'", "\\'");
-            string script = $@"
-                new PNotify({{
-                    title: 'Shift Closed',
-                    text: '<div class=""text-center"">Shift has been successfully finalized and sent to the Approver.' +
-                          '<br/><br/><a class=""btn btn-success btn-sm mr-1"" href=""job_360_view.aspx?jobid={safeJobId}"">' +
-                          '<i class=""fa fa-eye""></i> Open JOB 360</a>' +
-                          '<a class=""btn btn-info btn-sm"" href=""jobs_and_manpower_v2.aspx"">' +
-                          '<i class=""fa fa-th-large""></i> JOB Dashboard</a></div>',
-                    type: 'success',
-                    styling: 'bootstrap3',
-                    hide: false,
-                    insert_brs: false,
-                    width: '460px',
-                    buttons: {{ sticker: false, closer: true }}
-                }});";
+            string script = $"showCloseSuccessModal('{safeJobId}');";
             ScriptManager.RegisterStartupScript(this, this.GetType(), "ShiftClosedPopup", script, true);
         }
 
@@ -306,17 +291,36 @@ namespace WebApplication1.bussiness.production
             ViewState_TableRow.Visible = true;
             Bind_GridView(ddljobid);
 
-            if (CC.CheckforPendingOUT(ddljobid, supv) == 0) NoPenidngPunch.Visible = true;
-            else NoPenidngPunch.Visible = false;
+            // Legacy job_outpunch.aspx.cs CheckPendingOUT(): when CheckforPendingOUT==0,
+            // immediately UpdateJOBTable1(Blocked|Active, Out-Punch Done, 4, Exit).
+            // V2 keeps that same update, behind a confirmation modal (UAT-029 / UAT-040).
+            if (CC.CheckforPendingOUT(ddljobid, supv) == 0)
+            {
+                NoPenidngPunch.Visible = true;
+                PromptCloseConfirmation();
+            }
+            else
+            {
+                NoPenidngPunch.Visible = false;
+            }
         }
 
-        private void UpdateJOBTable1(string jobidstatus, string jobstatus, string mastercode, string entryexitstatus)
+        private void PromptCloseConfirmation()
         {
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "ShowCloseConfirm", "showCloseConfirmModal();", true);
+        }
+
+        private int UpdateJOBTable1(string jobidstatus, string jobstatus, string mastercode, string entryexitstatus)
+        {
+            // Same parameterized close as legacy job_outpunch.aspx.cs UpdateJOBTable1().
+            // Writes JOBID_Status, JOB_Status, MasterStatusCode, EntryExit only — no new columns/states.
+            // WHERE also requires still-open (code 3 / Entry) so a second click or refresh cannot rewrite a closed job (UAT-040A / UAT-040B).
             try
             {
-                string CmdString = "UPDATE tbl_jobs set JOBID_Status=@JOBID_Status, JOB_Status=@JOB_Status, MasterStatusCode=@MasterStatusCode, EntryExit=@EntryExit where JOBID=@JOBID";
+                string CmdString = "UPDATE tbl_jobs set JOBID_Status=@JOBID_Status, JOB_Status=@JOB_Status, MasterStatusCode=@MasterStatusCode, EntryExit=@EntryExit where JOBID=@JOBID AND MasterStatusCode='3' AND EntryExit='Entry'";
                 dbcl.Sqlconnection();
                 dbcl.ConnectDb();
+                int rows;
                 using (SqlCommand cmd = new SqlCommand(CmdString, dbcl.Conn))
                 {
                     cmd.Parameters.AddWithValue("@JOBID", lbl_jobid.Text);
@@ -324,11 +328,60 @@ namespace WebApplication1.bussiness.production
                     cmd.Parameters.AddWithValue("@JOB_Status", jobstatus);
                     cmd.Parameters.AddWithValue("@MasterStatusCode", mastercode);
                     cmd.Parameters.AddWithValue("@EntryExit", entryexitstatus);
-                    cmd.ExecuteNonQuery();
+                    rows = cmd.ExecuteNonQuery();
                 }
                 dbcl.DisconnectDb();
+                return rows;
             }
-            catch (Exception ex) { ShowNotification("Error Closing Job", ex.Message, "error"); }
+            catch (Exception ex)
+            {
+                ShowNotification("Error Closing Job", ex.Message, "error");
+                return -1;
+            }
+        }
+
+        private bool TryReadJobCloseState(string jobid, out string masterCode, out string entryExit, out string jobStatus)
+        {
+            masterCode = "";
+            entryExit = "";
+            jobStatus = "";
+            if (string.IsNullOrEmpty(jobid)) return false;
+
+            string qry = "SELECT MasterStatusCode, EntryExit, JOB_Status FROM tbl_jobs WHERE JOBID=@JOBID";
+            dbcl.Sqlconnection();
+            dbcl.ConnectDb();
+            using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
+            {
+                cmd.Parameters.AddWithValue("@JOBID", jobid);
+                using (SqlDataReader rdr = cmd.ExecuteReader())
+                {
+                    if (!rdr.Read())
+                    {
+                        dbcl.DisconnectDb();
+                        return false;
+                    }
+                    masterCode = rdr["MasterStatusCode"] == DBNull.Value ? "" : rdr["MasterStatusCode"].ToString();
+                    entryExit = rdr["EntryExit"] == DBNull.Value ? "" : rdr["EntryExit"].ToString();
+                    jobStatus = rdr["JOB_Status"] == DBNull.Value ? "" : rdr["JOB_Status"].ToString();
+                }
+            }
+            dbcl.DisconnectDb();
+            return true;
+        }
+
+        private static bool IsAlreadyClosed(string masterCode, string entryExit, string jobStatus)
+        {
+            return masterCode == "4" && entryExit == "Exit" && jobStatus == "Out-Punch Done";
+        }
+
+        private void ShowCloseSuccessUi(string jobid)
+        {
+            ShowShiftClosedPopup(jobid);
+            ViewState_TableRow.Visible = false;
+            NoPenidngPunch.Visible = false;
+            PunchOutForm_Row.Visible = false;
+            JOBIDDetails_Row.Visible = false;
+            ActiveJOB_Checker();
         }
 
         private void Bind_GridView(string jobid)
@@ -550,42 +603,64 @@ namespace WebApplication1.bussiness.production
             CheckPendingOUT();
         }
 
-        // =================================================================================
-        // FINALIZATION & NOTIFICATION TRIGGER
-        // =================================================================================
+        // Close & Send (UAT-029 / UAT-040 / UAT-035). Control ID remains btn_FinalizeShift
+        // for markup/designer compatibility; this handler is the Close & Send action, not a
+        // separate Finalize Shift workflow step.
+        // UAT-040A / UAT-040B: idempotent — second click or refresh during/after close
+        // skips UpdateJOBTable1 when the job is already Out-Punch Done / code 4 / Exit.
         protected void btn_FinalizeShift_Click(object sender, EventArgs e)
         {
             string ddljobid = DDL_JOBID.SelectedValue;
+            if (string.IsNullOrEmpty(ddljobid)) ddljobid = lbl_jobid.Text;
             if (string.IsNullOrEmpty(ddljobid)) return;
 
-            string supv = Session["WORKMAN"].ToString();
+            string supv = Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "";
 
-            // Double check that no one is missing an out-punch before sealing
-            if (CC.CheckforPendingOUT(ddljobid, supv) == 0)
+            string masterCode, entryExit, jobStatus;
+            if (!TryReadJobCloseState(ddljobid, out masterCode, out entryExit, out jobStatus))
             {
-                // 1. Update Master Status Code to 4 (Exit)
-                string jobStatus = CC.CheckforPendingPermit(ddljobid, supv) == 0 ? "Blocked" : "Active";
-                UpdateJOBTable1(jobStatus, "Out-Punch Done", "4", "Exit");
-
-                // =======================================================
-                // NEW: TXT FILE LOGGING (SHIFT CLOSURE)
-                // =======================================================
-                JobWorkflowLogger.LogAction(ddljobid, "5. SHIFT CLOSED & FINALIZED", supv, "All workers successfully out-punched. Master Status Code updated to 4 (Exit). Job routed to Site Approver.");
-                // =======================================================
-
-                // 2. Fire and Forget Notifications (Does not block the UI)
-                Task.Run(() => TriggerShiftClosureNotifications(ddljobid));
-
-                // 3. Update UI Immediately - pop-up with redirect buttons (no blind redirect)
-                ShowShiftClosedPopup(ddljobid);
-                ViewState_TableRow.Visible = false;
-                NoPenidngPunch.Visible = false;
-                ActiveJOB_Checker();
+                ShowNotification("Error", "JOB ID was not found.", "error");
+                return;
             }
-            else
+
+            if (IsAlreadyClosed(masterCode, entryExit, jobStatus))
+            {
+                ShowCloseSuccessUi(ddljobid);
+                return;
+            }
+
+            if (CC.CheckforPendingOUT(ddljobid, supv) != 0)
             {
                 ShowNotification("Warning", "You still have missing OUT-Punches. Please complete them first.", "warning");
+                return;
             }
+
+            if (masterCode != "3" || entryExit != "Entry")
+            {
+                ShowNotification("Warning", "This shift is not ready to close.", "warning");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(lbl_jobid.Text)) lbl_jobid.Text = ddljobid;
+
+            // Same parameterized UpdateJOBTable1 writes as legacy (Blocked|Active, Out-Punch Done, 4, Exit).
+            string closeJobIdStatus = CC.CheckforPendingPermit(ddljobid, supv) == 0 ? "Blocked" : "Active";
+            int rowsUpdated = UpdateJOBTable1(closeJobIdStatus, "Out-Punch Done", "4", "Exit");
+            if (rowsUpdated < 0) return;
+
+            if (!TryReadJobCloseState(ddljobid, out masterCode, out entryExit, out jobStatus) || !IsAlreadyClosed(masterCode, entryExit, jobStatus))
+            {
+                ShowNotification("Warning", "This shift is not ready to close.", "warning");
+                return;
+            }
+
+            if (rowsUpdated > 0)
+            {
+                JobWorkflowLogger.LogAction(ddljobid, "5. SHIFT CLOSED & FINALIZED", supv, "All workers successfully out-punched. Master Status Code updated to 4 (Exit). Job routed to Site Approver.");
+                Task.Run(() => TriggerShiftClosureNotifications(ddljobid));
+            }
+
+            ShowCloseSuccessUi(ddljobid);
         }
 
         // =================================================================================

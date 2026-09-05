@@ -511,13 +511,11 @@
                                                 <div class="d-flex align-items-center justify-content-center flex-wrap">
                                                     <i class="fa fa-check-circle text-success mr-3" style="font-size: 30px;"></i>
                                                     <h4 class="text-success m-0 mr-3" style="font-weight: 700;">All Punches Completed</h4>
-
-                                                    <asp:Button ID="btn_FinalizeShift" runat="server"
-                                                        Text="Submit to Approver & Close Shift"
-                                                        CssClass="btn btn-success m-0 mt-2 mt-sm-0"
-                                                        Style="border-radius: 30px; padding: 10px 30px; font-weight: bold; font-size: 15px; box-shadow: 0 4px 10px rgba(26, 187, 156, 0.3); transition: transform 0.2s;"
-                                                        OnClientClick="showLoader();"
-                                                        OnClick="btn_FinalizeShift_Click" />
+                                                    <button type="button" class="btn btn-success m-0 mt-2 mt-sm-0"
+                                                        style="border-radius: 30px; padding: 10px 30px; font-weight: bold; font-size: 15px; box-shadow: 0 4px 10px rgba(26, 187, 156, 0.3);"
+                                                        onclick="showCloseConfirmModal(); return false;">
+                                                        Close &amp; Send
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -540,6 +538,56 @@
         </div>
     </div>
 
+    <div class="modal fade" id="confirmCloseModal" tabindex="-1" role="dialog" aria-labelledby="confirmCloseTitle" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #1ABB9C; color: #fff;">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #fff; opacity: 1;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="confirmCloseTitle"><i class="fa fa-send"></i> Close shift and send for approval?</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-2">All workers are OUT-punched. Closing this shift writes the same legacy status as automatic close:</p>
+                    <ul>
+                        <li><code>JOB_Status = Out-Punch Done</code></li>
+                        <li><code>MasterStatusCode = 4</code></li>
+                        <li><code>EntryExit = Exit</code></li>
+                    </ul>
+                    <p class="text-muted small mb-0">The job will appear in the Site In-Charge approval queue and drop off the pending-OUT dashboard.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" id="btn_ReviewAgain" data-dismiss="modal">Review Again</button>
+                    <asp:Button ID="btn_FinalizeShift" runat="server"
+                        Text="Close &amp; Send"
+                        CssClass="btn btn-success"
+                        CausesValidation="false"
+                        UseSubmitBehavior="true"
+                        OnClientClick="return lockCloseAndSend(this);"
+                        OnClick="btn_FinalizeShift_Click" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="successCloseModal" tabindex="-1" role="dialog" aria-labelledby="successCloseTitle" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #26B99A; color: #fff;">
+                    <h4 class="modal-title" id="successCloseTitle"><i class="fa fa-check-circle"></i> Shift submitted for approval</h4>
+                </div>
+                <div class="modal-body text-center">
+                    <p>JOB <strong id="closeSuccessJobId"></strong> is closed and sent to the Site In-Charge.</p>
+                    <p class="text-muted small">Status is Out-Punch Done / MasterStatusCode 4 / EntryExit Exit. No pending-OUT orphan remains.</p>
+                </div>
+                <div class="modal-footer" style="text-align: center;">
+                    <a id="closeSuccess360" class="btn btn-success" href="#"><i class="fa fa-eye"></i> Open JOB 360</a>
+                    <a id="closeSuccessDash" class="btn btn-info" href="jobs_and_manpower_v2.aspx"><i class="fa fa-th-large"></i> JOB Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script type="text/javascript">
         function showPNotify(title, text, type) {
             new PNotify({
@@ -547,8 +595,46 @@
             });
         }
 
-        function showLoader() { document.getElementById("loadingOverlay").style.display = "block"; }
+        function showLoader(message) {
+            var overlay = document.getElementById("loadingOverlay");
+            if (overlay) overlay.style.display = "block";
+            var textEl = overlay ? overlay.querySelector(".loading-text") : null;
+            if (textEl) textEl.textContent = message || "Processing Exit...";
+        }
         function hideLoader() { document.getElementById("loadingOverlay").style.display = "none"; }
+
+        function lockCloseAndSend(btn) {
+            // UAT-040A: first click posts; later clicks are no-ops until the page reloads.
+            if (window.__closeAndSendLocked) return false;
+            window.__closeAndSendLocked = true;
+            showLoader("Closing shift...");
+            btn.value = "Closing...";
+            var reviewBtn = document.getElementById("btn_ReviewAgain");
+            if (reviewBtn) reviewBtn.disabled = true;
+            var headerClose = document.querySelector("#confirmCloseModal .close");
+            if (headerClose) headerClose.disabled = true;
+            setTimeout(function () { btn.disabled = true; }, 0);
+            return true;
+        }
+
+        function showCloseConfirmModal() {
+            hideLoader();
+            if (window.jQuery) {
+                $('#confirmCloseModal').modal({ backdrop: 'static', keyboard: false });
+            }
+        }
+
+        function showCloseSuccessModal(jobid) {
+            hideLoader();
+            if (!window.jQuery) return;
+            $('#confirmCloseModal').modal('hide');
+            var safeId = jobid || '';
+            var jobEl = document.getElementById('closeSuccessJobId');
+            if (jobEl) jobEl.textContent = safeId;
+            var viewEl = document.getElementById('closeSuccess360');
+            if (viewEl) viewEl.setAttribute('href', 'job_360_view.aspx?jobid=' + encodeURIComponent(safeId));
+            $('#successCloseModal').modal({ backdrop: 'static', keyboard: false });
+        }
 
         function validateInput(sender, args) {
             var inputValue = document.getElementById('<%= txt_ot.ClientID %>');
