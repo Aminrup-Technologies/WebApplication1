@@ -1098,7 +1098,8 @@ namespace WebApplication1.bussiness.production
 
         private void ShowTriggerTab()
         {
-            ScriptManager.RegisterStartupScript(this, GetType(), "showTriggerTab", "showTriggerTab();", true);
+            hfActiveTab.Value = "#tab_triggers";
+            ScriptManager.RegisterStartupScript(upTriggers, upTriggers.GetType(), "showTriggerTab", "showTriggerTab();", true);
         }
     }
 }
