@@ -51,11 +51,7 @@
         <add tagPrefix="asp" namespace="System.Web.UI.WebControls" assembly="System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
       </controls>
     </pages>
-    <sessionState mode="InProc" customProvider="DefaultSessionProvider" timeout="20">
-      <providers>
-        <add name="DefaultSessionProvider" type="System.Web.Providers.DefaultSessionStateProvider, System.Web.Providers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" connectionStringName="DefaultConnection" />
-      </providers>
-    </sessionState>
+    <sessionState mode="InProc" timeout="20" />
     <machineKey decryption="AES" decryptionKey="4ae9d54c6e52b8f91d8511b21041b57b371ac58d1e784441ce7e278ebe4db73a" validationKey="1525f34901b25d56725af6ff9c0e676dfa1ea110048bf359978f7fd600174a2e68fa57b36b5b6ae953e7aab7cab1a1faefaa3052bf2ca102cd1cc2fd10173e9c" />
   </system.web>
   <entityFramework>

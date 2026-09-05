@@ -8,10 +8,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>ATS | Cloud ERP - Login</title>
 
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/@pnotify/core@5.2.0/dist/PNotify.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/@pnotify/core@5.2.0/dist/BrightTheme.css" rel="stylesheet">
+    <link href="bussiness/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@pnotify/core@5.2.0/dist/PNotify.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@pnotify/core@5.2.0/dist/BrightTheme.css" rel="stylesheet" />
 
     <style type="text/css">
         body { background: #f0f2f5; min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; padding: 15px; }
@@ -36,7 +37,6 @@
 </head>
 <body>
     <form id="form1" runat="server">
-        <asp:ScriptManager ID="ScriptManager1" runat="server" />
         <div class="login-card">
             <asp:Image ID="Image1" runat="server" ImageUrl="~/erp_images/ats_translogo.png" Height="80" Width="80" CssClass="brand-logo" />
             <h1 class="h5 text-center fw-bold mb-4">ATS Cloud ERP</h1>
@@ -108,6 +108,7 @@
                         <p class="small text-center fw-bold mfa-manual mb-3">
                             <asp:Label ID="lbl_mfa_manual" runat="server"></asp:Label>
                         </p>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
                     </asp:PlaceHolder>
                     <div class="mb-3">
                         <label class="form-label small fw-bold text-muted">VERIFICATION CODE</label>
@@ -135,7 +136,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@pnotify/core@5.2.0/dist/PNotify.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
         window.notify = function (title, text, type) {
             if (typeof PNotify === "undefined") {

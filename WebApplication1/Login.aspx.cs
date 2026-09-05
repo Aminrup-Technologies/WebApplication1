@@ -28,6 +28,7 @@ namespace WebApplication1.bussiness.production
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            Stopwatch sw = Stopwatch.StartNew();
             if (!IsPostBack)
             {
                 if (Request.Cookies["ATS_SavedID"] != null)
@@ -42,6 +43,7 @@ namespace WebApplication1.bussiness.production
                     RefreshMfaHint();
                 }
             }
+            LogLoginTiming(IsPostBack ? "pageLoad_postback" : "pageLoad", sw, "login.aspx");
         }
 
         // --- NEW FIX: Server-side Tab Control ---
@@ -385,7 +387,7 @@ namespace WebApplication1.bussiness.production
                 string loginId = Session[SessionKeys.MfaPendingLoginId] as string;
                 hf_mfa_otpauth.Value = MfaTotpHelper.BuildOtpAuthUri(loginId, secret);
                 lbl_mfa_manual.Text = secret ?? "";
-                ScriptManager.RegisterStartupScript(this, GetType(), "mfaqr",
+                ClientScript.RegisterStartupScript(GetType(), "mfaqr",
                     "window.setTimeout(function(){ if (window.renderMfaQr) { renderMfaQr(); } }, 50);", true);
             }
             else
@@ -920,7 +922,7 @@ namespace WebApplication1.bussiness.production
             ViewState["ForgotMode"] = false;
 
             Notify("Success", "Reset successful. Redirecting...", "success");
-            ScriptManager.RegisterStartupScript(this, GetType(), "redirect", "setTimeout(function(){ window.location.href='login.aspx'; }, 2000);", true);
+            ClientScript.RegisterStartupScript(GetType(), "redirect", "setTimeout(function(){ window.location.href='login.aspx'; }, 2000);", true);
         }
 
         /* ================= HELPERS ================= */
@@ -973,7 +975,7 @@ namespace WebApplication1.bussiness.production
         private void Notify(string title, string msg, string type)
         {
             string script = $"window.setTimeout(function () {{ if (window.notify) {{ notify('{title}', '{msg}', '{type}'); }} else {{ alert('{title}: {msg}'); }} }}, 50);";
-            ScriptManager.RegisterStartupScript(this, GetType(), Guid.NewGuid().ToString(), script, true);
+            ClientScript.RegisterStartupScript(GetType(), Guid.NewGuid().ToString(), script, true);
         }
 
         private void InsertLoginAudit(string loginId, string workmanSL, string result, string reason)
