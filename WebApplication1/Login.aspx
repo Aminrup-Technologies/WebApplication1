@@ -166,7 +166,28 @@
                 });
             }
             renderMfaQr();
+            bindMfaAutoSubmit();
         });
+
+        function bindMfaAutoSubmit() {
+            var input = document.getElementById('<%= txt_mfa_otp.ClientID %>');
+            var btn = document.getElementById('<%= btn_mfa_verify.ClientID %>');
+            if (!input || !btn || input.getAttribute('data-autosubmit') === '1') return;
+            input.setAttribute('data-autosubmit', '1');
+            input.setAttribute('inputmode', 'numeric');
+            var submitted = false;
+            input.addEventListener('input', function () {
+                var digits = (input.value || '').replace(/\D/g, '');
+                if (digits.length > 6) digits = digits.substring(0, 6);
+                if (input.value !== digits) input.value = digits;
+                if (digits.length === 6 && !submitted && !btn.disabled) {
+                    submitted = true;
+                    btn.click();
+                    return;
+                }
+                if (digits.length < 6) submitted = false;
+            });
+        }
 
         function renderMfaQr() {
             const box = document.getElementById('mfaQrBox');
