@@ -113,16 +113,117 @@ Merged 05-Sep-2026 into `Jul_to_Sep_2026_Suport_N_Dev_Works`.
 - UAT-018A ✅ (final permit delete after IN: `PermitUpload='No'`, `FinalUpldStatus='No'`, `MasterStatusCode` stays `3`, OUT inbox predicates intact)
 - UAT-019 ✅
 
-**Remaining Work:**
-- PR #62 — JOB360 Navigation Contract
-- PR #63 — Work Order Nature Persistence
-- PR #64 — Permit Inbox Continuity
+**Remaining Work (after M2; M3–M6 recorded below):**
+None.
 
 No executable code was changed to record this milestone.
 
 ---
 
+### Milestone M3 — JOB360 Navigation Contract
+
+**PR:** #62 (`cursor/job360-navigation-contract-6c97`)
+**Status:** Merged `aaea92e` 2026-09-05
+**UAT closed:** UAT-046, UAT-047, UAT-048, UAT-049
+
+**Files changed:**
+- `WebApplication1/bussiness/production/job_360_view.aspx.cs`
+- `WebApplication1/bussiness/production/job_inpunch_v2.aspx.cs`
+- `WebApplication1/bussiness/production/job_outpunch_v2.aspx.cs`
+- `WebApplication1/bussiness/production/job_permitupload_v2.aspx.cs`
+- `docs/JOBID_LIFECYCLE_FUNCTIONAL_AUDIT.md`
+
+**Methods changed:**
+- `job_360_view.aspx.cs` `btn_Act_UploadPermit_Click()`, `btn_Act_InPunch_Click()`, `btn_Act_OutPunch_Click()` — encode `txt_jobid` with existing `create_jobid_v2.EncodeJobID()` before redirect
+- `job_inpunch_v2.aspx.cs` `Page_Load()` — catch `FormatException` from `DecodeJobID`; skip selection when decoded value is empty
+- `job_outpunch_v2.aspx.cs` `Page_Load()` — same
+- `job_permitupload_v2.aspx.cs` `Page_Load()` — same; inbox insert fallback still runs only for a successfully decoded non-empty JOBID
+
+**Methods unchanged:** `DecodeJobID()` algorithm; `EncodeJobID()` algorithm; `ActiveJOB_Checker()` (IN/OUT at M3); `UpdatePermitStatus()`; `UpdateJOBTable1()`; `CheckPendingOUT()`; `btn_FinalizeShift_Click()`; V1 pages; JOB360 inbound raw `jobid`; JOB360 AddDocs/SwapDate raw links.
+
+**Finding resolved:**
+JOB360 raw JOBID was incompatible with V2 Base64 decoding.
+
+**UAT:**
+- UAT-046 — JOB360 Permit opens the selected V2 JOBID (encoded `jobid`)
+- UAT-047 — JOB360 IN opens the selected V2 JOBID (encoded `jobid`)
+- UAT-048 — JOB360 OUT opens the selected V2 JOBID (encoded `jobid`)
+- UAT-049 — valid encoded links still work; invalid/empty `jobid` does not throw; V1 and non-V2 360 actions unchanged
+
+**Regression:** PR #59 (IN-Punch eligibility), PR #60 (shift closure), and PR #61 (permit state writes) are unchanged.
+
+**Remaining Work (after M3; M4–M6 recorded below):**
+None.
+
+---
+
+### Milestone M4 — Work Order Nature Persistence
+
+**PR:** #63 (`cursor/wo-nature-persistence-6c97`)
+**Status:** Merged `111a986` 2026-09-05
+**UAT closed:** UAT-010, UAT-011, UAT-012
+
+**Files changed:**
+- `WebApplication1/bussiness/production/create_jobid_v2.aspx.cs`
+- `docs/JOBID_LIFECYCLE_FUNCTIONAL_AUDIT.md`
+
+**Methods changed:**
+- `DDL_Workorder_SelectedIndexChanged()` — write `WO_BillingNature` and `WO_ContractNature` ViewState from the selected Work Order row; clear both when the placeholder is selected
+- `Workorder_Binder()` — clear both natures when the WO list is rebound (selection returns to placeholder)
+
+**Methods unchanged:** `Insert_JOBData()` parameterized `@BillingType`/`@BillingCode` branch (now receives persisted Non-Billing); `DDL_Worksite_SelectedIndexChanged()` ARC vs non-ARC `BindDepLoc`; `Find_DBCode()`; `btn_submit_Click()`; skip-permit `WO_MasterStatusCode == "3"` writes; IN/OUT/permit/JOB360 pages.
+
+**Finding resolved:**
+`WO_BillingNature` and `WO_ContractNature` ViewState were declared and later read, but never assigned from the selected Work Order. Locals `billingNature`/`contractNature` drove UI only, so postback save and ARC location binding saw empty strings.
+
+**UAT:**
+- UAT-010 — Billing Work Order: natures persist across postback; save writes dropdown BillingType/BillingCode
+- UAT-011 — Non-Billing Work Order: natures persist; save writes `BillingType='Non-Billing'` and `BillingCode='NB'`
+- UAT-012 — ARC Work Order: `WO_ContractNature` persists; location binding uses the ARC `BindDepLoc` path
+
+**Regression:** PR #59, #60, #61, and #62 (`aaea92e`) files/behavior are unchanged (this PR only edits create V2 nature persistence).
+
+**Remaining Work (after M4; M5–M6 recorded below):**
+None.
+
+---
+
+### Milestone M5 — Permit Inbox Continuity
+
+**PR:** #64 (`cursor/permit-inbox-continuity-6c97`)
+**Status:** Merged `6e597d0` 2026-09-05
+**UAT closed:** UAT-014, UAT-015, UAT-015A, UAT-015B
+
+**Files changed:**
+- `WebApplication1/bussiness/production/job_permitupload_v2.aspx.cs`
+- `docs/JOBID_LIFECYCLE_FUNCTIONAL_AUDIT.md`
+
+**Methods changed:**
+- `ActiveJOB_Checker()` — inbox SQL uses `EntryExit='Entry'` (legacy) instead of `MasterStatusCode='1'`
+
+**Methods unchanged:** `UpdatePermitStatus()`, `ReadPermitJobState()`, `InsertIntoDB()`, `Bind_JOBIDDetails()`, `Page_Load()` FormatException catch and QueryString fallback (M3), IN/OUT/create/JOB360 pages.
+
+**Finding resolved:**
+After the first permit upload, `UpdatePermitStatus()` sets `MasterStatusCode='3'`. The V2 inbox required `'1'`, so the JOB disappeared and supervisors could not return to add more files. Inbox now matches legacy (`EntryExit='Entry'`), so the JOB remains selectable until Close & Send sets `EntryExit='Exit'`.
+
+**UAT:**
+- UAT-014 — Create → IN → first permit → leave → return: JOB still in inbox
+- UAT-015 — second permit: FileCount increments; JOB remains available
+- UAT-015A — upload → leave → return, repeated: continuation while Active + Entry
+- UAT-015B — after Close & Send (`EntryExit='Exit'`): JOB no longer in inbox
+
+**Regression:** PR #59, #60, #61, #62 (`aaea92e`), and #63 (`111a986`) files/behavior are unchanged except this inbox filter. M2 permit *writes* are unchanged. M3 decode handling is unchanged.
+
+**Remaining Work (after M5; M6 recorded below):**
+None.
+
+---
+
 ### Milestone M6 — Dashboard Alignment
+
+**PR:** #65 (`cursor/dashboard-alignment-6c97`)
+**Status:** Synchronized onto `6e597d0`; awaiting squash merge
+**UAT closed:** UAT-004, UAT-005, UAT-035, UAT-035A, UAT-035B
 
 **Files changed:**
 - `WebApplication1/bussiness/production/jobs_and_manpower_v2.aspx.cs`
@@ -144,6 +245,9 @@ V2 hub Pending Permit used `MasterStatusCode='1'` (pre-IN), then briefly reused 
 - UAT-035B — approval queue is `JOB_Status='Out-Punch Done' AND EntryExit='Exit'` on `view_jobsforapproval`; hub has no approval badge; jobs stay in Pending OUT until Close & Send
 
 **Regression:** PR #59–#64 workflow files are not in this diff. V1 hub SQL is unchanged.
+
+**Remaining Work:**
+None.
 
 ---
 
@@ -241,7 +345,7 @@ create_jobid_v2.aspx
     └── else (typically "1")
             ↓
         job_permitupload_v2.aspx?jobid={masked}
-            │  inbox: Active + last 3 days + MasterStatusCode='1'  ← BEFORE in-punch
+            │  inbox: Active + last 3 days + creator + EntryExit='Entry'  ← UAT-014 (after IN; survives first upload)
             │  FileCount>0 → MasterStatusCode=3, FinalUpldStatus=Yes, PermitUpload=Yes, JOB_Status=Permit Uploaded (UAT-013 / UAT-018 / UAT-019)
             │  does not overwrite Out-Punch Done; does not roll MasterStatusCode back after IN
             └── btn_inpunch_Click()
@@ -269,9 +373,9 @@ manage_jobid_v2.aspx
             └── manage_jobid_v2.aspx            (Session Grid_Year/Grid_Month)
 
 job_360_view.aspx  (admin override; not a primary user page)
-    ├── job_permitupload_v2.aspx?jobid={RAW}   ← DecodeJobID will throw
-    ├── job_inpunch_v2.aspx?jobid={RAW}        ← DecodeJobID will throw
-    └── job_outpunch_v2.aspx?jobid={RAW}       ← DecodeJobID will throw
+    ├── job_permitupload_v2.aspx?jobid={EncodeJobID}   ← UAT-046
+    ├── job_inpunch_v2.aspx?jobid={EncodeJobID}        ← UAT-047
+    └── job_outpunch_v2.aspx?jobid={EncodeJobID}       ← UAT-048
 ```
 
 ## Alternate / failure / retry branches
@@ -309,8 +413,8 @@ job_360_view.aspx  (admin override; not a primary user page)
 | Param | Pages | Notes |
 |---|---|---|
 | none | legacy create/permit/in/out; both hubs | JOB selected from dropdown |
-| `jobid` (Base64) | V2 create→permit/in; permit→in; in/out Page_Load | `EncodeJobID` / `DecodeJobID` |
-| `jobid` (raw) | `job_360_view` action buttons | incompatible with V2 decode |
+| `jobid` (Base64) | V2 create→permit/in; permit→in; JOB360 Permit/IN/OUT; in/out/permit Page_Load | `EncodeJobID` / `DecodeJobID` (UAT-046) |
+| `jobid` (raw) | `job_360_view` inbound QueryString; 360 AddDocs/SwapDate | JOB360 itself still reads raw; V2 punch/permit no longer receive raw from 360 |
 | `JOBID`, `dbid`, `supv` | manage→view (both) | `supv` is trusted as creator, not compared to Session |
 | `JOBID` only | attach_manpower; several memo/approval viewers | no ownership check on attach_manpower |
 | `vw` | `vw_sopapproval` → legacy view | adjacent |
@@ -823,7 +927,7 @@ Only `USERID` and `WORKMAN`. Later uses REGION, USERTYPE, USERNAME, COMPANY_CODE
 - After SP insert, second UPDATE sets `Required_Documents`, `GPS_Latitude/Longitude`, `App_Version='V2'`. Method: `Insert_JOBData()`.
 - Route: `WO_MasterStatusCode=="3"` → `job_inpunch_v2.aspx?jobid={EncodeJobID}`; else permit V2. Method: `btn_submit_Click()`.
 - Encode: URL-safe Base64, not a signature. Method: `EncodeJobID()`.
-- **Defect:** `WO_BillingNature` and `WO_ContractNature` ViewState are never assigned. Locals `billingNature`/`contractNature` used for UI only. Insert therefore never takes the `Non-Billing`/`NB` ViewState branch (`Insert_JOBData()` lines 726–727). Location ARC branch (`WO_ContractNature=="ARC"`) never runs (`DDL_Worksite_SelectedIndexChanged()` line 986).
+- **Resolved (UAT-010 / UAT-011 / UAT-012):** `DDL_Workorder_SelectedIndexChanged()` writes `WO_BillingNature` and `WO_ContractNature` ViewState from the selected WO row. `Insert_JOBData()` Non-Billing/`NB` branch and `DDL_Worksite_SelectedIndexChanged()` ARC `BindDepLoc` now see those values after later postbacks. `Workorder_Binder()` clears both when the WO list is rebound.
 - **Defect:** success redirect block is duplicated (lines 628–685); both `Response.Redirect(..., false)` without `return`.
 - Mandatory documents are UI-locked (`onclick="return false"`) but `GetSelectedDocuments()` does not verify mandatory IDs at submit.
 
@@ -843,7 +947,7 @@ Success: masked permit or IN-punch. Cancel: homepage. V1: `create_jobid.aspx` af
 PNotify. Insert catch returns null. Backdate/duplicate-warning/system-log/version-log swallow errors.
 
 ### Edge Cases
-Region change rebinds WO but not billing types (first bind uses Session REGION). GPS is non-empty string only. Unbounded JOBID loop. Static `jobInsertLock` as legacy.
+Region change rebinds WO and clears `WO_BillingNature`/`WO_ContractNature` until a WO is selected again. GPS is non-empty string only. Unbounded JOBID loop. Static `jobInsertLock` as legacy.
 
 ### Side Effects
 `JobWorkflowLogger.LogAction(..., "1. CREATE JOB (V2 Smart Workflow)", ...)`. GPS and required-doc columns. `App_Version='V2'`.
@@ -853,12 +957,12 @@ Region change rebinds WO but not billing types (first bind uses Session REGION).
 ## job_permitupload_v2.aspx
 
 ### Purpose
-Step 2: upload permits for `MasterStatusCode='1'` jobs, then route to IN-punch.
+Step 2: upload permits for in-punch jobs (`EntryExit='Entry'`), then continue IN or further uploads.
 
 ### Entry Conditions
-`USERID`+`WORKMAN` only. QueryString `jobid` decoded then selected if in inbox; **else inserted into dropdown and bound anyway**. Methods: `Page_Load()`, `DecodeJobID()`, `ActiveJOB_Checker()`, `Bind_JOBIDDetails()`.
+`USERID`+`WORKMAN` only. QueryString `jobid` decoded (`FormatException` → empty, no 500) then selected if in inbox; **else inserted into dropdown and bound anyway** when decode succeeded and value is non-empty. Methods: `Page_Load()`, `DecodeJobID()`, `ActiveJOB_Checker()`, `Bind_JOBIDDetails()`.
 
-Inbox SQL: last 3 days, creator, Active, **`MasterStatusCode='1'`**.
+Inbox SQL: last 3 days, creator, Active, **`EntryExit='Entry'`** (UAT-014 / UAT-015; same as `job_permitupload.aspx.cs` / `CountChecker.Find_PendingPermitUpload`). Closed jobs (`EntryExit='Exit'`) are excluded (UAT-015B).
 
 ### Inputs
 JOB dropdown, upload type, file. Hidden job labels.
@@ -883,7 +987,7 @@ Read: USERID, WORKMAN, USERNAME (insert). Written: none.
 Outgoing: `job_inpunch_v2.aspx?jobid={masked}`. V1: plain `job_permitupload.aspx` (no switch log).
 
 ### Error Handling
-PNotify. Decode has no try/catch (malformed Base64 throws in Page_Load). No transaction file+DB.
+PNotify. `Page_Load` catches `FormatException` from `DecodeJobID` (UAT-048); empty/invalid tokens skip selection. No transaction file+DB.
 
 ### Edge Cases
 QueryString JOB not in inbox still binds (IDOR if JOBID guessed/decoded). `Bind_JOBIDDetails` queries by JOBID only. PNG saved as JPEG.
@@ -899,7 +1003,7 @@ Workflow logs add/remove/complete/error. Disk + DB blob.
 Step 3: stage scans, batch-insert Entry attendance, heal job to Entry.
 
 ### Entry Conditions
-USERID+WORKMAN. Inbox: Active, 3 days, creator — **no `MasterStatusCode='3'` gate** (legacy parity as of UAT-006 / UAT-021). Method: `ActiveJOB_Checker()`. QueryString decoded JOB selected only if already in dropdown.
+USERID+WORKMAN. Inbox: Active, 3 days, creator — **no `MasterStatusCode='3'` gate** (legacy parity as of UAT-006 / UAT-021). Method: `ActiveJOB_Checker()`. QueryString decoded JOB selected only if already in dropdown; `FormatException` from `DecodeJobID` is caught (UAT-048).
 
 ### Inputs
 JOB, IN date/time, workman scan, GP override, V1-switch reason.
@@ -934,7 +1038,7 @@ No auto-route to OUT. V1 with logging.
 PNotify; workflow error log. No transaction around batch SP. Healing still runs after partial success.
 
 ### Edge Cases
-Malformed `jobid` throws. Duplicate check vs DeleteStatus=1 can block re-add of a previously deleted punch. Empty batch still heals status.
+Malformed `jobid` is ignored (`FormatException` caught; UAT-048). Duplicate check vs DeleteStatus=1 can block re-add of a previously deleted punch. Empty batch still heals status.
 
 ### Side Effects
 Workflow logs (scan reject, batch, GP, error, downgrade). NotificationQueue. No WhatsApp on IN complete.
@@ -947,7 +1051,7 @@ Workflow logs (scan reject, batch, GP, error, downgrade). NotificationQueue. No 
 Step 4: individual OUT, optional hard-delete, **last-OUT confirmation then legacy `UpdateJOBTable1()` close**.
 
 ### Entry Conditions
-USERID+WORKMAN. Inbox: Active, 3 days, creator, `MasterStatusCode='3'`, `EntryExit='Entry'`. Selection also requires `FinalUpldStatus='Yes'`. Methods: `ActiveJOB_Checker()`, `Pull_PermitStatus()`. QueryString Base64, must exist in dropdown.
+USERID+WORKMAN. Inbox: Active, 3 days, creator, `MasterStatusCode='3'`, `EntryExit='Entry'`. Selection also requires `FinalUpldStatus='Yes'`. Methods: `ActiveJOB_Checker()`, `Pull_PermitStatus()`. QueryString Base64, must exist in dropdown; `FormatException` from `DecodeJobID` is caught (UAT-048).
 
 ### Inputs
 OUT date (UI min = job date−1 day), time, lunch, code, OT.
@@ -973,7 +1077,7 @@ Success modal links `job_360_view.aspx?jobid={raw}` and hub. V1: plain `job_outp
 PNotify. Parse/config/`REGION` before try. Notification failures logged, not shown (`Task.Run`).
 
 ### Edge Cases
-`job_360_view` raw query vs DecodeJobID. Grid does not filter DeleteStatus or AttendanceStatus. Finalize does not set `Incharge_Approval` (remains Pending from create).
+JOB360 Permit/IN/OUT now encode with `create_jobid_v2.EncodeJobID`. Grid does not filter DeleteStatus or AttendanceStatus. Finalize does not set `Incharge_Approval` (remains Pending from create).
 
 ### Side Effects
 Workflow logs; `~/Logs/OutPunch/{date}/Notification_Log.txt`; MSG91 WhatsApp + SMTP if `JOB_ALERT` enabled.
@@ -1103,7 +1207,7 @@ Result labels used only: PRESERVED | CHANGED | ADDED | REMOVED | REGRESSION | SE
 | Capability | Legacy | V2 | Result |
 |---|---|---|---|
 | Auth | 6 keys | USERID+WORKMAN | CHANGED |
-| Inbox predicate | `EntryExit='Entry'` | `MasterStatusCode='1'` | CHANGED |
+| Inbox predicate | `EntryExit='Entry'` | `EntryExit='Entry'` (UAT-014; was `MasterStatusCode='1'`) | PRESERVED |
 | QueryString JOB | No | Base64 `jobid`; can bind JOB not in inbox | CHANGED |
 | Next step | OUT-punch | IN-punch (masked) | CHANGED |
 | Sets JOB_Status=Permit Uploaded | Yes | Yes unless already Out-Punch Done (UAT-013 / UAT-019) | PRESERVED |
@@ -1214,7 +1318,7 @@ Evidence: `create_jobid_v2.aspx.cs` `Find_DBCode()`, `Insert_JOBData()`.
 **Old Logic:** `if (DB_WOType == "ARC")` → code 1 / FinalUpldStatus No; else code 3 / Yes. UI after create **always IN-punch**. Permit inbox is jobs already `EntryExit='Entry'`.  
 Evidence: `create_jobid.aspx.cs` `Insert_JOBData()`; `create_jobid.aspx` btn_upload Visible=false; `job_permitupload.aspx.cs` `ActiveJOB_Checker()`; `jobstatus_flow.ascx` steps 2 then 3.
 
-**New Logic:** Matrix `Default_MasterStatusCode`. `"3"` → create redirects to IN-punch; else create still redirects to permit. Permit inbox remains `MasterStatusCode='1'`. **IN-punch inbox no longer requires code 3** (UAT-006 / UAT-021): same Active 3-day creator predicates as legacy.  
+**New Logic:** Matrix `Default_MasterStatusCode`. `"3"` → create redirects to IN-punch; else create still redirects to permit. Permit inbox lists Active 3-day creator jobs with `EntryExit='Entry'` (UAT-014 / UAT-015), matching legacy — first upload no longer drops the JOB. **IN-punch inbox no longer requires code 3** (UAT-006 / UAT-021): same Active 3-day creator predicates as legacy.  
 Evidence: `create_jobid_v2.aspx.cs` `btn_submit_Click()`, `Insert_JOBData()`; `job_permitupload_v2.aspx.cs` `ActiveJOB_Checker()`; `job_inpunch_v2.aspx.cs` `ActiveJOB_Checker()`.
 
 **Impact:** Post-create auto-redirect still prefers permit for matrix code `1`, but a newly created permit-required job **appears in IN-Punch immediately**.  
@@ -1299,9 +1403,9 @@ Evidence: `create_jobid_v2.aspx.cs` `GetUserBackdateLimit()`, `txt_jobdate_TextC
 ## 12. Billing type persistence
 
 **Old Logic:** Always `DDL_BillingType` text/value into SP.  
-**New Logic:** Intended Non-Billing → Type `Non-Billing` code `NB` via `WO_BillingNature`; **property never assigned**, so insert uses dropdown (or empty if hidden).  
-Evidence: `create_jobid_v2.aspx.cs` lines 25–26, 319–321, 726–727.  
-**Risk:** High — Non-Billing jobs may store empty BillingType/BillingCode; dashboard MS/LI counts and memo filters break.
+**New Logic (UAT-010 / UAT-011):** Non-Billing → Type `Non-Billing` code `NB` via persisted `WO_BillingNature`; Billing → dropdown text/value. Written in `DDL_Workorder_SelectedIndexChanged()`; read in `Insert_JOBData()`.  
+Evidence: `create_jobid_v2.aspx.cs` ViewState properties, `DDL_Workorder_SelectedIndexChanged()`, `Insert_JOBData()`.  
+**Risk:** Resolved for create save. Dashboard MS/LI counts still depend on stored BillingCode.
 
 ---
 
@@ -1489,7 +1593,7 @@ SP bodies themselves are not in repo — **no evidence they changed**.
 | Upload extension-only validation (both) | residual | `ImportPermit` both |
 | Legacy hardcoded delete path `C:\atswork.in\...` | residual | `job_permitupload.aspx.cs` `rootFolder` |
 | V2 MapPath `~/erp_images/Permits/` | SECURITY IMPROVEMENT | `job_permitupload_v2.aspx.cs` `ImportPermit()` |
-| `job_360_view` raw jobid into DecodeJobID | exception / DoS of navigation | `job_360_view.aspx.cs` `btn_Act_*`; V2 `DecodeJobID()` |
+| `job_360_view` raw jobid into DecodeJobID | **Resolved (UAT-046):** 360 Permit/IN/OUT encode with `EncodeJobID`; V2 `Page_Load` catches `FormatException` | `job_360_view.aspx.cs` `btn_Act_UploadPermit_Click` / `btn_Act_InPunch_Click` / `btn_Act_OutPunch_Click`; V2 `Page_Load` |
 | UrlReferrer NRE on view V1 | open-adjacent crash | `view_jobdetails.aspx.cs` `Page_Load()` |
 | Back V2 is fixed manage URL | SECURITY IMPROVEMENT vs open redirect | `view_jobdetails_v2.aspx.cs` back |
 | Legacy `ShowPopup` jQuery `.html(ex.Message)` | XSS if exception text hostile | `create_jobid.aspx.cs` / permit catch |
@@ -1515,7 +1619,7 @@ No classic open-redirect found on V2 success paths (relative known pages). Legac
 **Resolved (UAT-029 / UAT-040 / UAT-035 / UAT-040A / UAT-040B).** Last OUT shows a confirmation modal. Close & Send reuses `UpdateJOBTable1` (`JOB_Status='Out-Punch Done'`, `MasterStatusCode='4'`, `EntryExit='Exit'`). Second click or refresh of the close POST skips the write if already closed and still shows the success modal. The job matches the approval inbox immediately and leaves the pending-OUT dashboard count. Finalize Shift is not a required extra step.
 
 ### R3. Cross-version inbox mismatch
-**Inbox half resolved (UAT-006 / UAT-005).** V2 IN-Punch lists V1-created Active 3-day jobs (no code-3 filter). V2 hub Pending Permit counts outstanding work (`EntryExit='Entry'` AND `FinalUpldStatus='No'`). Permit *page* inbox remains `EntryExit='Entry'` (M5 / PR #64) so additional files can still be added after the KPI drops.
+**Inbox resolved for V2 IN-Punch and permit page (UAT-006 / UAT-014 / UAT-005).** V2 IN-Punch lists V1-created Active 3-day jobs (no code-3 filter). V2 permit inbox matches legacy `EntryExit='Entry'` (M5 / PR #64). V2 hub Pending Permit counts outstanding work (`EntryExit='Entry'` AND `FinalUpldStatus='No'`) and is not the permit inbox (M6 / PR #65).
 
 ## High
 
@@ -1523,12 +1627,10 @@ No classic open-redirect found on V2 success paths (relative known pages). Legac
 **Resolved (UAT-013 / UAT-018 / UAT-019).** `UpdatePermitStatus()` writes `JOB_Status='Permit Uploaded'` and `PermitUpload` Yes/No with FileCount. Out-Punch Done is not overwritten. Last-file delete does not revert IN/OUT/close state.
 
 ### R5. WO_BillingNature / WO_ContractNature never stored
-**Works differently.** Non-Billing WO may insert blank billing; location SQL uses non-ARC binder.  
-**Repro:** Select Non-Billing WO; hide billing dropdown; submit; inspect `BillingType`/`BillingCode`. Select ARC WO; compare location list vs V1.
+**Resolved (UAT-010 / UAT-011 / UAT-012).** `DDL_Workorder_SelectedIndexChanged()` assigns both ViewState properties from the selected `tlb_WO_Data` row. Non-Billing insert writes `Non-Billing`/`NB`. ARC location binding uses persisted `WO_ContractNature`. Region WO rebind clears both until a WO is selected again.
 
 ### R6. job_360_view deep links throw on V2 punch/permit pages
-**Broken navigation.**  
-**Repro:** Close shift → popup 360 → use IN/OUT/Permit action buttons (`jobid=` raw). `DecodeJobID` `FromBase64String` throws.
+**Resolved (UAT-046 / UAT-047 / UAT-048 / UAT-049).** JOB360 Permit/IN/OUT encode `txt_jobid` with existing `create_jobid_v2.EncodeJobID()` before redirect. V2 `Page_Load` still calls `DecodeJobID()` (algorithm unchanged); `FormatException` is caught so invalid tokens load the inbox without a 500. Session, creator inbox filters, and permit fallback for successfully decoded IDs are unchanged. AddDocs/SwapDate still pass raw JOBID to non-V2 pages.
 
 ### R7. CSM rule source changed (region list → matrix, default Yes if unmapped)
 **Became stricter or more permissive depending on matrix data.** Missing matrix logs error and applies permit+CSM+attendance required.  
@@ -1594,7 +1696,7 @@ Unchanged on V1; V2 mostly ViewState.
 - **Code movement:** Dashboard SQL copied V1→V2. Create rewritten around `tlb_WO_Rule_Matrix`, calendar, GPS, documents. Permit/IN/OUT rewritten with Base64 `jobid`, PNotify, `JobWorkflowLogger`. Manage/view parameterized; delete became soft+transactional.
 - **New dependencies:** `tlb_WO_Rule_Matrix`, `tlb_Company_Calendar`, `tlb_Backdate_Exceptions`, `tlb_DocumentMaster`, `tlb_Region_Documents`, `tlb_System_Logs`, `tbl_Version_Switch_Log`, `NotificationTemplates`/`NotificationQueue`, `NotificationTriggerHelper`, MSG91/SMTP on close/share, filesystem logs under `~/Logs/`.
 - **Unchanged SPs (call-level):** `SP_InsertInto_JOBSTable`, `SP_InsertInto_AttendanceTable`, `SP_Update_AttendancePunchOUT`. Bodies not in repo.
-- **Known implementation defects in V2:** unassigned `WO_BillingNature`/`WO_ContractNature`; duplicated create redirects; permit status omitting `JOB_Status`/`PermitUpload`; 360-view raw vs Base64 jobid; dead hub switch-to-old link; permit QueryString IDOR bind.
+- **Known implementation defects in V2:** duplicated create redirects; dead hub switch-to-old link; permit QueryString IDOR bind. (Permit `JOB_Status`/`PermitUpload` restored in M2; 360→V2 jobid encoding restored in M3; `WO_BillingNature`/`WO_ContractNature` assigned in M4; permit inbox `EntryExit='Entry'` restored in M5; hub Pending Permit = outstanding work in M6.)
 
 ## Client Business Summary
 
@@ -1637,7 +1739,7 @@ Written for the client SPOC.
 |---|---|---|
 | Hub V1/V2 | `jobs_and_manpower.aspx.cs`, `_v2.aspx.cs` | `Page_Load`, `LoadDashboardStats` |
 | Create V1 | `create_jobid.aspx.cs` | `Page_Load`, `DataChecker`, `Insert_JOBData`, `Find_DBCode`, `Workorder_Binder`, `btn_inpunch_Click` |
-| Create V2 | `create_jobid_v2.aspx.cs` | `Page_Load`, `GetUserBackdateLimit`, `DDL_Workorder_SelectedIndexChanged`, `btn_submit_Click`, `Insert_JOBData`, `EncodeJobID` |
+| Create V2 | `create_jobid_v2.aspx.cs` | `Page_Load`, `GetUserBackdateLimit`, `DDL_Workorder_SelectedIndexChanged`, `Workorder_Binder`, `btn_submit_Click`, `Insert_JOBData`, `EncodeJobID` |
 | Permit V1 | `job_permitupload.aspx.cs` | `ActiveJOB_Checker`, `InsertIntoDB`, `UpdatePermiStatus`, `btn_inpunch_Click` |
 | Permit V2 | `job_permitupload_v2.aspx.cs` | `ActiveJOB_Checker`, `UpdatePermitStatus`, `btn_inpunch_Click`, `DecodeJobID` |
 | IN V1 | `job_inpunch.aspx.cs` | `ActiveJOB_Checker`, `txt_empworkman_TextChanged`, `InsertIntoAttendanceTable`, `UpdateJOBTableStatus` |
