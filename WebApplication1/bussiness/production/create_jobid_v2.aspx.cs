@@ -280,12 +280,19 @@ namespace WebApplication1.bussiness.production
         Method: DDL_Workorder_SelectedIndexChanged
         When: March 30, 2026
         Why: Added Matrix_Match_ID to the SQL query to detect silent LEFT JOIN failures. Includes logic to alert the UI and log the missing Rule Matrix mapping for administrators.
+        When: 05-Sep-2026
+        Why: UAT-010 / UAT-011 / UAT-012 — persist WO Billing_Nature and Contract_Nature into existing ViewState properties so later insert and location binding still see the selected Work Order after postback.
         ======================================================================================
         */
         protected void DDL_Workorder_SelectedIndexChanged(object sender, EventArgs e)
         {
             string workorderDBID = DDL_Workorder.SelectedValue;
-            if (string.IsNullOrEmpty(workorderDBID)) return;
+            if (string.IsNullOrEmpty(workorderDBID))
+            {
+                WO_BillingNature = "";
+                WO_ContractNature = "";
+                return;
+            }
 
             try
             {
@@ -319,6 +326,10 @@ namespace WebApplication1.bussiness.production
                     string contractNature = dt.Rows[0]["Contract_Nature"].ToString();
                     string billingNature = dt.Rows[0]["Billing_Nature"].ToString();
                     string executionType = dt.Rows[0]["Execution_Type"].ToString();
+                    // Persist WO natures in ViewState (same pattern as WO_MasterStatusCode / WO_AutoTitle).
+                    // Locals drive this event's UI; later postbacks read the properties.
+                    WO_ContractNature = contractNature;
+                    WO_BillingNature = billingNature;
                     WO_MasterStatusCode = dt.Rows[0]["Default_MasterStatusCode"].ToString();
 
                     // =====================================================================
@@ -877,6 +888,9 @@ namespace WebApplication1.bussiness.production
 
             SqlParameter[] parameters = { new SqlParameter("@RegionCode", regionCode) };
             ExecuteAndBindDDL(query, DDL_Workorder, "WO_Number", "DB_Code", parameters);
+            // Rebind resets the selected WO to the placeholder; natures follow the selected WO.
+            WO_BillingNature = "";
+            WO_ContractNature = "";
         }
 
         private void BindWorkSites(string regionCode)
