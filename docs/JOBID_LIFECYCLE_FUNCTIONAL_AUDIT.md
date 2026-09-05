@@ -99,28 +99,27 @@ No executable code was changed to record this milestone.
 
 ### Milestone M2 — Permit State Consistency
 
-Restore legacy-compatible permit completion fields on V2 upload/delete without reintroducing permit-before-IN.
+Merged 05-Sep-2026 into `Jul_to_Sep_2026_Suport_N_Dev_Works`.
 
-| Field | Value |
-|---|---|
-| **Files changed** | `WebApplication1/bussiness/production/job_permitupload_v2.aspx.cs` only |
-| **Methods changed** | `UpdatePermitStatus()`; `ReadPermitJobState()` (new) |
-| **Finding resolved** | V2 permit wrote FileCount / FinalUpldStatus / MasterStatusCode but omitted `JOB_Status='Permit Uploaded'` and `PermitUpload`. Reports and mixed V1/V2 filters missed V2 permit-path jobs. |
-| **Mapped UAT** | `UAT-013`, `UAT-018`, `UAT-019` |
-| **Unchanged pages** | `job_inpunch_v2.aspx.cs`, `job_outpunch_v2.aspx.cs`, `create_jobid_v2.aspx.cs`, `job_permitupload_v2.aspx` |
+**Merged PR:**
+- PR #61 — Restore permit JOB_Status and PermitUpload writes (`https://github.com/Aminrup-Technologies/WebApplication1/pull/61`)
 
-**Writes after this fix (parameterized)**
+**Resolved High Finding:**
+- Permit state reporting restored without breaking the restored M1 lifecycle (Create → IN-Punch → Permit → OUT → Close & Send → Approval).
 
-- `PermitUpload` = Yes when FileCount>0, else No.
-- `JOB_Status` = Permit Uploaded when files exist, unless already Out-Punch Done (approval KEEP). Last-file delete reverts to Created only while `EntryExit='Created'` (IN has not happened).
-- `FinalUpldStatus` / `FileCount` unchanged in meaning (Yes/No from count; ±1).
-- `MasterStatusCode` still becomes 3 on first file. Last-file delete rolls back to 1 only before IN. After Entry/Exit or code 4/5, code is not regressed.
+**Completed UAT:**
+- UAT-013 ✅
+- UAT-018 ✅
+- UAT-018A ✅ (final permit delete after IN: `PermitUpload='No'`, `FinalUpldStatus='No'`, `MasterStatusCode` stays `3`, OUT inbox predicates intact)
+- UAT-019 ✅
 
-**Remaining after M2:**
-- PR #62 — JOB360 Navigation
+**Remaining Work:**
+- PR #62 — JOB360 Navigation Contract
 - PR #63 — Work Order Nature Persistence
 - PR #64 — Permit Inbox Continuity
 - PR #65 — Dashboard Alignment
+
+No executable code was changed to record this milestone.
 
 ---
 
