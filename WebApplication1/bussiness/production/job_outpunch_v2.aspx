@@ -557,12 +557,13 @@
                     <p class="text-muted small mb-0">The job will appear in the Site In-Charge approval queue and drop off the pending-OUT dashboard.</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Review Again</button>
+                    <button type="button" class="btn btn-default" id="btn_ReviewAgain" data-dismiss="modal">Review Again</button>
                     <asp:Button ID="btn_FinalizeShift" runat="server"
                         Text="Close &amp; Send"
                         CssClass="btn btn-success"
                         CausesValidation="false"
-                        OnClientClick="showLoader();"
+                        UseSubmitBehavior="true"
+                        OnClientClick="return lockCloseAndSend(this);"
                         OnClick="btn_FinalizeShift_Click" />
                 </div>
             </div>
@@ -594,8 +595,27 @@
             });
         }
 
-        function showLoader() { document.getElementById("loadingOverlay").style.display = "block"; }
+        function showLoader(message) {
+            var overlay = document.getElementById("loadingOverlay");
+            if (overlay) overlay.style.display = "block";
+            var textEl = overlay ? overlay.querySelector(".loading-text") : null;
+            if (textEl) textEl.textContent = message || "Processing Exit...";
+        }
         function hideLoader() { document.getElementById("loadingOverlay").style.display = "none"; }
+
+        function lockCloseAndSend(btn) {
+            // UAT-040A: first click posts; later clicks are no-ops until the page reloads.
+            if (window.__closeAndSendLocked) return false;
+            window.__closeAndSendLocked = true;
+            showLoader("Closing shift...");
+            btn.value = "Closing...";
+            var reviewBtn = document.getElementById("btn_ReviewAgain");
+            if (reviewBtn) reviewBtn.disabled = true;
+            var headerClose = document.querySelector("#confirmCloseModal .close");
+            if (headerClose) headerClose.disabled = true;
+            setTimeout(function () { btn.disabled = true; }, 0);
+            return true;
+        }
 
         function showCloseConfirmModal() {
             hideLoader();
