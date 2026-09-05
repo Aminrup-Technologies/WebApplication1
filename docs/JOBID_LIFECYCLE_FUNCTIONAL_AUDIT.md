@@ -65,6 +65,38 @@ Restore legacy automatic shift-close semantics on V2 OUT-Punch, with a confirmat
 
 ---
 
+### Milestone M1 — Legacy State Machine Restored
+
+Merged 05-Sep-2026 into `Jul_to_Sep_2026_Suport_N_Dev_Works`.
+
+**Merged PRs:**
+- PR #59 — Restore legacy-compatible JOBID IN-Punch eligibility (`https://github.com/Aminrup-Technologies/WebApplication1/pull/59`)
+- PR #60 — Restore legacy-compatible shift closure with confirmation modal (`https://github.com/Aminrup-Technologies/WebApplication1/pull/60`)
+
+**Resolved Critical Findings:**
+1. IN-Punch eligibility restored. Permit-required (ARC) jobs appear in IN-Punch immediately after create. `ActiveJOB_Checker()` no longer requires `MasterStatusCode='3'`. Duplicate Entry and non-ARC skip-permit writes are unchanged.
+2. Legacy-compatible Close & Send restored. Last OUT opens a confirmation modal; Close & Send reuses `UpdateJOBTable1()` (`JOB_Status='Out-Punch Done'`, `MasterStatusCode='4'`, `EntryExit='Exit'`). Finalize Shift is not a required extra step. Close is idempotent.
+
+**UAT Status:**
+- UAT-006 ✅
+- UAT-021 ✅
+- UAT-029 ✅
+- UAT-040 ✅
+- UAT-040A ✅
+- UAT-040B ✅
+- UAT-035 ✅
+
+**Remaining High-Priority Work:**
+- PR #61 — Permit State Consistency
+- PR #62 — JOB360 Navigation
+- PR #63 — Work Order Nature Persistence
+- PR #64 — Permit Inbox Continuity
+- PR #65 — Dashboard Alignment
+
+No executable code was changed to record this milestone.
+
+---
+
 # PHASE 1 — JOBID Dependency Graph
 
 ## Menu / Hub entry
