@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  COMMIT-SAFE TEMPLATE - NO REAL CREDENTIALS HERE.
+  Copy this file to connections.config (gitignored) on a new clone or let
+  the first MSBuild copy it. Web.config references connections.config via
+  configSource, so that local file must exist for the app to boot.
+  It is excluded from IIS publish, so deploy will not overwrite the real
+  connections.config already on the server.
+  On the server or your machine, set the real connection string, e.g.:
+  <add name="DbConn" connectionString="Data Source=...;Initial Catalog=ats_erp;User ID=...;Password=...;" providerName="System.Data.SqlClient" />
+-->
+<connectionStrings>
+  <add name="DbConn" connectionString="Data Source=.\SQLEXPRESS;Initial Catalog=ats_erp;Integrated Security=True;Max Pool Size=100" providerName="System.Data.SqlClient" />
+</connectionStrings>

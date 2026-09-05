@@ -378,5 +378,9 @@ FodyWeavers.xsd
 /WebApplication1/bussiness/production/WindowsServiceLog/01112024
 /WebApplication1/bussiness/production/WindowsServiceLog
 
-# Local secret overrides - NEVER commit this file
+# Credential / machine-local config — ignored so Visual Studio and Cursor
+# do not stage them on commit. Copy the matching *.example file to this
+# name on a new clone (the project also copies it on first build).
 /WebApplication1/appsettings.secrets.config
+/WebApplication1/connections.config
+/WebApplication1/Web.config
