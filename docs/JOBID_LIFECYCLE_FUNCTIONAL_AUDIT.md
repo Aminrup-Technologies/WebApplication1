@@ -10,6 +10,27 @@
 
 ---
 
+## Post-audit fix — UAT-006 / UAT-021 (05-Sep-2026)
+
+Restore legacy-compatible IN-Punch eligibility for permit-required jobs. V2 no longer waits for `MasterStatusCode='3'` before listing a job on IN-Punch.
+
+| Field | Value |
+|---|---|
+| **UAT IDs** | `UAT-006`, `UAT-021` |
+| **Finding resolved** | Critical: V2 blocked IN-punch for permit-required jobs until `MasterStatusCode='3'`. Legacy listed Active 3-day creator jobs with no status-code gate. |
+| **Files changed** | `WebApplication1/bussiness/production/job_inpunch_v2.aspx.cs`; `WebApplication1/bussiness/production/create_jobid_v2.aspx.cs` (comments only — insert writes unchanged) |
+| **Methods changed** | `job_inpunch_v2.aspx.cs` `ActiveJOB_Checker()`; `create_jobid_v2.aspx.cs` `Insert_JOBData()` comments documenting legacy ARC vs skip-permit writes |
+| **Methods unchanged** | `CheckDuplicateEntry()`, `btn_finalsubmit_Click()` duplicate `COUNT` on `AttendanceStatus='Entry'`; `Insert_JOBData()` skip-permit branch (`WO_MasterStatusCode == "3"` → `FinalUpldStatus=Yes`, `PermitUpload=N/A`) |
+
+**Eligibility after this fix**
+
+- Permit-required create (`MasterStatusCode='1'`, `EntryExit='Created'`, `FinalUpldStatus='No'`) **appears in V2 IN-Punch immediately** (same predicates as `job_inpunch.aspx.cs` `ActiveJOB_Checker()`: last 3 days, `Creator_Workman=@Workman`, `JOBID_Status='Active'`).
+- Skip-permit / non-ARC create (`MasterStatusCode='3'`, `FinalUpldStatus='Yes'`) is **unchanged** in `Insert_JOBData()`.
+- Duplicate Entry protection is **unchanged** (`CheckDuplicateEntry` + final-submit `AttendanceStatus='Entry'` count).
+- Inbox SQL remains **parameterized** (`@Workman`).
+
+---
+
 # PHASE 1 — JOBID Dependency Graph
 
 ## Menu / Hub entry
@@ -110,7 +131,7 @@ create_jobid_v2.aspx
             └── btn_inpunch_Click()
                     ↓
                 job_inpunch_v2.aspx?jobid={masked}
-                    │  inbox: Active + MasterStatusCode='3' + EntryExit IN (Created,Entry)
+                    │  inbox: Active + last 3 days + creator (legacy parity; code '1' jobs included)
                     │  SP_InsertInto_AttendanceTable (batch from ViewState)
                     │  healing UPDATE: JOB_Status=In-Punch Done, EntryExit=Entry
                     └── (no auto-route to outpunch)
@@ -755,7 +776,7 @@ Workflow logs add/remove/complete/error. Disk + DB blob.
 Step 3: stage scans, batch-insert Entry attendance, heal job to Entry.
 
 ### Entry Conditions
-USERID+WORKMAN. Inbox: Active, 3 days, creator, **`MasterStatusCode='3'` AND `EntryExit IN ('Created','Entry')`**. Method: `ActiveJOB_Checker()`. QueryString decoded JOB selected only if already in dropdown.
+USERID+WORKMAN. Inbox: Active, 3 days, creator — **no `MasterStatusCode='3'` gate** (legacy parity as of UAT-006 / UAT-021). Method: `ActiveJOB_Checker()`. QueryString decoded JOB selected only if already in dropdown.
 
 ### Inputs
 JOB, IN date/time, workman scan, GP override, V1-switch reason.
@@ -979,7 +1000,7 @@ Result labels used only: PRESERVED | CHANGED | ADDED | REMOVED | REGRESSION | SE
 
 | Capability | Legacy | V2 | Result |
 |---|---|---|---|
-| Inbox | Any Active 3-day creator job | MasterStatusCode=3 and EntryExit Created/Entry | CHANGED |
+| Inbox | Any Active 3-day creator job | Any Active 3-day creator job (UAT-006 restored; no code-3 gate) | PRESERVED |
 | Staging then SP insert | Yes | Yes | PRESERVED |
 | AttendanceCode Ab / Approval Pending | Yes | Yes | PRESERVED |
 | Pending OUT elsewhere | Yes | Yes | PRESERVED |
@@ -1071,22 +1092,22 @@ Evidence: `create_jobid_v2.aspx.cs` `Find_DBCode()`, `Insert_JOBData()`.
 **Old Logic:** `if (DB_WOType == "ARC")` → code 1 / FinalUpldStatus No; else code 3 / Yes. UI after create **always IN-punch**. Permit inbox is jobs already `EntryExit='Entry'`.  
 Evidence: `create_jobid.aspx.cs` `Insert_JOBData()`; `create_jobid.aspx` btn_upload Visible=false; `job_permitupload.aspx.cs` `ActiveJOB_Checker()`; `jobstatus_flow.ascx` steps 2 then 3.
 
-**New Logic:** Matrix `Default_MasterStatusCode`. `"3"` → IN-punch immediately; else permit **before** IN-punch. Permit inbox is `MasterStatusCode='1'`. IN-punch inbox requires code 3.  
+**New Logic:** Matrix `Default_MasterStatusCode`. `"3"` → create redirects to IN-punch; else create still redirects to permit. Permit inbox remains `MasterStatusCode='1'`. **IN-punch inbox no longer requires code 3** (UAT-006 / UAT-021): same Active 3-day creator predicates as legacy.  
 Evidence: `create_jobid_v2.aspx.cs` `btn_submit_Click()`, `Insert_JOBData()`; `job_permitupload_v2.aspx.cs` `ActiveJOB_Checker()`; `job_inpunch_v2.aspx.cs` `ActiveJOB_Checker()`.
 
-**Impact:** Workflow order inverted for permit-required jobs.  
-**Risk:** **Critical** operational break if users/training/SOPs assume IN then Permit. Cross-version mixing (create V2, punch V1) bypasses the new gate.
+**Impact:** Post-create auto-redirect still prefers permit for matrix code `1`, but a newly created permit-required job **appears in IN-Punch immediately**.  
+**Risk:** Medium remaining UX mismatch (redirect vs inbox). Cross-version mixing of permit pages can still diverge.
 
 ## 4. Punch eligibility (IN)
 
 **Old Logic:** Active 3-day job, any MasterStatusCode; worker Active; not in roster; no open Entry anywhere.  
 Evidence: `job_inpunch.aspx.cs` `ActiveJOB_Checker()`, `txt_empworkman_TextChanged()`.
 
-**New Logic:** Job must already be code 3; same worker rules; DB duplicate does not ignore DeleteStatus=1.  
+**New Logic (UAT-006 / UAT-021):** Inbox matches legacy (Active, 3-day, creator — no code-3 gate). Same worker rules; DB duplicate still does not ignore DeleteStatus=1.  
 Evidence: `job_inpunch_v2.aspx.cs` `ActiveJOB_Checker()`, `CheckDuplicateEntry()`.
 
-**Impact:** Cannot IN-punch a V2 permit-pending job. Cannot re-IN a worker whose prior row was hard-deleted in V1 but can be blocked after V2 soft-delete inconsistency.  
-**Risk:** High.
+**Impact:** Permit-pending V2 jobs are IN-punch eligible immediately after create (UAT-006). Duplicate Entry and pending-OUT worker rules are unchanged (UAT-021). Soft-deleted Entry rows can still block re-add (`DeleteStatus` omitted from the duplicate SQL).  
+**Risk:** Low for inbox eligibility; Medium for DeleteStatus duplicate leftover.
 
 ## 5. Status transitions
 
@@ -1239,19 +1260,20 @@ Evidence: `create_jobid_v2.aspx.cs` lines 25–26, 319–321, 726–727.
   FinalUpldStatus=No
   App_Version=V2
         │
-        │  IN-punch inbox WILL NOT list this job
-        │  Permit required first
-        ↓
-  FileCount>0
-  FinalUpldStatus=Yes
-  MasterStatusCode=3
-  JOB_Status remains "Created"          ← NEW / CHANGED
-  PermitUpload remains "No"             ← NEW / CHANGED
-        │
+        │  IN-punch inbox LISTS this job immediately (UAT-006)
+        │  same predicates as legacy: Active, 3-day, creator
         ↓ IN batch + heal
   JOB_Status=In-Punch Done
-  EntryExit=Entry
   MasterStatusCode=3
+  EntryExit=Entry
+        │
+        │  permit still available while code=1 until first file
+        ↓ FileCount>0
+  FinalUpldStatus=Yes
+  MasterStatusCode=3
+  JOB_Status remains "In-Punch Done" if IN already ran
+  (or remains "Created" if permit ran first)
+  PermitUpload remains "No"             ← NEW / CHANGED (V2 permit omit)
         │
         │  last OUT does NOT close                     ← CHANGED
         │  supervisor must Finalize Shift
@@ -1281,7 +1303,7 @@ INVALID NOW ALLOWED:
   - QueryString bind of another creator’s JOB on permit V2 if masked ID known.
 
 PREVIOUS RESTRICTION REMOVED:
-  - IN-punch no longer allowed while MasterStatusCode=1 (stricter, not looser).
+  - IN-punch while MasterStatusCode=1 is allowed again (legacy parity, UAT-006).
   - Site Staff cannot change region (stricter).
   - Attendance edit on details is more reachable (looser).
 ```
@@ -1290,7 +1312,7 @@ PREVIOUS RESTRICTION REMOVED:
 
 - **New states:** `App_Version=V2`; soft-deleted (`DeleteStatus=1`); “closed-on-finalize-only” waiting state (all Exit punches, job still Entry/code 3).
 - **Removed states:** none of 1/3/4/5 removed; `JOB_Status='Permit Uploaded'` often **never entered** on V2 permit path.
-- **Changed transitions:** permit-before-IN; no auto-close; permit upload no longer writes JOB_Status/PermitUpload.
+- **Changed transitions:** IN-punch inbox restored to legacy (no code-3 gate, UAT-006); create redirect still may send code-1 jobs to permit first; no auto-close; permit upload no longer writes JOB_Status/PermitUpload.
 - **Invalid now allowed:** stay in code 3 Entry after all workers out; Non-Billing insert with blank billing if dropdown hidden (ViewState bug).
 - **Previous restrictions removed:** yesterday-only backdate; ARC-only permit rule (now matrix); WhatsApp-only share.
 
@@ -1364,12 +1386,8 @@ No classic open-redirect found on V2 success paths (relative known pages). Legac
 ## Critical
 
 ### R1. Permit-required workflow order inverted
-**Works differently.** V1: Create → IN → Permit → OUT. V2: Create → Permit → IN → OUT (if matrix code 1).  
-**Repro:**
-1. Log in as a Site Staff user whose WO is ARC with matrix Default_MasterStatusCode=1.
-2. Create JOB on V2; observe redirect to permit, not IN-punch.
-3. Open V2 IN-punch without uploading: JOB absent from dropdown.
-4. Compare V1: after create, only In-Punch is offered; permit page lists jobs already Entry.
+**Partially resolved (UAT-006 / UAT-021).** Create may still redirect to permit (`btn_submit_Click` when code ≠ 3), but V2 IN-Punch inbox no longer requires `MasterStatusCode='3'`. A newly created permit-required job **appears in IN-Punch immediately**, matching legacy `ActiveJOB_Checker()`.
+**Remaining difference:** post-create auto-redirect still prefers permit for matrix code `1`; hub navigation to IN-Punch lists the job without a file upload.
 
 ### R2. OUT no longer auto-closes the JOB
 **Works differently / could break existing users.** Approver inbox needs `JOB_Status='Out-Punch Done' AND EntryExit='Exit'`.  
@@ -1381,12 +1399,7 @@ No classic open-redirect found on V2 success paths (relative known pages). Legac
 5. Repeat on V1: last punch auto-closes.
 
 ### R3. Cross-version inbox mismatch
-**Could break existing users** during dual-run.  
-**Repro:**
-1. Create ARC job on V1 (code 1, EntryExit Created).
-2. Open V2 IN-punch: not listed (needs code 3).
-3. Create on V2 code 1, switch to V1 IN-punch: listed (V1 ignores code).
-4. User can IN-punch without permit, defeating V2 gate.
+**Inbox half resolved (UAT-006).** V2 IN-Punch now lists V1-created Active 3-day jobs (no code-3 filter). Dual-run can still mix permit pages (V2 permit inbox remains `MasterStatusCode='1'`).
 
 ## High
 
@@ -1480,7 +1493,7 @@ Written for the client SPOC.
 - Safety toolbox/SOP rules still block OUT when the job is marked as needing CSM documents.
 
 **What changes in daily work**
-1. **Permit timing.** On the old screens, people normally IN-punched first and uploaded the permit afterwards. On the new screens, if the work order is configured to need a permit, the system sends the user to permit upload **immediately after create** and **will not list the job for IN-punch** until a file is attached. This is the largest process change.
+1. **Permit timing.** On the old screens, people normally IN-punched first and uploaded the permit afterwards. Create V2 still auto-redirects permit-required jobs to permit upload. **IN-Punch inbox listing is restored (UAT-006):** a newly created permit-required job appears in IN-Punch immediately (no `MasterStatusCode='3'` gate). Duplicate Entry protection is unchanged (UAT-021).
 2. **Closing the shift is now a separate click.** Previously, punching OUT the last person closed the job automatically and it appeared for approval. Now the supervisor must press **Finalize Shift**. If they forget, the In-Charge will not see the job.
 3. **The menu opens the new screens.** “Create JOBID” goes to the new dashboard. The new dashboard’s “Switch to OLD Version” button does not actually go back.
 4. **New create rules.** Job title must be more than three words. Some regions require sharing GPS at submit. Some work orders auto-fill the title or hide billing. Dates can go back two days by default (old screen: yesterday only), unless an exception allows more.
@@ -1495,7 +1508,7 @@ Written for the client SPOC.
 - The old HR email about unmapped skills may stop if operations only watch that mailbox.
 
 **Operational impact**
-- Retrain permit-required gangs: **permit before IN**.
+- Retrain permit-required gangs: create may still land on permit, but IN-Punch lists the job immediately (UAT-006).
 - Retrain OUT: **Finalize Shift** is mandatory for approval.
 - Do not mix old and new screens for the same job during rollout; inboxes filter differently and can skip or bypass steps.
 - Confirm with Admin that each work order’s rule matrix (permit yes/no, CSM yes/no, skip-to-IN) matches how that contract is supposed to run. A missing matrix currently forces permit + CSM + attendance.

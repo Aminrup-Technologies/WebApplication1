@@ -4,6 +4,8 @@ File_Name: job_inpunch_v2_aspx_cs
 When: April 12, 2026
 Why: Updated alongside the V2 UI modernization phase. Business logic, duplicate prevention, and Gatepass validation remain fully preserved. Added a standard try/finally block to the `btn_gtpsedit_Click` method to ensure the SQL connection safely closes even if an error is thrown during Gatepass logging.
 What: Preserved existing C# logic behind the modernized `.aspx` presentation layer.
+When: 05-Sep-2026
+Why: UAT-006 / UAT-021 — restore legacy IN-Punch inbox eligibility so permit-required (ARC, MasterStatusCode='1') jobs appear immediately after create. Duplicate Entry checks and parameterized SQL are unchanged.
 ======================================================================================
 */
 
@@ -105,9 +107,10 @@ namespace WebApplication1.bussiness.production
         // =================================================================================
         private void ActiveJOB_Checker()
         {
-            // Bypass the old CountChecker (CC) class and align perfectly with the Smart Dashboard!
-            // We explicitly check for MasterStatusCode='3' and EntryExit='Created'
-            string query = "SELECT CONCAT(JOBID, ' : ', CONVERT(VARCHAR, CreatedDate, 105)) AS DisplayText, JOBID as ValueField FROM tbl_jobs WHERE [CreatedDate] >= DATEADD(DAY, -3, GETDATE()) AND Creator_Workman=@Workman AND JOBID_Status='Active' AND MasterStatusCode='3' AND EntryExit IN ('Created', 'Entry') ORDER BY CreatedDate DESC";
+            // Legacy parity with job_inpunch.aspx.cs ActiveJOB_Checker():
+            // permit-required (ARC / MasterStatusCode='1') jobs are IN-Punch eligible immediately after create.
+            // Do not require MasterStatusCode='3'. Keep the 3-day Active creator inbox and parameterized SQL.
+            string query = "SELECT CONCAT(JOBID, ' : ', CONVERT(VARCHAR, CreatedDate, 105)) AS DisplayText, JOBID as ValueField FROM tbl_jobs WHERE [CreatedDate] >= DATEADD(DAY, -3, GETDATE()) AND Creator_Workman=@Workman AND JOBID_Status='Active' ORDER BY CreatedDate DESC";
 
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
