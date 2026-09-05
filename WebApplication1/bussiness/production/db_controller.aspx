@@ -166,6 +166,7 @@
             <div class="clearfix"></div>
 
             <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
+            <asp:HiddenField ID="hfActiveTab" runat="server" Value="#tab_region_safety" />
 
             <div class="row">
                 <div class="col-md-12">
@@ -729,11 +730,51 @@
             new PNotify({ title: title, text: text, type: type, styling: 'bootstrap3', delay: 4000 });
         }
 
-        function showTriggerTab() {
-            var tab = document.querySelector('.nav-tabs a[href="#tab_triggers"]');
-            if (tab) {
-                $(tab).tab('show');
+        function getActiveTabField() {
+            return document.getElementById('<%= hfActiveTab.ClientID %>');
+        }
+
+        function persistActiveTab(tabHref) {
+            var hf = getActiveTabField();
+            if (hf && tabHref) {
+                hf.value = tabHref;
             }
+        }
+
+        function restoreActiveTab() {
+            var allowed = {
+                '#tab_region_safety': true,
+                '#tab_wo_config': true,
+                '#tab_wo_matrix': true,
+                '#tab_doc_master': true,
+                '#tab_smart_calendar': true,
+                '#tab_backdate': true,
+                '#tab_triggers': true
+            };
+            var hf = getActiveTabField();
+            var href = (hf && allowed[hf.value]) ? hf.value : '#tab_region_safety';
+            var tabLink = document.querySelector('.nav-tabs a[href="' + href + '"]');
+            if (!tabLink) {
+                href = '#tab_region_safety';
+                tabLink = document.querySelector('.nav-tabs a[href="' + href + '"]');
+            }
+            $('.nav-tabs-custom > .nav-tabs > li').removeClass('active');
+            $('.tab-content > .tab-pane').removeClass('active in show');
+            if (tabLink) {
+                $(tabLink).parent('li').addClass('active');
+                $(href).addClass('active in show');
+            }
+            if (href === '#tab_smart_calendar' && calendar) {
+                setTimeout(function () {
+                    calendar.updateSize();
+                    calendar.render();
+                }, 200);
+            }
+        }
+
+        function showTriggerTab() {
+            persistActiveTab('#tab_triggers');
+            restoreActiveTab();
         }
 
         var calendar; // Global calendar object
@@ -869,16 +910,15 @@
             if (calendar) { calendar.refetchEvents(); }
         }
 
-        // Force Calendar to resize AFTER Bootstrap animation finishes
-        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-            var targetTab = $(e.target).attr("href");
-            if (targetTab === '#tab_smart_calendar') {
-                if (calendar) {
-                    setTimeout(function () {
-                        calendar.updateSize();
-                        calendar.render();
-                    }, 200);
-                }
+        $(document).ready(function () {
+            restoreActiveTab();
+            $('.nav-tabs a[data-toggle="tab"]').on('click shown.bs.tab', function (e) {
+                persistActiveTab($(e.currentTarget).attr('href'));
+            });
+            if (window.Sys && Sys.WebForms && Sys.WebForms.PageRequestManager) {
+                Sys.WebForms.PageRequestManager.getInstance().add_endRequest(function () {
+                    restoreActiveTab();
+                });
             }
         });
     </script>
