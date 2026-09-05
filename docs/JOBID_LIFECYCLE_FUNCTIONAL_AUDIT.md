@@ -113,8 +113,7 @@ Merged 05-Sep-2026 into `Jul_to_Sep_2026_Suport_N_Dev_Works`.
 - UAT-018A ✅ (final permit delete after IN: `PermitUpload='No'`, `FinalUpldStatus='No'`, `MasterStatusCode` stays `3`, OUT inbox predicates intact)
 - UAT-019 ✅
 
-**Remaining Work (after M2; M3 recorded below):**
-- PR #63 — Work Order Nature Persistence
+**Remaining Work (after M2; M3 and M4 recorded below):**
 - PR #64 — Permit Inbox Continuity
 - PR #65 — Dashboard Alignment
 
@@ -123,6 +122,10 @@ No executable code was changed to record this milestone.
 ---
 
 ### Milestone M3 — JOB360 Navigation Contract
+
+**PR:** #62 (`cursor/job360-navigation-contract-6c97`)
+**Status:** Merged `aaea92e` 2026-09-05
+**UAT closed:** UAT-046, UAT-047, UAT-048, UAT-049
 
 **Files changed:**
 - `WebApplication1/bussiness/production/job_360_view.aspx.cs`
@@ -150,8 +153,39 @@ JOB360 raw JOBID was incompatible with V2 Base64 decoding.
 
 **Regression:** PR #59 (IN-Punch eligibility), PR #60 (shift closure), and PR #61 (permit state writes) are unchanged.
 
+**Remaining Work (after M3; M4 recorded below):**
+- PR #64 — Permit Inbox Continuity
+- PR #65 — Dashboard Alignment
+
+---
+
+### Milestone M4 — Work Order Nature Persistence
+
+**PR:** #63 (`cursor/wo-nature-persistence-6c97`)
+**Status:** Approved for squash merge
+**UAT closed:** UAT-010, UAT-011, UAT-012
+
+**Files changed:**
+- `WebApplication1/bussiness/production/create_jobid_v2.aspx.cs`
+- `docs/JOBID_LIFECYCLE_FUNCTIONAL_AUDIT.md`
+
+**Methods changed:**
+- `DDL_Workorder_SelectedIndexChanged()` — write `WO_BillingNature` and `WO_ContractNature` ViewState from the selected Work Order row; clear both when the placeholder is selected
+- `Workorder_Binder()` — clear both natures when the WO list is rebound (selection returns to placeholder)
+
+**Methods unchanged:** `Insert_JOBData()` parameterized `@BillingType`/`@BillingCode` branch (now receives persisted Non-Billing); `DDL_Worksite_SelectedIndexChanged()` ARC vs non-ARC `BindDepLoc`; `Find_DBCode()`; `btn_submit_Click()`; skip-permit `WO_MasterStatusCode == "3"` writes; IN/OUT/permit/JOB360 pages.
+
+**Finding resolved:**
+`WO_BillingNature` and `WO_ContractNature` ViewState were declared and later read, but never assigned from the selected Work Order. Locals `billingNature`/`contractNature` drove UI only, so postback save and ARC location binding saw empty strings.
+
+**UAT:**
+- UAT-010 — Billing Work Order: natures persist across postback; save writes dropdown BillingType/BillingCode
+- UAT-011 — Non-Billing Work Order: natures persist; save writes `BillingType='Non-Billing'` and `BillingCode='NB'`
+- UAT-012 — ARC Work Order: `WO_ContractNature` persists; location binding uses the ARC `BindDepLoc` path
+
+**Regression:** PR #59, #60, #61, and #62 (`aaea92e`) files/behavior are unchanged (this PR only edits create V2 nature persistence).
+
 **Remaining Work:**
-- PR #63 — Work Order Nature Persistence
 - PR #64 — Permit Inbox Continuity
 - PR #65 — Dashboard Alignment
 
@@ -826,7 +860,7 @@ Only `USERID` and `WORKMAN`. Later uses REGION, USERTYPE, USERNAME, COMPANY_CODE
 - After SP insert, second UPDATE sets `Required_Documents`, `GPS_Latitude/Longitude`, `App_Version='V2'`. Method: `Insert_JOBData()`.
 - Route: `WO_MasterStatusCode=="3"` → `job_inpunch_v2.aspx?jobid={EncodeJobID}`; else permit V2. Method: `btn_submit_Click()`.
 - Encode: URL-safe Base64, not a signature. Method: `EncodeJobID()`.
-- **Defect:** `WO_BillingNature` and `WO_ContractNature` ViewState are never assigned. Locals `billingNature`/`contractNature` used for UI only. Insert therefore never takes the `Non-Billing`/`NB` ViewState branch (`Insert_JOBData()` lines 726–727). Location ARC branch (`WO_ContractNature=="ARC"`) never runs (`DDL_Worksite_SelectedIndexChanged()` line 986).
+- **Resolved (UAT-010 / UAT-011 / UAT-012):** `DDL_Workorder_SelectedIndexChanged()` writes `WO_BillingNature` and `WO_ContractNature` ViewState from the selected WO row. `Insert_JOBData()` Non-Billing/`NB` branch and `DDL_Worksite_SelectedIndexChanged()` ARC `BindDepLoc` now see those values after later postbacks. `Workorder_Binder()` clears both when the WO list is rebound.
 - **Defect:** success redirect block is duplicated (lines 628–685); both `Response.Redirect(..., false)` without `return`.
 - Mandatory documents are UI-locked (`onclick="return false"`) but `GetSelectedDocuments()` does not verify mandatory IDs at submit.
 
@@ -846,7 +880,7 @@ Success: masked permit or IN-punch. Cancel: homepage. V1: `create_jobid.aspx` af
 PNotify. Insert catch returns null. Backdate/duplicate-warning/system-log/version-log swallow errors.
 
 ### Edge Cases
-Region change rebinds WO but not billing types (first bind uses Session REGION). GPS is non-empty string only. Unbounded JOBID loop. Static `jobInsertLock` as legacy.
+Region change rebinds WO and clears `WO_BillingNature`/`WO_ContractNature` until a WO is selected again. GPS is non-empty string only. Unbounded JOBID loop. Static `jobInsertLock` as legacy.
 
 ### Side Effects
 `JobWorkflowLogger.LogAction(..., "1. CREATE JOB (V2 Smart Workflow)", ...)`. GPS and required-doc columns. `App_Version='V2'`.
@@ -1302,9 +1336,9 @@ Evidence: `create_jobid_v2.aspx.cs` `GetUserBackdateLimit()`, `txt_jobdate_TextC
 ## 12. Billing type persistence
 
 **Old Logic:** Always `DDL_BillingType` text/value into SP.  
-**New Logic:** Intended Non-Billing → Type `Non-Billing` code `NB` via `WO_BillingNature`; **property never assigned**, so insert uses dropdown (or empty if hidden).  
-Evidence: `create_jobid_v2.aspx.cs` lines 25–26, 319–321, 726–727.  
-**Risk:** High — Non-Billing jobs may store empty BillingType/BillingCode; dashboard MS/LI counts and memo filters break.
+**New Logic (UAT-010 / UAT-011):** Non-Billing → Type `Non-Billing` code `NB` via persisted `WO_BillingNature`; Billing → dropdown text/value. Written in `DDL_Workorder_SelectedIndexChanged()`; read in `Insert_JOBData()`.  
+Evidence: `create_jobid_v2.aspx.cs` ViewState properties, `DDL_Workorder_SelectedIndexChanged()`, `Insert_JOBData()`.  
+**Risk:** Resolved for create save. Dashboard MS/LI counts still depend on stored BillingCode.
 
 ---
 
@@ -1526,8 +1560,7 @@ No classic open-redirect found on V2 success paths (relative known pages). Legac
 **Resolved (UAT-013 / UAT-018 / UAT-019).** `UpdatePermitStatus()` writes `JOB_Status='Permit Uploaded'` and `PermitUpload` Yes/No with FileCount. Out-Punch Done is not overwritten. Last-file delete does not revert IN/OUT/close state.
 
 ### R5. WO_BillingNature / WO_ContractNature never stored
-**Works differently.** Non-Billing WO may insert blank billing; location SQL uses non-ARC binder.  
-**Repro:** Select Non-Billing WO; hide billing dropdown; submit; inspect `BillingType`/`BillingCode`. Select ARC WO; compare location list vs V1.
+**Resolved (UAT-010 / UAT-011 / UAT-012).** `DDL_Workorder_SelectedIndexChanged()` assigns both ViewState properties from the selected `tlb_WO_Data` row. Non-Billing insert writes `Non-Billing`/`NB`. ARC location binding uses persisted `WO_ContractNature`. Region WO rebind clears both until a WO is selected again.
 
 ### R6. job_360_view deep links throw on V2 punch/permit pages
 **Resolved (UAT-046 / UAT-047 / UAT-048 / UAT-049).** JOB360 Permit/IN/OUT encode `txt_jobid` with existing `create_jobid_v2.EncodeJobID()` before redirect. V2 `Page_Load` still calls `DecodeJobID()` (algorithm unchanged); `FormatException` is caught so invalid tokens load the inbox without a 500. Session, creator inbox filters, and permit fallback for successfully decoded IDs are unchanged. AddDocs/SwapDate still pass raw JOBID to non-V2 pages.
@@ -1596,7 +1629,7 @@ Unchanged on V1; V2 mostly ViewState.
 - **Code movement:** Dashboard SQL copied V1→V2. Create rewritten around `tlb_WO_Rule_Matrix`, calendar, GPS, documents. Permit/IN/OUT rewritten with Base64 `jobid`, PNotify, `JobWorkflowLogger`. Manage/view parameterized; delete became soft+transactional.
 - **New dependencies:** `tlb_WO_Rule_Matrix`, `tlb_Company_Calendar`, `tlb_Backdate_Exceptions`, `tlb_DocumentMaster`, `tlb_Region_Documents`, `tlb_System_Logs`, `tbl_Version_Switch_Log`, `NotificationTemplates`/`NotificationQueue`, `NotificationTriggerHelper`, MSG91/SMTP on close/share, filesystem logs under `~/Logs/`.
 - **Unchanged SPs (call-level):** `SP_InsertInto_JOBSTable`, `SP_InsertInto_AttendanceTable`, `SP_Update_AttendancePunchOUT`. Bodies not in repo.
-- **Known implementation defects in V2:** unassigned `WO_BillingNature`/`WO_ContractNature`; duplicated create redirects; dead hub switch-to-old link; permit QueryString IDOR bind. (Permit `JOB_Status`/`PermitUpload` restored in M2; 360→V2 jobid encoding restored in M3.)
+- **Known implementation defects in V2:** duplicated create redirects; dead hub switch-to-old link; permit QueryString IDOR bind. (Permit `JOB_Status`/`PermitUpload` restored in M2; 360→V2 jobid encoding restored in M3; `WO_BillingNature`/`WO_ContractNature` assigned in M4.)
 
 ## Client Business Summary
 
@@ -1639,7 +1672,7 @@ Written for the client SPOC.
 |---|---|---|
 | Hub V1/V2 | `jobs_and_manpower.aspx.cs`, `_v2.aspx.cs` | `Page_Load`, `LoadDashboardStats` |
 | Create V1 | `create_jobid.aspx.cs` | `Page_Load`, `DataChecker`, `Insert_JOBData`, `Find_DBCode`, `Workorder_Binder`, `btn_inpunch_Click` |
-| Create V2 | `create_jobid_v2.aspx.cs` | `Page_Load`, `GetUserBackdateLimit`, `DDL_Workorder_SelectedIndexChanged`, `btn_submit_Click`, `Insert_JOBData`, `EncodeJobID` |
+| Create V2 | `create_jobid_v2.aspx.cs` | `Page_Load`, `GetUserBackdateLimit`, `DDL_Workorder_SelectedIndexChanged`, `Workorder_Binder`, `btn_submit_Click`, `Insert_JOBData`, `EncodeJobID` |
 | Permit V1 | `job_permitupload.aspx.cs` | `ActiveJOB_Checker`, `InsertIntoDB`, `UpdatePermiStatus`, `btn_inpunch_Click` |
 | Permit V2 | `job_permitupload_v2.aspx.cs` | `ActiveJOB_Checker`, `UpdatePermitStatus`, `btn_inpunch_Click`, `DecodeJobID` |
 | IN V1 | `job_inpunch.aspx.cs` | `ActiveJOB_Checker`, `txt_empworkman_TextChanged`, `InsertIntoAttendanceTable`, `UpdateJOBTableStatus` |
