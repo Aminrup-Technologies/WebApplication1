@@ -1620,3 +1620,18 @@ Written for the client SPOC.
 | Menu | `webmaster.Master` / `.Master.cs` | CreateJOBS → V2 hub |
 
 **Adjacent JOBID participants (not primary pages, but on the graph):** `attach_manpower.aspx`, `job_360_view.aspx`, `jobapprovalpage.aspx`, `view_jobsforapproval.aspx`, `jobs_approval.aspx`, `csm_toolboxtalk.aspx`, `csm_soptraining.aspx`, `homepage.aspx`, `vw_supplyjobs.aspx`, `vw_lineitemjobs.aspx`, `db_controller.aspx` (matrix status labels).
+
+---
+
+### Version Freeze — Production Baseline v1.0
+
+**Date:** September 2026  
+**Branch:** `Jul_to_Sep_2026_Suport_N_Dev_Works`  
+**Companion:** `docs/RELEASE_READINESS_PACK_v1.0.md`
+
+- PR #59–#65 complete (M1–M6).
+- Release Readiness Pack created.
+- This audit is the functional specification for JOBID V2 lifecycle behavior.
+- Future enhancements must preserve the v1.0 baseline unless formally approved.
+
+No executable code was changed to record this freeze. Milestone history above is unaltered.
