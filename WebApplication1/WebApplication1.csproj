@@ -272,6 +272,7 @@
     <Content Include="bussiness\production\css\loader.css" />
     <Content Include="bussiness\production\css\Site.css" />
     <Content Include="Content\job360-cockpit.css" />
+    <Content Include="Content\supervisor-wizard.css" />
     <Content Include="bussiness\production\db_controller.aspx" />
     <Content Include="bussiness\production\deta_employeemaster.aspx" />
     <Content Include="bussiness\production\deta_mustering.aspx" />
@@ -317,6 +318,7 @@
     <Content Include="bussiness\production\job_inpunch_v2.aspx" />
     <Content Include="bussiness\production\job_outpunch_v2.aspx" />
     <Content Include="bussiness\production\job_permitupload_v2.aspx" />
+    <Content Include="bussiness\production\supervisor_wizard.aspx" />
     <Content Include="bussiness\production\js\jquery-1.9.1.js" />
     <Content Include="bussiness\production\LiveJOB_pnl.aspx" />
     <Content Include="bussiness\production\Live_overall_pnl.aspx" />
@@ -5622,6 +5624,13 @@
     </Compile>
     <Compile Include="bussiness\production\job_permitupload_v2.aspx.designer.cs">
       <DependentUpon>job_permitupload_v2.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\supervisor_wizard.aspx.cs">
+      <DependentUpon>supervisor_wizard.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\supervisor_wizard.aspx.designer.cs">
+      <DependentUpon>supervisor_wizard.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\LiveJOB_pnl.aspx.cs">
       <DependentUpon>LiveJOB_pnl.aspx</DependentUpon>
