@@ -2,6 +2,10 @@
  * WHEN: 2026-02-27
  * WHY: Fixing the tab reset bug by manipulating the tab HTML classes directly from the server.
  * WHAT: Implemented server-side control over tab_login_btn, tab_forgot_btn, pane_login, and pane_forgot in Page_PreRender.
+ *
+ * WHEN: 2026-09-06
+ * WHY: Extract identity Session writes from GrantAuthenticatedSession so later Switch User can reuse them without duplicating keys.
+ * WHAT: ApplySessionFromEmployeeRow assigns the same 15 login Session keys and clears MFA transients. Audit, LastLogin, LoginStatus, ATS_SavedID, and homepage_v2 redirect stay in GrantAuthenticatedSession. No behavior change.
  */
 
 using System;
@@ -16,6 +20,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using System.Web.Hosting;
+using System.Web.SessionState;
 using System.Web.UI;
 using WebApplication1.bussiness.production;
 
@@ -707,19 +712,46 @@ namespace WebApplication1.bussiness.production
             Notify("Login", "Verification cancelled. Enter your password again.", "info");
         }
 
-        private void ClearMfaSession()
+        private static void ClearMfaSession()
         {
-            Session.Remove(SessionKeys.MfaPendingLoginId);
-            Session.Remove(SessionKeys.MfaOtpHash);
-            Session.Remove(SessionKeys.MfaOtpExp);
-            Session.Remove(SessionKeys.MfaOtpTry);
-            Session.Remove(SessionKeys.MfaOtpEmail);
-            Session.Remove(SessionKeys.MfaOtpMobile);
-            Session.Remove(SessionKeys.MfaRemember);
-            Session.Remove(SessionKeys.MfaResendAt);
-            Session.Remove(SessionKeys.MfaMethod);
-            Session.Remove(SessionKeys.MfaTotpEnroll);
-            Session.Remove(SessionKeys.MfaTotpSecret);
+            HttpSessionState session = HttpContext.Current.Session;
+            session.Remove(SessionKeys.MfaPendingLoginId);
+            session.Remove(SessionKeys.MfaOtpHash);
+            session.Remove(SessionKeys.MfaOtpExp);
+            session.Remove(SessionKeys.MfaOtpTry);
+            session.Remove(SessionKeys.MfaOtpEmail);
+            session.Remove(SessionKeys.MfaOtpMobile);
+            session.Remove(SessionKeys.MfaRemember);
+            session.Remove(SessionKeys.MfaResendAt);
+            session.Remove(SessionKeys.MfaMethod);
+            session.Remove(SessionKeys.MfaTotpEnroll);
+            session.Remove(SessionKeys.MfaTotpSecret);
+        }
+
+        private static void ApplySessionFromEmployeeRow(DataRow employee)
+        {
+            ClearMfaSession();
+
+            HttpSessionState session = HttpContext.Current.Session;
+            session[SessionKeys.UserID] = employee["LoginID"].ToString();
+            session[SessionKeys.WorkmanSL] = employee["WorkmanSL"].ToString();
+            session[SessionKeys.UserFirstName] = employee["FirstName"].ToString();
+            session[SessionKeys.UserName] = employee["FullName"].ToString();
+            session[SessionKeys.UserType] = employee["User_RoleType"].ToString();
+            session[SessionKeys.UserRoleDB] = employee["UserRoleDB"].ToString();
+            session[SessionKeys.RolePermissionDB] = employee["RolePermissionDB"].ToString();
+            session[SessionKeys.Region] = employee["WorkRegion"].ToString();
+            session[SessionKeys.UserState] = employee["WorkState"].ToString();
+            session[SessionKeys.CompanyCode] = employee["WorkCompany"].ToString();
+            session[SessionKeys.WorkSite] = employee["WorkSite"].ToString();
+            session[SessionKeys.SiteCode] = employee["Worksite_Code"].ToString();
+            session[SessionKeys.Designation] = employee["SkillDesignation"].ToString();
+            session[SessionKeys.Skill] = employee["SkillCategory"].ToString();
+
+            string photo = employee["PrfPicFile"].ToString();
+            session[SessionKeys.UserPhoto] = (!string.IsNullOrEmpty(photo) && Directory.Exists(rootFolder) && File.Exists(Path.Combine(rootFolder, photo)))
+                                            ? photo
+                                            : "No_Image.jpg";
         }
 
         private void GrantAuthenticatedSession(DataRow row, bool rememberMe, string auditResult, bool markMfaVerified)
@@ -764,25 +796,7 @@ namespace WebApplication1.bussiness.production
             if (rememberMe) { Response.Cookies.Add(new HttpCookie("ATS_SavedID", id) { Expires = DateTime.Now.AddDays(15) }); }
             else if (Request.Cookies["ATS_SavedID"] != null) { Response.Cookies["ATS_SavedID"].Expires = DateTime.Now.AddDays(-1); }
 
-            Session[SessionKeys.UserID] = id;
-            Session[SessionKeys.WorkmanSL] = workmanSL;
-            Session[SessionKeys.UserFirstName] = row["FirstName"].ToString();
-            Session[SessionKeys.UserName] = row["FullName"].ToString();
-            Session[SessionKeys.UserType] = row["User_RoleType"].ToString();
-            Session[SessionKeys.UserRoleDB] = row["UserRoleDB"].ToString();
-            Session[SessionKeys.RolePermissionDB] = row["RolePermissionDB"].ToString();
-            Session[SessionKeys.Region] = row["WorkRegion"].ToString();
-            Session[SessionKeys.UserState] = row["WorkState"].ToString();
-            Session[SessionKeys.CompanyCode] = row["WorkCompany"].ToString();
-            Session[SessionKeys.WorkSite] = row["WorkSite"].ToString();
-            Session[SessionKeys.SiteCode] = row["Worksite_Code"].ToString();
-            Session[SessionKeys.Designation] = row["SkillDesignation"].ToString();
-            Session[SessionKeys.Skill] = row["SkillCategory"].ToString();
-
-            string photo = row["PrfPicFile"].ToString();
-            Session[SessionKeys.UserPhoto] = (!string.IsNullOrEmpty(photo) && Directory.Exists(rootFolder) && File.Exists(Path.Combine(rootFolder, photo)))
-                                            ? photo
-                                            : "No_Image.jpg";
+            ApplySessionFromEmployeeRow(row);
 
             Response.Redirect("~/bussiness/production/homepage_v2.aspx", false);
             Context.ApplicationInstance.CompleteRequest();
