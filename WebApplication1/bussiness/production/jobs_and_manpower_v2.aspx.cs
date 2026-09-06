@@ -29,13 +29,13 @@ namespace WebApplication1.bussiness.production
         {
             string workman = Session["WORKMAN"].ToString();
 
-            // ONE SINGLE QUERY to get all 6 metrics instantly!
-            // Notice how we use the new MasterStatusCode logic we built in V2.
+            // Pending Permit = outstanding permit work (FinalUpldStatus='No'), not the permit inbox.
+            // Pending IN uses EntryExit='Created'. Pending OUT is unchanged (code 3 + Entry).
             string query = @"
                 SELECT 
                     SUM(CASE WHEN JOBID_Status = 'Active' AND CreatedDate >= DATEADD(DAY, -3, GETDATE()) THEN 1 ELSE 0 END) as ActiveJobs,
-                    SUM(CASE WHEN MasterStatusCode = '1' AND JOBID_Status = 'Active' AND CreatedDate >= DATEADD(DAY, -3, GETDATE()) THEN 1 ELSE 0 END) as PendingPermits,
-                    SUM(CASE WHEN MasterStatusCode = '3' AND EntryExit = 'Created' AND JOBID_Status = 'Active' AND CreatedDate >= DATEADD(DAY, -3, GETDATE()) THEN 1 ELSE 0 END) as PendingInPunch,
+                    SUM(CASE WHEN EntryExit = 'Entry' AND FinalUpldStatus = 'No' AND JOBID_Status = 'Active' AND CreatedDate >= DATEADD(DAY, -3, GETDATE()) THEN 1 ELSE 0 END) as PendingPermits,
+                    SUM(CASE WHEN EntryExit = 'Created' AND JOBID_Status = 'Active' AND CreatedDate >= DATEADD(DAY, -3, GETDATE()) THEN 1 ELSE 0 END) as PendingInPunch,
                     SUM(CASE WHEN MasterStatusCode = '3' AND EntryExit = 'Entry' AND JOBID_Status = 'Active' AND CreatedDate >= DATEADD(DAY, -3, GETDATE()) THEN 1 ELSE 0 END) as PendingOutPunch,
                     SUM(CASE WHEN BillingCode = 'MS' AND MONTH(CreatedDate) = MONTH(GETDATE()) AND YEAR(CreatedDate) = YEAR(GETDATE()) THEN 1 ELSE 0 END) as SupplyJobs,
                     SUM(CASE WHEN BillingCode = 'LI' AND MONTH(CreatedDate) = MONTH(GETDATE()) AND YEAR(CreatedDate) = YEAR(GETDATE()) THEN 1 ELSE 0 END) as LineItemJobs

@@ -113,8 +113,8 @@ Merged 05-Sep-2026 into `Jul_to_Sep_2026_Suport_N_Dev_Works`.
 - UAT-018A ✅ (final permit delete after IN: `PermitUpload='No'`, `FinalUpldStatus='No'`, `MasterStatusCode` stays `3`, OUT inbox predicates intact)
 - UAT-019 ✅
 
-**Remaining Work (after M2; M3–M5 recorded below):**
-- PR #65 — Dashboard Alignment
+**Remaining Work (after M2; M3–M6 recorded below):**
+None.
 
 No executable code was changed to record this milestone.
 
@@ -152,8 +152,8 @@ JOB360 raw JOBID was incompatible with V2 Base64 decoding.
 
 **Regression:** PR #59 (IN-Punch eligibility), PR #60 (shift closure), and PR #61 (permit state writes) are unchanged.
 
-**Remaining Work (after M3; M4 and M5 recorded below):**
-- PR #65 — Dashboard Alignment
+**Remaining Work (after M3; M4–M6 recorded below):**
+None.
 
 ---
 
@@ -183,15 +183,15 @@ JOB360 raw JOBID was incompatible with V2 Base64 decoding.
 
 **Regression:** PR #59, #60, #61, and #62 (`aaea92e`) files/behavior are unchanged (this PR only edits create V2 nature persistence).
 
-**Remaining Work (after M4; M5 recorded below):**
-- PR #65 — Dashboard Alignment
+**Remaining Work (after M4; M5–M6 recorded below):**
+None.
 
 ---
 
 ### Milestone M5 — Permit Inbox Continuity
 
 **PR:** #64 (`cursor/permit-inbox-continuity-6c97`)
-**Status:** Approved for squash merge
+**Status:** Merged `6e597d0` 2026-09-05
 **UAT closed:** UAT-014, UAT-015, UAT-015A, UAT-015B
 
 **Files changed:**
@@ -214,8 +214,42 @@ After the first permit upload, `UpdatePermitStatus()` sets `MasterStatusCode='3'
 
 **Regression:** PR #59, #60, #61, #62 (`aaea92e`), and #63 (`111a986`) files/behavior are unchanged except this inbox filter. M2 permit *writes* are unchanged. M3 decode handling is unchanged.
 
+**Remaining Work (after M5; M6 recorded below):**
+None.
+
+---
+
+### Milestone M6 — Dashboard Alignment
+
+**PR:** #65 (`cursor/dashboard-alignment-6c97`)
+**Status:** Synchronized onto `6e597d0`; awaiting squash merge
+**UAT closed:** UAT-004, UAT-005, UAT-035, UAT-035A, UAT-035B
+
+**Files changed:**
+- `WebApplication1/bussiness/production/jobs_and_manpower_v2.aspx.cs`
+- `docs/JOBID_LIFECYCLE_FUNCTIONAL_AUDIT.md`
+
+**Methods changed:**
+- `LoadDashboardStats()` — Pending Permit = outstanding permit work (`EntryExit='Entry'` AND `FinalUpldStatus='No'`); Pending IN = `EntryExit='Created'`; Pending OUT / Active / MS / LI unchanged
+
+**Methods unchanged:** `Page_Load()` auth gate; V1 `jobs_and_manpower.aspx.cs`; IN/OUT/permit/create/JOB360 pages (PR #64 inbox remains `EntryExit='Entry'` only); `Span1` (still unassigned).
+
+**Finding resolved:**
+V2 hub Pending Permit used `MasterStatusCode='1'` (pre-IN), then briefly reused the permit *inbox* predicate (`EntryExit='Entry'`), which counted completed and skip-permit jobs. The badge now means **outstanding permit work**: Active, last 3 days, creator, `EntryExit='Entry'`, `FinalUpldStatus='No'`. Pending IN counts `EntryExit='Created'` (includes code-1 jobs). Permit inbox (PR #64) is unchanged.
+
+**UAT:**
+- UAT-004 — Close & Send (`code 4` / `EntryExit='Exit'`): Pending OUT CASE no longer matches; count drops immediately
+- UAT-005 — Pending Permit = outstanding work only (`EntryExit='Entry'` AND `FinalUpldStatus='No'`). Not the permit inbox.
+- UAT-035 — after Close & Send, Pending OUT decreases on dashboard refresh
+- UAT-035A — first permit upload sets `FinalUpldStatus='Yes'`; Pending Permit **drops**. Additional files remain available via the PR #64 inbox (`EntryExit='Entry'`).
+- UAT-035B — approval queue is `JOB_Status='Out-Punch Done' AND EntryExit='Exit'` on `view_jobsforapproval`; hub has no approval badge; jobs stay in Pending OUT until Close & Send
+
+**Regression:** PR #59–#64 workflow files are not in this diff. V1 hub SQL is unchanged.
+
 **Remaining Work:**
-- PR #65 — Dashboard Alignment
+None.
+
+---
 
 # PHASE 1 — JOBID Dependency Graph
 
@@ -847,13 +881,20 @@ Identical six-key gate. Method: `Page_Load()`.
 None. Dead control: “Switch to OLD Version” `href="#"` (`jobs_and_manpower_v2.aspx` line 133).
 
 ### Validation / Business Rules / Database
-**Identical SQL** to legacy `LoadDashboardStats()`. Parameterized SELECT `tbl_jobs`.
+`LoadDashboardStats()` (UAT-004 / UAT-005 / UAT-035): parameterized SELECT `tbl_jobs` where `Creator_Workman=@Workman`:
+- Active: `JOBID_Status='Active'` last 3 days (unchanged)
+- Pending permits: `EntryExit='Entry'` AND `FinalUpldStatus='No'` + Active + 3 days (**outstanding permit work**; not the permit inbox, which stays `EntryExit='Entry'` only)
+- Pending IN: `EntryExit='Created'` + Active + 3 days (includes code-1 jobs eligible immediately after create; was `MasterStatusCode='3'` AND Created)
+- Pending OUT: `MasterStatusCode='3'` + `EntryExit='Entry'` + Active + 3 days (**unchanged**; Close & Send removes the job)
+- Supply / Line-item: `BillingCode` `MS`/`LI` current calendar month (unchanged)
+
+No Ready-for-Approval or Closed badge on this hub. Approval list remains `view_jobsforapproval` (`JOB_Status='Out-Punch Done' AND EntryExit='Exit'`). Manage tile `Span1` still unassigned.
 
 ### Session / Navigation
 Read same six keys. Outgoing: `*_v2.aspx` create/permit/in/out, memos, **`manage_jobid_v2.aspx`**.
 
 ### Error Handling / Edge Cases / Side Effects
-Same as legacy. Extra: manage badge `Span1` is never assigned (stays 0).
+Same as legacy except KPI CASE for Pending Permit / Pending IN (M6). Extra: manage badge `Span1` is never assigned (stays 0).
 
 ---
 
@@ -1126,7 +1167,7 @@ Result labels used only: PRESERVED | CHANGED | ADDED | REMOVED | REGRESSION | SE
 | Capability | Legacy | V2 | Result |
 |---|---|---|---|
 | Auth gate (6 session keys) | Yes | Yes | PRESERVED |
-| KPI SQL / 3-day window | Identical | Identical | PRESERVED |
+| KPI SQL / 3-day window | Pre-IN code gates | Permit=`Entry`+`FinalUpldStatus='No'` (outstanding work); IN=`Created`; OUT=code 3+`Entry` (UAT-004 / UAT-005) | CHANGED |
 | Links to create/permit/in/out | V1 pages | V2 pages | CHANGED |
 | Manage JOBID tile | Absent | `manage_jobid_v2.aspx` | ADDED |
 | Switch to other version | Works → V2 | `href="#"` dead | REGRESSION |
@@ -1578,7 +1619,7 @@ No classic open-redirect found on V2 success paths (relative known pages). Legac
 **Resolved (UAT-029 / UAT-040 / UAT-035 / UAT-040A / UAT-040B).** Last OUT shows a confirmation modal. Close & Send reuses `UpdateJOBTable1` (`JOB_Status='Out-Punch Done'`, `MasterStatusCode='4'`, `EntryExit='Exit'`). Second click or refresh of the close POST skips the write if already closed and still shows the success modal. The job matches the approval inbox immediately and leaves the pending-OUT dashboard count. Finalize Shift is not a required extra step.
 
 ### R3. Cross-version inbox mismatch
-**Inbox half resolved (UAT-006 / UAT-014).** V2 IN-Punch lists V1-created Active 3-day jobs (no code-3 filter). V2 permit inbox now matches legacy `EntryExit='Entry'` (no `MasterStatusCode='1'` gate). Dashboard pending-permit KPI may still use `MasterStatusCode='1'` (PR #65).
+**Inbox resolved for V2 IN-Punch and permit page (UAT-006 / UAT-014 / UAT-005).** V2 IN-Punch lists V1-created Active 3-day jobs (no code-3 filter). V2 permit inbox matches legacy `EntryExit='Entry'` (M5 / PR #64). V2 hub Pending Permit counts outstanding work (`EntryExit='Entry'` AND `FinalUpldStatus='No'`) and is not the permit inbox (M6 / PR #65).
 
 ## High
 
@@ -1655,7 +1696,7 @@ Unchanged on V1; V2 mostly ViewState.
 - **Code movement:** Dashboard SQL copied V1→V2. Create rewritten around `tlb_WO_Rule_Matrix`, calendar, GPS, documents. Permit/IN/OUT rewritten with Base64 `jobid`, PNotify, `JobWorkflowLogger`. Manage/view parameterized; delete became soft+transactional.
 - **New dependencies:** `tlb_WO_Rule_Matrix`, `tlb_Company_Calendar`, `tlb_Backdate_Exceptions`, `tlb_DocumentMaster`, `tlb_Region_Documents`, `tlb_System_Logs`, `tbl_Version_Switch_Log`, `NotificationTemplates`/`NotificationQueue`, `NotificationTriggerHelper`, MSG91/SMTP on close/share, filesystem logs under `~/Logs/`.
 - **Unchanged SPs (call-level):** `SP_InsertInto_JOBSTable`, `SP_InsertInto_AttendanceTable`, `SP_Update_AttendancePunchOUT`. Bodies not in repo.
-- **Known implementation defects in V2:** duplicated create redirects; dead hub switch-to-old link; permit QueryString IDOR bind. (Permit `JOB_Status`/`PermitUpload` restored in M2; 360→V2 jobid encoding restored in M3; `WO_BillingNature`/`WO_ContractNature` assigned in M4; permit inbox `EntryExit='Entry'` restored in M5.)
+- **Known implementation defects in V2:** duplicated create redirects; dead hub switch-to-old link; permit QueryString IDOR bind. (Permit `JOB_Status`/`PermitUpload` restored in M2; 360→V2 jobid encoding restored in M3; `WO_BillingNature`/`WO_ContractNature` assigned in M4; permit inbox `EntryExit='Entry'` restored in M5; hub Pending Permit = outstanding work in M6.)
 
 ## Client Business Summary
 
