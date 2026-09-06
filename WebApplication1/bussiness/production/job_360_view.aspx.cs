@@ -1260,23 +1260,24 @@ namespace WebApplication1.bussiness.production
         // ACTION BUTTON EXECUTORS
         // =================================================================================
         // V2 pages DecodeJobID() (URL-safe Base64). Encode here; do not pass raw JOByyMMddXXX.
+        // Inbound ?jobid= on this page remains raw (Page_Load). Hops encode via JobIdEncoding.
         protected void btn_Act_UploadPermit_Click(object sender, EventArgs e)
         {
             string jobid = (txt_jobid.Text ?? "").Trim();
             if (string.IsNullOrEmpty(jobid)) return;
-            Response.Redirect($"job_permitupload_v2.aspx?jobid={create_jobid_v2.EncodeJobID(jobid)}", false);
+            Response.Redirect($"job_permitupload_v2.aspx?jobid={JobIdEncoding.EncodeJobID(jobid)}", false);
         }
         protected void btn_Act_InPunch_Click(object sender, EventArgs e)
         {
             string jobid = (txt_jobid.Text ?? "").Trim();
             if (string.IsNullOrEmpty(jobid)) return;
-            Response.Redirect($"job_inpunch_v2.aspx?jobid={create_jobid_v2.EncodeJobID(jobid)}", false);
+            Response.Redirect($"job_inpunch_v2.aspx?jobid={JobIdEncoding.EncodeJobID(jobid)}", false);
         }
         protected void btn_Act_OutPunch_Click(object sender, EventArgs e)
         {
             string jobid = (txt_jobid.Text ?? "").Trim();
             if (string.IsNullOrEmpty(jobid)) return;
-            Response.Redirect($"job_outpunch_v2.aspx?jobid={create_jobid_v2.EncodeJobID(jobid)}", false);
+            Response.Redirect($"job_outpunch_v2.aspx?jobid={JobIdEncoding.EncodeJobID(jobid)}", false);
         }
         protected void btn_Act_AddDocs_Click(object sender, EventArgs e) { Response.Redirect($"manage_compliance_docs.aspx?jobid={txt_jobid.Text}", false); }
         protected void btn_Act_SwapDate_Click(object sender, EventArgs e) { Response.Redirect($"swap_jobdate.aspx?jobid={txt_jobid.Text}", false); }

@@ -43,7 +43,7 @@ namespace WebApplication1.bussiness.production
                     string realJobId = "";
                     try
                     {
-                        realJobId = DecodeJobID(maskedId);
+                        realJobId = JobIdEncoding.DecodeJobID(maskedId);
                     }
                     catch (FormatException)
                     {
@@ -75,19 +75,6 @@ namespace WebApplication1.bussiness.production
             string safeJobId = (jobid ?? "").Replace("\\", "\\\\").Replace("'", "\\'");
             string script = $"showCloseSuccessModal('{safeJobId}');";
             ScriptManager.RegisterStartupScript(this, this.GetType(), "ShiftClosedPopup", script, true);
-        }
-
-        public static string DecodeJobID(string maskedData)
-        {
-            if (string.IsNullOrEmpty(maskedData)) return "";
-            string incoming = maskedData.Replace("-", "+").Replace("_", "/");
-            switch (incoming.Length % 4)
-            {
-                case 2: incoming += "=="; break;
-                case 3: incoming += "="; break;
-            }
-            var base64EncodedBytes = Convert.FromBase64String(incoming);
-            return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
         }
 
         private void Bind_AttendnaceCode()

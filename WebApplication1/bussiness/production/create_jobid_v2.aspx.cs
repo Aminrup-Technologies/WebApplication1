@@ -550,13 +550,6 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-        public static string EncodeJobID(string plainText)
-        {
-            if (string.IsNullOrEmpty(plainText)) return "";
-            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
-            return Convert.ToBase64String(plainTextBytes).Replace("+", "-").Replace("/", "_").Replace("=", "");
-        }
-
         // =================================================================================
         // INSERTION AND SMART ROUTING
         // =================================================================================
@@ -659,7 +652,7 @@ namespace WebApplication1.bussiness.production
                 JobWorkflowLogger.LogAction(generatedJobId, "1. CREATE JOB (V2 Smart Workflow)", Session["WORKMAN"].ToString(), logDetails.ToString());
                 // =======================================================
 
-                string maskedJobId = EncodeJobID(generatedJobId);
+                string maskedJobId = JobIdEncoding.EncodeJobID(generatedJobId);
 
                 // V2 DYNAMIC ROUTING
                 if (WO_MasterStatusCode == "3")
@@ -678,7 +671,7 @@ namespace WebApplication1.bussiness.production
 
             if (!string.IsNullOrEmpty(generatedJobId))
             {
-                string maskedJobId = EncodeJobID(generatedJobId);
+                string maskedJobId = JobIdEncoding.EncodeJobID(generatedJobId);
 
                 // V2 DYNAMIC ROUTING
                 if (WO_MasterStatusCode == "3")

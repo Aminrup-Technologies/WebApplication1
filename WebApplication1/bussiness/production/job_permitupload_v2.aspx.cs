@@ -47,7 +47,7 @@ namespace WebApplication1.bussiness.production
                     string realJobId = "";
                     try
                     {
-                        realJobId = DecodeJobID(maskedId);
+                        realJobId = JobIdEncoding.DecodeJobID(maskedId);
                     }
                     catch (FormatException)
                     {
@@ -85,29 +85,6 @@ namespace WebApplication1.bussiness.production
         {
             string script = $"showPNotify('{title}', '{message.Replace("'", "\\'")}', '{type}');";
             ScriptManager.RegisterStartupScript(this, this.GetType(), "PNotify", script, true);
-        }
-
-        // =================================================================================
-        // URL MASKING UTILITIES
-        // =================================================================================
-        public static string EncodeJobID(string plainText)
-        {
-            if (string.IsNullOrEmpty(plainText)) return "";
-            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
-            return Convert.ToBase64String(plainTextBytes).Replace("+", "-").Replace("/", "_").Replace("=", "");
-        }
-
-        public static string DecodeJobID(string maskedData)
-        {
-            if (string.IsNullOrEmpty(maskedData)) return "";
-            string incoming = maskedData.Replace("-", "+").Replace("_", "/");
-            switch (incoming.Length % 4)
-            {
-                case 2: incoming += "=="; break;
-                case 3: incoming += "="; break;
-            }
-            var base64EncodedBytes = Convert.FromBase64String(incoming);
-            return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
         }
 
         // =================================================================================
@@ -514,7 +491,7 @@ namespace WebApplication1.bussiness.production
             // =======================================================
 
             // SMART ROUTING: Mask the JOBID before passing it to Step 3
-            string maskedJobId = EncodeJobID(lbl_jobid.Text);
+            string maskedJobId = JobIdEncoding.EncodeJobID(lbl_jobid.Text);
             Response.Redirect($"job_inpunch_v2.aspx?jobid={maskedJobId}", false);
         }
     }
