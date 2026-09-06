@@ -55,13 +55,7 @@ namespace WebApplication1.bussiness.production
 
         private void ShowNotification(string title, string message, string type)
         {
-            if (string.IsNullOrEmpty(message)) message = "An unknown error occurred.";
-
-            // Ensure no breaking line breaks or unescaped quotes break the JavaScript execution
-            string cleanMessage = message.Replace("'", "\\'").Replace("\"", "\\\"").Replace("\r", "").Replace("\n", "<br/>");
-
-            string script = $"showPNotify('{title}', '{cleanMessage}', '{type}');";
-            ScriptManager.RegisterStartupScript(this, this.GetType(), "PNotify", script, true);
+            NotificationHelper.Show(this, title, message, type, NotificationHelper.EscapeMode.Full);
         }
 
         protected void btn_search_Click(object sender, EventArgs e)
