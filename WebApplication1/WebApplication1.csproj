@@ -6097,6 +6097,7 @@
       <DependentUpon>ats_work_sites.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\CountChecker.cs" />
+    <Compile Include="bussiness\production\JobStatusConstants.cs" />
     <Compile Include="bussiness\production\create_jobid.aspx.cs">
       <DependentUpon>create_jobid.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

@@ -1099,7 +1099,7 @@ namespace WebApplication1.bussiness.production
 
             DateTime? closeTs = null;
             string closeFallback = null;
-            if (string.Equals(GetSafeString(row, "EntryExit", ""), "Exit", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(GetSafeString(row, "EntryExit", ""), JobStatusConstants.Exit, StringComparison.OrdinalIgnoreCase))
             {
                 closeTs = row.Table.Columns.Contains("UpdatedOn") ? ParseDateSafe(row["UpdatedOn"]) : null;
                 if (!closeTs.HasValue)
@@ -1146,13 +1146,13 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsAdmin()) return;
 
-            if (masterCode == "1")
+            if (masterCode == JobStatusConstants.Status1)
             {
                 btn_Act_ForcePermitBypass.Visible = true;
                 btn_Act_CancelShift.Visible = true;
             }
 
-            if (masterCode == "3" && actualWorkerCount == 0)
+            if (masterCode == JobStatusConstants.Status3 && actualWorkerCount == 0)
             {
                 btn_Act_ResetToCreated.Visible = true;
                 btn_Act_CancelShift.Visible = true;
@@ -1166,7 +1166,7 @@ namespace WebApplication1.bussiness.production
 
         private void ApplyUnblockVisibility(bool isBlocked, string jobStatus, string entryExitStatus)
         {
-            if ((isBlocked || jobStatus == "Blocked") && entryExitStatus != "Exit" && IsAdmin())
+            if ((isBlocked || jobStatus == "Blocked") && entryExitStatus != JobStatusConstants.Exit && IsAdmin())
             {
                 btn_Act_Unblock.Visible = true;
             }
@@ -1178,9 +1178,9 @@ namespace WebApplication1.bussiness.production
         /// </summary>
         private void ApplySupervisorHopVisibility(DataRow row, int pipelineStep, string entryExitStatus, int actualWorkerCount)
         {
-            bool isCreated = entryExitStatus == "Created";
-            bool isEntry = entryExitStatus == "Entry";
-            bool isExit = entryExitStatus == "Exit";
+            bool isCreated = entryExitStatus == JobStatusConstants.Created;
+            bool isEntry = entryExitStatus == JobStatusConstants.Entry;
+            bool isExit = entryExitStatus == JobStatusConstants.Exit;
 
             if (isExit) return;
 
@@ -1224,7 +1224,7 @@ namespace WebApplication1.bussiness.production
 
         private void ApplyInWindowForceOutVisibility(string entryExitStatus, DateTime? dtFirstInPunchLogic, DateTime? dtCreatedDate)
         {
-            if (entryExitStatus == "Entry" && dtFirstInPunchLogic.HasValue && dtCreatedDate.HasValue && dtCreatedDate.Value.Date < DateTime.Now.Date)
+            if (entryExitStatus == JobStatusConstants.Entry && dtFirstInPunchLogic.HasValue && dtCreatedDate.HasValue && dtCreatedDate.Value.Date < DateTime.Now.Date)
             {
                 btn_Act_ForceOut.Visible = true;
             }
@@ -1232,7 +1232,7 @@ namespace WebApplication1.bussiness.production
 
         private void ApplyLockoutForceOutVisibility(string entryExitStatus, DateTime? dtFirstInPunchLogic)
         {
-            if ((entryExitStatus == "Entry" || entryExitStatus == "Created") && dtFirstInPunchLogic.HasValue)
+            if ((entryExitStatus == JobStatusConstants.Entry || entryExitStatus == JobStatusConstants.Created) && dtFirstInPunchLogic.HasValue)
             {
                 if (IsAdmin()) btn_Act_ForceOut.Visible = true;
                 lbl_bottleneck.Text += " Admin must Force OUT-Punch to close this shift.";
@@ -1608,7 +1608,7 @@ namespace WebApplication1.bussiness.production
                             cmdSP.CommandType = CommandType.StoredProcedure;
                             cmdSP.Parameters.AddWithValue("@Id", id);
                             cmdSP.Parameters.AddWithValue("@JOBID", txt_jobid.Text);
-                            cmdSP.Parameters.AddWithValue("@SubmitterStatus", "Exit");
+                            cmdSP.Parameters.AddWithValue("@SubmitterStatus", JobStatusConstants.Exit);
                             cmdSP.Parameters.AddWithValue("@EmployeeWrk", empWrk);
                             cmdSP.Parameters.AddWithValue("@Outpunch_Time", outTime);
                             cmdSP.Parameters.AddWithValue("@WorkedTime", workedTimeMins);
@@ -1691,7 +1691,7 @@ namespace WebApplication1.bussiness.production
                                 cmdSP.CommandType = CommandType.StoredProcedure;
                                 cmdSP.Parameters.AddWithValue("@Id", id);
                                 cmdSP.Parameters.AddWithValue("@JOBID", txt_jobid.Text);
-                                cmdSP.Parameters.AddWithValue("@SubmitterStatus", "Exit");
+                                cmdSP.Parameters.AddWithValue("@SubmitterStatus", JobStatusConstants.Exit);
                                 cmdSP.Parameters.AddWithValue("@EmployeeWrk", empWrk);
                                 cmdSP.Parameters.AddWithValue("@Outpunch_Time", outTime);
                                 cmdSP.Parameters.AddWithValue("@WorkedTime", workedTimeMins);

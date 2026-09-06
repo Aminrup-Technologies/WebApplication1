@@ -356,27 +356,27 @@ namespace WebApplication1.bussiness.production
             // MasterStatusCode: legacy upload sets 3; last-file delete sets 1.
             // After IN (Entry/Exit) or close (4/5), do not regress — preserves IN-before-Permit and approval.
             string masterCode;
-            if (currentMaster == "4" || currentMaster == "5")
+            if (currentMaster == JobStatusConstants.Status4 || currentMaster == JobStatusConstants.Status5)
             {
                 masterCode = currentMaster;
             }
             else if (newCount > 0)
             {
-                masterCode = "3";
+                masterCode = JobStatusConstants.Status3;
             }
-            else if (entryExit == "Created")
+            else if (entryExit == JobStatusConstants.Created)
             {
-                masterCode = "1";
+                masterCode = JobStatusConstants.Status1;
             }
             else
             {
-                masterCode = string.IsNullOrEmpty(currentMaster) ? "1" : currentMaster;
+                masterCode = string.IsNullOrEmpty(currentMaster) ? JobStatusConstants.Status1 : currentMaster;
             }
 
             // JOB_Status: legacy upload sets Permit Uploaded. Do not overwrite Out-Punch Done.
             // Last-file delete may revert to Created only when IN has not happened.
             string jobStatus;
-            if (currentJobStatus == "Out-Punch Done")
+            if (currentJobStatus == JobStatusConstants.OutPunchDone)
             {
                 jobStatus = currentJobStatus;
             }
@@ -384,13 +384,13 @@ namespace WebApplication1.bussiness.production
             {
                 jobStatus = "Permit Uploaded";
             }
-            else if (entryExit == "Created")
+            else if (entryExit == JobStatusConstants.Created)
             {
-                jobStatus = "Created";
+                jobStatus = JobStatusConstants.Created;
             }
             else
             {
-                jobStatus = string.IsNullOrEmpty(currentJobStatus) ? "Created" : currentJobStatus;
+                jobStatus = string.IsNullOrEmpty(currentJobStatus) ? JobStatusConstants.Created : currentJobStatus;
             }
 
             string query = @"UPDATE tbl_jobs
