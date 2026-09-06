@@ -79,15 +79,7 @@ namespace WebApplication1.bussiness.production
 
         public static string DecodeJobID(string maskedData)
         {
-            if (string.IsNullOrEmpty(maskedData)) return "";
-            string incoming = maskedData.Replace("-", "+").Replace("_", "/");
-            switch (incoming.Length % 4)
-            {
-                case 2: incoming += "=="; break;
-                case 3: incoming += "="; break;
-            }
-            var base64EncodedBytes = Convert.FromBase64String(incoming);
-            return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+            return JobIdCodec.Decode(maskedData);
         }
 
         private void Bind_AttendnaceCode()

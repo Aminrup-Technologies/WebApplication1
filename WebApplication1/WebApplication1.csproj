@@ -6096,6 +6096,7 @@
     <Compile Include="bussiness\production\ats_work_sites.aspx.designer.cs">
       <DependentUpon>ats_work_sites.aspx</DependentUpon>
     </Compile>
+    <Compile Include="App_Code\JobIdCodec.cs" />
     <Compile Include="bussiness\production\CountChecker.cs" />
     <Compile Include="bussiness\production\create_jobid.aspx.cs">
       <DependentUpon>create_jobid.aspx</DependentUpon>

@@ -552,9 +552,7 @@ namespace WebApplication1.bussiness.production
 
         public static string EncodeJobID(string plainText)
         {
-            if (string.IsNullOrEmpty(plainText)) return "";
-            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
-            return Convert.ToBase64String(plainTextBytes).Replace("+", "-").Replace("/", "_").Replace("=", "");
+            return JobIdCodec.Encode(plainText);
         }
 
         // =================================================================================

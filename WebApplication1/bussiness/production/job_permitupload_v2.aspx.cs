@@ -92,22 +92,12 @@ namespace WebApplication1.bussiness.production
         // =================================================================================
         public static string EncodeJobID(string plainText)
         {
-            if (string.IsNullOrEmpty(plainText)) return "";
-            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
-            return Convert.ToBase64String(plainTextBytes).Replace("+", "-").Replace("/", "_").Replace("=", "");
+            return JobIdCodec.Encode(plainText);
         }
 
         public static string DecodeJobID(string maskedData)
         {
-            if (string.IsNullOrEmpty(maskedData)) return "";
-            string incoming = maskedData.Replace("-", "+").Replace("_", "/");
-            switch (incoming.Length % 4)
-            {
-                case 2: incoming += "=="; break;
-                case 3: incoming += "="; break;
-            }
-            var base64EncodedBytes = Convert.FromBase64String(incoming);
-            return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+            return JobIdCodec.Decode(maskedData);
         }
 
         // =================================================================================
