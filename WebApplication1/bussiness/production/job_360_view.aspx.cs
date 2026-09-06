@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Web.UI;
+using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 
 namespace WebApplication1.bussiness.production
@@ -467,6 +468,12 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_EditCoreDetails_Click(object sender, EventArgs e)
         {
+            if (!IsAdmin())
+            {
+                ShowNotification("Access Denied", "You do not have permission to perform this override.", "error");
+                return;
+            }
+
             try
             {
                 // Pre-fill the textboxes with the current data from the screen
@@ -484,6 +491,12 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_SaveCoreDetails_Click(object sender, EventArgs e)
         {
+            if (!IsAdmin())
+            {
+                ShowNotification("Access Denied", "You do not have permission to perform this override.", "error");
+                return;
+            }
+
             try
             {
                 dbcl.Sqlconnection();
@@ -619,6 +632,8 @@ namespace WebApplication1.bussiness.production
 
             try
             {
+                ClearAuditTimeline();
+
                 // 2. Extract Master Row Data Safely
                 string permitUploadReq = GetSafeString(row, "PermitUpload", "No");
                 string csmReq = GetSafeString(row, "CSM_Documents", "No");
@@ -850,6 +865,7 @@ namespace WebApplication1.bussiness.production
 
                 bool isBlocked = row.Table.Columns.Contains("IsBlocked") && row["IsBlocked"] != DBNull.Value && Convert.ToBoolean(row["IsBlocked"]);
                 ActionBarRow.Visible = true;
+                BindAuditTimeline(row, dtMasterJobSysCreation, dtFirstInPunchLogic, dtPermit, dtLastOutPunchUpdated, dtApproval);
                 EvaluateActionMatrix(row, currentStep, isBlocked, dtFirstInPunchLogic, ParseDateSafe(row["CreatedDate"]), actualWorkerCount);
             }
             catch (Exception ex)
@@ -970,6 +986,7 @@ namespace WebApplication1.bussiness.production
         private void EvaluateActionMatrix(DataRow row, int pipelineStep, bool isBlocked, DateTime? dtFirstInPunchLogic, DateTime? dtCreatedDate, int actualWorkerCount)
         {
             ResetActionButtonVisibility();
+            ApplyAdminConsoleVisibility();
 
             divBottleneck.Attributes["class"] = "d-none";
             lbl_bottleneck.Text = "";
@@ -1041,9 +1058,88 @@ namespace WebApplication1.bussiness.production
             btn_Act_ResetToCreated.Visible = false;
             btn_Act_CancelShift.Visible = false;
             btn_Act_AdminRollback.Visible = false;
-            // Phase D / Phase C: stay hidden. Do not enable here.
+            // Phase D: Inspector / Edit Core are enabled after reset via ApplyAdminConsoleVisibility (IsAdmin).
             btn_Act_ViewRawData.Visible = false;
             btn_EditCoreDetails.Visible = false;
+            if (btn_Act_EditCoreAdmin != null)
+                btn_Act_EditCoreAdmin.Visible = false;
+        }
+
+        /// <summary>
+        /// Phase D: Inspector and Edit Core are visible only to Admin / Office Staff.
+        /// Click handlers still re-check IsAdmin() at postback (same pattern as Phase C).
+        /// </summary>
+        private void ApplyAdminConsoleVisibility()
+        {
+            if (!IsAdmin())
+                return;
+
+            btn_Act_ViewRawData.Visible = true;
+            btn_EditCoreDetails.Visible = true;
+            if (btn_Act_EditCoreAdmin != null)
+                btn_Act_EditCoreAdmin.Visible = true;
+        }
+
+        /// <summary>
+        /// Phase D read-only audit timeline. Labels timestamps already loaded by
+        /// EvaluateSmartLifecycle — no extra SQL, no new tables, no audit writes.
+        /// </summary>
+        private void BindAuditTimeline(
+            DataRow row,
+            DateTime dtMasterJobSysCreation,
+            DateTime? dtFirstInPunchLogic,
+            DateTime? dtPermit,
+            DateTime? dtLastOutPunchUpdated,
+            DateTime? dtApproval)
+        {
+            SetAuditNode(audit_created, lbl_audit_created, dtMasterJobSysCreation, null);
+            SetAuditNode(audit_in, lbl_audit_in, dtFirstInPunchLogic, null);
+            SetAuditNode(audit_permit, lbl_audit_permit, dtPermit, null);
+            SetAuditNode(audit_out, lbl_audit_out, dtLastOutPunchUpdated, null);
+
+            DateTime? closeTs = null;
+            string closeFallback = null;
+            if (string.Equals(GetSafeString(row, "EntryExit", ""), "Exit", StringComparison.OrdinalIgnoreCase))
+            {
+                closeTs = row.Table.Columns.Contains("UpdatedOn") ? ParseDateSafe(row["UpdatedOn"]) : null;
+                if (!closeTs.HasValue)
+                    closeFallback = "Recorded";
+            }
+            SetAuditNode(audit_close, lbl_audit_close, closeTs, closeFallback);
+            SetAuditNode(audit_approval, lbl_audit_approval, dtApproval, null);
+        }
+
+        private void ClearAuditTimeline()
+        {
+            SetAuditNode(audit_created, lbl_audit_created, null, null);
+            SetAuditNode(audit_in, lbl_audit_in, null, null);
+            SetAuditNode(audit_permit, lbl_audit_permit, null, null);
+            SetAuditNode(audit_out, lbl_audit_out, null, null);
+            SetAuditNode(audit_close, lbl_audit_close, null, null);
+            SetAuditNode(audit_approval, lbl_audit_approval, null, null);
+        }
+
+        private static void SetAuditNode(HtmlGenericControl node, Label label, DateTime? when, string completedFallback)
+        {
+            if (node == null || label == null)
+                return;
+
+            if (when.HasValue)
+            {
+                node.Attributes["class"] = "audit-node completed";
+                label.Text = when.Value.ToString("dd-MMM HH:mm");
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(completedFallback))
+            {
+                node.Attributes["class"] = "audit-node completed";
+                label.Text = completedFallback;
+                return;
+            }
+
+            node.Attributes["class"] = "audit-node";
+            label.Text = "Pending";
         }
 
         private void ApplyAdminOverrideVisibility(string approvalStatus, string masterCode, int actualWorkerCount)
@@ -1746,6 +1842,12 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_Act_ViewRawData_Click(object sender, EventArgs e)
         {
+            if (!IsAdmin())
+            {
+                ShowNotification("Access Denied", "You do not have permission to perform this override.", "error");
+                return;
+            }
+
             string jobid = txt_jobid.Text.Trim();
             if (string.IsNullOrEmpty(jobid)) return;
 

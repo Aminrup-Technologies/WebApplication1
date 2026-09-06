@@ -195,6 +195,66 @@
             border-color: #1ABB9C;
         }
 
+        .admin-console-card .x_panel {
+            min-height: 150px;
+        }
+
+        .audit-timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 12px 8px 4px 8px;
+        }
+
+        .audit-node {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .audit-node .audit-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin: 0 auto 8px auto;
+            background: #ccc;
+            border: 2px solid #ccc;
+            position: relative;
+            z-index: 1;
+        }
+
+        .audit-node:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: #e6e6e6;
+            z-index: 0;
+        }
+
+        .audit-node.completed:not(:last-child)::after {
+            background: #1ABB9C;
+        }
+
+        .audit-node.completed .audit-dot {
+            background: #1ABB9C;
+            border-color: #1ABB9C;
+        }
+
+        .audit-node .audit-name {
+            font-weight: 700;
+            font-size: 12px;
+            color: #2a3f54;
+        }
+
+        .audit-node .audit-when {
+            font-size: 11px;
+            color: #73879C;
+        }
+
         @media (max-width: 768px) {
             .stepper-wrapper {
                 flex-direction: column;
@@ -645,14 +705,41 @@
             </div>
 
             <div role="tabpanel" class="tab-pane" id="cockpit_admin">
-            <div class="row">
-                <div class="col-md-12 col-sm-12">
+            <div class="row admin-console-card">
+                <div class="col-md-4 col-sm-12">
+                    <div class="x_panel modern-panel" style="border-left: 5px solid #2a3f54;">
+                        <div class="x_title">
+                            <h2><i class="fa fa-database"></i>Raw Inspector</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <p class="text-muted">Admin only. Existing modal. Permits exclude blob.</p>
+                            <asp:LinkButton ID="btn_Act_ViewRawData" runat="server" CssClass="btn btn-dark btn-sm text-white" OnClick="btn_Act_ViewRawData_Click" Visible="false" CausesValidation="false"
+                                ToolTip="IMPACT: Opens a developer-level view of the raw database rows linked to this JOBID for deep debugging."><i class="fa fa-database"></i> Raw DB Inspector</asp:LinkButton>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-12">
+                    <div class="x_panel modern-panel" style="border-left: 5px solid #3498DB;">
+                        <div class="x_title">
+                            <h2><i class="fa fa-pencil-square-o"></i>Edit Core</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <p class="text-muted">Admin only. Shift and title. Existing modal and save SQL.</p>
+                            <asp:LinkButton ID="btn_Act_EditCoreAdmin" runat="server" CssClass="btn btn-sm btn-primary" OnClick="btn_EditCoreDetails_Click" Visible="false" CausesValidation="false"><i class="fa fa-edit"></i> Edit Core Details</asp:LinkButton>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-12">
                     <div class="x_panel modern-panel" style="background-color: #f8f9fa; border-left: 5px solid #2a3f54;">
+                        <div class="x_title">
+                            <h2><i class="fa fa-cogs"></i>Overrides</h2>
+                            <div class="clearfix"></div>
+                        </div>
                         <div class="x_content mb-0 pb-0">
                             <div class="d-flex flex-wrap align-items-center">
-                                <h5 class="mr-4 mb-2 font-weight-bold text-dark"><i class="fa fa-cogs"></i>Administrative Overrides:</h5>
-
-                                <%-- Exception Handling & Overrides --%>
+                                <%-- Exception Handling & Overrides (IDs and bindings unchanged) --%>
                                 <asp:LinkButton ID="btn_Act_Unblock" runat="server" CssClass="btn btn-dark btn-sm mb-2 mr-2" OnClick="btn_Act_Unblock_Click"
                                     OnClientClick="if(!confirm('Are you sure you want to Unblock this JOB and grant a 24-hour grace period?')) return false;" Visible="false" CausesValidation="false"
                                     ToolTip="IMPACT: Removes the 72-hour system block and grants a 24-hour grace period for corrections."><i class="fa fa-unlock"></i> Unblock JOB</asp:LinkButton>
@@ -671,7 +758,6 @@
                                     OnClientClick="if(!confirm('Delete this JOB permanently? This cannot be undone.')) return false;" Visible="false" CausesValidation="false"
                                     ToolTip="IMPACT: Permanently soft-deletes this job and completely removes it from all active operational workflows."><i class="fa fa-trash"></i> Delete JOB</asp:LinkButton>
 
-                                <%-- Admin God Mode Actions --%>
                                 <asp:LinkButton ID="btn_Act_ForcePermitBypass" runat="server" CssClass="btn btn-warning btn-sm mb-2 mr-2 text-dark" OnClick="btn_Act_ForcePermitBypass_Click"
                                     OnClientClick="if(!confirm('EMERGENCY BYPASS: Bypass the safety permit requirement?')) return false;" Visible="false" CausesValidation="false"
                                     ToolTip="IMPACT: Administratively bypasses the safety permit requirement, unlocking the job for IN-Punching immediately."><i class="fa fa-shield"></i> Bypass Permits</asp:LinkButton>
@@ -689,9 +775,51 @@
                                     ToolTip="IMPACT: Revokes Final Approval, changes status to 'Returned', and rolls the job back to the supervisor for critical payroll corrections.">
     <i class="fa fa-undo text-danger"></i> Admin Rollback
                                 </asp:LinkButton>
-
-                                <asp:LinkButton ID="btn_Act_ViewRawData" runat="server" CssClass="btn btn-dark btn-sm mb-2 mr-2 text-white" OnClick="btn_Act_ViewRawData_Click" Visible="false" CausesValidation="false"
-                                    ToolTip="IMPACT: Opens a developer-level view of the raw database rows linked to this JOBID for deep debugging."><i class="fa fa-database"></i> Raw DB Inspector</asp:LinkButton>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12">
+                    <div class="x_panel modern-panel">
+                        <div class="x_title">
+                            <h2><i class="fa fa-history"></i>Audit Timeline</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <p class="text-muted mb-2">Read-only. Existing timestamps only. Close &amp; Send remains on job_outpunch_v2.</p>
+                            <div class="audit-timeline">
+                                <div class="audit-node" id="audit_created" runat="server">
+                                    <div class="audit-dot"></div>
+                                    <div class="audit-name">Created</div>
+                                    <asp:Label ID="lbl_audit_created" runat="server" CssClass="audit-when"></asp:Label>
+                                </div>
+                                <div class="audit-node" id="audit_in" runat="server">
+                                    <div class="audit-dot"></div>
+                                    <div class="audit-name">First IN</div>
+                                    <asp:Label ID="lbl_audit_in" runat="server" CssClass="audit-when"></asp:Label>
+                                </div>
+                                <div class="audit-node" id="audit_permit" runat="server">
+                                    <div class="audit-dot"></div>
+                                    <div class="audit-name">Permit</div>
+                                    <asp:Label ID="lbl_audit_permit" runat="server" CssClass="audit-when"></asp:Label>
+                                </div>
+                                <div class="audit-node" id="audit_out" runat="server">
+                                    <div class="audit-dot"></div>
+                                    <div class="audit-name">OUT</div>
+                                    <asp:Label ID="lbl_audit_out" runat="server" CssClass="audit-when"></asp:Label>
+                                </div>
+                                <div class="audit-node" id="audit_close" runat="server">
+                                    <div class="audit-dot"></div>
+                                    <div class="audit-name">Close &amp; Send</div>
+                                    <asp:Label ID="lbl_audit_close" runat="server" CssClass="audit-when"></asp:Label>
+                                </div>
+                                <div class="audit-node" id="audit_approval" runat="server">
+                                    <div class="audit-dot"></div>
+                                    <div class="audit-name">Approval</div>
+                                    <asp:Label ID="lbl_audit_approval" runat="server" CssClass="audit-when"></asp:Label>
+                                </div>
                             </div>
                         </div>
                     </div>
