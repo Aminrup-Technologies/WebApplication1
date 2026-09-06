@@ -255,15 +255,269 @@
             color: #73879C;
         }
 
+        .job360-tab-scroller {
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            background: #fff;
+        }
+
+        .cockpit-tabs {
+            display: flex;
+            flex-wrap: nowrap;
+            margin-bottom: 0;
+            min-width: max-content;
+        }
+
+        .cockpit-tabs > li {
+            float: none;
+            flex: 0 0 auto;
+        }
+
+        .cockpit-tabs > li > a {
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            padding: 12px 16px;
+        }
+
+        .job360-grid-scroll {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+        }
+
+        .job360-sticky-search {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            background: #F7F7F7;
+            padding-top: 4px;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+        }
+
+        /* Phase E: 320–768px field layout. Desktop stepper/timeline stay horizontal. */
         @media (max-width: 768px) {
+            .job360-sticky-search .form-group {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                margin-bottom: 8px;
+            }
+
+            .job360-sticky-search .form-group > [class*="col-"] {
+                float: none;
+                width: auto;
+                max-width: 100%;
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+
+            .job360-sticky-search .label-align {
+                width: 100%;
+                text-align: left !important;
+                padding-bottom: 4px;
+            }
+
+            .job360-sticky-search .col-md-5 {
+                flex: 1 1 160px;
+            }
+
+            .job360-sticky-search .col-md-4 {
+                flex: 0 0 auto;
+            }
+
+            .job360-sticky-search .btn,
+            .job360-action-bar .btn,
+            .admin-console-card .btn,
+            .cockpit-tab-content .btn {
+                min-height: 44px;
+                min-width: 44px;
+                padding: 10px 14px;
+                margin-bottom: 8px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .job360-sticky-search .form-control {
+                min-height: 44px;
+            }
+
+            .job360-action-bar {
+                position: sticky;
+                top: 44px;
+                z-index: 34;
+                background: #F7F7F7;
+            }
+
+            .job360-action-bar .btn {
+                width: 100%;
+                margin-right: 0 !important;
+            }
+
+            .job360-action-bar .d-flex {
+                width: 100%;
+            }
+
+            .job360-action-bar h5 {
+                width: 100%;
+                margin-right: 0 !important;
+            }
+
+            .job360-sticky-tabs {
+                position: sticky;
+                top: 0;
+                z-index: 35;
+                background: #fff;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            }
+
             .stepper-wrapper {
                 flex-direction: column;
                 align-items: stretch;
+                margin: 0 0 12px 0;
             }
 
-            .stepper-item::before,
+            .stepper-item {
+                flex: none;
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: flex-start;
+                text-align: left;
+                padding: 0 0 20px 0;
+            }
+
+            .stepper-item::before {
+                display: none !important;
+                content: none !important;
+            }
+
             .stepper-item::after {
-                display: none;
+                display: block;
+                content: "";
+                position: absolute;
+                border-bottom: none;
+                border-left: 3px solid #e1e5eb;
+                width: 0;
+                height: calc(100% - 48px);
+                top: 44px;
+                left: 20px;
+                z-index: 2;
+            }
+
+            .stepper-item:last-child {
+                padding-bottom: 0;
+            }
+
+            .stepper-item:last-child::after {
+                content: none !important;
+                display: none !important;
+            }
+
+            .stepper-item.completed::after {
+                border-color: #1ABB9C;
+            }
+
+            .stepper-item.failed::after {
+                border-color: #E74C3C;
+            }
+
+            .stepper-item .step-counter {
+                width: 44px;
+                height: 44px;
+                margin: 0 12px 0 0;
+                flex-shrink: 0;
+            }
+
+            .step-name {
+                flex: 1;
+                text-align: left;
+                padding-top: 12px;
+                font-size: 14px;
+            }
+
+            .stepper-item .step-details {
+                flex: 0 0 calc(100% - 56px);
+                width: calc(100% - 56px);
+                margin: 8px 0 0 56px;
+                min-width: 0;
+                box-sizing: border-box;
+            }
+
+            .audit-timeline {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0;
+                padding: 4px 0;
+            }
+
+            .audit-node {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: center;
+                text-align: left;
+                flex: none;
+                padding: 8px 0 16px 0;
+            }
+
+            .audit-node .audit-dot {
+                margin: 0 12px 0 0;
+                flex-shrink: 0;
+            }
+
+            .audit-node .audit-name {
+                font-size: 14px;
+                margin-right: 8px;
+            }
+
+            .audit-node:not(:last-child)::after {
+                top: 18px;
+                left: 5px;
+                width: 2px;
+                height: calc(100% - 12px);
+                background: #e6e6e6;
+            }
+
+            .audit-node.completed:not(:last-child)::after {
+                background: #1ABB9C;
+            }
+
+            .admin-console-card > [class*="col-"] {
+                width: 100%;
+                float: none;
+            }
+
+            .admin-console-card .x_panel {
+                min-height: 0;
+            }
+
+            .admin-console-card .btn {
+                width: 100%;
+            }
+
+            .job360-grid-scroll,
+            .cockpit-tab-content .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .job360-grid-scroll table,
+            .cockpit-tab-content .table-responsive table {
+                min-width: 560px;
+            }
+
+            .tat-badge,
+            .badge {
+                white-space: normal;
+                word-break: break-word;
+            }
+
+            .page-title h3 {
+                font-size: 18px;
+                line-height: 1.3;
             }
         }
     </style>
@@ -278,7 +532,7 @@
         </div>
         <div class="clearfix"></div>
 
-        <div class="row">
+        <div class="row job360-sticky-search">
             <div class="col-md-12 col-sm-12">
                 <div class="x_panel modern-panel">
                     <div class="x_content novalidate">
@@ -301,6 +555,7 @@
 
         <div id="MainDashboardRow" runat="server" visible="false">
 
+            <div class="job360-tab-scroller job360-sticky-tabs">
             <ul class="nav nav-tabs cockpit-tabs" role="tablist">
                 <li role="presentation" class="active"><a href="#cockpit_overview" class="cockpit-tab" aria-controls="cockpit_overview" role="tab" data-toggle="tab">Overview</a></li>
                 <li role="presentation"><a href="#cockpit_details" class="cockpit-tab" aria-controls="cockpit_details" role="tab" data-toggle="tab">Details</a></li>
@@ -309,10 +564,11 @@
                 <li role="presentation"><a href="#cockpit_csm" class="cockpit-tab" aria-controls="cockpit_csm" role="tab" data-toggle="tab">CSM</a></li>
                 <li role="presentation"><a href="#cockpit_admin" class="cockpit-tab" aria-controls="cockpit_admin" role="tab" data-toggle="tab">Admin</a></li>
             </ul>
+            </div>
             <div class="tab-content cockpit-tab-content">
 
             <div role="tabpanel" class="tab-pane active" id="cockpit_overview">
-            <div class="row" id="ActionBarRow" runat="server" visible="false">
+            <div class="row job360-action-bar" id="ActionBarRow" runat="server" visible="false">
                 <div class="col-md-12 col-sm-12">
                     <div class="x_panel modern-panel" style="background-color: #f8f9fa; border-left: 5px solid #2a3f54;">
                         <div class="x_content mb-0 pb-0">
@@ -413,7 +669,8 @@
                             <div class="clearfix"></div>
                         </div>
                         <div class="x_content">
-                            <table class="table table-bordered table-sm detail-table">
+                            <div class="table-responsive job360-grid-scroll">
+                                <table class="table table-bordered table-sm detail-table">
                                 <tr>
                                     <th>JOB Date</th>
                                     <td>
@@ -450,9 +707,11 @@
                                         <asp:Label ID="lbl_jobstatus" runat="server" Font-Bold="true"></asp:Label></td>
                                 </tr>
                             </table>
+                            </div>
 
                             <!-- Extended Admin/Financial Details (From DB Dump) -->
                             <h6 class="text-info font-weight-bold"><i class="fa fa-lock"></i>Admin & Financial Ledger</h6>
+                            <div class="table-responsive job360-grid-scroll">
                             <table class="table table-bordered table-sm detail-table" style="background-color: #fdfdfe;">
                                 <tr>
                                     <th>Billing Status</th>
@@ -496,6 +755,7 @@
                                     </td>
                                 </tr>
                             </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -515,7 +775,7 @@
                             <div class="clearfix"></div>
                         </div>
                         <div class="x_content">
-                            <div class="table-responsive">
+                            <div class="table-responsive job360-grid-scroll">
                                 <asp:GridView ID="gvPermits" runat="server" Width="100%" CssClass="table table-striped jambo_table table-bordered table-sm" AutoGenerateColumns="false" EmptyDataText="<div class='p-3 text-center text-muted'>No Permits Attached</div>" OnRowCommand="gvPermits_RowCommand">
                                     <Columns>
                                         <asp:TemplateField HeaderText="File Details">
@@ -570,7 +830,7 @@
                             <div class="clearfix"></div>
                         </div>
                         <div class="x_content">
-                            <div class="card-box table-responsive">
+                            <div class="card-box table-responsive job360-grid-scroll">
                                 <asp:GridView ID="gvManpower" runat="server" Width="100%" CssClass="table table-striped jambo_table table-bordered table-sm dt-responsive nowrap" AutoGenerateColumns="false" EmptyDataText="<div class='p-3 text-center text-muted'>No Manpower IN-Punched Yet</div>" OnRowCommand="gvManpower_RowCommand" OnRowDataBound="gvManpower_RowDataBound">
                                     <Columns>
                                         <asp:TemplateField HeaderText="Sl">
@@ -645,7 +905,7 @@
                             <div class="clearfix"></div>
                         </div>
                         <div class="x_content">
-                            <div class="table-responsive">
+                            <div class="table-responsive job360-grid-scroll">
                                 <asp:GridView ID="gvTBT" runat="server" Width="100%" CssClass="table table-striped jambo_table table-bordered table-sm" AutoGenerateColumns="false" EmptyDataText="<div class='p-3 text-center text-muted'>No TBT Records Found</div>">
                                     <Columns>
                                         <asp:BoundField DataField="TBT_ID" HeaderText="TBT ID" ItemStyle-Font-Bold="true" ItemStyle-ForeColor="#2a3f54" />
@@ -678,7 +938,7 @@
                             <div class="clearfix"></div>
                         </div>
                         <div class="x_content">
-                            <div class="table-responsive">
+                            <div class="table-responsive job360-grid-scroll">
                                 <asp:GridView ID="gvSOP" runat="server" Width="100%" CssClass="table table-striped jambo_table table-bordered table-sm" AutoGenerateColumns="false" EmptyDataText="<div class='p-3 text-center text-muted'>No SOP Records Found</div>">
                                     <Columns>
                                         <asp:BoundField DataField="SOP_ID" HeaderText="SOP ID" ItemStyle-Font-Bold="true" ItemStyle-ForeColor="#2a3f54" />
