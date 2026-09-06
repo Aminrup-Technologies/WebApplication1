@@ -105,3 +105,22 @@ Follow `docs/MAINTENANCE_GUIDELINES.md` versioning. Do not silently rewrite the 
 - Not an implementation backlog with estimates or owners.
 - Not a license to edit `job_*_v2.aspx.cs`, hub SQL, or schema.
 - Not a replacement for the v2.1.0 audit, changelog, or maintenance guidelines.
+
+---
+
+## 7. Repository epic (issue drafts)
+
+GitHub Issue templates live under `.github/ISSUE_TEMPLATE/`. Index: `docs/JOBID_V2.2_EPIC.md`.
+
+| ID | Draft |
+|----|--------|
+| CR-001 | Unified Wizard |
+| CR-002 | Mobile UI |
+| CR-003 | Supervisor Dashboard |
+| CR-004 | QR Workflow |
+| CR-005 | GPS Validation |
+| CR-006 | Permit Checklist |
+| CR-007 | Reporting & Analytics |
+| CR-008 | Technical Debt |
+
+These are drafts only. They do not open GitHub issues by themselves and do not authorize implementation PRs.
