@@ -575,7 +575,7 @@ namespace WebApplication1.bussiness.production
                             cmd.Parameters.AddWithValue("@SiteIncharge_Approval", "Pending");
                             cmd.Parameters.AddWithValue("@SubmitterName", Session["USERNAME"].ToString());
                             cmd.Parameters.AddWithValue("@SubmitterWrk", Session["WORKMAN"].ToString());
-                            cmd.Parameters.AddWithValue("@SubmitterStatus", "Entry");
+                            cmd.Parameters.AddWithValue("@SubmitterStatus", JobStatusConstants.EntryExitEntry);
                             cmd.Parameters.AddWithValue("@EmployeeName", row["name"].ToString());
                             cmd.Parameters.AddWithValue("@EmployeeWrk", row["wrk"].ToString());
                             cmd.Parameters.AddWithValue("@Employee_Worksite", row["wrksitename"].ToString());
@@ -590,7 +590,7 @@ namespace WebApplication1.bussiness.production
                             cmd.Parameters.AddWithValue("@GatePassNo", row["gpno"].ToString());
                             cmd.Parameters.AddWithValue("@SafetyPassNo", row["sftyno"].ToString());
                             cmd.Parameters.AddWithValue("@Inpunch_Time", row["in"].ToString());
-                            cmd.Parameters.AddWithValue("@AttendanceStatus", "Entry");
+                            cmd.Parameters.AddWithValue("@AttendanceStatus", JobStatusConstants.EntryExitEntry);
                             cmd.Parameters.AddWithValue("@AttendanceCode", "Ab");
 
                             if (cmd.ExecuteNonQuery() > 0)
