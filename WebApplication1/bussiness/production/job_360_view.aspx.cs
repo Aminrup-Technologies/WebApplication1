@@ -307,35 +307,47 @@ namespace WebApplication1.bussiness.production
                 {
                     dbcl.Sqlconnection();
                     dbcl.ConnectDb();
+                    SqlTransaction transaction = dbcl.Conn.BeginTransaction();
 
-                    // 1. Invalidate the worker
-                    string updAtt = @"UPDATE tbl_attendance 
+                    try
+                    {
+                        // 1. Invalidate the worker
+                        string updAtt = @"UPDATE tbl_attendance 
                                       SET DeleteStatus = 1, 
                                           AttendanceStatus = 'Invalidated', 
                                           LastModified = GETDATE(), 
                                           ModifiedByName = @Admin 
                                       WHERE JOBID = @JOBID AND EmployeeWrk = @Workman";
 
-                    using (SqlCommand cmdAtt = new SqlCommand(updAtt, dbcl.Conn))
-                    {
-                        cmdAtt.Parameters.AddWithValue("@Admin", adminUser);
-                        cmdAtt.Parameters.AddWithValue("@JOBID", jobid);
-                        cmdAtt.Parameters.AddWithValue("@Workman", workmanWrk);
-                        cmdAtt.ExecuteNonQuery();
-                    }
+                        using (SqlCommand cmdAtt = new SqlCommand(updAtt, dbcl.Conn, transaction))
+                        {
+                            cmdAtt.Parameters.AddWithValue("@Admin", adminUser);
+                            cmdAtt.Parameters.AddWithValue("@JOBID", jobid);
+                            cmdAtt.Parameters.AddWithValue("@Workman", workmanWrk);
+                            cmdAtt.ExecuteNonQuery();
+                        }
 
-                    // 2. Recalculate Active Manpower Headcount on Master Table
-                    string updJob = @"UPDATE tbl_jobs 
+                        // 2. Recalculate Active Manpower Headcount on Master Table
+                        // Same COUNT formula as job_inpunch_v2 (AttendanceStatus='Entry'). Do not change lifecycle columns.
+                        string updJob = @"UPDATE tbl_jobs 
+                                      SET ManpowerCount = (SELECT COUNT(*) FROM tbl_attendance WHERE JOBID=@JOBID AND AttendanceStatus='Entry') 
                                       WHERE JOBID = @JOBID";
 
-                    using (SqlCommand cmdJob = new SqlCommand(updJob, dbcl.Conn))
-                    {
-                        cmdJob.Parameters.AddWithValue("@JOBID", jobid);
-                        cmdJob.ExecuteNonQuery();
-                    }
+                        using (SqlCommand cmdJob = new SqlCommand(updJob, dbcl.Conn, transaction))
+                        {
+                            cmdJob.Parameters.AddWithValue("@JOBID", jobid);
+                            cmdJob.ExecuteNonQuery();
+                        }
 
-                    ShowNotification("Worker Removed", $"Worker {workmanWrk} has been invalidated and removed from the active roster.", "success");
-                    Load360View(jobid); // Full refresh to sync state
+                        transaction.Commit();
+                        ShowNotification("Worker Removed", $"Worker {workmanWrk} has been invalidated and removed from the active roster.", "success");
+                        Load360View(jobid); // Full refresh to sync state
+                    }
+                    catch (Exception exTransaction)
+                    {
+                        transaction.Rollback();
+                        throw new Exception("Invalidate failed and rolled back. Reason: " + exTransaction.Message);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -516,11 +528,12 @@ namespace WebApplication1.bussiness.production
                            LastModified = GETDATE(),
                            ModifiedByName = @Admin,
                            ModifiedByWrk = @AdminWrk
-                       WHERE Id = @Id";
+                       WHERE Id = @Id AND JOBID = @JOBID";
 
                 using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
                 {
                     cmd.Parameters.AddWithValue("@Id", hf_EditWorkerId.Value);
+                    cmd.Parameters.AddWithValue("@JOBID", txt_jobid.Text.Trim());
                     cmd.Parameters.AddWithValue("@InTime", string.IsNullOrEmpty(txt_EditInTime.Text) ? (object)DBNull.Value : Convert.ToDateTime(txt_EditInTime.Text));
                     cmd.Parameters.AddWithValue("@OutTime", string.IsNullOrEmpty(txt_EditOutTime.Text) ? (object)DBNull.Value : Convert.ToDateTime(txt_EditOutTime.Text));
                     cmd.Parameters.AddWithValue("@OT", string.IsNullOrEmpty(txt_EditOT.Text) ? 0 : Convert.ToDecimal(txt_EditOT.Text));
@@ -544,18 +557,22 @@ namespace WebApplication1.bussiness.production
                 try
                 {
                     int id = Convert.ToInt32(e.CommandArgument);
+                    string jobid = (txt_jobid.Text ?? "").Trim();
                     string fileName = "";
+                    if (string.IsNullOrEmpty(jobid)) return;
 
                     dbcl.Sqlconnection(); dbcl.ConnectDb();
-                    using (SqlCommand cmd = new SqlCommand("SELECT Name FROM tbl_jobspermit WHERE Id=@Id", dbcl.Conn))
+                    using (SqlCommand cmd = new SqlCommand("SELECT Name FROM tbl_jobspermit WHERE Id=@Id AND JOBID=@JOBID", dbcl.Conn))
                     {
                         cmd.Parameters.AddWithValue("@Id", id);
+                        cmd.Parameters.AddWithValue("@JOBID", jobid);
                         fileName = cmd.ExecuteScalar()?.ToString();
                     }
 
-                    using (SqlCommand cmdUpd = new SqlCommand("UPDATE tbl_jobspermit SET DownloadStatus=1 WHERE Id=@Id", dbcl.Conn))
+                    using (SqlCommand cmdUpd = new SqlCommand("UPDATE tbl_jobspermit SET DownloadStatus=1 WHERE Id=@Id AND JOBID=@JOBID", dbcl.Conn))
                     {
                         cmdUpd.Parameters.AddWithValue("@Id", id);
+                        cmdUpd.Parameters.AddWithValue("@JOBID", jobid);
                         cmdUpd.ExecuteNonQuery();
                     }
                     dbcl.DisconnectDb();
@@ -1170,6 +1187,12 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_Act_Unblock_Click(object sender, EventArgs e)
         {
+            if (!IsAdmin())
+            {
+                ShowNotification("Access Denied", "You do not have permission to perform this override.", "error");
+                return;
+            }
+
             try
             {
                 dbcl.Sqlconnection(); dbcl.ConnectDb();
@@ -1193,6 +1216,12 @@ namespace WebApplication1.bussiness.production
         // GAP 1: Emergency Compliance Bypass
         protected void btn_Act_ForcePermitBypass_Click(object sender, EventArgs e)
         {
+            if (!IsAdmin())
+            {
+                ShowNotification("Access Denied", "You do not have permission to perform this override.", "error");
+                return;
+            }
+
             try
             {
                 dbcl.Sqlconnection(); dbcl.ConnectDb();
@@ -1212,6 +1241,12 @@ namespace WebApplication1.bussiness.production
         // GAP 2: Granular State Rollback (Step 3 -> Step 1)
         protected void btn_Act_ResetToCreated_Click(object sender, EventArgs e)
         {
+            if (!IsAdmin())
+            {
+                ShowNotification("Access Denied", "You do not have permission to perform this override.", "error");
+                return;
+            }
+
             try
             {
                 dbcl.Sqlconnection(); dbcl.ConnectDb();
@@ -1238,6 +1273,12 @@ namespace WebApplication1.bussiness.production
         // GAP 3: Shift Cancellation / Ghost Jobs
         protected void btn_Act_CancelShift_Click(object sender, EventArgs e)
         {
+            if (!IsAdmin())
+            {
+                ShowNotification("Access Denied", "You do not have permission to perform this override.", "error");
+                return;
+            }
+
             try
             {
                 dbcl.Sqlconnection(); dbcl.ConnectDb();
@@ -1261,6 +1302,12 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_Act_Delete_Click(object sender, EventArgs e)
         {
+            if (!IsAdmin())
+            {
+                ShowNotification("Access Denied", "You do not have permission to perform this override.", "error");
+                return;
+            }
+
             try
             {
                 dbcl.Sqlconnection();
@@ -1301,6 +1348,12 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_Act_Resubmit_Click(object sender, EventArgs e)
         {
+            if (!IsAdmin())
+            {
+                ShowNotification("Access Denied", "You do not have permission to perform this override.", "error");
+                return;
+            }
+
             try
             {
                 dbcl.Sqlconnection();
@@ -1412,6 +1465,12 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_Act_ForceOut_Click(object sender, EventArgs e)
         {
+            if (!IsAdmin())
+            {
+                ShowNotification("Access Denied", "You do not have permission to perform this override.", "error");
+                return;
+            }
+
             try
             {
                 dbcl.Sqlconnection();
@@ -1569,6 +1628,12 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_Act_AdminRollback_Click(object sender, EventArgs e)
         {
+            if (!IsAdmin())
+            {
+                ShowNotification("Access Denied", "You do not have permission to perform this override.", "error");
+                return;
+            }
+
             try
             {
                 dbcl.Sqlconnection();
