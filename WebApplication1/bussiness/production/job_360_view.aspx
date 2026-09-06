@@ -165,6 +165,47 @@
         .border-top-info {
             border-top: 4px solid #17a2b8 !important;
         }
+
+        .cockpit-tabs > li > a {
+            font-weight: 600;
+            color: #2a3f54;
+        }
+
+        .cockpit-tab-content {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-top: none;
+            padding: 15px 10px 5px 10px;
+        }
+
+        /* Site Docs (CSM) remains a server stepper node for EvaluateSmartLifecycle; not shown on the frozen Overview labels. */
+        .step-csm-hidden {
+            display: none !important;
+        }
+
+        /* Close & Send is a visual label only (no runat=server). Completion follows existing step5 until a later CR splits Close from MAX(LastModified). */
+        #step5.completed + .step-close-send .step-counter {
+            background-color: #1ABB9C;
+            color: white;
+            border-color: #1ABB9C;
+        }
+
+        #step5.completed + .step-close-send::before,
+        #step5.completed + .step-close-send::after {
+            border-color: #1ABB9C;
+        }
+
+        @media (max-width: 768px) {
+            .stepper-wrapper {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .stepper-item::before,
+            .stepper-item::after {
+                display: none;
+            }
+        }
     </style>
 </asp:Content>
 
@@ -200,6 +241,17 @@
 
         <div id="MainDashboardRow" runat="server" visible="false">
 
+            <ul class="nav nav-tabs cockpit-tabs" role="tablist">
+                <li role="presentation" class="active"><a href="#cockpit_overview" class="cockpit-tab" aria-controls="cockpit_overview" role="tab" data-toggle="tab">Overview</a></li>
+                <li role="presentation"><a href="#cockpit_details" class="cockpit-tab" aria-controls="cockpit_details" role="tab" data-toggle="tab">Details</a></li>
+                <li role="presentation"><a href="#cockpit_permits" class="cockpit-tab" aria-controls="cockpit_permits" role="tab" data-toggle="tab">Permits</a></li>
+                <li role="presentation"><a href="#cockpit_manpower" class="cockpit-tab" aria-controls="cockpit_manpower" role="tab" data-toggle="tab">Manpower</a></li>
+                <li role="presentation"><a href="#cockpit_csm" class="cockpit-tab" aria-controls="cockpit_csm" role="tab" data-toggle="tab">CSM</a></li>
+                <li role="presentation"><a href="#cockpit_admin" class="cockpit-tab" aria-controls="cockpit_admin" role="tab" data-toggle="tab">Admin</a></li>
+            </ul>
+            <div class="tab-content cockpit-tab-content">
+
+            <div role="tabpanel" class="tab-pane active" id="cockpit_overview">
             <div class="row" id="ActionBarRow" runat="server" visible="false">
                 <div class="col-md-12 col-sm-12">
                     <div class="x_panel modern-panel" style="background-color: #f8f9fa; border-left: 5px solid #2a3f54;">
@@ -219,53 +271,11 @@
 
                                 <asp:LinkButton ID="btn_Act_OutPunch" runat="server" CssClass="btn btn-warning btn-sm mb-2 mr-2 text-dark" OnClick="btn_Act_OutPunch_Click" Visible="false" CausesValidation="false"
                                     ToolTip="Proceed to OUT-Punch workers and close this shift."><i class="fa fa-sign-out"></i> OUT-Punch Shift</asp:LinkButton>
-
-                                <%-- Exception Handling & Overrides --%>
-                                <asp:LinkButton ID="btn_Act_Unblock" runat="server" CssClass="btn btn-dark btn-sm mb-2 mr-2" OnClick="btn_Act_Unblock_Click"
-                                    OnClientClick="if(!confirm('Are you sure you want to Unblock this JOB and grant a 24-hour grace period?')) return false;" Visible="false" CausesValidation="false"
-                                    ToolTip="IMPACT: Removes the 72-hour system block and grants a 24-hour grace period for corrections."><i class="fa fa-unlock"></i> Unblock JOB</asp:LinkButton>
-
-                                <asp:LinkButton ID="btn_Act_Resubmit" runat="server" CssClass="btn btn-secondary btn-sm mb-2 mr-2" OnClick="btn_Act_Resubmit_Click" Visible="false" CausesValidation="false"
-                                    ToolTip="IMPACT: Resets rejected/cancelled jobs back to 'In-Punch Done' state and invalidates existing attendance so the supervisor can correct it."><i class="fa fa-refresh"></i> Fix & Resubmit</asp:LinkButton>
-
-                                <asp:LinkButton ID="btn_Act_ForceOut" runat="server" CssClass="btn btn-danger btn-sm mb-2 mr-2" OnClick="btn_Act_ForceOut_Click"
-                                    OnClientClick="if(!confirm('WARNING: This will forcefully clock out all manpower. Proceed?')) return false;" Visible="false" CausesValidation="false"
-                                    ToolTip="IMPACT: Automatically clocks out all active workers using their standard shift hours and forces the job to close."><i class="fa fa-stop-circle"></i> Force OUT-Punch</asp:LinkButton>
-
-                                <asp:LinkButton ID="btn_Act_SwapDate" runat="server" CssClass="btn btn-secondary btn-sm mb-2 mr-2" OnClick="btn_Act_SwapDate_Click" Visible="false" CausesValidation="false"
-                                    ToolTip="IMPACT: Changes the official creation date of this job (Allowed only if no attendance is logged)."><i class="fa fa-calendar"></i> Swap Date</asp:LinkButton>
-
-                                <asp:LinkButton ID="btn_Act_Delete" runat="server" CssClass="btn btn-danger btn-sm mb-2 mr-2" OnClick="btn_Act_Delete_Click"
-                                    OnClientClick="if(!confirm('Delete this JOB permanently? This cannot be undone.')) return false;" Visible="false" CausesValidation="false"
-                                    ToolTip="IMPACT: Permanently soft-deletes this job and completely removes it from all active operational workflows."><i class="fa fa-trash"></i> Delete JOB</asp:LinkButton>
-
-                                <%-- Admin God Mode Actions --%>
-                                <asp:LinkButton ID="btn_Act_ForcePermitBypass" runat="server" CssClass="btn btn-warning btn-sm mb-2 mr-2 text-dark" OnClick="btn_Act_ForcePermitBypass_Click"
-                                    OnClientClick="if(!confirm('EMERGENCY BYPASS: Bypass the safety permit requirement?')) return false;" Visible="false" CausesValidation="false"
-                                    ToolTip="IMPACT: Administratively bypasses the safety permit requirement, unlocking the job for IN-Punching immediately."><i class="fa fa-shield"></i> Bypass Permits</asp:LinkButton>
-
-                                <asp:LinkButton ID="btn_Act_ResetToCreated" runat="server" CssClass="btn btn-danger btn-sm mb-2 mr-2" OnClick="btn_Act_ResetToCreated_Click"
-                                    OnClientClick="if(!confirm('ROLLBACK: Reset the job to Step 1 and delete attached permits?')) return false;" Visible="false" CausesValidation="false"
-                                    ToolTip="IMPACT: Deletes all uploaded permits and rolls the job back to Step 1 (Created state)."><i class="fa fa-backward"></i> Reset to Created</asp:LinkButton>
-
-                                <asp:LinkButton ID="btn_Act_CancelShift" runat="server" CssClass="btn btn-dark btn-sm mb-2 mr-2" OnClick="btn_Act_CancelShift_Click"
-                                    OnClientClick="if(!confirm('CANCEL SHIFT: Mark this job as Void/Cancelled?')) return false;" Visible="false" CausesValidation="false"
-                                    ToolTip="IMPACT: Voids the ghost shift completely and safely archives the record."><i class="fa fa-times-circle"></i> Cancel/Void Shift</asp:LinkButton>
-
-                                <asp:LinkButton ID="btn_Act_AdminRollback" runat="server" CssClass="btn btn-warning btn-sm mb-2 mr-2 text-dark" OnClick="btn_Act_AdminRollback_Click"
-                                    OnClientClick="if(!confirm('ADMIN OVERRIDE: Revoke this approval and roll the JOB back to the Supervisor for corrections?')) return false;" Visible="false" CausesValidation="false"
-                                    ToolTip="IMPACT: Revokes Final Approval, changes status to 'Returned', and rolls the job back to the supervisor for critical payroll corrections.">
-    <i class="fa fa-undo text-danger"></i> Admin Rollback
-                                </asp:LinkButton>
-
-                                <asp:LinkButton ID="btn_Act_ViewRawData" runat="server" CssClass="btn btn-dark btn-sm mb-2 mr-2 text-white" OnClick="btn_Act_ViewRawData_Click" Visible="false" CausesValidation="false"
-                                    ToolTip="IMPACT: Opens a developer-level view of the raw database rows linked to this JOBID for deep debugging."><i class="fa fa-database"></i> Raw DB Inspector</asp:LinkButton>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
             <div class="row">
                 <div class="col-md-12 col-sm-12">
                     <div class="x_panel modern-panel">
@@ -280,33 +290,39 @@
                             <div class="stepper-wrapper" id="stepperContainer" runat="server">
                                 <div class="stepper-item" id="step1" runat="server">
                                     <div class="step-counter"><i class="fa fa-file-text-o"></i></div>
-                                    <div class="step-name">Created</div>
+                                    <div class="step-name">Create</div>
                                     <asp:Literal ID="lit_step1_details" runat="server"></asp:Literal>
-                                </div>
-                                <div class="stepper-item" id="step2" runat="server">
-                                    <div class="step-counter"><i class="fa fa-paperclip"></i></div>
-                                    <div class="step-name">Upload Permit</div>
-                                    <asp:Literal ID="lit_step2_details" runat="server"></asp:Literal>
                                 </div>
                                 <div class="stepper-item" id="step3" runat="server">
                                     <div class="step-counter"><i class="fa fa-sign-in"></i></div>
-                                    <div class="step-name">IN-Punched</div>
+                                    <div class="step-name">IN-Punch</div>
                                     <asp:Literal ID="lit_step3_details" runat="server"></asp:Literal>
                                 </div>
+                                <div class="stepper-item" id="step2" runat="server">
+                                    <div class="step-counter"><i class="fa fa-paperclip"></i></div>
+                                    <div class="step-name">Permit Upload</div>
+                                    <asp:Literal ID="lit_step2_details" runat="server"></asp:Literal>
+                                </div>
+                                <div class="stepper-item" id="step5" runat="server">
+                                    <div class="step-counter"><i class="fa fa-sign-out"></i></div>
+                                    <div class="step-name">OUT-Punch</div>
+                                    <asp:Literal ID="lit_step5_details" runat="server"></asp:Literal>
+                                </div>
+                                <div class="stepper-item step-close-send">
+                                    <div class="step-counter"><i class="fa fa-flag-checkered"></i></div>
+                                    <div class="step-name">Close &amp; Send</div>
+                                </div>
+                                <div class="stepper-item" id="step6" runat="server">
+                                    <div class="step-counter"><i class="fa fa-check-square-o"></i></div>
+                                    <div class="step-name">Approval</div>
+                                    <asp:Literal ID="lit_step6_details" runat="server"></asp:Literal>
+                                </div>
+                            </div>
+                            <div class="step-csm-hidden" aria-hidden="true">
                                 <div class="stepper-item" id="step4" runat="server">
                                     <div class="step-counter"><i class="fa fa-folder-open-o"></i></div>
                                     <div class="step-name">Site Docs (CSM)</div>
                                     <asp:Literal ID="lit_step4_details" runat="server"></asp:Literal>
-                                </div>
-                                <div class="stepper-item" id="step5" runat="server">
-                                    <div class="step-counter"><i class="fa fa-sign-out"></i></div>
-                                    <div class="step-name">OUT-Punched</div>
-                                    <asp:Literal ID="lit_step5_details" runat="server"></asp:Literal>
-                                </div>
-                                <div class="stepper-item" id="step6" runat="server">
-                                    <div class="step-counter"><i class="fa fa-check-square-o"></i></div>
-                                    <div class="step-name">Final Approval</div>
-                                    <asp:Literal ID="lit_step6_details" runat="server"></asp:Literal>
                                 </div>
                             </div>
 
@@ -320,9 +336,11 @@
                     </div>
                 </div>
             </div>
+            </div>
 
+            <div role="tabpanel" class="tab-pane" id="cockpit_details">
             <div class="row">
-                <div class="col-md-6 col-sm-12">
+                <div class="col-md-12 col-sm-12">
                     <div class="x_panel modern-panel">
                         <div class="x_title">
                             <h2><i class="fa fa-info-circle"></i>Core Details</h2>
@@ -422,7 +440,12 @@
                     </div>
                 </div>
 
-                <div class="col-md-6 col-sm-12">
+            </div>
+            </div>
+
+            <div role="tabpanel" class="tab-pane" id="cockpit_permits">
+            <div class="row">
+                <div class="col-md-12 col-sm-12">
                     <div class="x_panel modern-panel">
                         <div class="x_title">
                             <h2><i class="fa fa-folder-open-o"></i>Attached Permits (<asp:Label ID="lbl_filecount" runat="server" Text="0"></asp:Label>)</h2>
@@ -462,76 +485,11 @@
                         </div>
                     </div>
                 </div>
+
+            </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-6 col-sm-12">
-                    <div class="x_panel modern-panel border-top-info">
-                        <div class="x_title">
-                            <h2><i class="fa fa-bullhorn text-info"></i>Toolbox Talk (TBT) Records</h2>
-                            <ul class="nav navbar-right panel_toolbox">
-                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                            </ul>
-                            <div class="clearfix"></div>
-                        </div>
-                        <div class="x_content">
-                            <div class="table-responsive">
-                                <asp:GridView ID="gvTBT" runat="server" Width="100%" CssClass="table table-striped jambo_table table-bordered table-sm" AutoGenerateColumns="false" EmptyDataText="<div class='p-3 text-center text-muted'>No TBT Records Found</div>">
-                                    <Columns>
-                                        <asp:BoundField DataField="TBT_ID" HeaderText="TBT ID" ItemStyle-Font-Bold="true" ItemStyle-ForeColor="#2a3f54" />
-                                        <asp:BoundField DataField="TimeStamp" HeaderText="Submitted On" DataFormatString="{0:dd-MMM-yyyy hh:mm tt}" />
-                                        <asp:BoundField DataField="TBT_SupvName" HeaderText="Conducted By" />
-                                        <asp:BoundField DataField="ContractEmployees" HeaderText="Attendees" ItemStyle-CssClass="text-center font-weight-bold" />
-                                        <asp:TemplateField HeaderText="Safety Status">
-                                            <ItemTemplate>
-                                                <span class="badge <%# Eval("SafetySupvApprovalStatus").ToString() == "Approved" ? "bg-green" : "bg-warning text-dark" %>">
-                                                    <%# Eval("SafetySupvApprovalStatus") %>
-                                                </span>
-                                            </ItemTemplate>
-                                            <ItemStyle CssClass="text-center" />
-                                        </asp:TemplateField>
-                                    </Columns>
-                                    <HeaderStyle CssClass="headings" />
-                                </asp:GridView>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-sm-12">
-                    <div class="x_panel modern-panel border-top-info">
-                        <div class="x_title">
-                            <h2><i class="fa fa-book text-info"></i>Standard Operating Procedure (SOP)</h2>
-                            <ul class="nav navbar-right panel_toolbox">
-                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                            </ul>
-                            <div class="clearfix"></div>
-                        </div>
-                        <div class="x_content">
-                            <div class="table-responsive">
-                                <asp:GridView ID="gvSOP" runat="server" Width="100%" CssClass="table table-striped jambo_table table-bordered table-sm" AutoGenerateColumns="false" EmptyDataText="<div class='p-3 text-center text-muted'>No SOP Records Found</div>">
-                                    <Columns>
-                                        <asp:BoundField DataField="SOP_ID" HeaderText="SOP ID" ItemStyle-Font-Bold="true" ItemStyle-ForeColor="#2a3f54" />
-                                        <asp:BoundField DataField="SOPTitle" HeaderText="SOP Title" />
-                                        <asp:BoundField DataField="SOPTrainer" HeaderText="Trainer" />
-                                        <asp:BoundField DataField="SOPDuration" HeaderText="Duration" ItemStyle-CssClass="text-center" />
-                                        <asp:TemplateField HeaderText="Safety Status">
-                                            <ItemTemplate>
-                                                <span class="badge <%# Eval("SafetySupvApprovalStatus").ToString() == "Approved" ? "bg-green" : "bg-warning text-dark" %>">
-                                                    <%# Eval("SafetySupvApprovalStatus") %>
-                                                </span>
-                                            </ItemTemplate>
-                                            <ItemStyle CssClass="text-center" />
-                                        </asp:TemplateField>
-                                    </Columns>
-                                    <HeaderStyle CssClass="headings" />
-                                </asp:GridView>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+            <div role="tabpanel" class="tab-pane" id="cockpit_manpower">
             <div class="row">
                 <div class="col-md-12 col-sm-12">
                     <div class="x_panel modern-panel">
@@ -613,6 +571,135 @@
                 </div>
             </div>
 
+            </div>
+
+            <div role="tabpanel" class="tab-pane" id="cockpit_csm">
+            <div class="row">
+                <div class="col-md-6 col-sm-12">
+                    <div class="x_panel modern-panel border-top-info">
+                        <div class="x_title">
+                            <h2><i class="fa fa-bullhorn text-info"></i>Toolbox Talk (TBT) Records</h2>
+                            <ul class="nav navbar-right panel_toolbox">
+                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                            </ul>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div class="table-responsive">
+                                <asp:GridView ID="gvTBT" runat="server" Width="100%" CssClass="table table-striped jambo_table table-bordered table-sm" AutoGenerateColumns="false" EmptyDataText="<div class='p-3 text-center text-muted'>No TBT Records Found</div>">
+                                    <Columns>
+                                        <asp:BoundField DataField="TBT_ID" HeaderText="TBT ID" ItemStyle-Font-Bold="true" ItemStyle-ForeColor="#2a3f54" />
+                                        <asp:BoundField DataField="TimeStamp" HeaderText="Submitted On" DataFormatString="{0:dd-MMM-yyyy hh:mm tt}" />
+                                        <asp:BoundField DataField="TBT_SupvName" HeaderText="Conducted By" />
+                                        <asp:BoundField DataField="ContractEmployees" HeaderText="Attendees" ItemStyle-CssClass="text-center font-weight-bold" />
+                                        <asp:TemplateField HeaderText="Safety Status">
+                                            <ItemTemplate>
+                                                <span class="badge <%# Eval("SafetySupvApprovalStatus").ToString() == "Approved" ? "bg-green" : "bg-warning text-dark" %>">
+                                                    <%# Eval("SafetySupvApprovalStatus") %>
+                                                </span>
+                                            </ItemTemplate>
+                                            <ItemStyle CssClass="text-center" />
+                                        </asp:TemplateField>
+                                    </Columns>
+                                    <HeaderStyle CssClass="headings" />
+                                </asp:GridView>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-sm-12">
+                    <div class="x_panel modern-panel border-top-info">
+                        <div class="x_title">
+                            <h2><i class="fa fa-book text-info"></i>Standard Operating Procedure (SOP)</h2>
+                            <ul class="nav navbar-right panel_toolbox">
+                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                            </ul>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div class="table-responsive">
+                                <asp:GridView ID="gvSOP" runat="server" Width="100%" CssClass="table table-striped jambo_table table-bordered table-sm" AutoGenerateColumns="false" EmptyDataText="<div class='p-3 text-center text-muted'>No SOP Records Found</div>">
+                                    <Columns>
+                                        <asp:BoundField DataField="SOP_ID" HeaderText="SOP ID" ItemStyle-Font-Bold="true" ItemStyle-ForeColor="#2a3f54" />
+                                        <asp:BoundField DataField="SOPTitle" HeaderText="SOP Title" />
+                                        <asp:BoundField DataField="SOPTrainer" HeaderText="Trainer" />
+                                        <asp:BoundField DataField="SOPDuration" HeaderText="Duration" ItemStyle-CssClass="text-center" />
+                                        <asp:TemplateField HeaderText="Safety Status">
+                                            <ItemTemplate>
+                                                <span class="badge <%# Eval("SafetySupvApprovalStatus").ToString() == "Approved" ? "bg-green" : "bg-warning text-dark" %>">
+                                                    <%# Eval("SafetySupvApprovalStatus") %>
+                                                </span>
+                                            </ItemTemplate>
+                                            <ItemStyle CssClass="text-center" />
+                                        </asp:TemplateField>
+                                    </Columns>
+                                    <HeaderStyle CssClass="headings" />
+                                </asp:GridView>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            </div>
+
+            <div role="tabpanel" class="tab-pane" id="cockpit_admin">
+            <div class="row">
+                <div class="col-md-12 col-sm-12">
+                    <div class="x_panel modern-panel" style="background-color: #f8f9fa; border-left: 5px solid #2a3f54;">
+                        <div class="x_content mb-0 pb-0">
+                            <div class="d-flex flex-wrap align-items-center">
+                                <h5 class="mr-4 mb-2 font-weight-bold text-dark"><i class="fa fa-cogs"></i>Administrative Overrides:</h5>
+
+                                <%-- Exception Handling & Overrides --%>
+                                <asp:LinkButton ID="btn_Act_Unblock" runat="server" CssClass="btn btn-dark btn-sm mb-2 mr-2" OnClick="btn_Act_Unblock_Click"
+                                    OnClientClick="if(!confirm('Are you sure you want to Unblock this JOB and grant a 24-hour grace period?')) return false;" Visible="false" CausesValidation="false"
+                                    ToolTip="IMPACT: Removes the 72-hour system block and grants a 24-hour grace period for corrections."><i class="fa fa-unlock"></i> Unblock JOB</asp:LinkButton>
+
+                                <asp:LinkButton ID="btn_Act_Resubmit" runat="server" CssClass="btn btn-secondary btn-sm mb-2 mr-2" OnClick="btn_Act_Resubmit_Click" Visible="false" CausesValidation="false"
+                                    ToolTip="IMPACT: Resets rejected/cancelled jobs back to 'In-Punch Done' state and invalidates existing attendance so the supervisor can correct it."><i class="fa fa-refresh"></i> Fix & Resubmit</asp:LinkButton>
+
+                                <asp:LinkButton ID="btn_Act_ForceOut" runat="server" CssClass="btn btn-danger btn-sm mb-2 mr-2" OnClick="btn_Act_ForceOut_Click"
+                                    OnClientClick="if(!confirm('WARNING: This will forcefully clock out all manpower. Proceed?')) return false;" Visible="false" CausesValidation="false"
+                                    ToolTip="IMPACT: Automatically clocks out all active workers using their standard shift hours and forces the job to close."><i class="fa fa-stop-circle"></i> Force OUT-Punch</asp:LinkButton>
+
+                                <asp:LinkButton ID="btn_Act_SwapDate" runat="server" CssClass="btn btn-secondary btn-sm mb-2 mr-2" OnClick="btn_Act_SwapDate_Click" Visible="false" CausesValidation="false"
+                                    ToolTip="IMPACT: Changes the official creation date of this job (Allowed only if no attendance is logged)."><i class="fa fa-calendar"></i> Swap Date</asp:LinkButton>
+
+                                <asp:LinkButton ID="btn_Act_Delete" runat="server" CssClass="btn btn-danger btn-sm mb-2 mr-2" OnClick="btn_Act_Delete_Click"
+                                    OnClientClick="if(!confirm('Delete this JOB permanently? This cannot be undone.')) return false;" Visible="false" CausesValidation="false"
+                                    ToolTip="IMPACT: Permanently soft-deletes this job and completely removes it from all active operational workflows."><i class="fa fa-trash"></i> Delete JOB</asp:LinkButton>
+
+                                <%-- Admin God Mode Actions --%>
+                                <asp:LinkButton ID="btn_Act_ForcePermitBypass" runat="server" CssClass="btn btn-warning btn-sm mb-2 mr-2 text-dark" OnClick="btn_Act_ForcePermitBypass_Click"
+                                    OnClientClick="if(!confirm('EMERGENCY BYPASS: Bypass the safety permit requirement?')) return false;" Visible="false" CausesValidation="false"
+                                    ToolTip="IMPACT: Administratively bypasses the safety permit requirement, unlocking the job for IN-Punching immediately."><i class="fa fa-shield"></i> Bypass Permits</asp:LinkButton>
+
+                                <asp:LinkButton ID="btn_Act_ResetToCreated" runat="server" CssClass="btn btn-danger btn-sm mb-2 mr-2" OnClick="btn_Act_ResetToCreated_Click"
+                                    OnClientClick="if(!confirm('ROLLBACK: Reset the job to Step 1 and delete attached permits?')) return false;" Visible="false" CausesValidation="false"
+                                    ToolTip="IMPACT: Deletes all uploaded permits and rolls the job back to Step 1 (Created state)."><i class="fa fa-backward"></i> Reset to Created</asp:LinkButton>
+
+                                <asp:LinkButton ID="btn_Act_CancelShift" runat="server" CssClass="btn btn-dark btn-sm mb-2 mr-2" OnClick="btn_Act_CancelShift_Click"
+                                    OnClientClick="if(!confirm('CANCEL SHIFT: Mark this job as Void/Cancelled?')) return false;" Visible="false" CausesValidation="false"
+                                    ToolTip="IMPACT: Voids the ghost shift completely and safely archives the record."><i class="fa fa-times-circle"></i> Cancel/Void Shift</asp:LinkButton>
+
+                                <asp:LinkButton ID="btn_Act_AdminRollback" runat="server" CssClass="btn btn-warning btn-sm mb-2 mr-2 text-dark" OnClick="btn_Act_AdminRollback_Click"
+                                    OnClientClick="if(!confirm('ADMIN OVERRIDE: Revoke this approval and roll the JOB back to the Supervisor for corrections?')) return false;" Visible="false" CausesValidation="false"
+                                    ToolTip="IMPACT: Revokes Final Approval, changes status to 'Returned', and rolls the job back to the supervisor for critical payroll corrections.">
+    <i class="fa fa-undo text-danger"></i> Admin Rollback
+                                </asp:LinkButton>
+
+                                <asp:LinkButton ID="btn_Act_ViewRawData" runat="server" CssClass="btn btn-dark btn-sm mb-2 mr-2 text-white" OnClick="btn_Act_ViewRawData_Click" Visible="false" CausesValidation="false"
+                                    ToolTip="IMPACT: Opens a developer-level view of the raw database rows linked to this JOBID for deep debugging."><i class="fa fa-database"></i> Raw DB Inspector</asp:LinkButton>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+            </div>
         </div>
     </div>
     <!-- Worker Modification Modal -->
@@ -762,6 +849,16 @@
             $('[title]').tooltip({
                 placement: 'bottom',
                 trigger: 'hover'
+            });
+        });
+
+        $(document).ready(function () {
+            var stored = sessionStorage.getItem('job360-cockpit-tab');
+            if (stored && stored.indexOf('#cockpit_') === 0) {
+                $('.cockpit-tabs a[href="' + stored + '"]').tab('show');
+            }
+            $('.cockpit-tabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                sessionStorage.setItem('job360-cockpit-tab', $(e.target).attr('href'));
             });
         });
 
