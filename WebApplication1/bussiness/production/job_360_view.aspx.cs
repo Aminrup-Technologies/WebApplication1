@@ -952,14 +952,8 @@ namespace WebApplication1.bussiness.production
 
         private void EvaluateActionMatrix(DataRow row, int pipelineStep, bool isBlocked, DateTime? dtFirstInPunchLogic, DateTime? dtCreatedDate, int actualWorkerCount)
         {
-            // 1. Reset all buttons to hidden
-            btn_Act_UploadPermit.Visible = false; btn_Act_InPunch.Visible = false; btn_Act_AddDocs.Visible = false;
-            btn_Act_OutPunch.Visible = false; btn_Act_Unblock.Visible = false; btn_Act_Resubmit.Visible = false;
-            btn_Act_ForceOut.Visible = false; btn_Act_SwapDate.Visible = false; btn_Act_Delete.Visible = false;
-            btn_Act_ForcePermitBypass.Visible = false; btn_Act_ResetToCreated.Visible = false;
-            btn_Act_CancelShift.Visible = false; btn_Act_AdminRollback.Visible = false;
+            ResetActionButtonVisibility();
 
-            // Reset Alert Box
             divBottleneck.Attributes["class"] = "d-none";
             lbl_bottleneck.Text = "";
 
@@ -968,7 +962,6 @@ namespace WebApplication1.bussiness.production
             string masterCode = row["MasterStatusCode"].ToString();
             string jobStatus = row["JOBID_Status"].ToString();
 
-            // Safely parse DeleteStatus
             bool isDeleted = row["DeleteStatus"] != DBNull.Value &&
                              (row["DeleteStatus"].ToString() == "1" || row["DeleteStatus"].ToString().ToLower() == "true");
 
@@ -976,80 +969,178 @@ namespace WebApplication1.bussiness.production
             {
                 divBottleneck.Attributes["class"] = "alert alert-danger text-white font-weight-bold";
                 lbl_bottleneck.Text = $"<i class='fa fa-ban'></i> ARCHIVED/VOID RECORD: This JOB was DELETED/CANCELLED. No further actions allowed.";
+                ActionBarRow.Visible = false;
                 return;
             }
 
-            // ----------------------------------------------------------------------
-            // ADMIN OVERRIDES (God Mode)
-            // ----------------------------------------------------------------------
-            if (IsAdmin())
-            {
-                if (masterCode == "1") { btn_Act_ForcePermitBypass.Visible = true; btn_Act_CancelShift.Visible = true; }
-                if (masterCode == "3" && actualWorkerCount == 0) { btn_Act_ResetToCreated.Visible = true; btn_Act_CancelShift.Visible = true; }
-                if (approvalStatus == "Approved") { btn_Act_AdminRollback.Visible = true; }
-            }
+            ApplyAdminOverrideVisibility(approvalStatus, masterCode, actualWorkerCount);
 
-            // ----------------------------------------------------------------------
-            // TIME LOGIC (3-Day Window + Grace Period)
-            // ----------------------------------------------------------------------
             bool isWithin3Days = dtCreatedDate.HasValue && dtCreatedDate.Value.Date >= DateTime.Now.AddDays(-3).Date;
-
-            // Check Grace Period (The Unblock Logic)
             DateTime? graceExpiry = row["UnblockedUntil"] != DBNull.Value ? (DateTime?)Convert.ToDateTime(row["UnblockedUntil"]) : null;
             bool isGraceActive = graceExpiry.HasValue && DateTime.Now < graceExpiry.Value;
+            bool windowOpen = isWithin3Days || isGraceActive;
 
-            // 3. UNBLOCK BUTTON (Only show if truly blocked)
-            if ((isBlocked || jobStatus == "Blocked") && entryExitStatus != "Exit" && IsAdmin())
-            {
-                btn_Act_Unblock.Visible = true;
-            }
+            ApplyUnblockVisibility(isBlocked, jobStatus, entryExitStatus);
 
-            // 4. PIPELINE ACTIVATION (Allow if within 3 days OR Grace Period is active)
-            if (isWithin3Days || isGraceActive)
+            if (windowOpen)
             {
-                // If grace is active, show the warning that it expires
                 if (isGraceActive)
                 {
                     divBottleneck.Attributes["class"] = "alert alert-warning text-dark font-weight-bold";
                     lbl_bottleneck.Text = $"<i class='fa fa-clock-o'></i> GRACE PERIOD ACTIVE: Job unblocked until {graceExpiry.Value:dd-MMM HH:mm}";
                 }
 
-                if (pipelineStep == 2) btn_Act_UploadPermit.Visible = true;
-                if (pipelineStep == 3) btn_Act_InPunch.Visible = true;
-                if (pipelineStep == 4) btn_Act_AddDocs.Visible = true;
-                if (pipelineStep == 5) btn_Act_OutPunch.Visible = true;
-
-                if (entryExitStatus == "Entry" && dtFirstInPunchLogic.HasValue && dtCreatedDate.HasValue && dtCreatedDate.Value.Date < DateTime.Now.Date)
-                {
-                    btn_Act_ForceOut.Visible = true;
-                }
+                ApplySupervisorHopVisibility(row, pipelineStep, entryExitStatus, actualWorkerCount);
+                ApplyInWindowForceOutVisibility(entryExitStatus, dtFirstInPunchLogic, dtCreatedDate);
             }
             else
             {
-                // HARD LOCKOUT (Expired & No Grace)
                 divBottleneck.Attributes["class"] = "alert alert-danger text-white font-weight-bold";
                 lbl_bottleneck.Text = "SYSTEM LOCKOUT: Job is older than 3 days. Standard processing is disabled.";
-
-                if ((entryExitStatus == "Entry" || entryExitStatus == "Created") && dtFirstInPunchLogic.HasValue)
-                {
-                    if (IsAdmin()) btn_Act_ForceOut.Visible = true;
-                    lbl_bottleneck.Text += " Admin must Force OUT-Punch to close this shift.";
-                }
+                ApplyLockoutForceOutVisibility(entryExitStatus, dtFirstInPunchLogic);
             }
 
-            // 5. FIX & RESUBMIT
+            ApplyResubmitVisibility(approvalStatus);
+            ApplyPrePunchOverrideVisibility(dtFirstInPunchLogic, windowOpen);
+
+            ActionBarRow.Visible = btn_Act_UploadPermit.Visible
+                || btn_Act_InPunch.Visible
+                || btn_Act_AddDocs.Visible
+                || btn_Act_OutPunch.Visible;
+        }
+
+        private void ResetActionButtonVisibility()
+        {
+            btn_Act_UploadPermit.Visible = false;
+            btn_Act_InPunch.Visible = false;
+            btn_Act_AddDocs.Visible = false;
+            btn_Act_OutPunch.Visible = false;
+            btn_Act_Unblock.Visible = false;
+            btn_Act_Resubmit.Visible = false;
+            btn_Act_ForceOut.Visible = false;
+            btn_Act_SwapDate.Visible = false;
+            btn_Act_Delete.Visible = false;
+            btn_Act_ForcePermitBypass.Visible = false;
+            btn_Act_ResetToCreated.Visible = false;
+            btn_Act_CancelShift.Visible = false;
+            btn_Act_AdminRollback.Visible = false;
+            // Phase D / Phase C: stay hidden. Do not enable here.
+            btn_Act_ViewRawData.Visible = false;
+            btn_EditCoreDetails.Visible = false;
+        }
+
+        private void ApplyAdminOverrideVisibility(string approvalStatus, string masterCode, int actualWorkerCount)
+        {
+            if (!IsAdmin()) return;
+
+            if (masterCode == "1")
+            {
+                btn_Act_ForcePermitBypass.Visible = true;
+                btn_Act_CancelShift.Visible = true;
+            }
+
+            if (masterCode == "3" && actualWorkerCount == 0)
+            {
+                btn_Act_ResetToCreated.Visible = true;
+                btn_Act_CancelShift.Visible = true;
+            }
+
+            if (approvalStatus == "Approved")
+            {
+                btn_Act_AdminRollback.Visible = true;
+            }
+        }
+
+        private void ApplyUnblockVisibility(bool isBlocked, string jobStatus, string entryExitStatus)
+        {
+            if ((isBlocked || jobStatus == "Blocked") && entryExitStatus != "Exit" && IsAdmin())
+            {
+                btn_Act_Unblock.Visible = true;
+            }
+        }
+
+        /// <summary>
+        /// Overview hops follow the frozen M1–M6 order: Create → IN → Permit → OUT.
+        /// Permit outstanding must not hide IN. V2 inboxes remain the write surface.
+        /// </summary>
+        private void ApplySupervisorHopVisibility(DataRow row, int pipelineStep, string entryExitStatus, int actualWorkerCount)
+        {
+            bool isCreated = entryExitStatus == "Created";
+            bool isEntry = entryExitStatus == "Entry";
+            bool isExit = entryExitStatus == "Exit";
+
+            if (isExit) return;
+
+            // IN at Created (including permit-required). Empty Entry shift keeps the existing IN hop.
+            if (isCreated || (isEntry && actualWorkerCount == 0))
+            {
+                btn_Act_InPunch.Visible = true;
+            }
+
+            // Permit: optional at Created while outstanding; always while Entry (PR #64 inbox).
+            if ((isCreated && IsPermitOutstanding(row)) || isEntry)
+            {
+                btn_Act_UploadPermit.Visible = true;
+            }
+
+            // Add Docs: existing CSM step predicate (pipelineStep 4).
+            if (pipelineStep == 4)
+            {
+                btn_Act_AddDocs.Visible = true;
+            }
+
+            // OUT while Entry with manpower (Close & Send stays on job_outpunch_v2).
+            if (isEntry && actualWorkerCount > 0)
+            {
+                btn_Act_OutPunch.Visible = true;
+            }
+        }
+
+        private static bool IsPermitOutstanding(DataRow row)
+        {
+            string permitUpload = row.Table.Columns.Contains("PermitUpload") ? row["PermitUpload"].ToString() : "";
+            string finalUpldStatus = row.Table.Columns.Contains("FinalUpldStatus") ? row["FinalUpldStatus"].ToString() : "";
+            int fileCount = 0;
+            if (row.Table.Columns.Contains("FileCount") && row["FileCount"] != DBNull.Value)
+            {
+                int.TryParse(row["FileCount"].ToString(), out fileCount);
+            }
+
+            return permitUpload == "Yes" && fileCount == 0 && finalUpldStatus != "Yes";
+        }
+
+        private void ApplyInWindowForceOutVisibility(string entryExitStatus, DateTime? dtFirstInPunchLogic, DateTime? dtCreatedDate)
+        {
+            if (entryExitStatus == "Entry" && dtFirstInPunchLogic.HasValue && dtCreatedDate.HasValue && dtCreatedDate.Value.Date < DateTime.Now.Date)
+            {
+                btn_Act_ForceOut.Visible = true;
+            }
+        }
+
+        private void ApplyLockoutForceOutVisibility(string entryExitStatus, DateTime? dtFirstInPunchLogic)
+        {
+            if ((entryExitStatus == "Entry" || entryExitStatus == "Created") && dtFirstInPunchLogic.HasValue)
+            {
+                if (IsAdmin()) btn_Act_ForceOut.Visible = true;
+                lbl_bottleneck.Text += " Admin must Force OUT-Punch to close this shift.";
+            }
+        }
+
+        private void ApplyResubmitVisibility(string approvalStatus)
+        {
             if (approvalStatus == "Rejected" || approvalStatus == "Returned" || approvalStatus == "Cancelled")
             {
                 btn_Act_Resubmit.Visible = true;
             }
+        }
 
-            // 6. PRE-PUNCH CONTROLS
-            if (!dtFirstInPunchLogic.HasValue)
-            {
-                btn_Act_SwapDate.Visible = true;
-                btn_Act_Delete.Visible = true;
-                if (!isWithin3Days && !isGraceActive) lbl_bottleneck.Text += " No attendance logged. Swap Date or Delete.";
-            }
+        private void ApplyPrePunchOverrideVisibility(DateTime? dtFirstInPunchLogic, bool windowOpen)
+        {
+            if (dtFirstInPunchLogic.HasValue) return;
+
+            btn_Act_SwapDate.Visible = true;
+            btn_Act_Delete.Visible = true;
+            if (!windowOpen) lbl_bottleneck.Text += " No attendance logged. Swap Date or Delete.";
         }
 
         // =================================================================================
