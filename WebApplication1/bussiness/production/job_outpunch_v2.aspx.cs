@@ -65,8 +65,7 @@ namespace WebApplication1.bussiness.production
 
         private void ShowNotification(string title, string message, string type)
         {
-            string script = $"showPNotify('{title}', '{message.Replace("'", "\\'")}', '{type}');";
-            ScriptManager.RegisterStartupScript(this, this.GetType(), "PNotify", script, true);
+            NotificationHelper.Show(this, title, message, type, NotificationHelper.EscapeMode.QuoteOnly);
         }
 
         // Shift-closure success modal (UAT-029 / UAT-040). Same states as legacy UpdateJOBTable1.

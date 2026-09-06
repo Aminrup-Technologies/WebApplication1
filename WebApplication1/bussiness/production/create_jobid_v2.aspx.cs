@@ -120,17 +120,7 @@ namespace WebApplication1.bussiness.production
 
         private void ShowNotification(string title, string message, string type)
         {
-            // 1. Handle nulls safely
-            if (string.IsNullOrEmpty(message)) message = "An unknown error occurred.";
-
-            // 2. Sanitize the string to prevent JS syntax errors during UpdatePanel postbacks
-            string cleanMessage = message.Replace("'", "\\'")      // Escape single quotes
-                                         .Replace("\"", "\\\"")    // Escape double quotes
-                                         .Replace("\r", "")        // Strip carriage returns
-                                         .Replace("\n", "<br/>");  // Convert newlines to HTML breaks for PNotify
-
-            string script = $"showPNotify('{title}', '{cleanMessage}', '{type}');";
-            ScriptManager.RegisterStartupScript(this, this.GetType(), "PNotify", script, true);
+            NotificationHelper.Show(this, title, message, type, NotificationHelper.EscapeMode.Full);
         }
 
         // =================================================================================

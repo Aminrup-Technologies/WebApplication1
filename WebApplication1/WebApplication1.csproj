@@ -271,6 +271,7 @@
     <Content Include="bussiness\production\csm_tbtform.aspx" />
     <Content Include="bussiness\production\css\loader.css" />
     <Content Include="bussiness\production\css\Site.css" />
+    <Content Include="Content\job360-cockpit.css" />
     <Content Include="bussiness\production\db_controller.aspx" />
     <Content Include="bussiness\production\deta_employeemaster.aspx" />
     <Content Include="bussiness\production\deta_mustering.aspx" />
@@ -6098,6 +6099,7 @@
     </Compile>
     <Compile Include="App_Code\JobIdCodec.cs" />
     <Compile Include="App_Code\JobStatusConstants.cs" />
+    <Compile Include="App_Code\NotificationHelper.cs" />
     <Compile Include="bussiness\production\CountChecker.cs" />
     <Compile Include="bussiness\production\create_jobid.aspx.cs">
       <DependentUpon>create_jobid.aspx</DependentUpon>
