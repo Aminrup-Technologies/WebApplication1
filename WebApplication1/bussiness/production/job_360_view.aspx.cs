@@ -409,57 +409,6 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-        protected void btnSaveEdit_Click(object sender, EventArgs e)
-        {
-            string id = hf_EditWorkerId.Value;
-            string jobid = txt_jobid.Text.Trim();
-
-            try
-            {
-                dbcl.Sqlconnection();
-                dbcl.ConnectDb();
-
-                // Validate Inputs
-                if (string.IsNullOrEmpty(txt_EditInTime.Text) || string.IsNullOrEmpty(txt_EditOutTime.Text))
-                {
-                    ShowNotification("Validation Error", "In-Punch and Out-Punch times are required.", "warning");
-                    return;
-                }
-
-                // Update the record with Transaction safety
-                string updQry = @"UPDATE tbl_attendance 
-                          SET Inpunch_Time = @In, 
-                              Outpunch_Time = @Out, 
-                              ProvidedOT = @OT, 
-                              AttendanceStatus = @Status,
-                              LastModified = GETDATE(),
-                              ModifiedByName = @Admin
-                          WHERE Id = @Id";
-
-                using (SqlCommand cmd = new SqlCommand(updQry, dbcl.Conn))
-                {
-                    cmd.Parameters.AddWithValue("@Id", id);
-                    cmd.Parameters.AddWithValue("@In", txt_EditInTime.Text);
-                    cmd.Parameters.AddWithValue("@Out", txt_EditOutTime.Text);
-                    cmd.Parameters.AddWithValue("@OT", string.IsNullOrEmpty(txt_EditOT.Text) ? 0 : decimal.Parse(txt_EditOT.Text));
-                    cmd.Parameters.AddWithValue("@Status", ddl_EditStatus.SelectedValue);
-                    cmd.Parameters.AddWithValue("@Admin", Session["USERNAME"].ToString());
-                    cmd.ExecuteNonQuery();
-                }
-
-                // Log the change
-                JobWorkflowLogger.LogAction(jobid, "ADMIN: EDIT WORKER", Session["WORKMAN"].ToString(), $"Attendance record {id} updated. New Status: {ddl_EditStatus.SelectedValue}");
-
-                ShowNotification("Update Success", "Worker attendance updated.", "success");
-                Load360View(jobid);
-            }
-            catch (Exception ex)
-            {
-                ShowNotification("Update Error", ex.Message, "error");
-            }
-            finally { dbcl.DisconnectDb(); }
-        }
-
         protected void btn_EditCoreDetails_Click(object sender, EventArgs e)
         {
             if (!IsAdmin())
@@ -867,113 +816,6 @@ namespace WebApplication1.bussiness.production
                 // THIS CATCHES THE SILENT CRASH AND PRINTS IT IN THE YELLOW BOX!
                 divBottleneck.Attributes["class"] = "alert alert-danger text-white font-weight-bold";
                 lbl_bottleneck.Text = "PIPELINE RENDER ERROR: " + ex.Message;
-            }
-        }
-
-        private void EvaluateActionMatrix_OLD(DataRow row, int pipelineStep, bool isBlocked, DateTime? dtFirstInPunchLogic, DateTime? dtCreatedDate, int actualWorkerCount)
-        {
-            // 1. Hide all buttons initially
-            btn_Act_UploadPermit.Visible = false; btn_Act_InPunch.Visible = false; btn_Act_AddDocs.Visible = false;
-            btn_Act_OutPunch.Visible = false; btn_Act_Unblock.Visible = false; btn_Act_Resubmit.Visible = false;
-            btn_Act_ForceOut.Visible = false; btn_Act_SwapDate.Visible = false; btn_Act_Delete.Visible = false;
-
-            btn_Act_ForcePermitBypass.Visible = false; btn_Act_ResetToCreated.Visible = false;
-            btn_Act_CancelShift.Visible = false; btn_Act_AdminRollback.Visible = false;
-
-            string approvalStatus = row["Incharge_Approval"].ToString();
-            string entryExitStatus = row["EntryExit"].ToString();
-            string masterCode = row["MasterStatusCode"].ToString();
-
-            // Safely parse the DeleteStatus
-            bool isDeleted = row["DeleteStatus"] != DBNull.Value &&
-                             (row["DeleteStatus"].ToString() == "1" || row["DeleteStatus"].ToString().ToLower() == "true");
-
-            if (isDeleted || row["JOBID_Status"].ToString() == "Deleted" || row["JOBID_Status"].ToString() == "Cancelled")
-            {
-                divBottleneck.Attributes["class"] = "alert alert-danger text-white font-weight-bold";
-                lbl_bottleneck.Text = $"<i class='fa fa-ban'></i> ARCHIVED/VOID RECORD: This JOB was DELETED/CANCELLED on {FormatDate(ParseDateSafe(row["DeleteOn"]))}. No further actions allowed.";
-                return;
-            }
-
-            // ----------------------------------------------------------------------
-            // ADMIN OVERRIDES (God Mode Gaps)
-            // ----------------------------------------------------------------------
-            if (IsAdmin())
-            {
-                // GAP 1: Force Permit Bypass (Stuck at Step 1/2)
-                if (masterCode == "1")
-                {
-                    btn_Act_ForcePermitBypass.Visible = true;
-                    btn_Act_CancelShift.Visible = true;
-                }
-
-                // GAP 2 & 3: Reset to Created or Cancel Shift (At Step 3, but NO workers IN-Punched)
-                if (masterCode == "3" && actualWorkerCount == 0)
-                {
-                    btn_Act_ResetToCreated.Visible = true;
-                    btn_Act_CancelShift.Visible = true;
-                }
-
-                // Master Approval Rollback
-                if (approvalStatus == "Approved")
-                {
-                    btn_Act_AdminRollback.Visible = true;
-                    return; // Halt standard matrix
-                }
-            }
-            else if (approvalStatus == "Approved")
-            {
-                return; // Normal users see nothing
-            }
-
-            // 3. UNBLOCK PRIORITY
-            if ((isBlocked || row["JOBID_Status"].ToString() == "Blocked") && entryExitStatus != "Exit")
-            {
-                if (IsAdmin()) btn_Act_Unblock.Visible = true;
-                return;
-            }
-
-            // 4. EVALUATE 3-DAY WINDOW
-            bool isWithin3Days = false;
-            if (dtCreatedDate.HasValue)
-            {
-                isWithin3Days = dtCreatedDate.Value.Date >= DateTime.Now.AddDays(-3).Date;
-            }
-
-            if (isWithin3Days)
-            {
-                if (pipelineStep == 2) btn_Act_UploadPermit.Visible = true;
-                if (pipelineStep == 3) btn_Act_InPunch.Visible = true;
-                if (pipelineStep == 4) btn_Act_AddDocs.Visible = true;
-                if (pipelineStep == 5) btn_Act_OutPunch.Visible = true;
-
-                if (entryExitStatus == "Entry" && dtFirstInPunchLogic.HasValue && dtCreatedDate.HasValue && dtCreatedDate.Value.Date < DateTime.Now.Date)
-                {
-                    btn_Act_ForceOut.Visible = true;
-                }
-            }
-            else
-            {
-                lbl_bottleneck.Text = "SYSTEM LOCKOUT: Job is older than 3 days. Standard processing is disabled.";
-                if ((entryExitStatus == "Entry" || entryExitStatus == "Created") && dtFirstInPunchLogic.HasValue)
-                {
-                    if (IsAdmin()) btn_Act_ForceOut.Visible = true;
-                    lbl_bottleneck.Text += " Admin must Force OUT-Punch to close this shift.";
-                }
-            }
-
-            // 5. FIX & RESUBMIT
-            if (approvalStatus == "Rejected" || approvalStatus == "Returned" || approvalStatus == "Cancelled")
-            {
-                btn_Act_Resubmit.Visible = true;
-            }
-
-            // 6. PRE-PUNCH CONTROLS
-            if (!dtFirstInPunchLogic.HasValue)
-            {
-                btn_Act_SwapDate.Visible = true;
-                btn_Act_Delete.Visible = true;
-                if (!isWithin3Days) lbl_bottleneck.Text += " No attendance logged. Please Swap the Job Date to a current date, or Delete the record.";
             }
         }
 
@@ -1495,64 +1337,6 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-        protected void btn_Act_Resubmit_Click_OLD(object sender, EventArgs e)
-        {
-            string jobid = txt_jobid.Text.Trim();
-            string adminUser = Session["USERNAME"] != null ? Session["USERNAME"].ToString() : "ADMIN";
-
-            try
-            {
-                dbcl.Sqlconnection();
-                dbcl.ConnectDb();
-
-                string qryJob = @"UPDATE tbl_jobs 
-                                  SET Incharge_Approval = 'Pending', 
-                                      Incharge_Remarks = CONCAT(ISNULL(Incharge_Remarks,''), ' | ADMIN RESUBMIT: Opened for corrections by ', @AdminUser),
-                                      EntryExit = 'Entry',
-                                      JOB_Status = 'In-Punch Done', 
-                                      MasterStatusCode = '3',
-                                      IsBlocked = 0, 
-                                      JOBID_Status = 'Active',
-                                      BlockedTimestamp = NULL,
-                                      UnblockedUntil = DATEADD(HOUR, 24, GETDATE()),
-                                      UpdatedBy = @AdminUser,
-                                      UpdatedOn = GETDATE()                  
-                                  WHERE JOBID = @JOBID";
-
-                using (SqlCommand cmdJob = new SqlCommand(qryJob, dbcl.Conn))
-                {
-                    cmdJob.Parameters.AddWithValue("@JOBID", jobid);
-                    cmdJob.Parameters.AddWithValue("@AdminUser", adminUser);
-                    cmdJob.ExecuteNonQuery();
-                }
-
-                string qryAtt = @"UPDATE tbl_attendance 
-                                      Approval_Date = NULL,
-                                      AttendanceStatus = 'Absent',
-                                      LastModified = GETDATE(),
-                                      ModifiedByName = @AdminUser
-                                  WHERE JOBID = @JOBID";
-
-                using (SqlCommand cmdAtt = new SqlCommand(qryAtt, dbcl.Conn))
-                {
-                    cmdAtt.Parameters.AddWithValue("@JOBID", jobid);
-                    cmdAtt.Parameters.AddWithValue("@AdminUser", adminUser);
-                    cmdAtt.ExecuteNonQuery();
-                }
-
-                ShowNotification("Resubmitted", "JOB rolled back successfully. Worker attendance statuses have been reset.", "success");
-                Load360View(jobid);
-            }
-            catch (Exception ex)
-            {
-                ShowNotification("Error", ex.Message, "error");
-            }
-            finally
-            {
-                dbcl.DisconnectDb();
-            }
-        }
-
         protected void btn_Act_ForceOut_Click(object sender, EventArgs e)
         {
             if (!IsAdmin())
@@ -1652,70 +1436,6 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-        protected void btn_Act_ForceOut_Click_OLD(object sender, EventArgs e)
-        {
-            try
-            {
-                dbcl.Sqlconnection(); dbcl.ConnectDb();
-
-                string getStuckWorkersQry = "SELECT Id, EmployeeWrk, Inpunch_Time, WourkHours, LunchFactor FROM tbl_attendance WHERE JOBID = @JOBID AND Outpunch_Time IS NULL AND (DeleteStatus = 0 OR DeleteStatus IS NULL)";
-                using (SqlCommand cmdGet = new SqlCommand(getStuckWorkersQry, dbcl.Conn))
-                {
-                    cmdGet.Parameters.AddWithValue("@JOBID", txt_jobid.Text);
-                    using (SqlDataReader rdr = cmdGet.ExecuteReader())
-                    {
-                        DataTable dtStuckWorkers = new DataTable();
-                        dtStuckWorkers.Load(rdr);
-
-                        foreach (DataRow worker in dtStuckWorkers.Rows)
-                        {
-                            int id = Convert.ToInt32(worker["Id"]);
-                            string empWrk = worker["EmployeeWrk"].ToString();
-                            DateTime inTime = Convert.ToDateTime(worker["Inpunch_Time"]);
-
-                            int standardHours = worker["WourkHours"] != DBNull.Value ? Convert.ToInt32(worker["WourkHours"]) : 8;
-                            string lunchFactor = worker["LunchFactor"] != DBNull.Value ? worker["LunchFactor"].ToString() : "No";
-
-                            DateTime outTime = inTime.AddHours(standardHours);
-                            int workedTimeMins = standardHours * 60;
-                            decimal workedHoursDec = Convert.ToDecimal(standardHours);
-
-                            using (SqlCommand cmdSP = new SqlCommand("SP_Update_AttendancePunchOUT", dbcl.Conn))
-                            {
-                                cmdSP.CommandType = CommandType.StoredProcedure;
-                                cmdSP.Parameters.AddWithValue("@Id", id);
-                                cmdSP.Parameters.AddWithValue("@JOBID", txt_jobid.Text);
-                                cmdSP.Parameters.AddWithValue("@SubmitterStatus", JobStatusConstants.EntryExitExit);
-                                cmdSP.Parameters.AddWithValue("@EmployeeWrk", empWrk);
-                                cmdSP.Parameters.AddWithValue("@Outpunch_Time", outTime);
-                                cmdSP.Parameters.AddWithValue("@WorkedTime", workedTimeMins);
-                                cmdSP.Parameters.AddWithValue("@WorkedHours", workedHoursDec);
-                                cmdSP.Parameters.AddWithValue("@LunchFactor", lunchFactor);
-                                cmdSP.Parameters.AddWithValue("@Calc_OT", 0);
-                                cmdSP.Parameters.AddWithValue("@ProvidedOT", 0);
-                                cmdSP.Parameters.AddWithValue("@LastModified", DateTime.Now);
-                                cmdSP.Parameters.AddWithValue("@AttendanceStatus", "Present");
-                                cmdSP.Parameters.AddWithValue("@AttendanceCode", "P");
-                                cmdSP.ExecuteNonQuery();
-                            }
-                        }
-                    }
-                }
-
-                string qryJob = "UPDATE tbl_jobs SET JOBID_Status = 'Active', JOB_Status = 'Out-Punch Done', MasterStatusCode = '4', EntryExit = 'Exit' WHERE JOBID = @JOBID";
-                using (SqlCommand cmdJob = new SqlCommand(qryJob, dbcl.Conn))
-                {
-                    cmdJob.Parameters.AddWithValue("@JOBID", txt_jobid.Text);
-                    cmdJob.ExecuteNonQuery();
-                }
-
-                ShowNotification("Forced Closed", "All active manpower forcefully clocked out based on standard shift hours. JOB advanced to Approver queue.", "success");
-                Load360View(txt_jobid.Text);
-            }
-            catch (Exception ex) { ShowNotification("Error", ex.Message, "error"); }
-            finally { dbcl.DisconnectDb(); }
-        }
-
         protected void btn_Act_AdminRollback_Click(object sender, EventArgs e)
         {
             if (!IsAdmin())
@@ -1771,44 +1491,6 @@ namespace WebApplication1.bussiness.production
             catch (Exception ex)
             {
                 ShowNotification("Critical Error", ex.Message, "error");
-            }
-            finally
-            {
-                dbcl.DisconnectDb();
-            }
-        }
-
-        protected void btn_Act_AdminRollback_Click_OLD(object sender, EventArgs e)
-        {
-            try
-            {
-                dbcl.Sqlconnection();
-                dbcl.ConnectDb();
-
-                string qry = @"UPDATE tbl_jobs 
-                       SET Incharge_Approval = 'Returned', 
-                           Incharge_Remarks = 'ADMIN OVERRIDE: Approval revoked and returned for corrections.',
-                           JOB_Status = 'Out-Punch Done', 
-                           MasterStatusCode = '4',
-                           IsBlocked = 0, 
-                           JOBID_Status = 'Active',
-                           UpdatedOn = GETDATE(),
-                           UpdatedBy = @User
-                       WHERE JOBID = @JOBID";
-
-                using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
-                {
-                    cmd.Parameters.AddWithValue("@JOBID", txt_jobid.Text);
-                    cmd.Parameters.AddWithValue("@User", Session["USERNAME"] != null ? Session["USERNAME"].ToString() : "ADMIN");
-                    cmd.ExecuteNonQuery();
-                }
-
-                ShowNotification("Admin Rollback", "JOB approval has been revoked. It has been successfully rolled back to the Supervisor for corrections.", "success");
-                Load360View(txt_jobid.Text);
-            }
-            catch (Exception ex)
-            {
-                ShowNotification("Rollback Error", ex.Message, "error");
             }
             finally
             {
@@ -1922,49 +1604,5 @@ namespace WebApplication1.bussiness.production
             }
         }
 
-        protected void btn_Act_UnblockJob_Click(object sender, EventArgs e)
-        {
-            // Security Guard: Ensure only Admins can execute this
-            if (!IsAdmin())
-            {
-                ShowNotification("Access Denied", "You do not have permission to perform this override.", "error");
-                return;
-            }
-
-            //try
-            //{
-            //    dbcl.Sqlconnection();
-            //    dbcl.ConnectDb();
-
-            //    // SQL: Lift the block and set the grace period expiration
-            //    string qry = @"UPDATE tbl_jobs 
-            //           SET IsBlocked = 0, 
-            //               UnblockedUntil = DATEADD(hour, 24, GETDATE()) 
-            //           WHERE JOBID = @JOBID";
-
-            //    using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
-            //    {
-            //        cmd.Parameters.AddWithValue("@JOBID", txt_jobid.Text.Trim());
-            //        cmd.ExecuteNonQuery();
-            //    }
-
-            //    // AUDIT LOGGING (Using your centralized logger)
-            //    JobWorkflowLogger.LogAction(txt_jobid.Text, "ADMIN: UNBLOCK JOB", Session["WORKMAN"].ToString(),
-            //        "Granted 24-hour grace period to blocked job. Standard processing re-enabled.");
-
-            //    ShowNotification("Job Unblocked", "The job has been unblocked for the next 24 hours.", "success");
-
-            //    // Refresh the Control Tower view
-            //    Load360View(txt_jobid.Text);
-            //}
-            //catch (Exception ex)
-            //{
-            //    ShowNotification("Unblock Error", ex.Message, "error");
-            //}
-            //finally
-            //{
-            //    dbcl.DisconnectDb();
-            //}
-        }
     }
 }
