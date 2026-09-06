@@ -374,7 +374,7 @@ namespace WebApplication1.bussiness.production
 
         private static bool IsAlreadyClosed(string masterCode, string entryExit, string jobStatus)
         {
-            return masterCode == "4" && entryExit == "Exit" && jobStatus == "Out-Punch Done";
+            return masterCode == JobStatusConstants.CodeClosed && entryExit == JobStatusConstants.EntryExitExit && jobStatus == JobStatusConstants.StatusOutPunchDone;
         }
 
         private void ShowCloseSuccessUi(string jobid)
@@ -550,7 +550,7 @@ namespace WebApplication1.bussiness.production
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@Id", dbid);
                     cmd.Parameters.AddWithValue("@JOBID", DDL_JOBID.SelectedValue);
-                    cmd.Parameters.AddWithValue("@SubmitterStatus", "Exit");
+                    cmd.Parameters.AddWithValue("@SubmitterStatus", JobStatusConstants.EntryExitExit);
                     cmd.Parameters.AddWithValue("@EmployeeWrk", lbl_empworkman.Text);
                     cmd.Parameters.AddWithValue("@Outpunch_Time", dtout);
                     cmd.Parameters.AddWithValue("@LunchFactor", lunchyesno);
@@ -559,7 +559,7 @@ namespace WebApplication1.bussiness.production
                     cmd.Parameters.AddWithValue("@Calc_OT", emp_calOThrs);
                     cmd.Parameters.AddWithValue("@ProvidedOT", txt_ot.Text);
                     cmd.Parameters.AddWithValue("@LastModified", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt"));
-                    cmd.Parameters.AddWithValue("@AttendanceStatus", "Exit");
+                    cmd.Parameters.AddWithValue("@AttendanceStatus", JobStatusConstants.EntryExitExit);
                     cmd.Parameters.AddWithValue("@AttendanceCode", DDL_AttenCode.SelectedValue);
                     cmd.ExecuteNonQuery();
                 }
@@ -638,7 +638,7 @@ namespace WebApplication1.bussiness.production
                 return;
             }
 
-            if (masterCode != "3" || entryExit != "Entry")
+            if (masterCode != JobStatusConstants.CodeInPunch || entryExit != JobStatusConstants.EntryExitEntry)
             {
                 ShowNotification("Warning", "This shift is not ready to close.", "warning");
                 return;
@@ -647,8 +647,8 @@ namespace WebApplication1.bussiness.production
             if (string.IsNullOrEmpty(lbl_jobid.Text)) lbl_jobid.Text = ddljobid;
 
             // Same parameterized UpdateJOBTable1 writes as legacy (Blocked|Active, Out-Punch Done, 4, Exit).
-            string closeJobIdStatus = CC.CheckforPendingPermit(ddljobid, supv) == 0 ? "Blocked" : "Active";
-            int rowsUpdated = UpdateJOBTable1(closeJobIdStatus, "Out-Punch Done", "4", "Exit");
+            string closeJobIdStatus = CC.CheckforPendingPermit(ddljobid, supv) == 0 ? "Blocked" : JobStatusConstants.StatusActive;
+            int rowsUpdated = UpdateJOBTable1(closeJobIdStatus, JobStatusConstants.StatusOutPunchDone, JobStatusConstants.CodeClosed, JobStatusConstants.EntryExitExit);
             if (rowsUpdated < 0) return;
 
             if (!TryReadJobCloseState(ddljobid, out masterCode, out entryExit, out jobStatus) || !IsAlreadyClosed(masterCode, entryExit, jobStatus))

@@ -26,7 +26,7 @@ namespace WebApplication1.bussiness.production
         private string WO_BillingNature { get { return ViewState["WO_BillingNature"] as string ?? ""; } set { ViewState["WO_BillingNature"] = value; } }
         private bool WO_ReqCSM { get { return ViewState["WO_ReqCSM"] != null && (bool)ViewState["WO_ReqCSM"]; } set { ViewState["WO_ReqCSM"] = value; } }
         private bool WO_AutoTitle { get { return ViewState["WO_AutoTitle"] != null && (bool)ViewState["WO_AutoTitle"]; } set { ViewState["WO_AutoTitle"] = value; } }
-        private string WO_MasterStatusCode { get { return ViewState["WO_MasterStatusCode"] as string ?? "1"; } set { ViewState["WO_MasterStatusCode"] = value; } }
+        private string WO_MasterStatusCode { get { return ViewState["WO_MasterStatusCode"] as string ?? JobStatusConstants.CodeCreated; } set { ViewState["WO_MasterStatusCode"] = value; } }
 
         private static readonly object jobInsertLock = new object();
         // Add this under your other ViewState variables
@@ -660,7 +660,7 @@ namespace WebApplication1.bussiness.production
                 string maskedJobId = EncodeJobID(generatedJobId);
 
                 // V2 DYNAMIC ROUTING
-                if (WO_MasterStatusCode == "3")
+                if (WO_MasterStatusCode == JobStatusConstants.CodeInPunch)
                 {
                     Response.Redirect($"job_inpunch_v2.aspx?jobid={maskedJobId}", false);
                 }
@@ -679,7 +679,7 @@ namespace WebApplication1.bussiness.production
                 string maskedJobId = EncodeJobID(generatedJobId);
 
                 // V2 DYNAMIC ROUTING
-                if (WO_MasterStatusCode == "3")
+                if (WO_MasterStatusCode == JobStatusConstants.CodeInPunch)
                 {
                     Response.Redirect($"job_inpunch_v2.aspx?jobid={maskedJobId}", false);
                 }
@@ -718,7 +718,7 @@ namespace WebApplication1.bussiness.production
                     cmd.Parameters.AddWithValue("@WorkOrderNo", DDL_Workorder.SelectedItem.Text);
                     cmd.Parameters.AddWithValue("@Workorder_Type", DB_WOType);
                     cmd.Parameters.AddWithValue("@JOBID", JOBID);
-                    cmd.Parameters.AddWithValue("@JOBID_Status", "Active");
+                    cmd.Parameters.AddWithValue("@JOBID_Status", JobStatusConstants.StatusActive);
                     cmd.Parameters.AddWithValue("@JOB_Region", DDL_Region.SelectedValue);
                     cmd.Parameters.AddWithValue("@JOB_Company", txt_company.Text);
                     cmd.Parameters.AddWithValue("@JOB_Site", DDL_Worksite.SelectedItem.Text);
@@ -731,7 +731,7 @@ namespace WebApplication1.bussiness.production
                     cmd.Parameters.AddWithValue("@JOB_Title", txt_jobtitle.Text);
                     cmd.Parameters.AddWithValue("@JOB_PermitNo", txt_permitno.Text);
                     cmd.Parameters.AddWithValue("@Incharge_Approval", "Pending");
-                    cmd.Parameters.AddWithValue("@EntryExit", "Created");
+                    cmd.Parameters.AddWithValue("@EntryExit", JobStatusConstants.EntryExitCreated);
                     cmd.Parameters.AddWithValue("@BillingType", WO_BillingNature == "Non-Billing" ? "Non-Billing" : (DDL_BillingType.SelectedItem != null ? DDL_BillingType.SelectedItem.Text : ""));
                     cmd.Parameters.AddWithValue("@BillingCode", WO_BillingNature == "Non-Billing" ? "NB" : DDL_BillingType.SelectedValue);
                     cmd.Parameters.AddWithValue("@AttendanceCode", DDL_AttenCode.SelectedValue);
@@ -748,7 +748,7 @@ namespace WebApplication1.bussiness.production
                     cmd.Parameters.AddWithValue("@FileCount", 0);
                     cmd.Parameters.AddWithValue("@CSM_Documents", WO_ReqCSM ? "Yes" : "No");
 
-                    if (WO_MasterStatusCode == "3")
+                    if (WO_MasterStatusCode == JobStatusConstants.CodeInPunch)
                     {
                         // Non-ARC / skip-permit: same writes as legacy non-ARC Insert_JOBData()
                         cmd.Parameters.AddWithValue("@JOB_Status", "Permit Uploaded");
@@ -758,7 +758,7 @@ namespace WebApplication1.bussiness.production
                     else
                     {
                         // Permit-required: same writes as legacy ARC Insert_JOBData() (code 1, no upload yet)
-                        cmd.Parameters.AddWithValue("@JOB_Status", "Created");
+                        cmd.Parameters.AddWithValue("@JOB_Status", JobStatusConstants.EntryExitCreated);
                         cmd.Parameters.AddWithValue("@FinalUpldStatus", "No");
                         cmd.Parameters.AddWithValue("@PermitUpload", "No");
                     }
