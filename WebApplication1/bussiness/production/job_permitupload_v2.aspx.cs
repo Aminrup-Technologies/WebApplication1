@@ -47,7 +47,7 @@ namespace WebApplication1.bussiness.production
                     string realJobId = "";
                     try
                     {
-                        realJobId = JobIdEncoding.DecodeJobID(maskedId);
+                        realJobId = DecodeJobID(maskedId);
                     }
                     catch (FormatException)
                     {
@@ -85,6 +85,19 @@ namespace WebApplication1.bussiness.production
         {
             string script = $"showPNotify('{title}', '{message.Replace("'", "\\'")}', '{type}');";
             ScriptManager.RegisterStartupScript(this, this.GetType(), "PNotify", script, true);
+        }
+
+        // =================================================================================
+        // URL MASKING UTILITIES
+        // =================================================================================
+        public static string EncodeJobID(string plainText)
+        {
+            return JobIdCodec.Encode(plainText);
+        }
+
+        public static string DecodeJobID(string maskedData)
+        {
+            return JobIdCodec.Decode(maskedData);
         }
 
         // =================================================================================
@@ -491,7 +504,7 @@ namespace WebApplication1.bussiness.production
             // =======================================================
 
             // SMART ROUTING: Mask the JOBID before passing it to Step 3
-            string maskedJobId = JobIdEncoding.EncodeJobID(lbl_jobid.Text);
+            string maskedJobId = EncodeJobID(lbl_jobid.Text);
             Response.Redirect($"job_inpunch_v2.aspx?jobid={maskedJobId}", false);
         }
     }

@@ -65,7 +65,7 @@ namespace WebApplication1.bussiness.production
                     string realJobId = "";
                     try
                     {
-                        realJobId = JobIdEncoding.DecodeJobID(maskedId);
+                        realJobId = DecodeJobID(maskedId);
                     }
                     catch (FormatException)
                     {
@@ -89,6 +89,20 @@ namespace WebApplication1.bussiness.production
         {
             string script = $"showPNotify('{title}', '{message.Replace("'", "\\'")}', '{type}');";
             ScriptManager.RegisterStartupScript(this, this.GetType(), "PNotify", script, true);
+        }
+
+        // =================================================================================
+        // MASKING UTILITIES (URL-Safe Base64)
+        // Note: You can move these to DB_Utility_OH4Y.cs for use across all pages
+        // =================================================================================
+        public static string EncodeJobID(string plainText)
+        {
+            return JobIdCodec.Encode(plainText);
+        }
+
+        public static string DecodeJobID(string maskedData)
+        {
+            return JobIdCodec.Decode(maskedData);
         }
 
         // =================================================================================

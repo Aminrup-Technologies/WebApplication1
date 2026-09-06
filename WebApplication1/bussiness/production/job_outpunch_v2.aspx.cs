@@ -43,7 +43,7 @@ namespace WebApplication1.bussiness.production
                     string realJobId = "";
                     try
                     {
-                        realJobId = JobIdEncoding.DecodeJobID(maskedId);
+                        realJobId = DecodeJobID(maskedId);
                     }
                     catch (FormatException)
                     {
@@ -75,6 +75,11 @@ namespace WebApplication1.bussiness.production
             string safeJobId = (jobid ?? "").Replace("\\", "\\\\").Replace("'", "\\'");
             string script = $"showCloseSuccessModal('{safeJobId}');";
             ScriptManager.RegisterStartupScript(this, this.GetType(), "ShiftClosedPopup", script, true);
+        }
+
+        public static string DecodeJobID(string maskedData)
+        {
+            return JobIdCodec.Decode(maskedData);
         }
 
         private void Bind_AttendnaceCode()
