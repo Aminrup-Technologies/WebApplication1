@@ -222,7 +222,7 @@ None.
 ### Milestone M6 — Dashboard Alignment
 
 **PR:** #65 (`cursor/dashboard-alignment-6c97`)
-**Status:** Synchronized onto `6e597d0`; awaiting squash merge
+**Status:** Merged `a75bb1e` 2026-09-06
 **UAT closed:** UAT-004, UAT-005, UAT-035, UAT-035A, UAT-035B
 
 **Files changed:**
@@ -1753,3 +1753,19 @@ Written for the client SPOC.
 | Menu | `webmaster.Master` / `.Master.cs` | CreateJOBS → V2 hub |
 
 **Adjacent JOBID participants (not primary pages, but on the graph):** `attach_manpower.aspx`, `job_360_view.aspx`, `jobapprovalpage.aspx`, `view_jobsforapproval.aspx`, `jobs_approval.aspx`, `csm_toolboxtalk.aspx`, `csm_soptraining.aspx`, `homepage.aspx`, `vw_supplyjobs.aspx`, `vw_lineitemjobs.aspx`, `db_controller.aspx` (matrix status labels).
+
+---
+
+### Version Freeze — Production Baseline v1.0
+
+**Date:** September 2026  
+**Branch:** `Jul_to_Sep_2026_Suport_N_Dev_Works`  
+**Tag:** `v2.1.0-jobid-remediation` (`a75bb1e`)  
+**Companion:** `docs/RELEASE_READINESS_PACK_v1.0.md`, `docs/JOBID_CHANGELOG_v2.1.0.md`, `docs/MAINTENANCE_GUIDELINES.md`
+
+- PR #59–#65 complete (M1–M6).
+- Release Readiness Pack, changelog, and maintenance guidelines packaged by PR #66.
+- This audit is the functional specification for JOBID V2 lifecycle behavior.
+- Future enhancements must preserve the v1.0 baseline unless formally approved.
+
+No executable code was changed to record this freeze. Milestone history above is unaltered. The tagged executable baseline remains `a75bb1e`.
