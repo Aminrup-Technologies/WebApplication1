@@ -14,7 +14,7 @@
     <add key="AutoLogoutRedirectUrl" value="https://atswork.in/" />
     <add key="vs:EnableBrowserLink" value="false" />
     <add key="PayrollAuthorizedUsers" value="J8" />
-    <!-- Unused until Switch User (PR #89). Comma-separated WorkmanSL allowlist for CanImpersonate. -->
+    <!-- Used by ImpersonationAudit.CanImpersonate / Switch User. Comma-separated WorkmanSL allowlist. -->
     <add key="SwitchUserAuthorizedUsers" value="J8" />
     <add key="ValidationSettings:UnobtrusiveValidationMode" value="None" />
     <add key="TimeThresholdHours" value="72" />

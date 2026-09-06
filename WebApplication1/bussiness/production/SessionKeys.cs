@@ -8,8 +8,8 @@ namespace WebApplication1.bussiness.production
     /// <summary>
     /// Centralized repository for all Session string keys to prevent typos and enable IntelliSense.
     /// WHEN: 2026-09-06
-    /// WHY: PR #88 adds impersonation snapshot key names without changing login Session writes.
-    /// WHAT: IS_IMPERSONATING and ORIGINAL_* constants. No caller sets these yet.
+    /// WHY: PR #89 added impersonation snapshot key names; PR #90 adds IMPERSONATION_CORR for pairing IMPERSONATE / IMPERSONATE_RETURN.
+    /// WHAT: IS_IMPERSONATING, ORIGINAL_* , and IMPERSONATION_CORR constants.
     /// </summary>
     public class SessionKeys
     {
@@ -53,7 +53,7 @@ namespace WebApplication1.bussiness.production
         public const string MfaTotpEnroll = "MFA_TOTP_ENROLL";
         public const string MfaTotpSecret = "MFA_TOTP_SECRET";
 
-        // Impersonation snapshot (set only while an admin is viewing as another user; unused until Switch User)
+        // Impersonation snapshot (set only while an admin is viewing as another user)
         public const string IsImpersonating = "IS_IMPERSONATING";
         public const string OriginalUserID = "ORIGINAL_USERID";
         public const string OriginalWorkmanSL = "ORIGINAL_WORKMAN";
@@ -61,5 +61,6 @@ namespace WebApplication1.bussiness.production
         public const string OriginalUserType = "ORIGINAL_USERTYPE";
         public const string OriginalUserRoleDB = "ORIGINAL_UserRoleDB";
         public const string OriginalRolePermissionDB = "ORIGINAL_RolePermissionDB";
+        public const string ImpersonationCorrelation = "IMPERSONATION_CORR";
     }
 }

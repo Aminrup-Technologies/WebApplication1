@@ -125,6 +125,22 @@
     </script>
 
     <style type="text/css">
+        .impersonation-banner {
+            background: #f0ad4e;
+            color: #3a2a00;
+            text-align: center;
+            padding: 8px 16px;
+            font-size: 13px;
+            border-bottom: 1px solid #d58512;
+            position: relative;
+            z-index: 10001;
+        }
+        .impersonation-banner a {
+            color: #3a2a00;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
         #loader {
             position: fixed;
             top: 50%;
@@ -179,6 +195,15 @@
 
     <div style="display: none;" id="content">
         <form id="form1" runat="server">
+            <div id="pnl_impersonationBanner" runat="server" visible="false" class="impersonation-banner">
+                Viewing as
+                <asp:Label ID="lbl_impersonatedUser" runat="server" Font-Bold="true"></asp:Label>
+                (Workman
+                <asp:Label ID="lbl_impersonatedWorkman" runat="server" Font-Bold="true"></asp:Label>).
+                Original admin:
+                <asp:Label ID="lbl_originalAdmin" runat="server" Font-Bold="true"></asp:Label>.
+                <a href="SwitchUser.aspx">Return to my account</a>
+            </div>
             <div class="container body">
                 <div class="main_container">
                     <div class="col-md-3 left_col">
@@ -332,6 +357,7 @@
                                         </a>
                                         <div class="dropdown-menu dropdown-usermenu pull-right" aria-labelledby="navbarDropdown">
                                             <a class="dropdown-item" href="manage_profile.aspx">Manage Profile</a>
+                                            <a class="dropdown-item" id="lnk_switchUser" runat="server" href="SwitchUser.aspx" visible="false">Switch User</a>
                                             <a class="dropdown-item" target="_blank" href="https://wa.me/message/IWCQS7KUJRAHA1">Support</a>
                                             <button type="button" class="dropdown-item btn btn-primary btn-sm" id="btn_Logout" data-toggle="modal" data-target="#MyModal_Logout">Logout</button>
                                         </div>

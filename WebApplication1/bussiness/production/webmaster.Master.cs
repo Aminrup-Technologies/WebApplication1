@@ -19,6 +19,8 @@ namespace WebApplication1.gentelella_master.production
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            BindImpersonationChrome();
+
             if (!IsPostBack)
             {
                 if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null)
@@ -47,6 +49,22 @@ namespace WebApplication1.gentelella_master.production
                     ApplyPermissions(permissions);
                 }
             }
+        }
+
+        private void BindImpersonationChrome()
+        {
+            bool impersonating = ImpersonationAudit.IsImpersonating(Session);
+            bool canSwitch = ImpersonationAudit.CanImpersonate(Session);
+
+            lnk_switchUser.Visible = impersonating || canSwitch;
+            lnk_switchUser.InnerText = impersonating ? "Return to my account" : "Switch User";
+
+            pnl_impersonationBanner.Visible = impersonating;
+            if (!impersonating) return;
+
+            lbl_impersonatedUser.Text = Session[SessionKeys.UserName] != null ? Session[SessionKeys.UserName].ToString() : "";
+            lbl_impersonatedWorkman.Text = Session[SessionKeys.WorkmanSL] != null ? Session[SessionKeys.WorkmanSL].ToString() : "";
+            lbl_originalAdmin.Text = Session[SessionKeys.OriginalUserName] != null ? Session[SessionKeys.OriginalUserName].ToString() : "";
         }
 
         private void LoadConfigurations()
