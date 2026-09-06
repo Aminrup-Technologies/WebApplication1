@@ -1769,3 +1769,28 @@ Written for the client SPOC.
 - Future enhancements must preserve the v1.0 baseline unless formally approved.
 
 No executable code was changed to record this freeze. Milestone history above is unaltered. The tagged executable baseline remains `a75bb1e`.
+
+---
+
+### CR-010 Complete — Shared Infrastructure Refactor
+
+Date: September 2026
+
+Status: Complete
+
+Completed:
+
+- JobIdCodec
+- Status Constants
+- Shared UI
+- Dead-Code Retirement
+
+Behavior-preserving.
+
+No lifecycle predicates changed.
+
+No authorization predicates changed.
+
+No SQL predicates changed.
+
+---
