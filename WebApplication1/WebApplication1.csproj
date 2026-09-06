@@ -6100,6 +6100,7 @@
     <Compile Include="App_Code\JobIdCodec.cs" />
     <Compile Include="App_Code\JobStatusConstants.cs" />
     <Compile Include="App_Code\NotificationHelper.cs" />
+    <Compile Include="App_Code\ImpersonationAudit.cs" />
     <Compile Include="bussiness\production\CountChecker.cs" />
     <Compile Include="bussiness\production\create_jobid.aspx.cs">
       <DependentUpon>create_jobid.aspx</DependentUpon>
