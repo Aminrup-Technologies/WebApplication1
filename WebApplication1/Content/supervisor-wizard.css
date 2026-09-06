@@ -1,0 +1,121 @@
+/* CR-001 Phase A — Supervisor Wizard chrome.
+   Display-only. Do not share with JOB360 stepper semantics. */
+
+.sw-page {
+    padding-bottom: 88px;
+}
+
+.sw-search {
+    margin-bottom: 12px;
+}
+
+.sw-search .form-control,
+.sw-search .btn,
+.sw-actions .btn {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+.sw-stepper {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 8px;
+    padding: 8px 4px;
+    margin-bottom: 16px;
+    background: #fff;
+    border: 1px solid #e6e9ed;
+    border-radius: 8px;
+}
+
+.sw-step {
+    flex: 0 0 auto;
+    min-width: 88px;
+    min-height: 44px;
+    text-align: center;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: #f7f7f7;
+    color: #73879C;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.sw-step.is-complete {
+    background: #1ABB9C;
+    color: #fff;
+}
+
+.sw-step.is-current {
+    background: #3498DB;
+    color: #fff;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.25);
+}
+
+.sw-step.is-optional {
+    border: 1px dashed #ced4da;
+}
+
+.sw-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.sw-card dt {
+    font-size: 12px;
+    color: #73879C;
+    font-weight: 600;
+}
+
+.sw-card dd {
+    font-size: 15px;
+    font-weight: 600;
+    color: #2a3f54;
+    margin-bottom: 10px;
+}
+
+.sw-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 30;
+    display: flex;
+    gap: 8px;
+    background: #F7F7F7;
+    padding: 8px 0;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.sw-actions .btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .sw-search .form-group {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .sw-search .form-group > [class*="col-"] {
+        float: none;
+        width: auto;
+        max-width: 100%;
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    .sw-search .col-md-5 {
+        flex: 1 1 160px;
+    }
+
+    .sw-card dd {
+        word-break: break-word;
+    }
+}
