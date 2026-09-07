@@ -152,6 +152,24 @@
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         }
 
+        #loader .ats-spin-timer {
+            display: none;
+            margin-top: 8px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            font-family: ui-monospace, Consolas, monospace;
+            color: #198754;
+        }
+
+        #loader .ats-spin-phases {
+            margin-top: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #6c757d;
+            min-height: 1.1em;
+        }
+
         @keyframes ats-spin {
             to { transform: rotate(360deg); }
         }
@@ -196,8 +214,94 @@
 <body class="nav-sm footer_fixed">
     <div id="loader">
         <div class="ats-spin"></div>
-        <div class="ats-spin-msg"><%= ShowHomeLoader ? "Loading your workspace..." : "Loading..." %></div>
+        <div id="ats-spin-msg" class="ats-spin-msg"><%= ShowHomeLoader ? "Loading your workspace..." : "Loading..." %></div>
+        <div id="ats-spin-timer" class="ats-spin-timer">0.0s</div>
+        <div id="ats-spin-phases" class="ats-spin-phases"></div>
     </div>
+    <script type="text/javascript">
+        (function () {
+            var KEY = 'atsLoginTimer';
+            var fromLogin = <%= ShowHomeLoader ? "true" : "false" %>;
+            try { if (sessionStorage.getItem('atsLoginNav') === '1') fromLogin = true; } catch (e) { }
+            if (!fromLogin) return;
+
+            function readT() {
+                try {
+                    var raw = sessionStorage.getItem(KEY);
+                    return raw ? JSON.parse(raw) : null;
+                } catch (e) { return null; }
+            }
+            function writeT(t) {
+                try { sessionStorage.setItem(KEY, JSON.stringify(t)); } catch (e) { }
+            }
+            function fmt(ms) {
+                if (!isFinite(ms) || ms < 0) ms = 0;
+                var s = ms / 1000;
+                if (s < 60) return s.toFixed(1) + 's';
+                var m = Math.floor(s / 60);
+                var rem = s - (m * 60);
+                return m + ':' + (rem < 10 ? '0' : '') + rem.toFixed(1);
+            }
+            function closePhase(t) {
+                if (!t || !t.busyAt || !t.phase) return t;
+                var elapsed = Date.now() - t.busyAt;
+                if (t.phase === 'login') t.loginMs = (t.loginMs || 0) + elapsed;
+                else if (t.phase === 'verify') t.verifyMs = (t.verifyMs || 0) + elapsed;
+                else if (t.phase === 'home') t.homeMs = (t.homeMs || 0) + elapsed;
+                t.busyAt = null;
+                return t;
+            }
+            function totals(t) {
+                var done = (t.loginMs || 0) + (t.verifyMs || 0) + (t.homeMs || 0);
+                if (t.busyAt) return done + (Date.now() - t.busyAt);
+                return done;
+            }
+            function phases(t) {
+                var live = t.busyAt ? (Date.now() - t.busyAt) : 0;
+                var parts = [];
+                if (t.loginMs != null) parts.push('Login ' + fmt(t.loginMs));
+                else if (t.phase === 'login') parts.push('Login ' + fmt(live));
+                if (t.verifyMs != null) parts.push('Verify ' + fmt(t.verifyMs));
+                else if (t.phase === 'verify') parts.push('Verify ' + fmt(live));
+                if (t.homeMs != null) parts.push('Home ' + fmt(t.homeMs));
+                else if (t.phase === 'home') parts.push('Home ' + fmt(live));
+                return parts.join('  ·  ');
+            }
+
+            var t = readT() || { loginMs: null, verifyMs: null, homeMs: null };
+            t = closePhase(t);
+            t.phase = 'home';
+            t.busyAt = Date.now();
+            writeT(t);
+
+            var timerEl = document.getElementById('ats-spin-timer');
+            var phaseEl = document.getElementById('ats-spin-phases');
+            if (timerEl) timerEl.style.display = 'block';
+
+            window.__atsHomeTimer = {
+                paint: function () {
+                    var cur = readT();
+                    if (!cur) return;
+                    if (timerEl) timerEl.textContent = fmt(totals(cur));
+                    if (phaseEl) phaseEl.textContent = phases(cur);
+                },
+                closeHome: function () {
+                    var cur = readT();
+                    if (!cur) return null;
+                    if (cur.phase === 'home') cur = closePhase(cur);
+                    writeT(cur);
+                    return cur;
+                },
+                fmt: fmt,
+                totals: totals,
+                phases: phases
+            };
+            window.__atsHomeTimer.paint();
+            window.__atsHomeTick = setInterval(function () {
+                if (window.__atsHomeTimer) window.__atsHomeTimer.paint();
+            }, 100);
+        })();
+    </script>
 
     <div style="display: none;" id="content">
         <form id="form1" runat="server">
@@ -428,10 +532,31 @@
                     function revealHome() {
                         if (revealed) return;
                         revealed = true;
-                        var content = document.getElementById('content');
-                        var loader = document.getElementById('loader');
-                        if (content) content.style.display = 'block';
-                        if (loader) loader.style.display = 'none';
+                        if (window.__atsHomeTick) {
+                            clearInterval(window.__atsHomeTick);
+                            window.__atsHomeTick = null;
+                        }
+
+                        function showContent() {
+                            var content = document.getElementById('content');
+                            var loader = document.getElementById('loader');
+                            if (content) content.style.display = 'block';
+                            if (loader) loader.style.display = 'none';
+                            try { sessionStorage.removeItem('atsLoginTimer'); } catch (e) { }
+                        }
+
+                        if (!fromLogin || !window.__atsHomeTimer) {
+                            showContent();
+                            return;
+                        }
+
+                        var cur = window.__atsHomeTimer.closeHome();
+                        var msg = document.getElementById('ats-spin-msg');
+                        var spin = document.querySelector('#loader .ats-spin');
+                        if (msg) msg.textContent = 'Ready';
+                        if (spin) spin.style.animation = 'none';
+                        window.__atsHomeTimer.paint();
+                        setTimeout(showContent, 1600);
                     }
 
                     if (fromLogin && document.readyState !== 'complete') {

@@ -47,6 +47,20 @@
             animation: login-busy-spin 0.8s linear infinite;
         }
         .login-busy p { margin-top: 14px; font-weight: 600; color: #2a3f54; }
+        .login-busy-timer {
+            margin-top: 8px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            font-family: ui-monospace, Consolas, monospace;
+            color: #198754;
+        }
+        .login-busy-phases {
+            margin-top: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #6c757d;
+        }
         @keyframes login-busy-spin { to { transform: rotate(360deg); } }
     </style>
 
@@ -60,6 +74,8 @@
     <div id="login-busy" class="login-busy" aria-live="polite" aria-busy="true">
         <div class="login-busy-spin"></div>
         <p id="login-busy-msg">Signing you in...</p>
+        <div id="login-busy-timer" class="login-busy-timer">0.0s</div>
+        <div id="login-busy-phases" class="login-busy-phases"></div>
     </div>
     <form id="form1" runat="server">
         <div class="login-card">
@@ -169,12 +185,97 @@
             PNotify.alert({ title: title, text: text, type: type, delay: 3000, addClass: 'pnotify-custom' });
         };
 
+        var ATS_TIMER_KEY = 'atsLoginTimer';
+        var atsTimerTick = null;
+
+        function atsReadTimer() {
+            try {
+                var raw = sessionStorage.getItem(ATS_TIMER_KEY);
+                return raw ? JSON.parse(raw) : null;
+            } catch (e) { return null; }
+        }
+
+        function atsWriteTimer(t) {
+            try { sessionStorage.setItem(ATS_TIMER_KEY, JSON.stringify(t)); } catch (e) { }
+        }
+
+        function atsClearTimer() {
+            try {
+                sessionStorage.removeItem(ATS_TIMER_KEY);
+                sessionStorage.removeItem('atsLoginNav');
+            } catch (e) { }
+        }
+
+        function atsFormatMs(ms) {
+            if (!isFinite(ms) || ms < 0) ms = 0;
+            var s = ms / 1000;
+            if (s < 60) return s.toFixed(1) + 's';
+            var m = Math.floor(s / 60);
+            var rem = s - (m * 60);
+            return m + ':' + (rem < 10 ? '0' : '') + rem.toFixed(1);
+        }
+
+        function atsPhaseText(t, liveMs) {
+            var parts = [];
+            if (t.loginMs != null) parts.push('Login ' + atsFormatMs(t.loginMs));
+            else if (t.phase === 'login') parts.push('Login ' + atsFormatMs(liveMs));
+            if (t.verifyMs != null) parts.push('Verify ' + atsFormatMs(t.verifyMs));
+            else if (t.phase === 'verify') parts.push('Verify ' + atsFormatMs(liveMs));
+            return parts.join('  ·  ');
+        }
+
+        function atsTimerTotals(t) {
+            var done = (t.loginMs || 0) + (t.verifyMs || 0) + (t.homeMs || 0);
+            if (t.busyAt) return done + (Date.now() - t.busyAt);
+            return done;
+        }
+
+        function atsPaintLoginTimer() {
+            var t = atsReadTimer();
+            var timerEl = document.getElementById('login-busy-timer');
+            var phaseEl = document.getElementById('login-busy-phases');
+            if (!t || !timerEl) return;
+            var live = t.busyAt ? (Date.now() - t.busyAt) : 0;
+            timerEl.textContent = atsFormatMs(atsTimerTotals(t));
+            if (phaseEl) phaseEl.textContent = atsPhaseText(t, live);
+        }
+
+        function atsStartLoginTick() {
+            atsPaintLoginTimer();
+            if (atsTimerTick) return;
+            atsTimerTick = setInterval(atsPaintLoginTimer, 100);
+        }
+
+        function atsCloseOpenPhase(t) {
+            if (!t || !t.busyAt || !t.phase) return t;
+            var elapsed = Date.now() - t.busyAt;
+            if (t.phase === 'login') t.loginMs = (t.loginMs || 0) + elapsed;
+            else if (t.phase === 'verify') t.verifyMs = (t.verifyMs || 0) + elapsed;
+            t.busyAt = null;
+            return t;
+        }
+
         function showLoginBusy(msg) {
             var el = document.getElementById('login-busy');
             var text = document.getElementById('login-busy-msg');
             if (text && msg) text.textContent = msg;
             if (el) el.classList.add('is-on');
             try { sessionStorage.setItem('atsLoginNav', '1'); } catch (e) { }
+
+            var t = atsReadTimer() || {};
+            var isVerify = msg && msg.toLowerCase().indexOf('verif') >= 0;
+            if (isVerify) {
+                if (t.phase === 'login') t = atsCloseOpenPhase(t);
+                if (t.phase !== 'verify' || !t.busyAt) {
+                    t.phase = 'verify';
+                    t.busyAt = Date.now();
+                }
+            } else {
+                t = { loginMs: null, verifyMs: null, homeMs: null, phase: 'login', busyAt: Date.now() };
+            }
+            if (!t.busyAt) t.busyAt = Date.now();
+            atsWriteTimer(t);
+            atsStartLoginTick();
             return true;
         }
 
@@ -191,7 +292,14 @@
         document.addEventListener("DOMContentLoaded", function () {
             try {
                 if (!document.getElementById('pane_mfa')) {
-                    sessionStorage.removeItem('atsLoginNav');
+                    atsClearTimer();
+                } else {
+                    var t = atsReadTimer();
+                    if (t && t.busyAt) {
+                        t = atsCloseOpenPhase(t);
+                        t.phase = 'mfaWait';
+                        atsWriteTimer(t);
+                    }
                 }
             } catch (e) { }
 
