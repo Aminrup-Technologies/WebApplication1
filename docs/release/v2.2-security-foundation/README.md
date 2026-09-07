@@ -10,6 +10,10 @@ This folder is the Windows/IIS sign-off pack. Application code is frozen. Fill t
 
 | File | Purpose |
 | --- | --- |
+| `README.md` | Release card |
+| `RELEASE_NOTES.md` | Consolidation + BLOCKED verdict |
+| `CHANGELOG.md` | PR purpose / risk / UAT |
+| `MERGE_CHECKLIST.md` | Squash order (do not merge #103) |
 | `BUILD_EVIDENCE.md` | VS2015 Clean + Rebuild record |
 | `IIS_VALIDATION.md` | Login + three runtime pages |
 | `SQL_EVIDENCE.md` | Before/After SQL (Admin + overlay tables) |
