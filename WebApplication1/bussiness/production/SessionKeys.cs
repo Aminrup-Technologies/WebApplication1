@@ -49,5 +49,8 @@ namespace WebApplication1.bussiness.production
         public const string MfaMethod = "MFA_METHOD";
         public const string MfaTotpEnroll = "MFA_TOTP_ENROLL";
         public const string MfaTotpSecret = "MFA_TOTP_SECRET";
+
+        // One-shot overlay after a successful login until homepage_v2 has painted
+        public const string ShowHomeLoader = "ATS_SHOW_HOME_LOADER";
     }
 }

@@ -16,9 +16,16 @@ namespace WebApplication1.gentelella_master.production
 
         protected int IdleTimeoutMinutes { get; set; } = 10; // Default fallback
         protected string AutoLogoutUrl { get; set; } = "https://atswork.in/"; // Default fallback
+        protected bool ShowHomeLoader;
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (Session[SessionKeys.ShowHomeLoader] != null)
+            {
+                ShowHomeLoader = true;
+                Session.Remove(SessionKeys.ShowHomeLoader);
+            }
+
             if (!IsPostBack)
             {
                 if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null || Session["USERNAME"] == null || Session["WORKMAN"] == null)

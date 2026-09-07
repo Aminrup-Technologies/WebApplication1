@@ -27,6 +27,27 @@
         .footer-text a:hover { color: #146c43; text-decoration: underline !important; }
         .mfa-qr { display: flex; justify-content: center; margin: 0 auto 0.75rem; }
         .mfa-manual { font-family: ui-monospace, Consolas, monospace; letter-spacing: 0.08em; word-break: break-all; }
+        .login-busy {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 100000;
+            background: rgba(255,255,255,0.92);
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .login-busy.is-on { display: flex; }
+        .login-busy-spin {
+            width: 42px;
+            height: 42px;
+            border: 4px solid #e9ecef;
+            border-top-color: #198754;
+            border-radius: 50%;
+            animation: login-busy-spin 0.8s linear infinite;
+        }
+        .login-busy p { margin-top: 14px; font-weight: 600; color: #2a3f54; }
+        @keyframes login-busy-spin { to { transform: rotate(360deg); } }
     </style>
 
     <script type="text/javascript">
@@ -36,6 +57,10 @@
     </script>
 </head>
 <body>
+    <div id="login-busy" class="login-busy" aria-live="polite" aria-busy="true">
+        <div class="login-busy-spin"></div>
+        <p id="login-busy-msg">Signing you in...</p>
+    </div>
     <form id="form1" runat="server">
         <div class="login-card">
             <asp:Image ID="Image1" runat="server" ImageUrl="~/erp_images/ats_translogo.png" Height="80" Width="80" CssClass="brand-logo" />
@@ -114,7 +139,7 @@
                         <label class="form-label small fw-bold text-muted">VERIFICATION CODE</label>
                         <asp:TextBox ID="txt_mfa_otp" runat="server" CssClass="form-control" MaxLength="6" placeholder="6-Digit code" autocomplete="one-time-code"></asp:TextBox>
                     </div>
-                    <asp:Button ID="btn_mfa_verify" runat="server" Text="VERIFY & CONTINUE" CssClass="btn btn-success w-100 mb-2" OnClick="btn_mfa_verify_Click" />
+                    <asp:Button ID="btn_mfa_verify" runat="server" Text="VERIFY & CONTINUE" CssClass="btn btn-success w-100 mb-2" OnClick="btn_mfa_verify_Click" OnClientClick="return showLoginBusy('Verifying...');" />
                     <asp:Button ID="btn_mfa_resend" runat="server" Text="RESEND CODE" CssClass="btn btn-outline-secondary w-100 mb-2" OnClick="btn_mfa_resend_Click" CausesValidation="false" />
                     <asp:Button ID="btn_mfa_back" runat="server" Text="BACK TO LOGIN" CssClass="btn btn-link w-100 text-muted" OnClick="btn_mfa_back_Click" CausesValidation="false" />
                 </div>
@@ -144,6 +169,15 @@
             PNotify.alert({ title: title, text: text, type: type, delay: 3000, addClass: 'pnotify-custom' });
         };
 
+        function showLoginBusy(msg) {
+            var el = document.getElementById('login-busy');
+            var text = document.getElementById('login-busy-msg');
+            if (text && msg) text.textContent = msg;
+            if (el) el.classList.add('is-on');
+            try { sessionStorage.setItem('atsLoginNav', '1'); } catch (e) { }
+            return true;
+        }
+
         function validateLogin() {
             const id = document.getElementById('<%= txt_loginid.ClientID %>').value;
             const pass = document.getElementById('<%= txt_password.ClientID %>').value;
@@ -151,10 +185,16 @@
                 notify('Wait!', 'Please enter both User ID and Password.', 'notice');
                 return false;
             }
-            return true;
+            return showLoginBusy('Signing you in...');
         }
 
         document.addEventListener("DOMContentLoaded", function () {
+            try {
+                if (!document.getElementById('pane_mfa')) {
+                    sessionStorage.removeItem('atsLoginNav');
+                }
+            } catch (e) { }
+
             const toggle = document.getElementById('pass-toggle');
             if (toggle) {
                 toggle.addEventListener('click', function () {
@@ -182,6 +222,7 @@
                 if (input.value !== digits) input.value = digits;
                 if (digits.length === 6 && !submitted && !btn.disabled) {
                     submitted = true;
+                    showLoginBusy('Verifying...');
                     btn.click();
                     return;
                 }
