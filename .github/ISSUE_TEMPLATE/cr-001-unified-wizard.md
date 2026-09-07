@@ -2,21 +2,24 @@
 name: CR-001 Unified Wizard
 about: JOBID V2.2 Change Request — single supervisor path through Create, IN, Permit, OUT, Close
 title: "[CR-001] Unified Wizard"
-labels: ["v2.2", "change-request"]
+labels: ["jobid-v2.2", "change-request"]
 ---
 
 # CR-001 — Unified Wizard
 
-**Status:** Draft only. Not approved for implementation.  
-**Baseline:** `v2.1.0-jobid-remediation` (`a75bb1e`)  
+**Status:** Phase A **Certified**. Do not re-implement Phase A.  
+**Phase A execution baseline:** `docs/CR-001_EXECUTION_BASELINE.md` (`238bd2f`)  
+**Planning spec:** `docs/CR-001_UNIFIED_SUPERVISOR_WIZARD_SPEC.md`  
+**JOBID baseline:** `v2.1.0-jobid-remediation` (`a75bb1e`)  
 **Source:** `docs/JOBID_V2.2_ROADMAP.md` Priority 1  
-**This template is a Change Request draft.** Opening it does not authorize code.
+**GitHub label:** `jobid-v2.2` (not Security Foundation `v2.2`)  
+**This template is for Phase B+ only.** Opening it does not authorize code. Security Foundation v2.2 is complete and is a different program.
 
 ## Background
 
-V2 supervisors move between separate pages (`create_jobid_v2`, `job_inpunch_v2`, `job_permitupload_v2`, `job_outpunch_v2`) plus the hub (`jobs_and_manpower_v2`). Remediation M1–M6 restored the frozen lifecycle on those pages. Field users still leave one screen and re-select the JOBID on the next.
+V2 supervisors move between separate pages (`create_jobid_v2`, `job_inpunch_v2`, `job_permitupload_v2`, `job_outpunch_v2`) plus the hub (`jobs_and_manpower_v2`). Remediation M1–M6 restored the frozen lifecycle. CR-001 **Phase A** shipped a presentation-only supervisor wizard shell and is **certified** at `238bd2f`.
 
-A unified wizard would present one path through the same steps without replacing the v2.1.0 state machine.
+This issue is **not** another Phase A. Use it only for Phase B (Create experience) or a later certified slice, still without replacing the v2.1.0 state machine.
 
 ## Business Objective
 
@@ -38,7 +41,8 @@ Let a supervisor complete Create → IN → Permit (including additional files) 
 - Replacing Close & Send with auto-close or a new “wizard complete” state.
 - Schema or stored-procedure changes.
 - Changing approval predicates (`JOB_Status='Out-Punch Done' AND EntryExit='Exit'`).
-- Implementation PRs until this CR is approved.
+- Re-implementing Phase A (shell already certified).
+- Implementation PRs until this Phase B+ CR is approved.
 
 ## Acceptance Criteria
 
@@ -48,7 +52,7 @@ Let a supervisor complete Create → IN → Permit (including additional files) 
 - [ ] Last OUT still opens Close & Send confirmation; Review Again does not close.
 - [ ] Closed jobs match the approval list; Pending OUT drops.
 - [ ] No new JOB states.
-- [ ] v2.1.0 tag `a75bb1e` is not rewritten.
+- [ ] Phase A baseline `238bd2f` is the start SHA; `v2.1.0-jobid-remediation` (`a75bb1e`) is not rewritten.
 
 ## UAT Impact
 

@@ -2,7 +2,7 @@
 name: CR-006 Permit Checklist
 about: JOBID V2.2 Change Request — remaining permit files UI without breaking M2 writes or M5 inbox
 title: "[CR-006] Permit Checklist"
-labels: ["v2.2", "change-request"]
+labels: ["jobid-v2.2", "change-request"]
 ---
 
 # CR-006 — Permit Checklist
@@ -10,6 +10,7 @@ labels: ["v2.2", "change-request"]
 **Status:** Draft only. Not approved for implementation.  
 **Baseline:** `v2.1.0-jobid-remediation` (`a75bb1e`)  
 **Source:** `docs/JOBID_V2.2_ROADMAP.md` Priority 2  
+**GitHub label:** `jobid-v2.2`. Security Foundation v2.2 is complete and is a different program.  
 **This template is a Change Request draft.** Opening it does not authorize code.
 
 ## Background

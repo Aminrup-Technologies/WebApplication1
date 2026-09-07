@@ -2,7 +2,7 @@
 name: CR-007 Reporting and Analytics
 about: JOBID V2.2 Change Request — reports and KPIs from existing JOB states, not new ones
 title: "[CR-007] Reporting and Analytics"
-labels: ["v2.2", "change-request"]
+labels: ["jobid-v2.2", "change-request"]
 ---
 
 # CR-007 — Reporting and Analytics
@@ -10,6 +10,7 @@ labels: ["v2.2", "change-request"]
 **Status:** Draft only. Not approved for implementation.  
 **Baseline:** `v2.1.0-jobid-remediation` (`a75bb1e`)  
 **Source:** `docs/JOBID_V2.2_ROADMAP.md` Priority 3 (Reporting, Analytics, Productivity KPIs)  
+**GitHub label:** `jobid-v2.2`. Security Foundation v2.2 is complete and is a different program.  
 **This template is a Change Request draft.** Opening it does not authorize code.
 
 ## Background
