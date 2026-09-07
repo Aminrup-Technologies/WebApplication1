@@ -784,6 +784,7 @@ namespace WebApplication1.bussiness.production
                                             ? photo
                                             : "No_Image.jpg";
 
+            Session[SessionKeys.ShowHomeLoader] = true;
             Response.Redirect("~/bussiness/production/homepage_v2.aspx", false);
             Context.ApplicationInstance.CompleteRequest();
         }

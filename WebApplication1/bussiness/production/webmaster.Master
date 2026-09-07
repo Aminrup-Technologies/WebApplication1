@@ -127,16 +127,37 @@
     <style type="text/css">
         #loader {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 9999;
-            background-color: rgba(0, 0, 0, 0); /* Transparent background */
+            inset: 0;
+            z-index: 100000;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        #loader .ats-spin {
+            width: 42px;
+            height: 42px;
+            border: 4px solid #e9ecef;
+            border-top-color: #198754;
+            border-radius: 50%;
+            animation: ats-spin 0.8s linear infinite;
+        }
+
+        #loader .ats-spin-msg {
+            margin-top: 14px;
+            font-weight: 600;
+            color: #2a3f54;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        @keyframes ats-spin {
+            to { transform: rotate(360deg); }
         }
 
         .loader img {
-            display: block;
-            margin: 0 auto;
+            display: none;
         }
 
         /* Desktop Only */
@@ -174,7 +195,8 @@
 
 <body class="nav-sm footer_fixed">
     <div id="loader">
-        <img src="../../erp_images/Hourglass.gif" alt="loadergif" />
+        <div class="ats-spin"></div>
+        <div class="ats-spin-msg"><%= ShowHomeLoader ? "Loading your workspace..." : "Loading..." %></div>
     </div>
 
     <div style="display: none;" id="content">
@@ -394,8 +416,30 @@
 
             <script type="text/javascript">
                 document.addEventListener("DOMContentLoaded", function () {
-                    document.getElementById('content').style.display = 'block';
-                    document.getElementById('loader').style.display = 'none';
+                    var fromLogin = <%= ShowHomeLoader ? "true" : "false" %>;
+                    try {
+                        if (sessionStorage.getItem('atsLoginNav') === '1') {
+                            fromLogin = true;
+                            sessionStorage.removeItem('atsLoginNav');
+                        }
+                    } catch (e) { }
+
+                    var revealed = false;
+                    function revealHome() {
+                        if (revealed) return;
+                        revealed = true;
+                        var content = document.getElementById('content');
+                        var loader = document.getElementById('loader');
+                        if (content) content.style.display = 'block';
+                        if (loader) loader.style.display = 'none';
+                    }
+
+                    if (fromLogin && document.readyState !== 'complete') {
+                        window.addEventListener('load', revealHome);
+                        setTimeout(revealHome, 12000);
+                    } else {
+                        revealHome();
+                    }
                 });
             </script>
 
