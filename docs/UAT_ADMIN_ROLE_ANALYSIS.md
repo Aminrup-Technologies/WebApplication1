@@ -3,9 +3,20 @@
 **Mode:** Database architecture audit + idempotent SQL generator.  
 **Branch:** `uat/security-foundation-v2.2`  
 **Date:** 2026-09-07  
-**Live UAT SQL from this agent:** not reachable (no `connections.config`, no `sqlcmd`). Schema below is reverse-engineered from application INSERT/SELECT. **Numeric Admin ids and menu counts must come from running `scripts/provision_admin_role.sql` on UAT with `@ApplyChanges = 0`.**
+**Live UAT SQL from this agent:** not reachable (no `connections.config`, no `sqlcmd`). Schema is reverse-engineered from application INSERT/SELECT. **UAT operator facts below are treated as verified.**
 
-Do not invent `EmpType_Value` or a new `tlb_EmployeePermissions` matrix. Reuse the catalog and menu profile that existing Admins already use.
+Do not invent `EmpType_Value` or a new `tlb_EmployeePermissions` matrix.
+
+### UAT discovery facts (authoritative)
+
+| Fact | Value |
+| --- | --- |
+| `Employee_Type = 'Admin'` in `tlb_emp_roles` | **Absent.** Do not insert one. |
+| Operational `UserRoleDB` | `ATS-OS` (preserve) |
+| Full-access `RolePermissionDB` | `OS-HR` (preserve; 31 visible menus) |
+| `AuthorizationService.IsAdmin()` | `Session USERTYPE` from `User_RoleType` only |
+| `UserRoleDB` | Presence-checked at login; **not** a runtime allow/deny value |
+| Apply script | `scripts/promote_uat_admin.sql` (not `provision_admin_role.sql`) |
 
 ## Phase 1 — Security tables
 
@@ -103,7 +114,7 @@ Multiple Admin profiles are possible (same `USERTYPE`, different menus). The mod
 | Switch User | Yes only if also Admin + allowlist/overlay | **Never** (`USERTYPE` gate) |
 | JOB360 / attendance chrome | Yes | Yes (module exception) |
 
-What must change for a chosen WorkmanSL to become a platform Admin: **`User_RoleType` → Admin**, **`UserRoleDB` → existing Admin `EmpType_Value`**, **`RolePermissionDB` → existing full-access profile**. Overlay grants are additive and optional.
+What must change for `J8` on this UAT: **`User_RoleType` → `Admin`**, **`Role_Permission` → copy of `RolePermissionDB` (`OS-HR`)**. Preserve `UserRoleDB = ATS-OS` and `RolePermissionDB = OS-HR`. Do not invent an Admin catalog id. Overlay grants stay in `scripts/uat_switch_user_canary.sql`, not this promotion.
 
 ## Phase 5 — Full-access menu profile
 
@@ -113,7 +124,7 @@ Fill from script Result 5:
 | --- | --- |
 | *(run script)* |  |
 
-Full-access = the `Emp_PermissionValue` with the **highest visible child count**, preferring the one already used by Active Admins.
+Full-access on this UAT is **`OS-HR` (31 visible menus)**. Do not assign a different profile.
 
 ## Phase 6 — Role mapping
 
@@ -121,7 +132,7 @@ Fill from script Result 6. Do not guess ids.
 
 | EmpType_Value | Employee_Type | Security Foundation |
 | --- | --- | --- |
-| *(live)* | `Admin` | `USERTYPE` gate |
+| *(absent)* | `Admin` | **No catalog row.** `USERTYPE` is still the string `Admin` on the employee row. |
 | *(live)* | `Office Staff` | JOB360/attendance only |
 | *(live)* | `Site Staff` | JOB create routing |
 | *(live)* | other labels | not privilege unless a page compares the string |
@@ -137,32 +148,131 @@ Do not insert catalog rows from the Admin provisioner. Grant employee overlay ro
 
 ## Phase 8 — Provisioning script
 
-`scripts/provision_admin_role.sql`
+**Apply path:** `scripts/promote_uat_admin.sql`
 
-1. Run with `@ApplyChanges = 0` (default). Capture results 1–8 and `DERIVED`.
-2. Confirm `@WorkmanSL` (default `J8`) exists and is the intended UAT admin.
-3. Confirm `SwitchUserAuthorizedUsers` in `Web.config` still lists that WorkmanSL (config, not SQL).
-4. Set `@ApplyChanges = 1` and re-run. Duplicate execution is a no-op (`UPDATE` predicates + `NOT EXISTS` overlay inserts).
-5. Recycle IIS or wait 5 minutes if overlay grants were added (`PermissionRepository` cache).
+`scripts/provision_admin_role.sql` is discovery-only on this UAT. It will stop (or invent, if forced) because there is no `Employee_Type='Admin'` catalog row. Do not run it with `@ApplyChanges = 1`.
 
-If `Employee_Type = 'Admin'` is missing from `tlb_emp_roles`, the script **stops**. It will not invent `EmpType_Value` unless you set `@CreateMissingAdminRole = 1` and supply `@NewAdminEmpTypeValue` taken from an agreed catalog id.
+1. Run `promote_uat_admin.sql` with `@ApplyChanges = 0` (default). Review table/column checks, BEFORE, OS-HR menu count, PLANNED.
+2. Confirm `@WorkmanSL` is `J8` (or the intended UAT operator) and `WorkStatus = Active`.
+3. Confirm live `Web.config` `SwitchUserAuthorizedUsers` still lists that WorkmanSL (`Web.config.example` has `J8`).
+4. Set `@ApplyChanges = 1` and re-run. Second run is a no-op.
+5. Recycle IIS (or log out/in) so Session `USERTYPE` is rebuilt from `User_RoleType`.
+6. Execute the PR #102 canary (`scripts/uat_switch_user_canary.sql`) separately. This promotion does not write overlay rows.
 
 ## Phase 9 — Verification
 
-The same file prints `BEFORE`, `DERIVED`, `AFTER`, `AFTER-MENU`, `AFTER-OVERLAY`.
+`promote_uat_admin.sql` prints BEFORE, PLANNED, AFTER, VALIDATION.
 
 | Check | Expected |
 | --- | --- |
 | `User_RoleType` | `Admin` |
-| `UserRoleDB` | Derived Admin `EmpType_Value` |
-| `RolePermissionDB` | Derived full-access profile |
-| Overlay `USER_ADMIN` | Granted if overlay tables exist |
-| Overlay `SWITCH_USER` | Granted if overlay tables exist |
-| Duplicate execution | No extra overlay rows; no password/login mutation |
+| `UserRoleDB` | `ATS-OS` (unchanged) |
+| `RolePermissionDB` | `OS-HR` (unchanged) |
+| `Role_Permission` | `OS-HR` |
+| Overlay grants | Unchanged (not written here) |
+| Duplicate execution | 0 extra rows; login columns unchanged |
 | Login/session model | Unchanged (`ApplySessionFromEmployeeRow` still copies the three DB columns) |
 
-## Success / limits
+## Generated Script Verification
 
-This agent could not fill live Admin WorkmanSL / menu-count tables. UAT operators must paste Results 3–7 into this document after the dry run.
+**Script:** `scripts/promote_uat_admin.sql`  
+**Verified:** 2026-09-07 against `uat/security-foundation-v2.2`  
+**Ready for dry-run execution:** **PASS** (all static gates below passed)
 
-After apply, `J8` (or the chosen WorkmanSL) satisfies `AuthorizationService.IsAdmin()`, receives the same sidebar profile as existing Admins, and is overlay-ready for the SWITCH_USER canary without a parallel role model.
+### Table verification
+
+| Table | Exists | Evidence |
+| --- | --- | --- |
+| `tbl_Employee_Mustertable` | PASS | `Login.aspx.cs` `FetchEmployeeRowByLoginId` |
+| `tlb_emp_roles` | PASS | `manage_rolls.aspx.cs` INSERT/SELECT |
+| `tlb_emp_roles_permission` | PASS | `manage_rollsaccess.aspx.cs` INSERT (existence-checked only; not written) |
+| `tlb_EmployeePermissions` | PASS | `webmaster.Master.cs` `LoadPermissions` |
+
+No other base tables are referenced. `#TableCheck` / `#ColumnCheck` are session temp objects.
+
+### Column verification (`tbl_Employee_Mustertable`)
+
+| Column | Exists | Evidence | Script use |
+| --- | --- | --- | --- |
+| `User_RoleType` | PASS | `Login.aspx.cs` 149, 799 | SET to `Admin` |
+| `UserRoleDB` | PASS | `Login.aspx.cs` 149, 800 | Read/guard `ATS-OS`; not SET |
+| `RolePermissionDB` | PASS | `Login.aspx.cs` 149, 801 | Read/guard `OS-HR`; not SET |
+| `Role_Permission` | PASS | `emp_registration.aspx.cs` 495; `view_emp_mastertbldata.aspx.cs` 55 | SET equal to `RolePermissionDB` |
+| `WorkStatus` | PASS | `Login.aspx.cs` 148; Switch User search | Guard `Active` |
+| `LoginStatus` | PASS | `GrantAuthenticatedSession` UPDATE | Selected; not SET |
+| `LastLogin` | PASS | `GrantAuthenticatedSession` UPDATE | Selected; not SET |
+| `LastLogout` | PASS | `webmaster.Master.cs` 228 | Selected; not SET |
+| `PasswordExpiry` | PASS | `Login.aspx.cs` 148 | Selected; not SET |
+| `LoginPassword` | PASS | `Login.aspx.cs` 148, 221 | Presence only; not SET |
+| `WorkmanSL` / `LoginID` / `FullName` | PASS | `FetchEmployeeRowByLoginId` | Identity output |
+
+MFA columns (`MFAEnabled`, `MFAMethod`, …) are **not referenced**. Login treats them as optional (`IsMissingColumnException`). They are not in the SET list.
+
+`tlb_emp_roles.DeleteMode` is written by `manage_rolls.aspx.cs` 52 / 166. `tlb_EmployeePermissions.Emp_PermissionValue` / `IsVisible` are read by `webmaster.Master.cs`.
+
+### Repository compatibility
+
+| Check | Result |
+| --- | --- |
+| `Login.aspx.cs` `FetchEmployeeRowByLoginId` | PASS — still selects `User_RoleType`, `UserRoleDB`, `RolePermissionDB`. Script does not change the SELECT or password path. |
+| `ApplySessionFromEmployeeRow` | PASS — copies `User_RoleType` → `USERTYPE`, `UserRoleDB`, `RolePermissionDB`. `Role_Permission` is not sessioned. After re-login, `USERTYPE` becomes `Admin`; menu key stays `OS-HR`. |
+| `GrantAuthenticatedSession` | PASS — still owns `LastLogin` / `LoginStatus` / audit / `ATS_SavedID`. Script does not SET those columns. |
+| `AuthorizationService.IsAdmin()` | PASS — `USERTYPE == "Admin"` only (`AuthorizationService.cs` 79–82). Independent of `UserRoleDB`. |
+| `ImpersonationAudit.CanImpersonate()` | PASS — Admin USERTYPE **and** `SwitchUserAuthorizedUsers`. `Web.config.example` lists `J8`. Does not read `UserRoleDB`. |
+| Invented Admin `EmpType_Value` | PASS — none. No INSERT into `tlb_emp_roles`. |
+| `ATS-OS` preserved | PASS — apply guard requires `UserRoleDB = ATS-OS`. |
+| `OS-HR` preserved | PASS — apply guard requires `RolePermissionDB = OS-HR`. |
+| Idempotent | PASS — UPDATE only when `User_RoleType` or `Role_Permission` differs. |
+| Dry-run | PASS — `@ApplyChanges = 0` default; RETURN before UPDATE. |
+| Destructive SQL | PASS — no DROP/DELETE of base tables; temp `#` tables only. |
+
+### Security Foundation PR compatibility
+
+| PR | Compatibility |
+| --- | --- |
+| #89 Impersonation audit | PASS — `CanImpersonate` still Admin + CSV. Promotion supplies the Admin string. |
+| #91 Switch User | PASS — `ApplySessionFromEmployeeRow` unchanged; Switch User still does not call `GrantAuthenticatedSession`. |
+| #94 Role/permission audit | PASS — hybrid model unchanged: USERTYPE is privilege; `RolePermissionDB` is sidebar; `UserRoleDB` is presence. |
+| #95 AuthorizationService | PASS — `IsAdmin()` remains USERTYPE-only. |
+| #96 Overlay tables | PASS — this script does not INSERT overlay grants. Catalog may exist; unused here. |
+| #98 Permission Inspector | PASS — page gate is `IsAdmin()`. J8 can open it after re-login. `DescribeIdentity` uses `User_RoleType` from muster. |
+| #99 Access Analyzer | PASS — same Admin gate. Scan will show J8 as Admin with `OS-HR` menus. |
+| #100 Snapshot / migration bridge | PASS — payload still hashes identity + effective access. Promoting J8 **will** change J8’s `User_RoleType` and likely `SWITCH_USER` Granted vs a pre-promotion snapshot. Take the pre-canary snapshot **after** this promotion. Frozen #100 baseline is still the empty-overlay code baseline. |
+| #102 SWITCH_USER canary | PASS — dual-path unchanged. After promotion + re-login, `CanAccess("SWITCH_USER")` is true for `J8` via `USERTYPE+LEGACY_CONFIG` if live `SwitchUserAuthorizedUsers` still contains `J8`. Overlay INSERT remains a separate canary step. |
+
+### Runtime expectations (after apply + re-login)
+
+| Runtime | Expected |
+| --- | --- |
+| `Session["USERTYPE"]` | `Admin` |
+| `AuthorizationService.IsAdmin()` | `true` |
+| `CanAccess("SWITCH_USER")` | `true` (Admin + `SwitchUserAuthorizedUsers`=`J8`; overlay not required) |
+| `ImpersonationAudit.CanImpersonate()` | `true` (same two gates) |
+| Session `UserRoleDB` | `ATS-OS` |
+| Session `RolePermissionDB` | `OS-HR` (31 visible sidebar rows) |
+| Password / LastLogin / LoginStatus / LastLogout / PasswordExpiry / MFA | Unchanged by this script |
+
+### Remaining manual step
+
+1. Run dry-run (`@ApplyChanges = 0`). Confirm table/column EXISTS, target is Active, `UserRoleDB=ATS-OS`, `RolePermissionDB=OS-HR`, OS-HR visible count is 31.
+2. Review BEFORE vs PLANNED.
+3. Set `@ApplyChanges = 1` and re-run.
+4. Recycle IIS or log out/in.
+5. Confirm live `Web.config` still has `SwitchUserAuthorizedUsers=J8`.
+6. Execute PR #102 canary (`scripts/uat_switch_user_canary.sql`) on a **different** Admin who is not on the CSV if you need a clean overlay EffectiveAccess delta of 1.
+
+Do not re-save `J8` from `emp_registration` / employee edit while `tlb_emp_roles` has no `Admin` dropdown row — that UI would overwrite `User_RoleType` with the selected catalog label.
+
+### Success criteria (static)
+
+| Check | Required | Result |
+| --- | --- | --- |
+| Every referenced column exists | ✓ | PASS |
+| Every referenced table exists | ✓ | PASS |
+| No invented Admin role ID | ✓ | PASS |
+| ATS-OS preserved | ✓ | PASS |
+| OS-HR preserved | ✓ | PASS |
+| AuthorizationService compatibility | ✓ | PASS |
+| Idempotent | ✓ | PASS |
+| Dry-run supported | ✓ | PASS |
+| No login/session regression | ✓ | PASS |

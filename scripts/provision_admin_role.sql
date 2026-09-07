@@ -2,6 +2,11 @@
 -- Why: Provision platform Admin compatible with Security Foundation (#89–#102).
 -- What: Idempotent discovery + optional role/menu/employee/overlay provisioning.
 --
+-- UAT apply path is scripts/promote_uat_admin.sql.
+-- This file must not be applied on the current UAT: there is no
+-- Employee_Type='Admin' catalog row, and UserRoleDB/RolePermissionDB
+-- must stay ATS-OS / OS-HR. Use @ApplyChanges = 0 for discovery only.
+--
 -- This script does NOT invent EmpType_Value or Emp_PermissionValue.
 -- It reads live UAT rows, then (only if @ApplyChanges = 1) reuses those values.
 --
