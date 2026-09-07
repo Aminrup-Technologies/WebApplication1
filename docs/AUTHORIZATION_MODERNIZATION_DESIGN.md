@@ -1,10 +1,11 @@
-# Authorization Modernization — Technical Design (v2.3)
+# Authorization Modernization — Technical Design (v2.4)
 
-**Status:** PR A and PR B implemented. PRs C–E are planned, not built.  
+**Status:** PRs A, B, and C1 implemented. PR C CRUD and D–E are planned.  
 **Date:** 2026-09-07  
 **Authoritative audits:** `docs/ROLE_PERMISSION_ARCHITECTURE_AUDIT.md` (PR #94). Session identity remains as proven in PRs #86–#91.  
 **PR A:** `docs/AUTHORIZATION_SERVICE_PR_A.md`  
-**PR B:** `docs/AUTHORIZATION_OVERLAY_PR_B.md`
+**PR B:** `docs/AUTHORIZATION_OVERLAY_PR_B.md`  
+**PR C1:** `WebApplication1/bussiness/production/admin/security/PermissionInspector.md`
 
 ## Governance freeze
 
@@ -16,7 +17,7 @@ Do not change these production truths:
 | `USERTYPE` is the runtime privilege string | `AuthorizationService.IsAdmin()` is `USERTYPE == "Admin"` only. |
 | `RolePermissionDB` drives menu visibility | Master `LoadPermissions` is untouched. Overlay does not replace `tlb_EmployeePermissions`. |
 | `WORKMAN` allowlists stay | Config + hardcoded lists remain a compatibility layer. |
-| Existing pages stay as-is until explicitly migrated | PRs A and B have **zero** page edits. |
+| Existing pages stay as-is until explicitly migrated | PRs A, B, and C1 have **zero** edits to Login / Switch User / payroll / JOB360 / master |
 
 Do not replace the hybrid model. Build on top of it.
 
@@ -25,8 +26,9 @@ Do not replace the hybrid model. Build on top of it.
 | PR | Scope | This repo |
 | --- | --- | --- |
 | A | `AuthorizationService` wrapping today’s behavior | Done (`cursor/authorization-service-foundation-cf5b`) |
-| B | Overlay tables + `PermissionRepository` + cache + effective-permission wiring | **This change** |
-| C | Security Admin WebForms under `bussiness/production/admin/security/` | Not started |
+| B | Overlay tables + `PermissionRepository` + cache + effective-permission wiring | Done (`cursor/permission-overlay-infrastructure-cf5b`) |
+| C1 | Read-only Permission Inspector (`admin/security/PermissionInspector.aspx`) | **This change** |
+| C | Security Admin WebForms CRUD under `bussiness/production/admin/security/` | Not started |
 | D | Replace hardcoded `J8`/`A84`/… and config reads with `HasPermission` / `IsWorkmanAllowed`, keeping fallbacks | Not started |
 | E | Module migration: Switch User, Payroll, Attendance, JOB360, Administration | Not started |
 
@@ -47,6 +49,7 @@ Do not replace the hybrid model. Build on top of it.
 | `IsWorkmanAllowed(code)` | Overlay → config CSV → hardcoded WorkmanSL |
 | `HasPermission(code)` | Same as `CanAccess` |
 | `GetEffectivePermissions()` | Source tags: `USERTYPE`, `MODULE_EXCEPTION`, `GROUP`, `DIRECT`, `LEGACY_CONFIG`, `LEGACY_HARDCODED` |
+| `DescribeIdentity(...)` | Same gates for another employee; restores live Session (PR C1 inspector) |
 
 `CanAccess` does **not** short-circuit “if Admin then true”. That would give every Admin Switch User and payroll override, which production does not do.
 
@@ -77,6 +80,13 @@ Hardcoded WorkmanSL (J8, A84, K208, N21)
 ```
 
 `SWITCH_USER` overlay requires `USERTYPE == Admin` and not impersonating. Overlay must not let Office Staff impersonate.
+
+## Permission Inspector (PR C1)
+
+Direct URL: `~/bussiness/production/admin/security/PermissionInspector.aspx`  
+Gate: live `AuthorizationService.IsAdmin()` only. No menu item.
+
+Subject evaluation uses `DescribeIdentity` (same `CanAccess` order) and restores Session. Overlay health and cache peek are read-only `PermissionRepository` calls. Missing overlay tables show a warning and do not throw.
 
 ## What PR B does not do
 
