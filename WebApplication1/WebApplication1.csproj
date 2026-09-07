@@ -375,6 +375,7 @@
     <Content Include="bussiness\production\rpts\f29.aspx" />
     <Content Include="bussiness\production\rpts\tbttalk_rpt.aspx" />
     <Content Include="bussiness\production\searchemployee.aspx" />
+    <Content Include="bussiness\production\SwitchUser.aspx" />
     <Content Include="bussiness\production\csm_toolboxtalk.aspx" />
     <Content Include="bussiness\production\swap_jobdate.aspx" />
     <Content Include="bussiness\production\viewupdate_empmustertabledata.aspx" />
@@ -6021,6 +6022,13 @@
     </Compile>
     <Compile Include="bussiness\production\searchemployee.aspx.designer.cs">
       <DependentUpon>searchemployee.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\SwitchUser.aspx.cs">
+      <DependentUpon>SwitchUser.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\SwitchUser.aspx.designer.cs">
+      <DependentUpon>SwitchUser.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\csm_toolboxtalk.aspx.cs">
       <DependentUpon>csm_toolboxtalk.aspx</DependentUpon>

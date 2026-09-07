@@ -1,9 +1,10 @@
 /*
  * WHEN: 2026-09-06
- * WHY: PR #88 impersonation audit foundation. Switch User UI is not in this change.
+ * WHY: PR #89 impersonation audit foundation; PR #90 adds the restore-gate helper.
  * WHAT: Dedicated IMPERSONATE / IMPERSONATE_RETURN writers against tbl_UserLoginAudit (LoginResult),
- *       snapshot helpers for ORIGINAL_* Session keys, and IsImpersonating / CanImpersonate /
- *       CanReturnFromImpersonation guards. Existing login InsertLoginAudit is untouched.
+ *       snapshot helpers for ORIGINAL_* Session keys, IsOriginalIdentityCaptured (all six ORIGINAL_*
+ *       keys must be present), and IsImpersonating / CanImpersonate / CanReturnFromImpersonation guards.
+ *       Existing login InsertLoginAudit is untouched.
  */
 
 using System;
@@ -51,13 +52,38 @@ namespace WebApplication1.bussiness.production
             return IsWorkmanAuthorized(Read(session, SessionKeys.WorkmanSL));
         }
 
+        public static bool IsOriginalIdentityCaptured(HttpSessionState session)
+        {
+            if (session == null) return false;
+            return HasRequired(session, SessionKeys.OriginalUserID)
+                && HasRequired(session, SessionKeys.OriginalWorkmanSL)
+                && HasRequired(session, SessionKeys.OriginalUserName)
+                && HasRequired(session, SessionKeys.OriginalUserType)
+                && HasRequired(session, SessionKeys.OriginalUserRoleDB)
+                && HasRequired(session, SessionKeys.OriginalRolePermissionDB);
+        }
+
         public static bool CanReturnFromImpersonation(HttpSessionState session)
         {
             if (session == null) return false;
             if (!IsImpersonating(session)) return false;
-            if (string.IsNullOrWhiteSpace(Read(session, SessionKeys.OriginalUserID))) return false;
-            if (string.IsNullOrWhiteSpace(Read(session, SessionKeys.OriginalWorkmanSL))) return false;
-            return true;
+            return IsOriginalIdentityCaptured(session);
+        }
+
+        public static void StoreCorrelationId(HttpSessionState session, Guid correlationId)
+        {
+            if (session == null) return;
+            session[SessionKeys.ImpersonationCorrelation] = correlationId.ToString("D");
+        }
+
+        public static Guid GetCorrelationId(HttpSessionState session)
+        {
+            Guid parsed;
+            if (Guid.TryParse(Read(session, SessionKeys.ImpersonationCorrelation), out parsed))
+            {
+                return parsed;
+            }
+            return NewCorrelationId();
         }
 
         public static void CaptureOriginalIdentity(HttpSessionState session)
@@ -83,6 +109,7 @@ namespace WebApplication1.bussiness.production
             session.Remove(SessionKeys.OriginalUserType);
             session.Remove(SessionKeys.OriginalUserRoleDB);
             session.Remove(SessionKeys.OriginalRolePermissionDB);
+            session.Remove(SessionKeys.ImpersonationCorrelation);
         }
 
         public static void Write(
@@ -166,6 +193,11 @@ namespace WebApplication1.bussiness.production
                 if (parts[i].Trim().ToUpperInvariant() == needle) return true;
             }
             return false;
+        }
+
+        private static bool HasRequired(HttpSessionState session, string key)
+        {
+            return !string.IsNullOrWhiteSpace(Read(session, key));
         }
 
         private static string Read(HttpSessionState session, string key)

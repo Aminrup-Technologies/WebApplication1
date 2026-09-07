@@ -413,7 +413,7 @@ namespace WebApplication1.bussiness.production
                         </script>";
                         ClientScript.RegisterStartupScript(this.GetType(), "ShowExpiryNotification", PN_PasswordExpiry_script, false);
 
-                        if (psexpdays <= 15)
+                        if (psexpdays <= 15 && ShouldForcePasswordChange())
                         {
                             Response.Redirect("emp_pwdchange.aspx", false);
                             return;
@@ -788,7 +788,7 @@ namespace WebApplication1.bussiness.production
 
                             ClientScript.RegisterStartupScript(this.GetType(), "ShowExpiryNotification", PN_PasswordExpiry_script, false);
 
-                            if (psexpdays <= 15)
+                            if (psexpdays <= 15 && ShouldForcePasswordChange())
                             {
                                 Response.Redirect("emp_pwdchange.aspx", false);
                                 return;
@@ -991,6 +991,11 @@ namespace WebApplication1.bussiness.production
             }
         }
 
+
+        private bool ShouldForcePasswordChange()
+        {
+            return !ImpersonationAudit.IsImpersonating(Session);
+        }
 
         public void FindDaysLeft(string emp_outtime, ref Int32 day)
         {
