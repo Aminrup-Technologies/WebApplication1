@@ -3,7 +3,7 @@
 **Branch:** `uat/security-foundation-v2.2`  
 **Purpose:** Temporary Visual Studio + IIS UAT only. **Do not merge this branch.** Squash the reviewed PRs in order after UAT.  
 **Merge tip (stack complete):** `4eaed29` (`#102` merge)  
-**Docs on this branch:** UAT checklist + this report (see `git log -1`)  
+**Docs on this branch:** UAT checklist, this report, `docs/UAT_ADMIN_ROLE_ANALYSIS.md`, `docs/SECURITY_FOUNDATION_UAT_ORCHESTRATION.md`  
 **Base:** `Jul_to_Sep_2026_Suport_N_Dev_Works` at `820aacf` (this repo has no `main`; origin/HEAD points here)
 
 History was not rewritten or squashed. Each stacked PR was merged with a merge commit.
@@ -62,6 +62,10 @@ Login.aspx.cs auto-merged: `ApplySessionFromEmployeeRow` (#87) plus `Session[Ses
 ## Ready for IIS
 
 **PASS (structural).** Open `uat/security-foundation-v2.2` in Visual Studio 2015, Clean + Rebuild, then follow `SECURITY_FOUNDATION_UAT_CHECKLIST.md`.
+
+## UAT operator identity (live)
+
+`J8` / `ATS-OS` / `OS-HR` / `User_RoleType=Admin` on `atserp_uat`. Details: `docs/UAT_ADMIN_ROLE_ANALYSIS.md`. Overlay tables were missing as of 2026-09-07; run `scripts/create_permission_overlay.sql` before the canary INSERT.
 
 ## After UAT (do not merge this branch)
 

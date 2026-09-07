@@ -5,6 +5,8 @@
 
 The hashed snapshot is an **immutable pre-migration baseline**. Compare it to a post-migration snapshot **before** any overlay assignment, catalog edit, or CRUD work.
 
+**UAT identity (does not change snapshot rules):** operator `J8` is `User_RoleType=Admin`, `UserRoleDB=ATS-OS`, `RolePermissionDB=OS-HR`. Freeze the empty-overlay snapshot **after** `scripts/create_permission_overlay.sql` and **before** `scripts/uat_switch_user_canary.sql`.
+
 ## Acceptance
 
 Full snapshot files may differ (`GeneratedUtc=` is a header timestamp).

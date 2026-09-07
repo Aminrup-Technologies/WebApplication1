@@ -37,6 +37,8 @@ deny
 
 Until overlay assignments exist, allow/deny matches Admin + config (same snapshot payload as #100 for that set).
 
+**UAT identity:** `J8` is platform Admin (`User_RoleType`) with `UserRoleDB=ATS-OS` and `RolePermissionDB=OS-HR`. `Web.config.example` already lists `J8` on `SwitchUserAuthorizedUsers`. Empty overlay: `LegacyWouldAllow=true`, source `USERTYPE+LEGACY_CONFIG`. Overlay grant on `J8` yields `OVERLAY_DIRECT` with both flags true; it may **not** change snapshot EffectiveAccess. For exactly one EffectiveAccess change, use a **different** Admin who is not on the CSV.
+
 Office Staff never receives `SWITCH_USER`, even with an overlay row or a CSV entry.
 
 ## Canary telemetry (`DescribeIdentity`)

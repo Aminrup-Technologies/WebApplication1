@@ -3,7 +3,32 @@
 Single Visual Studio + IIS sign-off for the integrated stack on `uat/security-foundation-v2.2`.  
 **Do not merge that branch.** After this checklist is signed, squash the reviewed PRs in order (#89 → #91 → #94 → #95 → #96 → #98 → #99 → #100 → #102).
 
-Integration details: `docs/SECURITY_FOUNDATION_UAT_INTEGRATION.md`.
+Integration details: `docs/SECURITY_FOUNDATION_UAT_INTEGRATION.md`.  
+Orchestration status: `docs/SECURITY_FOUNDATION_UAT_ORCHESTRATION.md`.
+
+## UAT operator identity (live `atserp_uat`, 2026-09-07)
+
+| Field | Value |
+| --- | --- |
+| WorkmanSL | `J8` |
+| LoginID | ATS002112 |
+| FullName | ANUPAM SHARMA |
+| `User_RoleType` | `Admin` |
+| `UserRoleDB` | `ATS-OS` (do not change) |
+| `RolePermissionDB` | `OS-HR` (31/31 visible; do not change) |
+| Admin gate | `AuthorizationService.IsAdmin()` = Session `USERTYPE` from `User_RoleType` |
+| Overlay tables | **Missing until** `scripts/create_permission_overlay.sql` |
+| SQL already applied | `scripts/promote_uat_admin.sql` (no-op; already Admin) |
+
+`Web.config.example` lists `J8` on `SwitchUserAuthorizedUsers`. A clean snapshot **EffectiveAccess** delta of 1 requires a **different** Admin who is not on that CSV. Granting overlay to `J8` still proves Inspector `OVERLAY_DIRECT` while `LegacyWouldAllow` stays true.
+
+## Overlay deployment order
+
+1. `scripts/promote_uat_admin.sql` (done on UAT; dry-run then apply).
+2. Recycle IIS → login as `J8` → Switch User / Inspector / Analyzer.
+3. `scripts/create_permission_overlay.sql` (schema + catalog seeds only; no employee grants).
+4. Recycle IIS or wait 5 minutes → freeze empty-overlay snapshot.
+5. `scripts/uat_switch_user_canary.sql` INSERT → Inspector/Analyzer → DELETE rollback.
 
 ## Phase 1 — Environment
 
