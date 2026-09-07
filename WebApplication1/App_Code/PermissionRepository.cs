@@ -270,6 +270,30 @@ ORDER BY g.GroupCode", "GroupCode", "Name", "MemberCount", "PermissionCount");
             return unused;
         }
 
+        public static int CountDistinctWorkmansForCode(string permissionCode)
+        {
+            Dictionary<string, bool> unique = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+            AddWorkmansForCode(unique, GetDirectGrantInventory(), permissionCode);
+            AddWorkmansForCode(unique, GetGroupGrantInventory(), permissionCode);
+            return unique.Count;
+        }
+
+        private static void AddWorkmansForCode(Dictionary<string, bool> unique, DataTable table, string permissionCode)
+        {
+            if (unique == null || table == null || string.IsNullOrWhiteSpace(permissionCode)) return;
+            if (!table.Columns.Contains("WorkmanSL") || !table.Columns.Contains("PermissionCode")) return;
+            for (int i = 0; i < table.Rows.Count; i++)
+            {
+                object codeRaw = table.Rows[i]["PermissionCode"];
+                if (codeRaw == null || codeRaw == DBNull.Value) continue;
+                if (!string.Equals(codeRaw.ToString(), permissionCode, StringComparison.OrdinalIgnoreCase)) continue;
+                object workmanRaw = table.Rows[i]["WorkmanSL"];
+                if (workmanRaw == null || workmanRaw == DBNull.Value) continue;
+                string workman = workmanRaw.ToString().Trim();
+                if (workman.Length > 0) unique[workman] = true;
+            }
+        }
+
         private static void AddCodes(Dictionary<string, bool> used, DataTable table, string column)
         {
             if (table == null || !table.Columns.Contains(column)) return;

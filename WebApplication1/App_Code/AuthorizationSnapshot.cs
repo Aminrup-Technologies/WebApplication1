@@ -455,8 +455,7 @@ ORDER BY WorkmanSL, LoginID", new SqlParameter[0]);
         private static int GrantBucket(string source, bool granted)
         {
             if (!granted) return -1;
-            if (string.Equals(source, AuthorizationService.SourceDirect, StringComparison.OrdinalIgnoreCase)
-                || string.Equals(source, AuthorizationService.SourceGroup, StringComparison.OrdinalIgnoreCase))
+            if (AuthorizationService.IsOverlaySource(source))
             {
                 return 0;
             }
