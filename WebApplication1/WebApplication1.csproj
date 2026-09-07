@@ -378,6 +378,8 @@
     <Content Include="bussiness\production\SwitchUser.aspx" />
     <Content Include="bussiness\production\admin\security\PermissionInspector.aspx" />
     <Content Include="bussiness\production\admin\security\PermissionInspector.md" />
+    <Content Include="bussiness\production\admin\security\AccessAnalyzer.aspx" />
+    <Content Include="bussiness\production\admin\security\AccessAnalyzer.md" />
     <Content Include="bussiness\production\csm_toolboxtalk.aspx" />
     <Content Include="bussiness\production\swap_jobdate.aspx" />
     <Content Include="bussiness\production\viewupdate_empmustertabledata.aspx" />
@@ -6038,6 +6040,13 @@
     </Compile>
     <Compile Include="bussiness\production\admin\security\PermissionInspector.aspx.designer.cs">
       <DependentUpon>PermissionInspector.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="bussiness\production\admin\security\AccessAnalyzer.aspx.cs">
+      <DependentUpon>AccessAnalyzer.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bussiness\production\admin\security\AccessAnalyzer.aspx.designer.cs">
+      <DependentUpon>AccessAnalyzer.aspx</DependentUpon>
     </Compile>
     <Compile Include="bussiness\production\csm_toolboxtalk.aspx.cs">
       <DependentUpon>csm_toolboxtalk.aspx</DependentUpon>
