@@ -6,6 +6,10 @@
  * WHEN: 2026-09-06
  * WHY: Extract identity Session writes from GrantAuthenticatedSession so later Switch User can reuse them without duplicating keys.
  * WHAT: ApplySessionFromEmployeeRow assigns the same 15 login Session keys and clears MFA transients. Audit, LastLogin, LoginStatus, ATS_SavedID, and homepage_v2 redirect stay in GrantAuthenticatedSession. No behavior change.
+ *
+ * WHEN: 2026-09-06
+ * WHY: PR #90 Switch User must replay the same login Session builder and the same employee SELECT without copying SQL.
+ * WHAT: ApplySessionFromEmployeeRow is internal so SwitchUser can call it. FetchLoginUser delegates to FetchEmployeeRowByLoginId. SearchActiveEmployeesForSwitch is a parameterized Active-only search. GrantAuthenticatedSession side effects are unchanged.
  */
 
 using System;
@@ -133,6 +137,12 @@ namespace WebApplication1.bussiness.production
 
         private DataTable FetchLoginUser(string id)
         {
+            return FetchEmployeeRowByLoginId(dbcl, id);
+        }
+
+        internal static DataTable FetchEmployeeRowByLoginId(DB_Utility_OH4Y dbcl, string loginId)
+        {
+            if (dbcl == null) throw new ArgumentNullException("dbcl");
             string query = @"
                 SELECT TOP 1 
                     LoginID, LoginPassword, WorkStatus, DOR, PasswordExpiry, WorkmanSL, FirstName, FullName,
@@ -140,7 +150,56 @@ namespace WebApplication1.bussiness.production
                     WorkSite, Worksite_Code, SkillDesignation, SkillCategory, PrfPicFile, Email, MobileNo
                 FROM tbl_Employee_Mustertable WHERE LoginID = @LoginID";
 
-            return dbcl.SPreturn_dt(query, new SqlParameter[] { new SqlParameter("@LoginID", id) });
+            return dbcl.SPreturn_dt(query, new SqlParameter[] { new SqlParameter("@LoginID", loginId ?? "") });
+        }
+
+        internal static DataTable SearchActiveEmployeesForSwitch(DB_Utility_OH4Y dbcl, string workmanSL, string firstName, string fullName)
+        {
+            if (dbcl == null) throw new ArgumentNullException("dbcl");
+
+            List<string> filters = new List<string>();
+            filters.Add("WorkStatus = @WorkStatus");
+            List<SqlParameter> parameters = new List<SqlParameter>();
+            parameters.Add(new SqlParameter("@WorkStatus", "Active"));
+
+            if (!string.IsNullOrWhiteSpace(workmanSL))
+            {
+                filters.Add("WorkmanSL = @WorkmanSL");
+                parameters.Add(new SqlParameter("@WorkmanSL", workmanSL.Trim()));
+            }
+            if (!string.IsNullOrWhiteSpace(firstName))
+            {
+                filters.Add("FirstName LIKE @FirstName");
+                parameters.Add(new SqlParameter("@FirstName", ToContainsLike(firstName.Trim())));
+            }
+            if (!string.IsNullOrWhiteSpace(fullName))
+            {
+                filters.Add("FullName LIKE @FullName");
+                parameters.Add(new SqlParameter("@FullName", ToContainsLike(fullName.Trim())));
+            }
+
+            if (filters.Count == 1)
+            {
+                return new DataTable();
+            }
+
+            string query = @"
+                SELECT TOP 100
+                    WorkmanSL, FirstName, FullName, LoginID, WorkStatus, User_RoleType, WorkRegion, WorkCompany
+                FROM tbl_Employee_Mustertable
+                WHERE " + string.Join(" AND ", filters.ToArray()) + @"
+                ORDER BY FullName, WorkmanSL";
+
+            return dbcl.SPreturn_dt(query, parameters.ToArray());
+        }
+
+        private static string ToContainsLike(string value)
+        {
+            string escaped = (value ?? "")
+                .Replace("[", "[[]")
+                .Replace("%", "[%]")
+                .Replace("_", "[_]");
+            return "%" + escaped + "%";
         }
 
         private void PerformLogin(string id, string pass)
@@ -728,7 +787,7 @@ namespace WebApplication1.bussiness.production
             session.Remove(SessionKeys.MfaTotpSecret);
         }
 
-        private static void ApplySessionFromEmployeeRow(DataRow employee)
+        internal static void ApplySessionFromEmployeeRow(DataRow employee)
         {
             ClearMfaSession();
 
