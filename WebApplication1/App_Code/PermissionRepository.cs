@@ -3,7 +3,8 @@
  * WHY: Authorization modernization PR B. Overlay infrastructure behind AuthorizationService.
  * WHAT: Load the permission catalog; resolve group membership and direct grants for a WorkmanSL;
  *      cache snapshots in HttpRuntime.Cache (5-minute TTL). Missing tables fail closed (empty
- *      grant set). No page callers. Does not read tlb_EmployeePermissions (legacy menus).
+ *      grant set). Permission Inspector reads this API; it does not write grants.
+ *      Does not read tlb_EmployeePermissions (legacy menus).
  */
 
 using System;
@@ -97,6 +98,60 @@ namespace WebApplication1.bussiness.production
             return copy;
         }
 
+        public static bool IsRuntimeCacheAvailable()
+        {
+            return RuntimeCache() != null;
+        }
+
+        public static bool PeekSnapshotCached(string workmanSL)
+        {
+            if (string.IsNullOrWhiteSpace(workmanSL)) return false;
+            Cache cache = RuntimeCache();
+            if (cache == null) return false;
+            return cache[SnapshotKey(workmanSL.Trim())] != null;
+        }
+
+        public static DateTime GetSnapshotLoadedAtUtc(string workmanSL)
+        {
+            OverlaySnapshot snap = LoadSnapshot(workmanSL);
+            if (snap == null) return DateTime.MinValue;
+            return snap.LoadedAtUtc;
+        }
+
+        public static bool IsOverlaySchemaAvailable()
+        {
+            string cnn = ConnectionString();
+            if (string.IsNullOrEmpty(cnn)) return false;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(cnn))
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(@"
+SELECT CASE WHEN
+    OBJECT_ID(N'dbo.tlb_permissions', N'U') IS NOT NULL
+    AND OBJECT_ID(N'dbo.tlb_permission_groups', N'U') IS NOT NULL
+    AND OBJECT_ID(N'dbo.tlb_group_permissions', N'U') IS NOT NULL
+    AND OBJECT_ID(N'dbo.tlb_employee_group', N'U') IS NOT NULL
+    AND OBJECT_ID(N'dbo.tlb_employee_permissions', N'U') IS NOT NULL
+THEN 1 ELSE 0 END", conn))
+                    {
+                        object value = cmd.ExecuteScalar();
+                        if (value == null || value == DBNull.Value) return false;
+                        return Convert.ToInt32(value) == 1;
+                    }
+                }
+            }
+            catch (SqlException)
+            {
+                return false;
+            }
+            catch (ConfigurationErrorsException)
+            {
+                return false;
+            }
+        }
+
         public static void Invalidate(string workmanSL)
         {
             if (string.IsNullOrWhiteSpace(workmanSL)) return;
@@ -135,6 +190,7 @@ namespace WebApplication1.bussiness.production
                 OverlaySnapshot empty = new OverlaySnapshot();
                 empty.Codes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 empty.Groups = new List<string>();
+                empty.LoadedAtUtc = DateTime.UtcNow;
                 return empty;
             }
 
@@ -188,6 +244,7 @@ namespace WebApplication1.bussiness.production
             OverlaySnapshot snap = new OverlaySnapshot();
             snap.Codes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             snap.Groups = new List<string>();
+            snap.LoadedAtUtc = DateTime.UtcNow;
 
             string cnn = ConnectionString();
             if (string.IsNullOrEmpty(cnn)) return snap;
@@ -355,6 +412,7 @@ ORDER BY Module, PermissionCode", conn))
         {
             public Dictionary<string, string> Codes;
             public List<string> Groups;
+            public DateTime LoadedAtUtc;
         }
     }
 }

@@ -5,7 +5,8 @@
  * WHAT: Additive AuthorizationService. Overlay grants come from PermissionRepository
  *      (direct + group, 5-minute cache). SWITCH_USER still requires CanImpersonate
  *      or (Admin + overlay) so Office Staff cannot gain impersonation from an empty
- *      overlay catalog. IsAdmin() is USERTYPE == Admin only.
+ *      overlay catalog. IsAdmin() is USERTYPE == Admin only. DescribeIdentity evaluates
+ *      another employee through the same gates and restores the live Session.
  */
 
 using System;
@@ -158,6 +159,73 @@ namespace WebApplication1.bussiness.production
                 list.Add(Describe(session, codes[i]));
             }
             return list;
+        }
+
+        /// <summary>
+        /// Evaluate the canonical gates as if this employee were logged in (not impersonating).
+        /// Restores the live Session in finally so the inspector never leaks subject identity.
+        /// </summary>
+        public static void DescribeIdentity(
+            HttpSessionState session,
+            string userId,
+            string rolePermissionDb,
+            string userRoleDb,
+            string userName,
+            string workmanSL,
+            string userType,
+            out bool authenticated,
+            out bool admin,
+            out bool canImpersonate,
+            out bool payrollConfigAllowlist,
+            out IList<EffectivePermission> permissions)
+        {
+            authenticated = false;
+            admin = false;
+            canImpersonate = false;
+            payrollConfigAllowlist = false;
+            permissions = new List<EffectivePermission>();
+            if (session == null) return;
+
+            object oldUserId = session[SessionKeys.UserID];
+            object oldRolePermission = session[SessionKeys.RolePermissionDB];
+            object oldUserRole = session[SessionKeys.UserRoleDB];
+            object oldUserName = session[SessionKeys.UserName];
+            object oldWorkman = session[SessionKeys.WorkmanSL];
+            object oldUserType = session[SessionKeys.UserType];
+            object oldImpersonating = session[SessionKeys.IsImpersonating];
+            try
+            {
+                session[SessionKeys.UserID] = userId ?? "";
+                session[SessionKeys.RolePermissionDB] = rolePermissionDb ?? "";
+                session[SessionKeys.UserRoleDB] = userRoleDb ?? "";
+                session[SessionKeys.UserName] = userName ?? "";
+                session[SessionKeys.WorkmanSL] = workmanSL ?? "";
+                session[SessionKeys.UserType] = userType ?? "";
+                session.Remove(SessionKeys.IsImpersonating);
+
+                authenticated = IsAuthenticated(session);
+                admin = IsAdmin(session);
+                canImpersonate = ImpersonationAudit.CanImpersonate(session);
+                payrollConfigAllowlist = IsWorkmanOnConfigAllowlist(session, AuthorizationFeatureCodes.PayrollOverride);
+                permissions = GetEffectivePermissions(session);
+            }
+            finally
+            {
+                RestoreSessionValue(session, SessionKeys.UserID, oldUserId);
+                RestoreSessionValue(session, SessionKeys.RolePermissionDB, oldRolePermission);
+                RestoreSessionValue(session, SessionKeys.UserRoleDB, oldUserRole);
+                RestoreSessionValue(session, SessionKeys.UserName, oldUserName);
+                RestoreSessionValue(session, SessionKeys.WorkmanSL, oldWorkman);
+                RestoreSessionValue(session, SessionKeys.UserType, oldUserType);
+                RestoreSessionValue(session, SessionKeys.IsImpersonating, oldImpersonating);
+            }
+        }
+
+        private static void RestoreSessionValue(HttpSessionState session, string key, object previous)
+        {
+            if (session == null || string.IsNullOrEmpty(key)) return;
+            if (previous == null) session.Remove(key);
+            else session[key] = previous;
         }
 
         private static EffectivePermission Describe(HttpSessionState session, string code)
