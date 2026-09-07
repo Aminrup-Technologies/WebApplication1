@@ -1,0 +1,326 @@
+/*
+ * WHEN: 2026-09-07
+ * WHY: Authorization modernization PR A. Wrap the hybrid Session / USERTYPE / WORKMAN model
+ *      documented in docs/ROLE_PERMISSION_ARCHITECTURE_AUDIT.md without changing any page.
+ * WHAT: Additive AuthorizationService. Overlay tables are not queried (PR B). SWITCH_USER
+ *      delegates to ImpersonationAudit.CanImpersonate so Admin+allowlist behavior cannot drift.
+ *      IsAdmin() is USERTYPE == Admin only (Office Staff is a module exception, not platform admin).
+ */
+
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Web;
+using System.Web.SessionState;
+
+namespace WebApplication1.bussiness.production
+{
+    public sealed class EffectivePermission
+    {
+        public string Code { get; set; }
+        public bool Granted { get; set; }
+        public string Source { get; set; }
+        public string Detail { get; set; }
+    }
+
+    public static class AuthorizationFeatureCodes
+    {
+        public const string SwitchUser = "SWITCH_USER";
+        public const string PayrollOverride = "PAYROLL_OVERRIDE";
+        public const string Job360Override = "JOB360_OVERRIDE";
+        public const string AttendanceOverride = "ATTENDANCE_OVERRIDE";
+        public const string ExportPayroll = "EXPORT_PAYROLL";
+        public const string UserAdmin = "USER_ADMIN";
+
+        public const string LegacyPayrollDashboard = "LEGACY_PAYROLL_DASHBOARD";
+        public const string LegacyAttachManpower = "LEGACY_ATTACH_MANPOWER";
+        public const string LegacyExpenseHeads = "LEGACY_EXPENSE_HEADS";
+    }
+
+    public static class AuthorizationService
+    {
+        public const string SourceUserType = "USERTYPE";
+        public const string SourceGroup = "GROUP";
+        public const string SourceDirect = "DIRECT";
+        public const string SourceLegacyConfig = "LEGACY_CONFIG";
+        public const string SourceLegacyHardcoded = "LEGACY_HARDCODED";
+        public const string SourceModuleException = "MODULE_EXCEPTION";
+        public const string SourceNone = "NONE";
+
+        public const string OfficeStaffUserType = "Office Staff";
+
+        public static bool IsAuthenticated()
+        {
+            return IsAuthenticated(CurrentSession());
+        }
+
+        public static bool IsAuthenticated(HttpSessionState session)
+        {
+            if (session == null) return false;
+            return HasValue(session, SessionKeys.UserID)
+                && HasValue(session, SessionKeys.RolePermissionDB)
+                && HasValue(session, SessionKeys.UserRoleDB)
+                && HasValue(session, SessionKeys.UserName)
+                && HasValue(session, SessionKeys.WorkmanSL);
+        }
+
+        public static bool IsAdmin()
+        {
+            return IsAdmin(CurrentSession());
+        }
+
+        public static bool IsAdmin(HttpSessionState session)
+        {
+            if (session == null) return false;
+            return string.Equals(Read(session, SessionKeys.UserType), ImpersonationAudit.AdminUserType, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static bool HasPermission(string code)
+        {
+            return HasPermission(CurrentSession(), code);
+        }
+
+        public static bool HasPermission(HttpSessionState session, string code)
+        {
+            return CanAccess(session, code);
+        }
+
+        public static bool CanAccess(string feature)
+        {
+            return CanAccess(CurrentSession(), feature);
+        }
+
+        public static bool CanAccess(HttpSessionState session, string feature)
+        {
+            if (string.IsNullOrWhiteSpace(feature)) return false;
+            if (!IsAuthenticated(session)) return false;
+
+            string code = feature.Trim();
+
+            if (string.Equals(code, AuthorizationFeatureCodes.SwitchUser, StringComparison.OrdinalIgnoreCase))
+            {
+                return ImpersonationAudit.CanImpersonate(session);
+            }
+
+            if (HasOverlayPermission(session, code)) return true;
+            if (IsWorkmanOnConfigAllowlist(session, code)) return true;
+            if (IsWorkmanOnHardcodedList(session, code)) return true;
+            if (MatchesModuleException(session, code)) return true;
+            return false;
+        }
+
+        public static bool IsWorkmanAllowed(string code)
+        {
+            return IsWorkmanAllowed(CurrentSession(), code);
+        }
+
+        public static bool IsWorkmanAllowed(HttpSessionState session, string code)
+        {
+            if (session == null || string.IsNullOrWhiteSpace(code)) return false;
+            if (HasOverlayPermission(session, code)) return true;
+            if (IsWorkmanOnConfigAllowlist(session, code)) return true;
+            return IsWorkmanOnHardcodedList(session, code);
+        }
+
+        public static IList<EffectivePermission> GetEffectivePermissions()
+        {
+            return GetEffectivePermissions(CurrentSession());
+        }
+
+        public static IList<EffectivePermission> GetEffectivePermissions(HttpSessionState session)
+        {
+            List<EffectivePermission> list = new List<EffectivePermission>();
+            string[] codes = new string[]
+            {
+                AuthorizationFeatureCodes.SwitchUser,
+                AuthorizationFeatureCodes.PayrollOverride,
+                AuthorizationFeatureCodes.Job360Override,
+                AuthorizationFeatureCodes.AttendanceOverride,
+                AuthorizationFeatureCodes.ExportPayroll,
+                AuthorizationFeatureCodes.UserAdmin,
+                AuthorizationFeatureCodes.LegacyPayrollDashboard,
+                AuthorizationFeatureCodes.LegacyAttachManpower,
+                AuthorizationFeatureCodes.LegacyExpenseHeads
+            };
+
+            for (int i = 0; i < codes.Length; i++)
+            {
+                list.Add(Describe(session, codes[i]));
+            }
+            return list;
+        }
+
+        private static EffectivePermission Describe(HttpSessionState session, string code)
+        {
+            EffectivePermission item = new EffectivePermission();
+            item.Code = code;
+            item.Granted = false;
+            item.Source = SourceNone;
+            item.Detail = "";
+
+            if (!IsAuthenticated(session))
+            {
+                item.Detail = "Not authenticated.";
+                return item;
+            }
+
+            if (string.Equals(code, AuthorizationFeatureCodes.SwitchUser, StringComparison.OrdinalIgnoreCase))
+            {
+                bool granted = ImpersonationAudit.CanImpersonate(session);
+                item.Granted = granted;
+                if (granted)
+                {
+                    item.Source = SourceUserType + "+" + SourceLegacyConfig;
+                    item.Detail = "USERTYPE=Admin and SwitchUserAuthorizedUsers.";
+                }
+                else if (ImpersonationAudit.IsImpersonating(session))
+                {
+                    item.Detail = "Already impersonating.";
+                }
+                else if (!IsAdmin(session))
+                {
+                    item.Source = SourceUserType;
+                    item.Detail = "USERTYPE is not Admin.";
+                }
+                else
+                {
+                    item.Source = SourceLegacyConfig;
+                    item.Detail = "Not on SwitchUserAuthorizedUsers.";
+                }
+                return item;
+            }
+
+            if (HasOverlayPermission(session, code))
+            {
+                item.Granted = true;
+                item.Source = SourceDirect;
+                item.Detail = "Permission overlay (PR B).";
+                return item;
+            }
+
+            if (IsWorkmanOnConfigAllowlist(session, code))
+            {
+                item.Granted = true;
+                item.Source = SourceLegacyConfig;
+                item.Detail = ConfigKeyFor(code);
+                return item;
+            }
+
+            if (IsWorkmanOnHardcodedList(session, code))
+            {
+                item.Granted = true;
+                item.Source = SourceLegacyHardcoded;
+                item.Detail = "Hardcoded WorkmanSL list.";
+                return item;
+            }
+
+            if (MatchesModuleException(session, code))
+            {
+                item.Granted = true;
+                item.Source = SourceModuleException;
+                item.Detail = "USERTYPE Admin or Office Staff (module-local).";
+                return item;
+            }
+
+            item.Detail = "No matching overlay, config, hardcoded, or module exception.";
+            return item;
+        }
+
+        private static bool HasOverlayPermission(HttpSessionState session, string code)
+        {
+            if (session == null || string.IsNullOrWhiteSpace(code)) return false;
+            return false;
+        }
+
+        private static bool IsWorkmanOnConfigAllowlist(HttpSessionState session, string code)
+        {
+            string key = ConfigKeyFor(code);
+            if (string.IsNullOrEmpty(key)) return false;
+            return IsWorkmanInCsv(Read(session, SessionKeys.WorkmanSL), ConfigurationManager.AppSettings[key]);
+        }
+
+        private static bool IsWorkmanOnHardcodedList(HttpSessionState session, string code)
+        {
+            string workman = Read(session, SessionKeys.WorkmanSL);
+            if (string.IsNullOrWhiteSpace(workman)) return false;
+
+            if (string.Equals(code, AuthorizationFeatureCodes.ExportPayroll, StringComparison.OrdinalIgnoreCase)
+                || string.Equals(code, AuthorizationFeatureCodes.LegacyPayrollDashboard, StringComparison.OrdinalIgnoreCase))
+            {
+                return WorkmanEquals(workman, "J8");
+            }
+            if (string.Equals(code, AuthorizationFeatureCodes.LegacyAttachManpower, StringComparison.OrdinalIgnoreCase))
+            {
+                return WorkmanEquals(workman, "J8")
+                    || WorkmanEquals(workman, "A84")
+                    || WorkmanEquals(workman, "K208")
+                    || WorkmanEquals(workman, "N21");
+            }
+            if (string.Equals(code, AuthorizationFeatureCodes.LegacyExpenseHeads, StringComparison.OrdinalIgnoreCase))
+            {
+                return WorkmanEquals(workman, "J8")
+                    || WorkmanEquals(workman, "A84")
+                    || WorkmanEquals(workman, "K208");
+            }
+            return false;
+        }
+
+        private static bool MatchesModuleException(HttpSessionState session, string code)
+        {
+            if (!string.Equals(code, AuthorizationFeatureCodes.Job360Override, StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(code, AuthorizationFeatureCodes.AttendanceOverride, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+            if (IsAdmin(session)) return true;
+            return string.Equals(Read(session, SessionKeys.UserType), OfficeStaffUserType, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static string ConfigKeyFor(string code)
+        {
+            if (string.Equals(code, AuthorizationFeatureCodes.SwitchUser, StringComparison.OrdinalIgnoreCase))
+            {
+                return ImpersonationAudit.AuthorizedUsersAppSetting;
+            }
+            if (string.Equals(code, AuthorizationFeatureCodes.PayrollOverride, StringComparison.OrdinalIgnoreCase))
+            {
+                return "PayrollAuthorizedUsers";
+            }
+            return "";
+        }
+
+        private static bool IsWorkmanInCsv(string workmanSL, string csv)
+        {
+            if (string.IsNullOrWhiteSpace(workmanSL) || string.IsNullOrEmpty(csv)) return false;
+            string needle = workmanSL.Trim().ToUpperInvariant();
+            string[] parts = csv.Split(',');
+            for (int i = 0; i < parts.Length; i++)
+            {
+                if (parts[i].Trim().ToUpperInvariant() == needle) return true;
+            }
+            return false;
+        }
+
+        private static bool WorkmanEquals(string workman, string expected)
+        {
+            return string.Equals((workman ?? "").Trim(), expected, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static HttpSessionState CurrentSession()
+        {
+            if (HttpContext.Current == null) return null;
+            return HttpContext.Current.Session;
+        }
+
+        private static bool HasValue(HttpSessionState session, string key)
+        {
+            return !string.IsNullOrWhiteSpace(Read(session, key));
+        }
+
+        private static string Read(HttpSessionState session, string key)
+        {
+            if (session == null || session[key] == null) return "";
+            return session[key].ToString();
+        }
+    }
+}
