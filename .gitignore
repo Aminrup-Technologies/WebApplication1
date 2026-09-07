@@ -384,3 +384,8 @@ FodyWeavers.xsd
 /WebApplication1/appsettings.secrets.config
 /WebApplication1/connections.config
 /WebApplication1/Web.config
+
+# Track ERP release evidence packs (VisualStudio.gitignore [Rr]elease/ would hide them).
+!docs/release/
+!docs/release/**
+docs/release/**/artifacts/*.txt
