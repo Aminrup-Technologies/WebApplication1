@@ -74,6 +74,7 @@
                                 <asp:ListItem Text="User" Value="user"></asp:ListItem>
                                 <asp:ListItem Text="Legacy" Value="legacy"></asp:ListItem>
                                 <asp:ListItem Text="Overlay" Value="overlay"></asp:ListItem>
+                                <asp:ListItem Text="Compare" Value="compare"></asp:ListItem>
                             </asp:RadioButtonList>
                             <span style="margin-left: 16px;">
                                 <asp:Button ID="btn_csv" runat="server" Text="Export CSV" CssClass="btn btn-default btn-sm" OnClick="btn_csv_Click" />
@@ -267,6 +268,61 @@
                                 <h4>Orphan groups</h4>
                                 <div class="table-responsive">
                                     <asp:GridView ID="gv_orphans" runat="server" Width="100%" CssClass="table table-striped table-bordered table-sm" AutoGenerateColumns="true" ShowHeaderWhenEmpty="true" EmptyDataText="None"></asp:GridView>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </asp:Panel>
+
+            <asp:Panel ID="pnl_compare" runat="server" Visible="false">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Snapshot comparison</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <p class="text-muted">Compare two Access Analyzer snapshot files. Header timestamps may differ. Acceptance is payload SHA-256 equality and <strong>Changed effective permission count = 0</strong>.</p>
+                                <div class="form-group no-print">
+                                    <label>Before (immutable baseline)</label>
+                                    <asp:FileUpload ID="fu_snapshotBefore" runat="server" />
+                                </div>
+                                <div class="form-group no-print">
+                                    <label>After</label>
+                                    <asp:FileUpload ID="fu_snapshotAfter" runat="server" />
+                                </div>
+                                <div class="no-print">
+                                    <asp:Button ID="btn_compare" runat="server" Text="Compare snapshots" CssClass="btn btn-success btn-sm" OnClick="btn_compare_Click" />
+                                </div>
+                                <p>
+                                    <asp:Label ID="lbl_compareVerdict" runat="server" Font-Bold="true"></asp:Label>
+                                </p>
+                                <div class="table-responsive">
+                                    <asp:GridView ID="gv_compareMetrics" runat="server" Width="100%" CssClass="table table-striped table-bordered table-sm" AutoGenerateColumns="false" ShowHeaderWhenEmpty="true" EmptyDataText="Upload two snapshots to compare.">
+                                        <Columns>
+                                            <asp:BoundField DataField="Metric" HeaderText="Metric" />
+                                            <asp:BoundField DataField="Before" HeaderText="Before" />
+                                            <asp:BoundField DataField="After" HeaderText="After" />
+                                            <asp:BoundField DataField="Delta" HeaderText="Delta" />
+                                        </Columns>
+                                    </asp:GridView>
+                                </div>
+                                <h4>Changed authorization decisions</h4>
+                                <div class="table-responsive">
+                                    <asp:GridView ID="gv_compareChanges" runat="server" Width="100%" CssClass="table table-striped table-bordered table-sm" AutoGenerateColumns="false" ShowHeaderWhenEmpty="true" EmptyDataText="None.">
+                                        <Columns>
+                                            <asp:BoundField DataField="Kind" HeaderText="Kind" />
+                                            <asp:BoundField DataField="WorkmanSL" HeaderText="Employee" />
+                                            <asp:BoundField DataField="LoginID" HeaderText="Login ID" />
+                                            <asp:BoundField DataField="Code" HeaderText="Permission" />
+                                            <asp:BoundField DataField="BeforeGranted" HeaderText="Before granted" />
+                                            <asp:BoundField DataField="AfterGranted" HeaderText="After granted" />
+                                            <asp:BoundField DataField="BeforeSource" HeaderText="Before source" />
+                                            <asp:BoundField DataField="AfterSource" HeaderText="After source" />
+                                        </Columns>
+                                    </asp:GridView>
                                 </div>
                             </div>
                         </div>

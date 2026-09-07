@@ -41,6 +41,11 @@ namespace WebApplication1.bussiness.production.admin.security
                 return;
             }
 
+            if (Page.Form != null)
+            {
+                Page.Form.Enctype = "multipart/form-data";
+            }
+
             if (!IsPostBack)
             {
                 BindPermissionList();
@@ -138,6 +143,11 @@ namespace WebApplication1.bussiness.production.admin.security
                     table = PermissionRepository.GetDirectGrantInventory();
                     name = "overlay-direct-grants.csv";
                 }
+                else if (CurrentMode() == "compare")
+                {
+                    lbl_msg.Text = "Nothing to export. Compare two snapshots first.";
+                    return;
+                }
                 else
                 {
                     lbl_msg.Text = "Nothing to export. Run a report first.";
@@ -167,6 +177,56 @@ namespace WebApplication1.bussiness.production.admin.security
                 dbcl.WriteToFile("AccessAnalyzer snapshot failed: " + ex);
                 lbl_msg.Text = "Snapshot failed. Contact IT if this continues.";
             }
+        }
+
+        protected void btn_compare_Click(object sender, EventArgs e)
+        {
+            if (!EnsureAdmin()) return;
+            string beforeBody = ReadUpload(fu_snapshotBefore);
+            string afterBody = ReadUpload(fu_snapshotAfter);
+            if (beforeBody.Length == 0 || afterBody.Length == 0)
+            {
+                lbl_compareVerdict.Text = "Choose both a Before snapshot and an After snapshot.";
+                lbl_msg.Text = lbl_compareVerdict.Text;
+                return;
+            }
+
+            AuthorizationSnapshotComparison comparison = AuthorizationSnapshot.Compare(beforeBody, afterBody);
+            DataTable metrics = ComparisonMetricsTable(comparison);
+            gv_compareMetrics.DataSource = metrics;
+            gv_compareMetrics.DataBind();
+
+            DataTable changes = ComparisonChangesTable(comparison);
+            gv_compareChanges.DataSource = changes;
+            gv_compareChanges.DataBind();
+            Session["AnalyzerExport"] = changes;
+            Session["AnalyzerExportName"] = "authorization-snapshot-diff.csv";
+
+            if (!string.IsNullOrEmpty(comparison.Error))
+            {
+                lbl_compareVerdict.Text = comparison.Error;
+            }
+            else if (comparison.ChangedEffectivePermissionCount > 0)
+            {
+                lbl_compareVerdict.Text = "FAIL: Changed effective permission count = "
+                    + comparison.ChangedEffectivePermissionCount.ToString()
+                    + ". Stop and investigate before merging or starting the next PR.";
+            }
+            else if (comparison.SourceOnlyChangeCount > 0)
+            {
+                lbl_compareVerdict.Text = "FAIL: effective access is unchanged, but "
+                    + comparison.SourceOnlyChangeCount.ToString()
+                    + " source/display row(s) differ. Stop and investigate before PR E.";
+            }
+            else if (!comparison.PayloadShaEqual)
+            {
+                lbl_compareVerdict.Text = "FAIL: payload SHA-256 differs with no row diffs. Re-download both snapshots.";
+            }
+            else
+            {
+                lbl_compareVerdict.Text = "PASS: Changed effective permission count = 0. Payload SHA-256 matches.";
+            }
+            lbl_msg.Text = lbl_compareVerdict.Text;
         }
 
         protected void btn_print_Click(object sender, EventArgs e)
@@ -403,6 +463,7 @@ ORDER BY FullName, WorkmanSL", new SqlParameter[0]);
             pnl_user.Visible = mode == "user";
             pnl_legacy.Visible = mode == "legacy";
             pnl_overlay.Visible = mode == "overlay";
+            pnl_compare.Visible = mode == "compare";
             if (mode == "overlay") BindOverlayAdoption();
         }
 
@@ -589,6 +650,78 @@ ORDER BY FullName, WorkmanSL", new SqlParameter[0]);
             Response.Write(sb.ToString());
             Response.Flush();
             Context.ApplicationInstance.CompleteRequest();
+        }
+
+        private static string ReadUpload(FileUpload upload)
+        {
+            if (upload == null || !upload.HasFile) return "";
+            using (System.IO.StreamReader reader = new System.IO.StreamReader(upload.FileContent, Encoding.UTF8))
+            {
+                return reader.ReadToEnd();
+            }
+        }
+
+        private static DataTable ComparisonMetricsTable(AuthorizationSnapshotComparison comparison)
+        {
+            DataTable table = new DataTable();
+            table.Columns.Add("Metric");
+            table.Columns.Add("Before");
+            table.Columns.Add("After");
+            table.Columns.Add("Delta");
+            AuthorizationSnapshotMetrics before = comparison != null ? comparison.BeforeMetrics : new AuthorizationSnapshotMetrics();
+            AuthorizationSnapshotMetrics after = comparison != null ? comparison.AfterMetrics : new AuthorizationSnapshotMetrics();
+            AddMetric(table, "Active employees scanned", before.EmployeesScanned, after.EmployeesScanned);
+            AddMetric(table, "Permissions evaluated", before.PermissionsEvaluated, after.PermissionsEvaluated);
+            AddMetric(table, "Allowed decisions", before.Allowed, after.Allowed);
+            AddMetric(table, "Denied decisions", before.Denied, after.Denied);
+            AddMetric(table, "Legacy Config grants", before.LegacyConfigGrants, after.LegacyConfigGrants);
+            AddMetric(table, "Legacy Hardcoded grants", before.LegacyHardcodedGrants, after.LegacyHardcodedGrants);
+            AddMetric(table, "Module grants", before.ModuleGrants, after.ModuleGrants);
+            AddMetric(table, "Overlay grants", before.OverlayGrants, after.OverlayGrants);
+            AddMetric(table, "Changed effective permission count", 0, comparison != null ? comparison.ChangedEffectivePermissionCount : 0);
+            return table;
+        }
+
+        private static void AddMetric(DataTable table, string metric, int before, int after)
+        {
+            DataRow row = table.NewRow();
+            row["Metric"] = metric;
+            row["Before"] = before.ToString();
+            row["After"] = after.ToString();
+            row["Delta"] = (after - before).ToString();
+            table.Rows.Add(row);
+        }
+
+        private static DataTable ComparisonChangesTable(AuthorizationSnapshotComparison comparison)
+        {
+            DataTable table = new DataTable();
+            table.Columns.Add("Kind");
+            table.Columns.Add("WorkmanSL");
+            table.Columns.Add("LoginID");
+            table.Columns.Add("Code");
+            table.Columns.Add("BeforeGranted");
+            table.Columns.Add("AfterGranted");
+            table.Columns.Add("BeforeSource");
+            table.Columns.Add("AfterSource");
+            if (comparison == null || comparison.Changes == null) return table;
+            int limit = comparison.Changes.Count;
+            if (limit > 200) limit = 200;
+            for (int i = 0; i < limit; i++)
+            {
+                AuthorizationSnapshotChange change = comparison.Changes[i];
+                if (change == null) continue;
+                DataRow row = table.NewRow();
+                row["Kind"] = change.Kind;
+                row["WorkmanSL"] = change.WorkmanSL;
+                row["LoginID"] = change.LoginID;
+                row["Code"] = change.Code;
+                row["BeforeGranted"] = change.BeforeGranted;
+                row["AfterGranted"] = change.AfterGranted;
+                row["BeforeSource"] = change.BeforeSource;
+                row["AfterSource"] = change.AfterSource;
+                table.Rows.Add(row);
+            }
+            return table;
         }
 
         private static string Csv(string value)

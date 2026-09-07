@@ -19,6 +19,7 @@ CRUD stays blocked until those questions are cheap to answer.
 | User | What does this person have? | Inspector-style search + one `DescribeIdentity` |
 | Legacy | Who still wins via Config / Hardcoded / Module? | Same scan; filter winning sources |
 | Overlay | What is in the overlay DB? | `PermissionRepository` inventory only |
+| Compare | Do two snapshots have the same effective access? | `AuthorizationSnapshot.Compare` (payload SHA, not timestamps) |
 
 Source display uses `AuthorizationService.DisplaySource` (never inferred on the page):
 
@@ -65,7 +66,9 @@ After a scan: per-code counts of Direct / Group / Config / Hardcoded / Module / 
 
 ## Export
 
-CSV of the last permission, user, or legacy grid (plain text). Overlay CSV exports direct grants if no other grid was run. **Snapshot** downloads `AuthorizationSnapshot` (hash + every scanned Active employee’s effective permissions). Print uses a print stylesheet (no Excel).
+CSV of the last permission, user, legacy, or compare-diff grid (plain text). Overlay CSV exports direct grants if no other grid was run. **Snapshot** downloads `AuthorizationSnapshot` (hash + every scanned Active employee’s effective permissions). **Compare** uploads two snapshot files and reports payload SHA equality plus changed decisions. Print uses a print stylesheet (no Excel).
+
+Zero-drift acceptance: `Changed effective permission count = 0` and matching payload SHA-256. Procedure: `docs/AUTHORIZATION_MIGRATION_VALIDATION_PR_D.md`.
 
 ## Regression
 

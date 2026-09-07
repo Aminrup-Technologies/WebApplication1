@@ -48,6 +48,13 @@ namespace WebApplication1.bussiness.production.admin.security
         protected global::System.Web.UI.WebControls.GridView gv_groupGrants;
         protected global::System.Web.UI.WebControls.Label lbl_unused;
         protected global::System.Web.UI.WebControls.GridView gv_orphans;
+        protected global::System.Web.UI.WebControls.Panel pnl_compare;
+        protected global::System.Web.UI.WebControls.FileUpload fu_snapshotBefore;
+        protected global::System.Web.UI.WebControls.FileUpload fu_snapshotAfter;
+        protected global::System.Web.UI.WebControls.Button btn_compare;
+        protected global::System.Web.UI.WebControls.Label lbl_compareVerdict;
+        protected global::System.Web.UI.WebControls.GridView gv_compareMetrics;
+        protected global::System.Web.UI.WebControls.GridView gv_compareChanges;
         protected global::System.Web.UI.WebControls.GridView gv_matrix;
     }
 }

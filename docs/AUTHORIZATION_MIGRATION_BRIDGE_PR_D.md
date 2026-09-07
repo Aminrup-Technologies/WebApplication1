@@ -3,7 +3,7 @@
 **Goal:** Replace duplicated authorization *consumers* with `AuthorizationService.CanAccess`, keeping identical runtime behavior while overlay assignments are empty.  
 **Not in this PR:** Security Admin CRUD, SQL, Login, Session key model, module-semantics changes.
 
-**Snapshot:** `AuthorizationSnapshot.Generate` (SHA-256 over sorted Active-employee permission rows). Download from Access Analyzer **Snapshot**. This is the rollback baseline before CRUD.
+**Snapshot:** `AuthorizationSnapshot.Generate` (SHA-256 over sorted Active-employee permission rows). Download from Access Analyzer **Snapshot**. Treat the file as an **immutable baseline**. Compare it with Access Analyzer **Compare** before any overlay or CRUD work. Procedure and zero-drift gate: `docs/AUTHORIZATION_MIGRATION_VALIDATION_PR_D.md`.
 
 ## Validation matrix
 
@@ -61,3 +61,5 @@ WorkmanSL|LoginID|UserType|Code|Granted|Source|Display
 ```
 
 Hash is UTF-8 SHA-256 of the payload lines only (not the header). Cap 1500 Active employees, same as the Analyzer scan. Overlay snapshots are warmed first. Live Session is restored after each `DescribeIdentity`.
+
+`AuthorizationSnapshot.Compare` ignores `GeneratedUtc` and diffs sorted authorization rows. Acceptance: payload SHA equal and **Changed effective permission count = 0**.
