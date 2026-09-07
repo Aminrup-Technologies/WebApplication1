@@ -3,10 +3,11 @@
  * WHY: Authorization modernization PR A. Wrap the hybrid Session / USERTYPE / WORKMAN model
  *      documented in docs/ROLE_PERMISSION_ARCHITECTURE_AUDIT.md without changing any page.
  * WHAT: Additive AuthorizationService. Overlay grants come from PermissionRepository
- *      (direct + group, 5-minute cache). SWITCH_USER still requires CanImpersonate
- *      or (Admin + overlay) so Office Staff cannot gain impersonation from an empty
- *      overlay catalog. IsAdmin() is USERTYPE == Admin only. DescribeIdentity evaluates
- *      another employee through the same gates and restores the live Session.
+ *      (direct + group, 5-minute cache). SWITCH_USER is a dual-path canary: Admin
+ *      required, then overlay Direct/Group, else SwitchUserAuthorizedUsers. Office Staff
+ *      cannot gain impersonation. Empty overlay ⇒ same allow/deny as Admin+CSV.
+ *      IsAdmin() is USERTYPE == Admin only. DescribeIdentity evaluates another employee
+ *      through the same gates and restores the live Session.
  */
 
 using System;
@@ -23,6 +24,8 @@ namespace WebApplication1.bussiness.production
         public bool Granted { get; set; }
         public string Source { get; set; }
         public string Detail { get; set; }
+        public bool OverlayWouldAllow { get; set; }
+        public bool LegacyWouldAllow { get; set; }
     }
 
     public static class AuthorizationFeatureCodes
@@ -44,6 +47,8 @@ namespace WebApplication1.bussiness.production
         public const string SourceUserType = "USERTYPE";
         public const string SourceGroup = "GROUP";
         public const string SourceDirect = "DIRECT";
+        public const string SourceOverlayDirect = "OVERLAY_DIRECT";
+        public const string SourceOverlayGroup = "OVERLAY_GROUP";
         public const string SourceLegacyConfig = "LEGACY_CONFIG";
         public const string SourceLegacyHardcoded = "LEGACY_HARDCODED";
         public const string SourceModuleException = "MODULE_EXCEPTION";
@@ -98,20 +103,17 @@ namespace WebApplication1.bussiness.production
             if (!IsAuthenticated(session)) return false;
 
             string code = feature.Trim();
+            if (string.Equals(code, AuthorizationFeatureCodes.SwitchUser, StringComparison.OrdinalIgnoreCase))
+            {
+                return DescribeSwitchUser(session).Granted;
+            }
 
             if (MatchesLegacyModuleAuthority(session, code)) return true;
 
             string overlaySource;
             if (HasOverlayPermission(session, code, out overlaySource))
             {
-                if (string.Equals(code, AuthorizationFeatureCodes.SwitchUser, StringComparison.OrdinalIgnoreCase))
-                {
-                    if (IsAdmin(session) && !ImpersonationAudit.IsImpersonating(session)) return true;
-                }
-                else
-                {
-                    return true;
-                }
+                return true;
             }
 
             if (IsWorkmanOnConfigAllowlist(session, code)) return true;
@@ -174,8 +176,16 @@ namespace WebApplication1.bussiness.production
             {
                 return "Denied";
             }
-            if (string.Equals(source, SourceDirect, StringComparison.OrdinalIgnoreCase)) return "Direct";
-            if (string.Equals(source, SourceGroup, StringComparison.OrdinalIgnoreCase)) return "Group";
+            if (string.Equals(source, SourceDirect, StringComparison.OrdinalIgnoreCase)
+                || string.Equals(source, SourceOverlayDirect, StringComparison.OrdinalIgnoreCase))
+            {
+                return "Direct";
+            }
+            if (string.Equals(source, SourceGroup, StringComparison.OrdinalIgnoreCase)
+                || string.Equals(source, SourceOverlayGroup, StringComparison.OrdinalIgnoreCase))
+            {
+                return "Group";
+            }
             if (string.Equals(source, SourceLegacyConfig, StringComparison.OrdinalIgnoreCase)) return "Config";
             if (string.Equals(source, SourceLegacyHardcoded, StringComparison.OrdinalIgnoreCase)) return "Hardcoded";
             if (string.Equals(source, SourceModuleException, StringComparison.OrdinalIgnoreCase)) return "Module";
@@ -262,6 +272,13 @@ namespace WebApplication1.bussiness.production
             item.Granted = false;
             item.Source = SourceNone;
             item.Detail = "";
+            item.OverlayWouldAllow = false;
+            item.LegacyWouldAllow = false;
+
+            if (string.Equals(code, AuthorizationFeatureCodes.SwitchUser, StringComparison.OrdinalIgnoreCase))
+            {
+                return DescribeSwitchUser(session);
+            }
 
             if (!IsAuthenticated(session))
             {
@@ -272,33 +289,20 @@ namespace WebApplication1.bussiness.production
             if (MatchesLegacyModuleAuthority(session, code))
             {
                 item.Granted = true;
-                if (string.Equals(code, AuthorizationFeatureCodes.SwitchUser, StringComparison.OrdinalIgnoreCase))
-                {
-                    item.Source = SourceUserType + "+" + SourceLegacyConfig;
-                    item.Detail = "USERTYPE=Admin and SwitchUserAuthorizedUsers.";
-                }
-                else
-                {
-                    item.Source = SourceModuleException;
-                    item.Detail = "USERTYPE Admin or Office Staff (module-local).";
-                }
+                item.Source = SourceModuleException;
+                item.Detail = "USERTYPE Admin or Office Staff (module-local).";
                 return item;
             }
 
             string overlaySource;
             if (HasOverlayPermission(session, code, out overlaySource))
             {
-                bool overlayUsable = !string.Equals(code, AuthorizationFeatureCodes.SwitchUser, StringComparison.OrdinalIgnoreCase)
-                    || (IsAdmin(session) && !ImpersonationAudit.IsImpersonating(session));
-                if (overlayUsable)
-                {
-                    item.Granted = true;
-                    item.Source = string.Equals(overlaySource, PermissionRepository.SourceGroup, StringComparison.OrdinalIgnoreCase)
-                        ? SourceGroup
-                        : SourceDirect;
-                    item.Detail = "Overlay " + overlaySource + ".";
-                    return item;
-                }
+                item.Granted = true;
+                item.Source = string.Equals(overlaySource, PermissionRepository.SourceGroup, StringComparison.OrdinalIgnoreCase)
+                    ? SourceGroup
+                    : SourceDirect;
+                item.Detail = "Overlay " + overlaySource + ".";
+                return item;
             }
 
             if (IsWorkmanOnConfigAllowlist(session, code))
@@ -317,35 +321,81 @@ namespace WebApplication1.bussiness.production
                 return item;
             }
 
-            if (string.Equals(code, AuthorizationFeatureCodes.SwitchUser, StringComparison.OrdinalIgnoreCase))
-            {
-                if (ImpersonationAudit.IsImpersonating(session))
-                {
-                    item.Detail = "Already impersonating.";
-                }
-                else if (!IsAdmin(session))
-                {
-                    item.Source = SourceUserType;
-                    item.Detail = "USERTYPE is not Admin.";
-                }
-                else
-                {
-                    item.Source = SourceLegacyConfig;
-                    item.Detail = "Not on SwitchUserAuthorizedUsers and no overlay grant.";
-                }
-                return item;
-            }
-
             item.Detail = "No matching overlay, config, hardcoded, or module exception.";
             return item;
         }
 
+        private static EffectivePermission DescribeSwitchUser(HttpSessionState session)
+        {
+            EffectivePermission item = new EffectivePermission();
+            item.Code = AuthorizationFeatureCodes.SwitchUser;
+            item.Granted = false;
+            item.Source = SourceNone;
+            item.Detail = "";
+            item.OverlayWouldAllow = false;
+            item.LegacyWouldAllow = false;
+
+            string overlaySource;
+            item.OverlayWouldAllow = HasOverlayPermission(session, AuthorizationFeatureCodes.SwitchUser, out overlaySource);
+            item.LegacyWouldAllow = IsWorkmanOnConfigAllowlist(session, AuthorizationFeatureCodes.SwitchUser);
+
+            if (!IsAuthenticated(session))
+            {
+                item.Detail = "Not authenticated.";
+                return item;
+            }
+            if (ImpersonationAudit.IsImpersonating(session))
+            {
+                item.Detail = "Already impersonating.";
+                return item;
+            }
+            if (!IsAdmin(session))
+            {
+                item.Source = SourceUserType;
+                item.Detail = "USERTYPE is not Admin.";
+                return item;
+            }
+
+            if (item.OverlayWouldAllow)
+            {
+                item.Granted = true;
+                item.Source = string.Equals(overlaySource, PermissionRepository.SourceGroup, StringComparison.OrdinalIgnoreCase)
+                    ? SourceOverlayGroup
+                    : SourceOverlayDirect;
+                item.Detail = "Overlay " + overlaySource + " (SWITCH_USER canary). Config fallback still evaluated.";
+                return item;
+            }
+
+            if (item.LegacyWouldAllow)
+            {
+                item.Granted = true;
+                item.Source = SourceUserType + "+" + SourceLegacyConfig;
+                item.Detail = "USERTYPE=Admin and SwitchUserAuthorizedUsers.";
+                return item;
+            }
+
+            item.Source = SourceLegacyConfig;
+            item.Detail = "Not on SwitchUserAuthorizedUsers and no overlay grant.";
+            return item;
+        }
+
+        public static bool IsOverlaySource(string source)
+        {
+            return string.Equals(source, SourceDirect, StringComparison.OrdinalIgnoreCase)
+                || string.Equals(source, SourceGroup, StringComparison.OrdinalIgnoreCase)
+                || string.Equals(source, SourceOverlayDirect, StringComparison.OrdinalIgnoreCase)
+                || string.Equals(source, SourceOverlayGroup, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static bool SwitchUserDualPathMatches(EffectivePermission item, bool authenticated, bool admin)
+        {
+            if (item == null) return false;
+            bool expected = authenticated && admin && (item.OverlayWouldAllow || item.LegacyWouldAllow);
+            return item.Granted == expected;
+        }
+
         private static bool MatchesLegacyModuleAuthority(HttpSessionState session, string code)
         {
-            if (string.Equals(code, AuthorizationFeatureCodes.SwitchUser, StringComparison.OrdinalIgnoreCase))
-            {
-                return ImpersonationAudit.CanImpersonate(session);
-            }
             return MatchesModuleException(session, code);
         }
 

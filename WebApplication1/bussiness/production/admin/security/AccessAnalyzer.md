@@ -21,12 +21,14 @@ CRUD stays blocked until those questions are cheap to answer.
 | Overlay | What is in the overlay DB? | `PermissionRepository` inventory only |
 | Compare | Do two snapshots have the same effective access? | `AuthorizationSnapshot.Compare` (payload SHA, not timestamps) |
 
+**Overlay Canary Status** (always visible, read-only): `SWITCH_USER` dual-path health. Overlay grants from inventory, legacy grants from `SwitchUserAuthorizedUsers`, match % / divergences from `DescribeIdentity` after **Validate canary** or a Permission/Legacy scan. Divergences must stay 0.
+
 Source display uses `AuthorizationService.DisplaySource` (never inferred on the page):
 
 | Engine source | Display |
 | --- | --- |
-| `DIRECT` | Direct |
-| `GROUP` | Group |
+| `DIRECT` / `OVERLAY_DIRECT` | Direct |
+| `GROUP` / `OVERLAY_GROUP` | Group |
 | `LEGACY_CONFIG` | Config |
 | `LEGACY_HARDCODED` | Hardcoded |
 | `MODULE_EXCEPTION` | Module |

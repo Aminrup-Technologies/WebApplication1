@@ -49,7 +49,8 @@ Sources are `EffectivePermission.Source` from `AuthorizationService`, not inferr
 | Source tag | Meaning |
 | --- | --- |
 | `USERTYPE` | Platform administrator string |
-| `USERTYPE+LEGACY_CONFIG` | Switch User via `CanImpersonate` (Admin + `SwitchUserAuthorizedUsers`) |
+| `USERTYPE+LEGACY_CONFIG` | Switch User via Admin + `SwitchUserAuthorizedUsers` (legacy fallback) |
+| `OVERLAY_DIRECT` / `OVERLAY_GROUP` | Switch User overlay canary (Admin still required) |
 | `MODULE_EXCEPTION` | JOB360 / attendance Admin **or** Office Staff |
 | `GROUP` / `DIRECT` | Overlay |
 | `LEGACY_CONFIG` | `SwitchUserAuthorizedUsers` or `PayrollAuthorizedUsers` CSV |
@@ -64,7 +65,7 @@ Breakdown rows are added only when that layer actually contributed (or overlay l
 
 | Permission | Typical empty-overlay result |
 | --- | --- |
-| `SWITCH_USER` | `CanImpersonate` only (Admin + CSV, not impersonating) |
+| `SWITCH_USER` | Dual-path canary: Admin + (overlay Direct/Group **or** `SwitchUserAuthorizedUsers`). Telemetry: `OverlayWouldAllow`, `LegacyWouldAllow`. |
 | `PAYROLL_OVERRIDE` | `PayrollAuthorizedUsers` CSV |
 | `JOB360_OVERRIDE` | Admin or Office Staff |
 | `ATTENDANCE_OVERRIDE` | Admin or Office Staff |

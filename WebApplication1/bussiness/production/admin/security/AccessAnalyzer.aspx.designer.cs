@@ -14,6 +14,14 @@ namespace WebApplication1.bussiness.production.admin.security
         protected global::System.Web.UI.WebControls.Label lbl_kpiHardcoded;
         protected global::System.Web.UI.WebControls.Label lbl_kpiModule;
         protected global::System.Web.UI.WebControls.Label lbl_kpiScanned;
+        protected global::System.Web.UI.WebControls.Label lbl_canaryHealth;
+        protected global::System.Web.UI.WebControls.Label lbl_canaryOverlay;
+        protected global::System.Web.UI.WebControls.Label lbl_canaryLegacy;
+        protected global::System.Web.UI.WebControls.Label lbl_canaryMatch;
+        protected global::System.Web.UI.WebControls.Label lbl_canaryDivergences;
+        protected global::System.Web.UI.WebControls.Label lbl_canaryEvaluated;
+        protected global::System.Web.UI.WebControls.Button btn_validateCanary;
+        protected global::System.Web.UI.WebControls.GridView gv_canaryDivergences;
         protected global::System.Web.UI.WebControls.RadioButtonList rbl_mode;
         protected global::System.Web.UI.WebControls.Button btn_csv;
         protected global::System.Web.UI.WebControls.Button btn_snapshot;
