@@ -2,7 +2,8 @@
 
 **Branch:** `uat/security-foundation-v2.2`  
 **Purpose:** Temporary Visual Studio + IIS UAT only. **Do not merge this branch.** Squash the reviewed PRs in order after UAT.  
-**Tip commit (before this report):** `4eaed29`  
+**Merge tip (stack complete):** `4eaed29` (`#102` merge)  
+**Docs on this branch:** UAT checklist + this report (see `git log -1`)  
 **Base:** `Jul_to_Sep_2026_Suport_N_Dev_Works` at `820aacf` (this repo has no `main`; origin/HEAD points here)
 
 History was not rewritten or squashed. Each stacked PR was merged with a merge commit.
