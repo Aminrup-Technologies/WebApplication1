@@ -3,7 +3,7 @@
  * WHY: Authorization modernization PR B. Overlay infrastructure behind AuthorizationService.
  * WHAT: Load the permission catalog; resolve group membership and direct grants for a WorkmanSL;
  *      cache snapshots in HttpRuntime.Cache (5-minute TTL). Missing tables fail closed (empty
- *      grant set). Permission Inspector reads this API; it does not write grants.
+ *      grant set). Permission Inspector and Access Analyzer read this API; they do not write grants.
  *      Does not read tlb_EmployeePermissions (legacy menus).
  */
 
@@ -181,6 +181,237 @@ THEN 1 ELSE 0 END", conn))
                 }
             }
             return list;
+        }
+
+        public static void WarmSnapshots(IList<string> workmanSLs)
+        {
+            if (workmanSLs == null || workmanSLs.Count == 0) return;
+            Cache cache = RuntimeCache();
+            Dictionary<string, OverlaySnapshot> loaded = new Dictionary<string, OverlaySnapshot>(StringComparer.OrdinalIgnoreCase);
+            if (IsOverlaySchemaAvailable())
+            {
+                loaded = QueryAllSnapshots();
+            }
+
+            DateTime now = DateTime.UtcNow;
+            for (int i = 0; i < workmanSLs.Count; i++)
+            {
+                string workman = (workmanSLs[i] ?? "").Trim();
+                if (workman.Length == 0) continue;
+                if (PeekSnapshotCached(workman)) continue;
+
+                OverlaySnapshot snap;
+                if (!loaded.TryGetValue(workman, out snap) || snap == null)
+                {
+                    snap = new OverlaySnapshot();
+                    snap.Codes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                    snap.Groups = new List<string>();
+                    snap.LoadedAtUtc = now;
+                }
+
+                if (cache != null)
+                {
+                    cache.Insert(
+                        SnapshotKey(workman),
+                        snap,
+                        null,
+                        DateTime.UtcNow.AddMinutes(CacheTtlMinutes),
+                        Cache.NoSlidingExpiration);
+                }
+            }
+        }
+
+        public static DataTable GetDirectGrantInventory()
+        {
+            return QueryTable(@"
+SELECT ep.WorkmanSL, p.PermissionCode
+FROM dbo.tlb_employee_permissions ep
+INNER JOIN dbo.tlb_permissions p ON p.Id = ep.PermissionId AND p.IsActive = 1
+ORDER BY ep.WorkmanSL, p.PermissionCode", "WorkmanSL", "PermissionCode");
+        }
+
+        public static DataTable GetGroupGrantInventory()
+        {
+            return QueryTable(@"
+SELECT eg.WorkmanSL, g.GroupCode, p.PermissionCode
+FROM dbo.tlb_employee_group eg
+INNER JOIN dbo.tlb_permission_groups g ON g.Id = eg.GroupId AND g.IsActive = 1
+INNER JOIN dbo.tlb_group_permissions gp ON gp.GroupId = g.Id
+INNER JOIN dbo.tlb_permissions p ON p.Id = gp.PermissionId AND p.IsActive = 1
+ORDER BY eg.WorkmanSL, g.GroupCode, p.PermissionCode", "WorkmanSL", "GroupCode", "PermissionCode");
+        }
+
+        public static DataTable GetGroupCatalogInventory()
+        {
+            return QueryTable(@"
+SELECT g.GroupCode, g.Name,
+    (SELECT COUNT(*) FROM dbo.tlb_employee_group eg WHERE eg.GroupId = g.Id) AS MemberCount,
+    (SELECT COUNT(*) FROM dbo.tlb_group_permissions gp WHERE gp.GroupId = g.Id) AS PermissionCount
+FROM dbo.tlb_permission_groups g
+WHERE g.IsActive = 1
+ORDER BY g.GroupCode", "GroupCode", "Name", "MemberCount", "PermissionCount");
+        }
+
+        public static IList<string> GetUnusedPermissionCodes()
+        {
+            List<string> unused = new List<string>();
+            IList<OverlayPermissionDefinition> catalog = GetActivePermissions();
+            DataTable direct = GetDirectGrantInventory();
+            DataTable groups = GetGroupGrantInventory();
+            Dictionary<string, bool> used = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+            AddCodes(used, direct, "PermissionCode");
+            AddCodes(used, groups, "PermissionCode");
+            for (int i = 0; i < catalog.Count; i++)
+            {
+                string code = catalog[i].PermissionCode;
+                if (string.IsNullOrWhiteSpace(code)) continue;
+                if (!used.ContainsKey(code)) unused.Add(code);
+            }
+            return unused;
+        }
+
+        private static void AddCodes(Dictionary<string, bool> used, DataTable table, string column)
+        {
+            if (table == null || !table.Columns.Contains(column)) return;
+            for (int i = 0; i < table.Rows.Count; i++)
+            {
+                object raw = table.Rows[i][column];
+                if (raw == null || raw == DBNull.Value) continue;
+                string code = raw.ToString();
+                if (!string.IsNullOrWhiteSpace(code)) used[code] = true;
+            }
+        }
+
+        private static DataTable QueryTable(string sql, params string[] columns)
+        {
+            DataTable table = new DataTable();
+            if (columns != null)
+            {
+                for (int i = 0; i < columns.Length; i++)
+                {
+                    table.Columns.Add(columns[i]);
+                }
+            }
+            string cnn = ConnectionString();
+            if (string.IsNullOrEmpty(cnn) || !IsOverlaySchemaAvailable()) return table;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(cnn))
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(sql, conn))
+                    {
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                DataRow row = table.NewRow();
+                                for (int c = 0; c < table.Columns.Count; c++)
+                                {
+                                    string name = table.Columns[c].ColumnName;
+                                    row[name] = reader[name] != DBNull.Value ? reader[name].ToString() : "";
+                                }
+                                table.Rows.Add(row);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (SqlException)
+            {
+                table.Rows.Clear();
+            }
+            catch (ConfigurationErrorsException)
+            {
+                table.Rows.Clear();
+            }
+            return table;
+        }
+
+        private static Dictionary<string, OverlaySnapshot> QueryAllSnapshots()
+        {
+            Dictionary<string, OverlaySnapshot> map = new Dictionary<string, OverlaySnapshot>(StringComparer.OrdinalIgnoreCase);
+            string cnn = ConnectionString();
+            if (string.IsNullOrEmpty(cnn)) return map;
+            DateTime now = DateTime.UtcNow;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(cnn))
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(@"
+SELECT ep.WorkmanSL, p.PermissionCode, N'DIRECT' AS GrantSource
+FROM dbo.tlb_employee_permissions ep
+INNER JOIN dbo.tlb_permissions p ON p.Id = ep.PermissionId AND p.IsActive = 1
+UNION ALL
+SELECT eg.WorkmanSL, p.PermissionCode, N'GROUP' AS GrantSource
+FROM dbo.tlb_employee_group eg
+INNER JOIN dbo.tlb_permission_groups g ON g.Id = eg.GroupId AND g.IsActive = 1
+INNER JOIN dbo.tlb_group_permissions gp ON gp.GroupId = g.Id
+INNER JOIN dbo.tlb_permissions p ON p.Id = gp.PermissionId AND p.IsActive = 1", conn))
+                    {
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string workman = reader["WorkmanSL"] != DBNull.Value ? reader["WorkmanSL"].ToString() : "";
+                                string code = reader["PermissionCode"] != DBNull.Value ? reader["PermissionCode"].ToString() : "";
+                                string grantSource = reader["GrantSource"] != DBNull.Value ? reader["GrantSource"].ToString() : SourceGroup;
+                                if (string.IsNullOrWhiteSpace(workman) || string.IsNullOrWhiteSpace(code)) continue;
+                                OverlaySnapshot snap = GetOrCreate(map, workman, now);
+                                string existing;
+                                if (snap.Codes.TryGetValue(code, out existing)
+                                    && string.Equals(existing, SourceDirect, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    continue;
+                                }
+                                snap.Codes[code] = string.Equals(grantSource, SourceDirect, StringComparison.OrdinalIgnoreCase)
+                                    ? SourceDirect
+                                    : SourceGroup;
+                            }
+                        }
+                    }
+
+                    using (SqlCommand groups = new SqlCommand(@"
+SELECT eg.WorkmanSL, g.GroupCode
+FROM dbo.tlb_employee_group eg
+INNER JOIN dbo.tlb_permission_groups g ON g.Id = eg.GroupId AND g.IsActive = 1", conn))
+                    {
+                        using (SqlDataReader reader = groups.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string workman = reader["WorkmanSL"] != DBNull.Value ? reader["WorkmanSL"].ToString() : "";
+                                string groupCode = reader["GroupCode"] != DBNull.Value ? reader["GroupCode"].ToString() : "";
+                                if (string.IsNullOrWhiteSpace(workman) || string.IsNullOrWhiteSpace(groupCode)) continue;
+                                OverlaySnapshot snap = GetOrCreate(map, workman, now);
+                                snap.Groups.Add(groupCode);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (SqlException)
+            {
+                map.Clear();
+            }
+            catch (ConfigurationErrorsException)
+            {
+                map.Clear();
+            }
+            return map;
+        }
+
+        private static OverlaySnapshot GetOrCreate(Dictionary<string, OverlaySnapshot> map, string workman, DateTime loadedAtUtc)
+        {
+            OverlaySnapshot snap;
+            if (map.TryGetValue(workman, out snap) && snap != null) return snap;
+            snap = new OverlaySnapshot();
+            snap.Codes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            snap.Groups = new List<string>();
+            snap.LoadedAtUtc = loadedAtUtc;
+            map[workman] = snap;
+            return snap;
         }
 
         private static OverlaySnapshot LoadSnapshot(string workmanSL)
