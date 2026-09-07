@@ -2,9 +2,10 @@
  * WHEN: 2026-09-07
  * WHY: Authorization modernization PR A. Wrap the hybrid Session / USERTYPE / WORKMAN model
  *      documented in docs/ROLE_PERMISSION_ARCHITECTURE_AUDIT.md without changing any page.
- * WHAT: Additive AuthorizationService. Overlay tables are not queried (PR B). SWITCH_USER
- *      delegates to ImpersonationAudit.CanImpersonate so Admin+allowlist behavior cannot drift.
- *      IsAdmin() is USERTYPE == Admin only (Office Staff is a module exception, not platform admin).
+ * WHAT: Additive AuthorizationService. Overlay grants come from PermissionRepository
+ *      (direct + group, 5-minute cache). SWITCH_USER still requires CanImpersonate
+ *      or (Admin + overlay) so Office Staff cannot gain impersonation from an empty
+ *      overlay catalog. IsAdmin() is USERTYPE == Admin only.
  */
 
 using System;
@@ -97,15 +98,23 @@ namespace WebApplication1.bussiness.production
 
             string code = feature.Trim();
 
-            if (string.Equals(code, AuthorizationFeatureCodes.SwitchUser, StringComparison.OrdinalIgnoreCase))
+            if (MatchesLegacyModuleAuthority(session, code)) return true;
+
+            string overlaySource;
+            if (HasOverlayPermission(session, code, out overlaySource))
             {
-                return ImpersonationAudit.CanImpersonate(session);
+                if (string.Equals(code, AuthorizationFeatureCodes.SwitchUser, StringComparison.OrdinalIgnoreCase))
+                {
+                    if (IsAdmin(session) && !ImpersonationAudit.IsImpersonating(session)) return true;
+                }
+                else
+                {
+                    return true;
+                }
             }
 
-            if (HasOverlayPermission(session, code)) return true;
             if (IsWorkmanOnConfigAllowlist(session, code)) return true;
             if (IsWorkmanOnHardcodedList(session, code)) return true;
-            if (MatchesModuleException(session, code)) return true;
             return false;
         }
 
@@ -117,7 +126,8 @@ namespace WebApplication1.bussiness.production
         public static bool IsWorkmanAllowed(HttpSessionState session, string code)
         {
             if (session == null || string.IsNullOrWhiteSpace(code)) return false;
-            if (HasOverlayPermission(session, code)) return true;
+            string overlayIgnored;
+            if (HasOverlayPermission(session, code, out overlayIgnored)) return true;
             if (IsWorkmanOnConfigAllowlist(session, code)) return true;
             return IsWorkmanOnHardcodedList(session, code);
         }
@@ -164,38 +174,36 @@ namespace WebApplication1.bussiness.production
                 return item;
             }
 
-            if (string.Equals(code, AuthorizationFeatureCodes.SwitchUser, StringComparison.OrdinalIgnoreCase))
+            if (MatchesLegacyModuleAuthority(session, code))
             {
-                bool granted = ImpersonationAudit.CanImpersonate(session);
-                item.Granted = granted;
-                if (granted)
+                item.Granted = true;
+                if (string.Equals(code, AuthorizationFeatureCodes.SwitchUser, StringComparison.OrdinalIgnoreCase))
                 {
                     item.Source = SourceUserType + "+" + SourceLegacyConfig;
                     item.Detail = "USERTYPE=Admin and SwitchUserAuthorizedUsers.";
                 }
-                else if (ImpersonationAudit.IsImpersonating(session))
-                {
-                    item.Detail = "Already impersonating.";
-                }
-                else if (!IsAdmin(session))
-                {
-                    item.Source = SourceUserType;
-                    item.Detail = "USERTYPE is not Admin.";
-                }
                 else
                 {
-                    item.Source = SourceLegacyConfig;
-                    item.Detail = "Not on SwitchUserAuthorizedUsers.";
+                    item.Source = SourceModuleException;
+                    item.Detail = "USERTYPE Admin or Office Staff (module-local).";
                 }
                 return item;
             }
 
-            if (HasOverlayPermission(session, code))
+            string overlaySource;
+            if (HasOverlayPermission(session, code, out overlaySource))
             {
-                item.Granted = true;
-                item.Source = SourceDirect;
-                item.Detail = "Permission overlay (PR B).";
-                return item;
+                bool overlayUsable = !string.Equals(code, AuthorizationFeatureCodes.SwitchUser, StringComparison.OrdinalIgnoreCase)
+                    || (IsAdmin(session) && !ImpersonationAudit.IsImpersonating(session));
+                if (overlayUsable)
+                {
+                    item.Granted = true;
+                    item.Source = string.Equals(overlaySource, PermissionRepository.SourceGroup, StringComparison.OrdinalIgnoreCase)
+                        ? SourceGroup
+                        : SourceDirect;
+                    item.Detail = "Overlay " + overlaySource + ".";
+                    return item;
+                }
             }
 
             if (IsWorkmanOnConfigAllowlist(session, code))
@@ -214,11 +222,22 @@ namespace WebApplication1.bussiness.production
                 return item;
             }
 
-            if (MatchesModuleException(session, code))
+            if (string.Equals(code, AuthorizationFeatureCodes.SwitchUser, StringComparison.OrdinalIgnoreCase))
             {
-                item.Granted = true;
-                item.Source = SourceModuleException;
-                item.Detail = "USERTYPE Admin or Office Staff (module-local).";
+                if (ImpersonationAudit.IsImpersonating(session))
+                {
+                    item.Detail = "Already impersonating.";
+                }
+                else if (!IsAdmin(session))
+                {
+                    item.Source = SourceUserType;
+                    item.Detail = "USERTYPE is not Admin.";
+                }
+                else
+                {
+                    item.Source = SourceLegacyConfig;
+                    item.Detail = "Not on SwitchUserAuthorizedUsers and no overlay grant.";
+                }
                 return item;
             }
 
@@ -226,10 +245,20 @@ namespace WebApplication1.bussiness.production
             return item;
         }
 
-        private static bool HasOverlayPermission(HttpSessionState session, string code)
+        private static bool MatchesLegacyModuleAuthority(HttpSessionState session, string code)
         {
+            if (string.Equals(code, AuthorizationFeatureCodes.SwitchUser, StringComparison.OrdinalIgnoreCase))
+            {
+                return ImpersonationAudit.CanImpersonate(session);
+            }
+            return MatchesModuleException(session, code);
+        }
+
+        private static bool HasOverlayPermission(HttpSessionState session, string code, out string source)
+        {
+            source = "";
             if (session == null || string.IsNullOrWhiteSpace(code)) return false;
-            return false;
+            return PermissionRepository.TryGetSource(Read(session, SessionKeys.WorkmanSL), code, out source);
         }
 
         private static bool IsWorkmanOnConfigAllowlist(HttpSessionState session, string code)
