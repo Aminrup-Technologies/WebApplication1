@@ -55,7 +55,7 @@
                                     <p class="perm-stat"><asp:Label ID="lbl_kpiScanned" runat="server"></asp:Label></p>
                                 </div>
                             </div>
-                            <p class="text-muted">Production page callers remain 0 until PR D/E. Hardcoded and module counts fill after Permission or Legacy analysis (`DescribeIdentity`).</p>
+                            <p class="text-muted">AuthorizationService page callers include production gates migrated in PR D plus Inspector/Analyzer. Hardcoded and module counts fill after Permission or Legacy analysis (`DescribeIdentity`).</p>
                         </div>
                     </div>
                 </div>
@@ -77,6 +77,7 @@
                             </asp:RadioButtonList>
                             <span style="margin-left: 16px;">
                                 <asp:Button ID="btn_csv" runat="server" Text="Export CSV" CssClass="btn btn-default btn-sm" OnClick="btn_csv_Click" />
+                                <asp:Button ID="btn_snapshot" runat="server" Text="Snapshot" CssClass="btn btn-default btn-sm" OnClick="btn_snapshot_Click" />
                                 <asp:Button ID="btn_print" runat="server" Text="Print" CssClass="btn btn-default btn-sm" OnClick="btn_print_Click" />
                             </span>
                             <div>

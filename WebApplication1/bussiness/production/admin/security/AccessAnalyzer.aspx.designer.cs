@@ -16,6 +16,7 @@ namespace WebApplication1.bussiness.production.admin.security
         protected global::System.Web.UI.WebControls.Label lbl_kpiScanned;
         protected global::System.Web.UI.WebControls.RadioButtonList rbl_mode;
         protected global::System.Web.UI.WebControls.Button btn_csv;
+        protected global::System.Web.UI.WebControls.Button btn_snapshot;
         protected global::System.Web.UI.WebControls.Button btn_print;
         protected global::System.Web.UI.WebControls.Label lbl_msg;
         protected global::System.Web.UI.WebControls.Panel pnl_permission;

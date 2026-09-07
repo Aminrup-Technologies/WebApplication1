@@ -1,12 +1,13 @@
-# Authorization Modernization — Technical Design (v2.5)
+# Authorization Modernization — Technical Design (v2.6)
 
-**Status:** PRs A, B, C1, and C2 implemented. PR C CRUD and D–E are planned.  
+**Status:** PRs A, B, C1, C2, and D implemented. PR C CRUD and E are planned.  
 **Date:** 2026-09-07  
 **Authoritative audits:** `docs/ROLE_PERMISSION_ARCHITECTURE_AUDIT.md` (PR #94). Session identity remains as proven in PRs #86–#91.  
 **PR A:** `docs/AUTHORIZATION_SERVICE_PR_A.md`  
 **PR B:** `docs/AUTHORIZATION_OVERLAY_PR_B.md`  
 **PR C1:** `WebApplication1/bussiness/production/admin/security/PermissionInspector.md`  
-**PR C2:** `WebApplication1/bussiness/production/admin/security/AccessAnalyzer.md`
+**PR C2:** `WebApplication1/bussiness/production/admin/security/AccessAnalyzer.md`  
+**PR D:** `docs/AUTHORIZATION_MIGRATION_BRIDGE_PR_D.md`
 
 ## Governance freeze
 
@@ -18,7 +19,7 @@ Do not change these production truths:
 | `USERTYPE` is the runtime privilege string | `AuthorizationService.IsAdmin()` is `USERTYPE == "Admin"` only. |
 | `RolePermissionDB` drives menu visibility | Master `LoadPermissions` is untouched. Overlay does not replace `tlb_EmployeePermissions`. |
 | `WORKMAN` allowlists stay | Config + hardcoded lists remain a compatibility layer. |
-| Existing pages stay as-is until explicitly migrated | PRs A–C2 have **zero** edits to Login / Switch User / payroll / JOB360 / master |
+| Existing pages stay as-is until explicitly migrated | Login / Session builder unchanged. PR D migrated privilege *consumers* to `CanAccess` without changing predicates. |
 
 Do not replace the hybrid model. Build on top of it.
 
@@ -29,10 +30,10 @@ Do not replace the hybrid model. Build on top of it.
 | A | `AuthorizationService` wrapping today’s behavior | Done (`cursor/authorization-service-foundation-cf5b`) |
 | B | Overlay tables + `PermissionRepository` + cache + effective-permission wiring | Done (`cursor/permission-overlay-infrastructure-cf5b`) |
 | C1 | Read-only Permission Inspector (`admin/security/PermissionInspector.aspx`) | Done (`cursor/permission-inspector-cf5b`) |
-| C2 | Read-only Access Analyzer (`admin/security/AccessAnalyzer.aspx`) | **This change** |
+| C2 | Read-only Access Analyzer (`admin/security/AccessAnalyzer.aspx`) | Done (`cursor/access-analyzer-cf5b`) |
+| D | Legacy migration bridge: page gates call `CanAccess`; snapshot baseline | **This change** |
 | C | Security Admin WebForms CRUD under `bussiness/production/admin/security/` | Not started |
-| D | Replace hardcoded `J8`/`A84`/… and config reads with `HasPermission` / `IsWorkmanAllowed`, keeping fallbacks | Not started |
-| E | Module migration: Switch User, Payroll, Attendance, JOB360, Administration | Not started |
+| E | Remaining USERTYPE routing (`create_jobid`) and overlay-backed cutover | Not started |
 
 ## PR A API (canonical)
 
@@ -96,7 +97,13 @@ Subject evaluation uses `DescribeIdentity` (same `CanAccess` order) and restores
 Direct URL: `~/bussiness/production/admin/security/AccessAnalyzer.aspx`  
 Gate: live `AuthorizationService.IsAdmin()` only. No menu item.
 
-Permission / User / Legacy rows come from `DescribeIdentity`. Overlay mode is inventory-only (`GetDirectGrantInventory`, groups, unused codes, orphan groups). CSV and print are read-only.
+Permission / User / Legacy rows come from `DescribeIdentity`. Overlay mode is inventory-only (`GetDirectGrantInventory`, groups, unused codes, orphan groups). CSV, print, and **Snapshot** are read-only.
+
+## Legacy migration bridge (PR D)
+
+Page privilege consumers call `AuthorizationService.CanAccess`. Predicates are unchanged (empty overlay). JOB360 / attendance stay Admin **or** Office Staff. Switch User stays Admin-only.
+
+Read-only snapshot: `AuthorizationSnapshot` (SHA-256). Download from the Analyzer.
 
 ## What PR B does not do
 

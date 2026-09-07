@@ -21,7 +21,7 @@ namespace WebApplication1.bussiness.production.admin.security
 {
     public partial class AccessAnalyzer : System.Web.UI.Page
     {
-        public const int AuthorizationServicePageCallers = 2;
+        public const int AuthorizationServicePageCallers = 15;
         public const int ScanLimit = 1500;
 
         DB_Utility_OH4Y dbcl = new DB_Utility_OH4Y();
@@ -146,6 +146,27 @@ namespace WebApplication1.bussiness.production.admin.security
             }
             if (string.IsNullOrEmpty(name)) name = "access-analyzer.csv";
             WriteCsv(table, name);
+        }
+
+        protected void btn_snapshot_Click(object sender, EventArgs e)
+        {
+            if (!EnsureAdmin()) return;
+            try
+            {
+                AuthorizationSnapshotDocument doc = AuthorizationSnapshot.Generate(Session, dbcl);
+                Response.Clear();
+                Response.Buffer = true;
+                Response.ContentType = "text/plain";
+                Response.AddHeader("Content-Disposition", "attachment; filename=authorization-snapshot-" + DateTime.UtcNow.ToString("yyyyMMddTHHmmssZ") + ".txt");
+                Response.Write(doc.Body);
+                Response.Flush();
+                Context.ApplicationInstance.CompleteRequest();
+            }
+            catch (Exception ex)
+            {
+                dbcl.WriteToFile("AccessAnalyzer snapshot failed: " + ex);
+                lbl_msg.Text = "Snapshot failed. Contact IT if this continues.";
+            }
         }
 
         protected void btn_print_Click(object sender, EventArgs e)

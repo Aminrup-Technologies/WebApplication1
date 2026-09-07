@@ -47,10 +47,7 @@ namespace WebApplication1.bussiness.production
         // =================================================================================
         protected bool IsAdmin()
         {
-            // Validates against standard Administrative Roles across the ATS Platform
-            return Session["USERTYPE"] != null &&
-                   (Session["USERTYPE"].ToString().Equals("Admin", StringComparison.OrdinalIgnoreCase) ||
-                    Session["USERTYPE"].ToString().Equals("Office Staff", StringComparison.OrdinalIgnoreCase));
+            return AuthorizationService.CanAccess(AuthorizationFeatureCodes.Job360Override);
         }
 
         private void ShowNotification(string title, string message, string type)
