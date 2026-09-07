@@ -7,6 +7,9 @@ namespace WebApplication1.bussiness.production
 {
     /// <summary>
     /// Centralized repository for all Session string keys to prevent typos and enable IntelliSense.
+    /// WHEN: 2026-09-06
+    /// WHY: PR #88 adds impersonation snapshot key names without changing login Session writes.
+    /// WHAT: IS_IMPERSONATING and ORIGINAL_* constants. No caller sets these yet.
     /// </summary>
     public class SessionKeys
     {
@@ -52,5 +55,14 @@ namespace WebApplication1.bussiness.production
 
         // One-shot overlay after a successful login until homepage_v2 has painted
         public const string ShowHomeLoader = "ATS_SHOW_HOME_LOADER";
+
+        // Impersonation snapshot (set only while an admin is viewing as another user; unused until Switch User)
+        public const string IsImpersonating = "IS_IMPERSONATING";
+        public const string OriginalUserID = "ORIGINAL_USERID";
+        public const string OriginalWorkmanSL = "ORIGINAL_WORKMAN";
+        public const string OriginalUserName = "ORIGINAL_USERNAME";
+        public const string OriginalUserType = "ORIGINAL_USERTYPE";
+        public const string OriginalUserRoleDB = "ORIGINAL_UserRoleDB";
+        public const string OriginalRolePermissionDB = "ORIGINAL_RolePermissionDB";
     }
 }
