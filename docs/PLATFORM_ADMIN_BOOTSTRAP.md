@@ -43,6 +43,72 @@ Prerequisite: `tlb_permissions` and `tlb_employee_permissions` must exist. If mi
 
 Idempotency: second apply inserts **zero** rows. PK is `(WorkmanSL, PermissionId)`.
 
+The last result set is always `BOOTSTRAP_SUMMARY` (`ResultSet = BOOTSTRAP_SUMMARY`). Nothing is logged to a table.
+
+## BOOTSTRAP_SUMMARY
+
+| Column | Meaning |
+| --- | --- |
+| `ActiveAdminCount` | Active `User_RoleType='Admin'` |
+| `CatalogCodesExpected` | 4 (pack size) |
+| `CatalogCodesPresent` | Pack codes found in `tlb_permissions` after ensure |
+| `CatalogCreated` | Catalog rows inserted this run (`NOT EXISTS`) |
+| `GrantsExpected` | `ActiveAdminCount × 4` |
+| `GrantsInserted` | Employee overlay rows inserted this run (`0` on dry-run) |
+| `GrantsSkippedExisting` | Pack grants that already existed before this run |
+| `DuplicateGrantCount` | Duplicate `(WorkmanSL, PermissionId)` groups (PK ⇒ 0) |
+| `MissingGrantCount` | Pack slots still absent after this run (dry-run = planned; apply must be 0) |
+| `ExecutionMode` | `DRY_RUN` or `APPLY` |
+| `Verdict` | `PASS` or `FAIL` |
+
+### PASS criteria
+
+| Check | Required |
+| --- | --- |
+| `CatalogCodesPresent` | = `CatalogCodesExpected` (4) |
+| `DuplicateGrantCount` | = 0 |
+| Dry-run `GrantsInserted` | = 0 |
+| First apply `GrantsInserted` | = missing slots only (`GrantsExpected − GrantsSkippedExisting`) |
+| Apply `MissingGrantCount` | = 0 |
+| Second apply `GrantsInserted` | = 0 |
+| Second apply `MissingGrantCount` | = 0 |
+
+### Sample — first apply (empty overlay, one UAT Admin `J8`)
+
+| Column | Value |
+| --- | --- |
+| ActiveAdminCount | 1 |
+| CatalogCodesExpected | 4 |
+| CatalogCodesPresent | 4 |
+| CatalogCreated | 0 or 4 (0 if #96 already seeded) |
+| GrantsExpected | 4 |
+| GrantsInserted | 4 |
+| GrantsSkippedExisting | 0 |
+| DuplicateGrantCount | 0 |
+| MissingGrantCount | 0 |
+| ExecutionMode | APPLY |
+| Verdict | PASS |
+
+If `J8` already has `SWITCH_USER` from the canary: `GrantsInserted=3`, `GrantsSkippedExisting=1`, still PASS.
+
+### Sample — second apply (idempotent)
+
+| Column | Value |
+| --- | --- |
+| ActiveAdminCount | 1 |
+| CatalogCodesExpected | 4 |
+| CatalogCodesPresent | 4 |
+| CatalogCreated | 0 |
+| GrantsExpected | 4 |
+| GrantsInserted | 0 |
+| GrantsSkippedExisting | 4 |
+| DuplicateGrantCount | 0 |
+| MissingGrantCount | 0 |
+| ExecutionMode | APPLY |
+| Verdict | PASS |
+
+Dry-run of the same state: `ExecutionMode=DRY_RUN`, `GrantsInserted=0`, `MissingGrantCount=0`, `GrantsSkippedExisting=4`, Verdict PASS.
+
 ## Before / After queries
 
 ### Before (Active Admins)
