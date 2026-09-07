@@ -6110,6 +6110,7 @@
     <Compile Include="App_Code\NotificationHelper.cs" />
     <Compile Include="App_Code\ImpersonationAudit.cs" />
     <Compile Include="App_Code\AuthorizationService.cs" />
+    <Compile Include="App_Code\PermissionRepository.cs" />
     <Compile Include="bussiness\production\CountChecker.cs" />
     <Compile Include="bussiness\production\create_jobid.aspx.cs">
       <DependentUpon>create_jobid.aspx</DependentUpon>
