@@ -384,3 +384,10 @@ FodyWeavers.xsd
 /WebApplication1/appsettings.secrets.config
 /WebApplication1/connections.config
 /WebApplication1/Web.config
+
+# Track Security Foundation RC evidence (VisualStudio.gitignore [Rr]elease/ and artifacts/ would hide it).
+!docs/release/
+!docs/release/**
+!docs/release/v2.2-security-foundation/artifacts/
+!docs/release/v2.2-security-foundation/artifacts/**
+docs/release/v2.2-security-foundation/artifacts/*.txt

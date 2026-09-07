@@ -5,6 +5,8 @@
 **PR #103:** draft, **DO NOT MERGE**  
 **Overall verdict:** **INCOMPLETE** — local gates passed; IIS / overlay / canary / snapshot are not invented.
 
+Windows sign-off pack: `docs/release/v2.2-security-foundation/` (`BUILD_EVIDENCE.md`, `IIS_VALIDATION.md`, `SQL_EVIDENCE.md`, `CANARY_EVIDENCE.md`, `FINAL_SIGNOFF.md`). Fill those files on the IIS box. **GO** / **NO GO** only in `FINAL_SIGNOFF.md`.
+
 This agent cannot recycle IIS or open pages. Those phases stay **PAUSED**.
 
 ## Repository Status

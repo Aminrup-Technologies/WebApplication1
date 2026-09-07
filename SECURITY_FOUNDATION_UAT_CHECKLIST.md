@@ -4,7 +4,8 @@ Single Visual Studio + IIS sign-off for the integrated stack on `uat/security-fo
 **Do not merge that branch.** After this checklist is signed, squash the reviewed PRs in order (#89 → #91 → #94 → #95 → #96 → #98 → #99 → #100 → #102).
 
 Integration details: `docs/SECURITY_FOUNDATION_UAT_INTEGRATION.md`.  
-Orchestration status: `docs/SECURITY_FOUNDATION_UAT_ORCHESTRATION.md`.
+Orchestration status: `docs/SECURITY_FOUNDATION_UAT_ORCHESTRATION.md`.  
+RC evidence pack (Windows sign-off): `docs/release/v2.2-security-foundation/`.
 
 ## UAT operator identity (live `atserp_uat`, 2026-09-07)
 
