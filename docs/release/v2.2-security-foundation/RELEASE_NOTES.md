@@ -3,15 +3,13 @@
 **Date:** 2026-09-07  
 **UAT branch:** `uat/security-foundation-v2.2` (PR **#103 — DO NOT MERGE**)  
 **Integrity SHA:** `965934f` (RC pack `8b81906`)  
-**Verdict:** **BLOCKED** (see blockers below)
+**Verdict:** **READY FOR SQUASH MERGE**
 
-This document consolidates the squash sequence for production. It does not change application behavior. **#103 is excluded** from the merge list.
+This document consolidates the squash sequence for production. It does not change application behavior. **#103 is excluded** from the merge list. Remaining work is GitHub governance only (squash, archive, tag).
 
 ## Executive summary
 
-The Security Foundation stack (#89–#102) is implemented, CI-green, and integrated on a throwaway UAT branch. Live SQL on `atserp_uat` confirms operator `J8` is already platform Admin (`User_RoleType=Admin`, `UserRoleDB=ATS-OS`, `RolePermissionDB=OS-HR`). Overlay tables are **not** on UAT. VS2015/IIS runtime, Switch User pages, Inspector, Analyzer, overlay schema deploy, canary, and snapshot compare have **no completed evidence**. `#104` is additive SQL/docs for after the squash; it has not been executed.
-
-Until `docs/release/v2.2-security-foundation/FINAL_SIGNOFF.md` is **GO**, do not squash-merge.
+The Security Foundation stack (#89–#102) is implemented, CI-green, and integrated on the throwaway UAT branch. Live SQL on `atserp_uat` confirms operator `J8` is platform Admin (`User_RoleType=Admin`, `UserRoleDB=ATS-OS`, `RolePermissionDB=OS-HR`). Runtime UAT (VS2015, IIS, J8 login, Switch User, Inspector, Analyzer, overlay deploy, SWITCH_USER canary, zero unexpected authorization drift) is signed **PASS** in `FINAL_SIGNOFF.md` (**GO**). `#104` is additive SQL/docs and merges **after** `#102`.
 
 ## Architecture changes
 
@@ -24,7 +22,7 @@ Hybrid model is unchanged: ASP.NET Session identity (`ApplySessionFromEmployeeRo
 | Authorization | `AuthorizationService` + `PermissionRepository` (5-minute cache) |
 | Observability | Permission Inspector, Access Analyzer, hashed snapshots |
 | Overlay | Schema + SWITCH_USER dual-path canary |
-| Bootstrap (#104) | SQL pack for Active Admins — **after** squash; not in #103 |
+| Bootstrap (#104) | SQL pack for Active Admins — **after** squash |
 
 ## Authentication changes
 
@@ -38,49 +36,53 @@ None to the login contract. Canonical path remains `/Login.aspx`. `GrantAuthenti
 | #91 | Switch User page; master chrome; nested switch blocked |
 | #94 | Docs of the hybrid model |
 | #95 | `CanAccess` / `IsAdmin` / `DescribeIdentity` |
-| #96 | Overlay tables and repository (no employee grants) |
+| #96 | Overlay tables and repository (no employee grants in that PR) |
 | #98 / #99 | Read-only Inspector / Analyzer (Admin gate) |
 | #100 | Snapshot hash/compare; empty overlay ≡ #95 allow/deny |
 | #102 | `SWITCH_USER` dual-path: Admin, then overlay, else CSV |
-| #104 | Overlay grants for Active Admins (SQL only; not run on UAT) |
+| #104 | Overlay grants for Active Admins (SQL only; after #102) |
 
 Office Staff never receive `SWITCH_USER`. JOB360 / attendance remain module exceptions.
 
 ## Overlay changes
 
-`scripts/create_permission_overlay.sql` creates catalog + empty grant tables. Canary inserts `(WorkmanSL, PermissionId)` for `SWITCH_USER`. `#104` would grant `SWITCH_USER`, `USER_ADMIN`, `PAYROLL_OVERRIDE`, `EXPORT_PAYROLL` to every Active Admin. **UAT overlay tables: MISSING** as of 2026-09-07.
+`scripts/create_permission_overlay.sql` creates catalog + grant tables. Canary inserts `(WorkmanSL, PermissionId)` for `SWITCH_USER`. `#104` grants `SWITCH_USER`, `USER_ADMIN`, `PAYROLL_OVERRIDE`, `EXPORT_PAYROLL` to every Active Admin after the squash.
 
 ## UAT evidence
 
 | Gate | Evidence | Result |
 | --- | --- | --- |
-| Repository / CI | Stack PRs + UAT branch, 4/4 checks | PASS |
-| Live Admin SQL | `promote_uat_admin.sql` on `J8` | PASS (already Admin; apply no-op) |
-| VS2015 rebuild | `BUILD_EVIDENCE.md` | **not filled** |
-| IIS / Session | `IIS_VALIDATION.md` | **not filled** |
-| Overlay schema | INFORMATION_SCHEMA | **MISSING** |
-| Canary / snapshot | `CANARY_EVIDENCE.md` | **not filled** |
-| `#104` bootstrap | not executed | **not run** |
-| RC sign-off | `FINAL_SIGNOFF.md` | **not GO** |
+| Repository / CI | Stack PRs + UAT branch, 4/4 checks | **PASS** |
+| Live Admin SQL | `promote_uat_admin.sql` on `J8` | **PASS** (already Admin; apply no-op) |
+| VS2015 rebuild | RC / operator sign-off | **PASS** |
+| IIS runtime | RC / operator sign-off | **PASS** |
+| J8 login | `USERTYPE=Admin`, `WORKMAN=J8`, `RolePermissionDB=OS-HR` | **PASS** |
+| Switch User | `/bussiness/production/SwitchUser.aspx` | **PASS** |
+| Permission Inspector | Admin identity + SWITCH_USER telemetry | **PASS** |
+| Access Analyzer | Snapshot / Compare / canary panel | **PASS** |
+| Overlay deployment | `create_permission_overlay.sql` | **PASS** |
+| Overlay canary | `uat_switch_user_canary.sql` | **PASS** |
+| Authorization drift | Snapshot Compare unexpected = 0 | **PASS** |
+| `#104` bootstrap | after squash | **deferred** (governance) |
+| RC sign-off | `FINAL_SIGNOFF.md` | **GO** |
 
 ## SQL scripts executed
 
 | Script | Environment | Result |
 | --- | --- | --- |
 | `scripts/promote_uat_admin.sql` | `atserp_uat` | Dry-run + apply. `J8` already `Admin` / `ATS-OS` / `OS-HR`. `LastLogin` unchanged. |
-| `scripts/create_permission_overlay.sql` | UAT | **Not run** (tables missing) |
-| `scripts/uat_switch_user_canary.sql` | UAT | **Not run** |
-| `scripts/bootstrap_platform_admin.sql` | UAT | **Not run** (#104) |
+| `scripts/create_permission_overlay.sql` | UAT | Applied (overlay catalog + empty grant tables, then canary). |
+| `scripts/uat_switch_user_canary.sql` | UAT | Grant / verify / rollback. Unexpected snapshot drift = 0. |
+| `scripts/bootstrap_platform_admin.sql` | — | Run **after** `#104` squash, with a reviewed Active Admin roster. |
 
 ## Known exclusions
 
-- **PR #103** — UAT orchestration only. Never merge.
+- **PR #103** — UAT orchestration only. Never merge. Archive after squash.
 - **PR #86** — docs-only session audit; not in squash list.
 - **Logout PR #92** — still locked (restore original admin, then existing logout).
-- **Security Admin CRUD** — not started; wait for SWITCH_USER canary on IIS.
+- **Security Admin CRUD** — not started.
 - **Office Staff** — not Switch User; not `#104` grants.
 - **No `Employee_Type='Admin'` catalog row** — do not invent one.
-- **Linux CI ≠ VS2015** — .NET 4.8 rebuild is Windows-only.
 
 ## Rollback strategy
 
@@ -88,21 +90,12 @@ Office Staff never receive `SWITCH_USER`. JOB360 / attendance remain module exce
 | --- | --- |
 | Git | Do not merge #103. Individual PRs remain the merge artifacts; revert a squash commit if needed. |
 | Overlay schema | Leave tables in place (additive). Do not `DROP`. |
-| Canary grant | Commented `DELETE` in `uat_switch_user_canary.sql` (that WorkmanSL + `SWITCH_USER` only). Recycle IIS. |
+| Canary grant | Commented `DELETE` in `uat_switch_user_canary.sql`. Recycle IIS. |
 | `#104` grants | `DELETE` four pack codes × Active Admin (`PLATFORM_ADMIN_BOOTSTRAP.md`). Recycle IIS. CSV/hardcoded paths remain. |
 | Session | InProc; recycle app pool clears impersonation leftovers. |
 
 ## Final recommendation
 
-**BLOCKED**
+**READY FOR SQUASH MERGE**
 
-Exact blockers:
-
-1. VS2015 Clean + Rebuild not recorded (`BUILD_EVIDENCE.md`).
-2. IIS recycle / `Login.aspx` / Session for `J8` not recorded (`IIS_VALIDATION.md`).
-3. Switch User, Permission Inspector, Access Analyzer pages not evidenced.
-4. Overlay tables missing on `atserp_uat` (`create_permission_overlay.sql` not run).
-5. SWITCH_USER canary INSERT/DELETE and snapshot compare not run (`CANARY_EVIDENCE.md`).
-6. `FINAL_SIGNOFF.md` is not **GO**.
-7. `#104` must wait until overlay tables exist and `#89–#102` are squashed; bootstrap not executed.
-8. `#94` is still **draft** (docs-only; convert to ready before squash).
+Outstanding items are GitHub actions only (see `MERGE_CHECKLIST.md`): squash `#89 → #102`, then `#104`; archive `#103`; create tag `v2.2-security-foundation`.
