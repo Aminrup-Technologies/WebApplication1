@@ -141,7 +141,18 @@ namespace WebApplication1.bussiness.production
         public static IList<EffectivePermission> GetEffectivePermissions(HttpSessionState session)
         {
             List<EffectivePermission> list = new List<EffectivePermission>();
-            string[] codes = new string[]
+            string[] codes = GetTrackedCodes();
+
+            for (int i = 0; i < codes.Length; i++)
+            {
+                list.Add(Describe(session, codes[i]));
+            }
+            return list;
+        }
+
+        public static string[] GetTrackedCodes()
+        {
+            return new string[]
             {
                 AuthorizationFeatureCodes.SwitchUser,
                 AuthorizationFeatureCodes.PayrollOverride,
@@ -153,12 +164,28 @@ namespace WebApplication1.bussiness.production
                 AuthorizationFeatureCodes.LegacyAttachManpower,
                 AuthorizationFeatureCodes.LegacyExpenseHeads
             };
+        }
 
-            for (int i = 0; i < codes.Length; i++)
+        public static string DisplaySource(string source, bool granted)
+        {
+            if (!granted) return "Denied";
+            if (string.IsNullOrWhiteSpace(source)
+                || string.Equals(source, SourceNone, StringComparison.OrdinalIgnoreCase))
             {
-                list.Add(Describe(session, codes[i]));
+                return "Denied";
             }
-            return list;
+            if (string.Equals(source, SourceDirect, StringComparison.OrdinalIgnoreCase)) return "Direct";
+            if (string.Equals(source, SourceGroup, StringComparison.OrdinalIgnoreCase)) return "Group";
+            if (string.Equals(source, SourceLegacyConfig, StringComparison.OrdinalIgnoreCase)) return "Config";
+            if (string.Equals(source, SourceLegacyHardcoded, StringComparison.OrdinalIgnoreCase)) return "Hardcoded";
+            if (string.Equals(source, SourceModuleException, StringComparison.OrdinalIgnoreCase)) return "Module";
+            if (string.Equals(source, SourceUserType, StringComparison.OrdinalIgnoreCase)) return "Admin";
+            if (source.IndexOf(SourceUserType, StringComparison.OrdinalIgnoreCase) >= 0
+                && source.IndexOf(SourceLegacyConfig, StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return "Admin+Config";
+            }
+            return source;
         }
 
         /// <summary>
