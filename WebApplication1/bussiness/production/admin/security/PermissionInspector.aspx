@@ -201,6 +201,8 @@
                                             </asp:TemplateField>
                                             <asp:BoundField DataField="Layer" HeaderText="Layer" HeaderStyle-Width="12%" />
                                             <asp:BoundField DataField="Source" HeaderText="Source" />
+                                            <asp:BoundField DataField="OverlayWouldAllow" HeaderText="OverlayWouldAllow" />
+                                            <asp:BoundField DataField="LegacyWouldAllow" HeaderText="LegacyWouldAllow" />
                                             <asp:BoundField DataField="Detail" HeaderText="Why" />
                                         </Columns>
                                     </asp:GridView>

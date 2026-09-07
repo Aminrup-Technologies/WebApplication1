@@ -52,6 +52,7 @@ namespace WebApplication1.bussiness.production.admin.security
                 BindOverlayAdoption();
             }
             BindKpi();
+            BindSwitchUserCanary();
             ShowModePanels();
         }
 
@@ -82,6 +83,7 @@ namespace WebApplication1.bussiness.production.admin.security
                 : (module > 0 ? "Partial (" + module + ")" : "No");
             lbl_msg.Text = holders.Rows.Count + " Active employee(s) receive " + code + "." + TruncationNote();
             BindKpi();
+            BindSwitchUserCanary();
         }
 
         protected void btn_searchUser_Click(object sender, EventArgs e)
@@ -129,6 +131,7 @@ namespace WebApplication1.bussiness.production.admin.security
             Session["AnalyzerExportName"] = "legacy-exposure.csv";
             lbl_msg.Text = legacy.Rows.Count + " legacy-backed permission row(s)." + TruncationNote();
             BindKpi();
+            BindSwitchUserCanary();
         }
 
         protected void btn_csv_Click(object sender, EventArgs e)
@@ -325,6 +328,9 @@ ORDER BY FullName, WorkmanSL", new SqlParameter[0]);
             Dictionary<string, bool> hardcodedUsers = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
             Dictionary<string, bool> moduleUsers = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
             Dictionary<string, bool> legacyUsers = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+            int canaryEvaluated = 0;
+            int canaryMatches = 0;
+            DataTable canaryDivergences = NewCanaryTable();
 
             for (int i = 0; i < employees.Rows.Count; i++)
             {
@@ -350,6 +356,18 @@ ORDER BY FullName, WorkmanSL", new SqlParameter[0]);
                     EffectivePermission item = permissions[p];
                     if (item == null) continue;
                     AddPermRow(scan, ReadRow(row, "WorkmanSL"), ReadRow(row, "FullName"), ReadRow(row, "User_RoleType"), item);
+                    if (string.Equals(item.Code, AuthorizationFeatureCodes.SwitchUser, StringComparison.OrdinalIgnoreCase))
+                    {
+                        canaryEvaluated++;
+                        if (AuthorizationService.SwitchUserDualPathMatches(item, authenticated, admin))
+                        {
+                            canaryMatches++;
+                        }
+                        else
+                        {
+                            AddCanaryRow(canaryDivergences, ReadRow(row, "WorkmanSL"), ReadRow(row, "User_RoleType"), item);
+                        }
+                    }
                     int bucket = SourceBucket(item.Source, item.Granted);
                     int[] cells;
                     if (item.Code != null && counts.TryGetValue(item.Code, out cells) && bucket >= 0 && bucket < cells.Length)
@@ -389,7 +407,23 @@ ORDER BY FullName, WorkmanSL", new SqlParameter[0]);
             ViewState["KpiModule"] = moduleUsers.Count;
             ViewState["KpiLegacyUsers"] = legacyUsers.Count;
             ViewState["ScanTruncated"] = employees.Rows.Count >= ScanLimit;
+            ViewState["CanaryEvaluated"] = canaryEvaluated;
+            ViewState["CanaryMatches"] = canaryMatches;
+            ViewState["CanaryDivergences"] = canaryEvaluated - canaryMatches;
+            Session["CanaryDivergenceTable"] = canaryDivergences;
             return scan;
+        }
+
+        protected void btn_validateCanary_Click(object sender, EventArgs e)
+        {
+            if (!EnsureAdmin()) return;
+            ScanActiveEmployees();
+            BindKpi();
+            BindSwitchUserCanary();
+            object divergences = ViewState["CanaryDivergences"];
+            lbl_msg.Text = "SWITCH_USER canary dual-path validation finished. Divergences: "
+                + (divergences != null ? divergences.ToString() : "0")
+                + "." + TruncationNote();
         }
 
         private void BindPermissionList()
@@ -456,6 +490,54 @@ ORDER BY FullName, WorkmanSL", new SqlParameter[0]);
             }
         }
 
+        private void BindSwitchUserCanary()
+        {
+            int overlay = PermissionRepository.CountDistinctWorkmansForCode(AuthorizationFeatureCodes.SwitchUser);
+            int config = CountSwitchUserCsvWorkmans();
+            lbl_canaryOverlay.Text = overlay.ToString();
+            lbl_canaryLegacy.Text = config.ToString();
+
+            object evaluated = ViewState["CanaryEvaluated"];
+            object matches = ViewState["CanaryMatches"];
+            object divergences = ViewState["CanaryDivergences"];
+            if (evaluated == null)
+            {
+                lbl_canaryEvaluated.Text = "—";
+                lbl_canaryMatch.Text = "—";
+                lbl_canaryDivergences.Text = "—";
+                lbl_canaryHealth.Text = overlay == 0 ? "Healthy (no overlay grants; run Validate canary)" : "Pending scan";
+                gv_canaryDivergences.DataSource = Session["CanaryDivergenceTable"] as DataTable;
+                gv_canaryDivergences.DataBind();
+                return;
+            }
+
+            int evaluatedCount = ParseInt(evaluated);
+            int matchCount = ParseInt(matches);
+            int divergenceCount = ParseInt(divergences);
+            lbl_canaryEvaluated.Text = evaluatedCount.ToString();
+            lbl_canaryDivergences.Text = divergenceCount.ToString();
+            if (evaluatedCount == 0)
+            {
+                lbl_canaryMatch.Text = "n/a";
+            }
+            else
+            {
+                double pct = (100.0 * matchCount) / evaluatedCount;
+                lbl_canaryMatch.Text = pct.ToString("0") + "%";
+            }
+            lbl_canaryHealth.Text = divergenceCount == 0 ? "Healthy" : "Unhealthy — stop";
+            DataTable divergenceTable = Session["CanaryDivergenceTable"] as DataTable;
+            gv_canaryDivergences.DataSource = divergenceTable;
+            gv_canaryDivergences.DataBind();
+        }
+
+        private static int CountSwitchUserCsvWorkmans()
+        {
+            Dictionary<string, bool> unique = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+            AddCsv(unique, ConfigurationManager.AppSettings[ImpersonationAudit.AuthorizedUsersAppSetting]);
+            return unique.Count;
+        }
+
         private void ShowModePanels()
         {
             string mode = CurrentMode();
@@ -520,8 +602,16 @@ ORDER BY FullName, WorkmanSL", new SqlParameter[0]);
         private static int SourceBucket(string source, bool granted)
         {
             if (!granted) return -1;
-            if (string.Equals(source, AuthorizationService.SourceDirect, StringComparison.OrdinalIgnoreCase)) return 0;
-            if (string.Equals(source, AuthorizationService.SourceGroup, StringComparison.OrdinalIgnoreCase)) return 1;
+            if (string.Equals(source, AuthorizationService.SourceDirect, StringComparison.OrdinalIgnoreCase)
+                || string.Equals(source, AuthorizationService.SourceOverlayDirect, StringComparison.OrdinalIgnoreCase))
+            {
+                return 0;
+            }
+            if (string.Equals(source, AuthorizationService.SourceGroup, StringComparison.OrdinalIgnoreCase)
+                || string.Equals(source, AuthorizationService.SourceOverlayGroup, StringComparison.OrdinalIgnoreCase))
+            {
+                return 1;
+            }
             if (string.Equals(source, AuthorizationService.SourceLegacyConfig, StringComparison.OrdinalIgnoreCase)) return 2;
             if (string.Equals(source, AuthorizationService.SourceLegacyHardcoded, StringComparison.OrdinalIgnoreCase)) return 3;
             if (string.Equals(source, AuthorizationService.SourceModuleException, StringComparison.OrdinalIgnoreCase)) return 4;
@@ -545,7 +635,33 @@ ORDER BY FullName, WorkmanSL", new SqlParameter[0]);
             table.Columns.Add("Source");
             table.Columns.Add("Display");
             table.Columns.Add("Detail");
+            table.Columns.Add("OverlayWouldAllow");
+            table.Columns.Add("LegacyWouldAllow");
             return table;
+        }
+
+        private static DataTable NewCanaryTable()
+        {
+            DataTable table = new DataTable();
+            table.Columns.Add("WorkmanSL");
+            table.Columns.Add("UserType");
+            table.Columns.Add("Allowed");
+            table.Columns.Add("Source");
+            table.Columns.Add("OverlayWouldAllow");
+            table.Columns.Add("LegacyWouldAllow");
+            return table;
+        }
+
+        private static void AddCanaryRow(DataTable table, string workman, string userType, EffectivePermission item)
+        {
+            DataRow row = table.NewRow();
+            row["WorkmanSL"] = workman;
+            row["UserType"] = userType;
+            row["Allowed"] = item != null && item.Granted ? "true" : "false";
+            row["Source"] = item != null ? item.Source : "";
+            row["OverlayWouldAllow"] = item != null && item.OverlayWouldAllow ? "true" : "false";
+            row["LegacyWouldAllow"] = item != null && item.LegacyWouldAllow ? "true" : "false";
+            table.Rows.Add(row);
         }
 
         private static DataTable NewMatrixTable()
@@ -572,6 +688,8 @@ ORDER BY FullName, WorkmanSL", new SqlParameter[0]);
             row["Source"] = item.Source ?? "";
             row["Display"] = AuthorizationService.DisplaySource(item.Source, item.Granted);
             row["Detail"] = item.Detail ?? "";
+            row["OverlayWouldAllow"] = item.OverlayWouldAllow ? "true" : "false";
+            row["LegacyWouldAllow"] = item.LegacyWouldAllow ? "true" : "false";
             table.Rows.Add(row);
         }
 

@@ -1,6 +1,6 @@
-# Authorization Modernization — Technical Design (v2.7)
+# Authorization Modernization — Technical Design (v2.8)
 
-**Status:** PRs A, B, C1, C2, and D implemented. Snapshot equivalence is the gate before PR E. Security Admin CRUD is after the E canary.  
+**Status:** PRs A, B, C1, C2, and D implemented. PR E SWITCH_USER overlay canary is this change. Security Admin CRUD is after the E canary is proven on IIS.  
 **Date:** 2026-09-07  
 **Authoritative audits:** `docs/ROLE_PERMISSION_ARCHITECTURE_AUDIT.md` (PR #94). Session identity remains as proven in PRs #86–#91.  
 **PR A:** `docs/AUTHORIZATION_SERVICE_PR_A.md`  
@@ -8,7 +8,8 @@
 **PR C1:** `WebApplication1/bussiness/production/admin/security/PermissionInspector.md`  
 **PR C2:** `WebApplication1/bussiness/production/admin/security/AccessAnalyzer.md`  
 **PR D:** `docs/AUTHORIZATION_MIGRATION_BRIDGE_PR_D.md`  
-**PR D validation:** `docs/AUTHORIZATION_MIGRATION_VALIDATION_PR_D.md`
+**PR D validation:** `docs/AUTHORIZATION_MIGRATION_VALIDATION_PR_D.md`  
+**PR E:** `docs/SWITCH_USER_CANARY_VALIDATION.md`
 
 ## Governance freeze
 
@@ -34,8 +35,8 @@ Do not replace the hybrid model. Build on top of it.
 | C2 | Read-only Access Analyzer (`admin/security/AccessAnalyzer.aspx`) | Done (`cursor/access-analyzer-cf5b`) |
 | D | Legacy migration bridge: page gates call `CanAccess`; snapshot baseline | **This change** |
 | D validation | Before/after payload SHA; Changed effective permission count = 0 | `docs/AUTHORIZATION_MIGRATION_VALIDATION_PR_D.md` |
-| E | Overlay activation for **one** permission (`SWITCH_USER`); keep legacy fallback | Not started |
-| C | Security Admin WebForms CRUD under `bussiness/production/admin/security/` | After E canary |
+| E | Overlay activation for **one** permission (`SWITCH_USER`); keep legacy fallback | **This change** |
+| C | Security Admin WebForms CRUD under `bussiness/production/admin/security/` | After E canary on IIS |
 
 ## PR A API (canonical)
 
@@ -109,9 +110,11 @@ Read-only snapshot: `AuthorizationSnapshot` (SHA-256). Download from the Analyze
 
 `create_jobid*` USERTYPE checks stay as job-create routing. They are not overlay candidates.
 
-## Overlay canary (PR E — not this change)
+## Overlay canary (PR E)
 
-One permission, preferably `SWITCH_USER`. Do **not** disable Config / Workman fallback. Overlay grant is additive. Freeze the PR D snapshot as Before.
+One permission: `SWITCH_USER`. Dual-path: Admin required, then overlay Direct/Group, else `SwitchUserAuthorizedUsers`. Do **not** disable Config / Workman fallback. Overlay grant is additive. Freeze the PR D snapshot as Before.
+
+`DescribeIdentity` telemetry for this code: `Granted`, `Source`, `LegacyWouldAllow`, `OverlayWouldAllow`. Access Analyzer **Overlay Canary Status** is read-only. Manual UAT SQL: `scripts/uat_switch_user_canary.sql`. Procedure: `docs/SWITCH_USER_CANARY_VALIDATION.md`.
 
 ## Security Admin CRUD
 

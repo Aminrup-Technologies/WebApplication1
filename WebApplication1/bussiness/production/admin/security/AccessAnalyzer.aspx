@@ -61,6 +61,61 @@
                 </div>
             </div>
 
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Overlay Canary Status <small>SWITCH_USER dual-path · read-only</small></h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <p>
+                                Dual-path validation:
+                                <asp:Label ID="lbl_canaryHealth" runat="server" Font-Bold="true"></asp:Label>
+                            </p>
+                            <div class="row">
+                                <div class="col-md-2 col-sm-4 col-xs-6">
+                                    <p class="kpi-label">Overlay grants</p>
+                                    <p class="perm-stat"><asp:Label ID="lbl_canaryOverlay" runat="server"></asp:Label></p>
+                                </div>
+                                <div class="col-md-2 col-sm-4 col-xs-6">
+                                    <p class="kpi-label">Legacy grants</p>
+                                    <p class="perm-stat"><asp:Label ID="lbl_canaryLegacy" runat="server"></asp:Label></p>
+                                </div>
+                                <div class="col-md-3 col-sm-4 col-xs-6">
+                                    <p class="kpi-label">Dual-path matches (overlay vs legacy)</p>
+                                    <p class="perm-stat"><asp:Label ID="lbl_canaryMatch" runat="server"></asp:Label></p>
+                                </div>
+                                <div class="col-md-2 col-sm-4 col-xs-6">
+                                    <p class="kpi-label">Divergences (should remain zero)</p>
+                                    <p class="perm-stat"><asp:Label ID="lbl_canaryDivergences" runat="server"></asp:Label></p>
+                                </div>
+                                <div class="col-md-3 col-sm-4 col-xs-6">
+                                    <p class="kpi-label">Employees evaluated</p>
+                                    <p class="perm-stat"><asp:Label ID="lbl_canaryEvaluated" runat="server"></asp:Label></p>
+                                </div>
+                            </div>
+                            <p class="text-muted no-print">No editing. Overlay grant plus config fallback must agree with `CanAccess("SWITCH_USER")`. Run Permission, Legacy, or <strong>Validate canary</strong> to fill match %.</p>
+                            <div class="no-print">
+                                <asp:Button ID="btn_validateCanary" runat="server" Text="Validate canary" CssClass="btn btn-success btn-sm" OnClick="btn_validateCanary_Click" />
+                            </div>
+                            <div class="table-responsive">
+                                <asp:GridView ID="gv_canaryDivergences" runat="server" Width="100%" CssClass="table table-striped table-bordered table-sm" AutoGenerateColumns="false" ShowHeaderWhenEmpty="true" EmptyDataText="No dual-path divergences.">
+                                    <Columns>
+                                        <asp:BoundField DataField="WorkmanSL" HeaderText="Employee" />
+                                        <asp:BoundField DataField="UserType" HeaderText="USERTYPE" />
+                                        <asp:BoundField DataField="Allowed" HeaderText="Allowed" />
+                                        <asp:BoundField DataField="Source" HeaderText="Source" />
+                                        <asp:BoundField DataField="OverlayWouldAllow" HeaderText="OverlayWouldAllow" />
+                                        <asp:BoundField DataField="LegacyWouldAllow" HeaderText="LegacyWouldAllow" />
+                                    </Columns>
+                                </asp:GridView>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row no-print">
                 <div class="col-md-12">
                     <div class="x_panel">
@@ -117,6 +172,8 @@
                                             <asp:BoundField DataField="UserType" HeaderText="USERTYPE" />
                                             <asp:BoundField DataField="Display" HeaderText="Source" />
                                             <asp:BoundField DataField="Source" HeaderText="Source enum" />
+                                            <asp:BoundField DataField="OverlayWouldAllow" HeaderText="OverlayWouldAllow" />
+                                            <asp:BoundField DataField="LegacyWouldAllow" HeaderText="LegacyWouldAllow" />
                                             <asp:BoundField DataField="Detail" HeaderText="Why" />
                                         </Columns>
                                     </asp:GridView>
@@ -187,6 +244,8 @@
                                             <asp:BoundField DataField="Code" HeaderText="Permission" />
                                             <asp:BoundField DataField="Display" HeaderText="Source" />
                                             <asp:BoundField DataField="Source" HeaderText="Source enum" />
+                                            <asp:BoundField DataField="OverlayWouldAllow" HeaderText="OverlayWouldAllow" />
+                                            <asp:BoundField DataField="LegacyWouldAllow" HeaderText="LegacyWouldAllow" />
                                             <asp:BoundField DataField="Detail" HeaderText="Why" />
                                         </Columns>
                                     </asp:GridView>

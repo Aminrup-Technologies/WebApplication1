@@ -268,6 +268,10 @@ namespace WebApplication1.bussiness.production.admin.security
             AddLegacy(table, "IsAdmin", admin);
             AddLegacy(table, "CanImpersonate", canImpersonate);
             AddLegacy(table, "PayrollAuthorizedUsers", payrollConfig);
+            EffectivePermission switchUser = FindCode(permissions, AuthorizationFeatureCodes.SwitchUser);
+            AddLegacy(table, "SWITCH_USER Allowed", switchUser != null && switchUser.Granted);
+            AddLegacy(table, "SWITCH_USER OverlayWouldAllow", switchUser != null && switchUser.OverlayWouldAllow);
+            AddLegacy(table, "SWITCH_USER LegacyWouldAllow", switchUser != null && switchUser.LegacyWouldAllow);
             EffectivePermission job360 = FindCode(permissions, AuthorizationFeatureCodes.Job360Override);
             AddLegacy(table, "JOB360 Override", job360 != null && job360.Granted);
             gv_legacy.DataSource = table;
@@ -374,6 +378,8 @@ namespace WebApplication1.bussiness.production.admin.security
             table.Columns.Add("Granted", typeof(bool));
             table.Columns.Add("Layer");
             table.Columns.Add("Source");
+            table.Columns.Add("OverlayWouldAllow");
+            table.Columns.Add("LegacyWouldAllow");
             table.Columns.Add("Detail");
             if (permissions == null) return table;
             for (int i = 0; i < permissions.Count; i++)
@@ -385,6 +391,8 @@ namespace WebApplication1.bussiness.production.admin.security
                 row["Granted"] = item.Granted;
                 row["Layer"] = LayerForSource(item.Source);
                 row["Source"] = item.Source ?? "";
+                row["OverlayWouldAllow"] = item.OverlayWouldAllow ? "true" : "false";
+                row["LegacyWouldAllow"] = item.LegacyWouldAllow ? "true" : "false";
                 row["Detail"] = item.Detail ?? "";
                 table.Rows.Add(row);
             }
@@ -398,8 +406,7 @@ namespace WebApplication1.bussiness.production.admin.security
             {
                 return "";
             }
-            if (string.Equals(source, AuthorizationService.SourceDirect, StringComparison.OrdinalIgnoreCase)
-                || string.Equals(source, AuthorizationService.SourceGroup, StringComparison.OrdinalIgnoreCase))
+            if (AuthorizationService.IsOverlaySource(source))
             {
                 return "Overlay";
             }
