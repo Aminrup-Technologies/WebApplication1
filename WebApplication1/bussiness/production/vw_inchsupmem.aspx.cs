@@ -62,11 +62,14 @@ namespace WebApplication1.bussiness.production
                     JOBID_Status as Orig_JOBID_Status, JOB_Site, JOB_InchargeName, JOB_Shift, JOB_Title, JOB_PermitNo,
                     JOB_Status, FinalUpldStatus, Incharge_Approval
                 FROM tbl_jobs
+                WHERE JOB_InchargeWrk = @Workman
                   AND CreatedDate >= @StartDate
                   AND CreatedDate < @EndDate
                   AND JOBID_Status = 'Blocked'
+                  AND EntryExit = 'Exit'
                   AND FinalUpldStatus = 'Yes'
                   AND Incharge_Approval = 'Approved'
+                  AND BillingCode = 'MS'
                 ORDER BY CreatedDate DESC";
 
             // @Username parameter removed
