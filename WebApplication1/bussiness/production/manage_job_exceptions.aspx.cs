@@ -16,7 +16,7 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || (Session["USERTYPE"].ToString() != "Admin" && Session["USERTYPE"].ToString() != "Office Staff"))
+                if (Session["USERID"] == null || !AuthorizationService.CanAccess(AuthorizationFeatureCodes.AttendanceOverride))
                 {
                     Response.Redirect("~/login.aspx", false);
                     return;

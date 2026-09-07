@@ -30,7 +30,7 @@ namespace WebApplication1.bussiness.production
                 }
                 else
                 {
-                    if (Session["WORKMAN"].ToString() == "J8")
+                    if (AuthorizationService.CanAccess(AuthorizationFeatureCodes.ExportPayroll))
                     {
                         if (Session["Changer"] != null)
                         {

@@ -34,7 +34,7 @@ namespace WebApplication1.bussiness.production
                 }
                 else if (Session["REGION"].ToString() == "JSR")
                 {
-                    if (Session["WORKMAN"].ToString() == "J8")
+                    if (AuthorizationService.CanAccess(AuthorizationFeatureCodes.ExportPayroll))
                     {
                         
                     }

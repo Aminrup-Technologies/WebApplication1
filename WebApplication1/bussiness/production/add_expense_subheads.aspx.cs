@@ -42,7 +42,7 @@ namespace WebApplication1.bussiness.production
 
         private void UserCheck()
         {
-            if (Session["WORKMAN"].ToString() == "J8" || Session["WORKMAN"].ToString() == "A84" || Session["WORKMAN"].ToString() == "K208")
+            if (AuthorizationService.CanAccess(AuthorizationFeatureCodes.LegacyExpenseHeads))
             {
                 add_panel.Visible = true;
             }

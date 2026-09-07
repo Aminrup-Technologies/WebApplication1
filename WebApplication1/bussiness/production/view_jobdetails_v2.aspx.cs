@@ -65,8 +65,7 @@ namespace WebApplication1.bussiness.production
 
         private void Checker()
         {
-            string workman = Session["WORKMAN"].ToString();
-            if (workman == "A84" || workman == "K208" || workman == "N21" || workman == "J8")
+            if (AuthorizationService.CanAccess(AuthorizationFeatureCodes.LegacyAttachManpower))
             {
                 attachmanpowerrow.Visible = true;
             }

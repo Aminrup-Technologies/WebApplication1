@@ -123,7 +123,7 @@ namespace WebApplication1.bussiness.production
                     //}
 
 
-                    if (Session["WORKMAN"].ToString() == "J8")
+                    if (AuthorizationService.CanAccess(AuthorizationFeatureCodes.ExportPayroll))
                     {
                         AGL_F17.Visible = false; KPO_F17.Visible = false; NINL_F17.Visible = false; JSR_F17.Visible = false; ATS_F17.Visible = true;
                         StateSelector.Visible = true; RegionSelector.Visible = true; RegionComSelector.Visible = true;
