@@ -19,7 +19,7 @@ namespace WebApplication1.bussiness.production
             if (!IsPostBack)
             {
                 // Ensure only Admins/HR can see the Payroll Audit Dashboard
-                if (Session["USERID"] == null || (Session["USERTYPE"].ToString() != "Admin" && Session["USERTYPE"].ToString() != "Office Staff"))
+                if (Session["USERID"] == null || !AuthorizationService.CanAccess(AuthorizationFeatureCodes.AttendanceOverride))
                 {
                     Response.Redirect("~/login.aspx", false);
                     return;

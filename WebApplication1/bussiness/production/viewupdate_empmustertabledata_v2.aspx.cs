@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -84,15 +83,7 @@ namespace WebApplication1.bussiness.production
 
         private void ApplyTabSecurity()
         {
-            string currentUser = Session["WORKMAN"] != null ? Session["WORKMAN"].ToString().Trim().ToUpper() : "";
-            string authConfig = ConfigurationManager.AppSettings["PayrollAuthorizedUsers"];
-            bool canViewPayroll = false;
-
-            if (!string.IsNullOrEmpty(authConfig))
-            {
-                var authorizedList = authConfig.Split(',').Select(x => x.Trim().ToUpper()).ToList();
-                if (authorizedList.Contains(currentUser)) { canViewPayroll = true; }
-            }
+            bool canViewPayroll = AuthorizationService.CanAccess(AuthorizationFeatureCodes.PayrollOverride);
 
             if (!canViewPayroll)
             {

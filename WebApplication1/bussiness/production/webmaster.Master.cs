@@ -61,7 +61,7 @@ namespace WebApplication1.gentelella_master.production
         private void BindImpersonationChrome()
         {
             bool impersonating = ImpersonationAudit.IsImpersonating(Session);
-            bool canSwitch = ImpersonationAudit.CanImpersonate(Session);
+            bool canSwitch = AuthorizationService.CanAccess(AuthorizationFeatureCodes.SwitchUser);
 
             lnk_switchUser.Visible = impersonating || canSwitch;
             lnk_switchUser.InnerText = impersonating ? "Return to my account" : "Switch User";

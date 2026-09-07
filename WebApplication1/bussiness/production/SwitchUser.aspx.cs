@@ -28,7 +28,7 @@ namespace WebApplication1.bussiness.production
                 return;
             }
 
-            bool canSwitch = ImpersonationAudit.CanImpersonate(Session);
+            bool canSwitch = AuthorizationService.CanAccess(AuthorizationFeatureCodes.SwitchUser);
             bool canReturn = ImpersonationAudit.CanReturnFromImpersonation(Session);
             bool impersonating = ImpersonationAudit.IsImpersonating(Session);
             if (!canSwitch && !canReturn && !impersonating)
@@ -43,7 +43,7 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_search_Click(object sender, EventArgs e)
         {
-            if (!ImpersonationAudit.CanImpersonate(Session))
+            if (!AuthorizationService.CanAccess(AuthorizationFeatureCodes.SwitchUser))
             {
                 DenyAndHome();
                 return;
@@ -79,7 +79,7 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_reset_Click(object sender, EventArgs e)
         {
-            if (!ImpersonationAudit.CanImpersonate(Session))
+            if (!AuthorizationService.CanAccess(AuthorizationFeatureCodes.SwitchUser))
             {
                 DenyAndHome();
                 return;
@@ -122,7 +122,7 @@ namespace WebApplication1.bussiness.production
 
         private void SwitchToUser(string targetLoginId)
         {
-            if (!ImpersonationAudit.CanImpersonate(Session))
+            if (!AuthorizationService.CanAccess(AuthorizationFeatureCodes.SwitchUser))
             {
                 DenyAndHome();
                 return;
