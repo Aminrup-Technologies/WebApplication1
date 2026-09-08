@@ -13,7 +13,7 @@
 | Master Index | ✅ |
 | Architecture | ✅ |
 | Business Modules | ⏳ |
-| Database | ⏳ |
+| Database | ⏳ (identity/roles present; JOB/payroll tables planned) |
 | Security | ⏳ |
 | Administration | ⏳ |
 | Developer | ⏳ |
