@@ -1,15 +1,21 @@
-# Security documentation hub
+# Security documentation
 
-Canonical Security Foundation docs already exist. This folder will **consolidate links**, not fork the model.
+This folder is the **operations and threat-model** companion to [architecture](../architecture/README.md). Architecture explains **how auth works**. Security here explains **what can go wrong**, **how to verify**, and **how to change it safely**.
 
-| Topic | Canonical |
-| --- | --- |
-| Invariants | [`SECURITY_FOUNDATION_BASELINE.md`](../../SECURITY_FOUNDATION_BASELINE.md) |
-| Authn | [`architecture/authentication-flow.md`](../architecture/authentication-flow.md) |
-| Authz | [`architecture/authorization-flow.md`](../architecture/authorization-flow.md) |
-| Overlay | [`architecture/permission-overlay.md`](../architecture/permission-overlay.md) |
-| Impersonation | [`architecture/impersonation-lifecycle.md`](../architecture/impersonation-lifecycle.md) |
-| Governance | [`governance/`](../governance/cursor_governance.md) |
-| Release pack | [`release/v2.2-security-foundation/`](../release/v2.2-security-foundation/README.md) |
+## Documents
 
-Tags: `v2.2-security-foundation`, `v2.2.1-governance`, `v2.2.2-operational`, `v2.2.3-governance-final`.
+| Doc | Status | Purpose |
+|-----|--------|---------|
+| [threat-model.md](threat-model.md) | Verified | Session, overlay, impersonation, MFA, config |
+| [verification.md](verification.md) | Verified | UAT / smoke checks without inventing Admin rows |
+| [change-control.md](change-control.md) | Verified | Pointers to governance matrix and CODEOWNERS |
+
+## Do not confuse
+
+| Topic | Canonical doc |
+|-------|----------------|
+| Login / Session | `docs/architecture/authentication-flow.md` |
+| `CanAccess` | `docs/architecture/authorization-flow.md` |
+| Switch User | `docs/architecture/switch-user.md` |
+| Overlay schema | `docs/architecture/permission-overlay.md` |
+| Governance | `docs/governance/security_change_matrix.md` |
