@@ -1,16 +1,17 @@
 # ATS ERP Documentation Index
 
 **Breadcrumb:** Documentation Hub → this index  
+**LTS Baseline:** `v2.2.4-documentation-baseline` (`e4552b3`) — [`FOUNDATION_PROGRAM_CLOSURE.md`](FOUNDATION_PROGRAM_CLOSURE.md)  
 **Charter:** [`ERP_DOCUMENTATION_CHARTER.md`](ERP_DOCUMENTATION_CHARTER.md)  
 **Governance:** [`governance/documentation_governance.md`](governance/documentation_governance.md) · [`documentation_impact_matrix.md`](governance/documentation_impact_matrix.md)  
 **Coverage:** [`DOCUMENTATION_COVERAGE.md`](DOCUMENTATION_COVERAGE.md) · **Gaps:** [`EVIDENCE_GAP_REGISTER.md`](EVIDENCE_GAP_REGISTER.md)  
-**Baseline:** `v2.2.3-governance-final` (`495fc68`)  
 **Rule:** Every new program document must be listed here.
 
 ## Quick navigation
 
 | I need… | Go to |
 | --- | --- |
+| Foundation Program status and LTS baseline | [Foundation Program Closure](FOUNDATION_PROGRAM_CLOSURE.md) |
 | How login and Session work | [authentication-flow](architecture/authentication-flow.md) · [session-architecture](architecture/session-architecture.md) |
 | How `CanAccess` / Admin / overlay work | [authorization-flow](architecture/authorization-flow.md) · [permission-overlay](architecture/permission-overlay.md) |
 | Switch User | [switch-user](architecture/switch-user.md) · [switch-user-ops](administration/switch-user-ops.md) |
