@@ -9,10 +9,12 @@ ASP.NET WebForms ERP. Identity is **ASP.NET InProc Session**, not Forms tickets.
 
 ## Documentation hub
 
-Start at [`docs/ERP_DOCUMENTATION_INDEX.md`](docs/ERP_DOCUMENTATION_INDEX.md).
+**Executive Overview:** [`docs/PROJECT_MANIFEST.md`](docs/PROJECT_MANIFEST.md) — Repository map, baseline, and readiness  
+**Navigation Hub:** [`docs/ERP_DOCUMENTATION_INDEX.md`](docs/ERP_DOCUMENTATION_INDEX.md) — Complete documentation index
 
 | Resource | Path |
 | --- | --- |
+| Project Manifest | [`docs/PROJECT_MANIFEST.md`](docs/PROJECT_MANIFEST.md) |
 | Charter | [`docs/ERP_DOCUMENTATION_CHARTER.md`](docs/ERP_DOCUMENTATION_CHARTER.md) |
 | Coverage | [`docs/DOCUMENTATION_COVERAGE.md`](docs/DOCUMENTATION_COVERAGE.md) |
 | Evidence gaps | [`docs/EVIDENCE_GAP_REGISTER.md`](docs/EVIDENCE_GAP_REGISTER.md) |
