@@ -11,7 +11,7 @@
 | Repository Discovery | ✅ |
 | Charter | ✅ |
 | Master Index | ✅ |
-| Architecture | ⏳ |
+| Architecture | ✅ |
 | Business Modules | ⏳ |
 | Database | ⏳ |
 | Security | ⏳ |
@@ -24,15 +24,16 @@
 
 | Document | Status |
 | --- | --- |
+| [Architecture hub](architecture/README.md) | Present |
 | [Authentication flow](architecture/authentication-flow.md) | Present (Security Foundation) |
 | [Authorization flow](architecture/authorization-flow.md) | Present |
 | [Impersonation lifecycle](architecture/impersonation-lifecycle.md) | Present |
 | [Permission overlay](architecture/permission-overlay.md) | Present |
-| MFA | Planned — `architecture/mfa.md` |
-| Session architecture | Planned — `architecture/session-architecture.md` |
-| Switch User | Planned — `architecture/switch-user.md` |
-| Master pages | Planned — `architecture/master-pages.md` |
-| Release architecture | Planned — `architecture/release-architecture.md` |
+| [MFA](architecture/mfa.md) | Present |
+| [Session architecture](architecture/session-architecture.md) | Present |
+| [Switch User](architecture/switch-user.md) | Present |
+| [Master pages](architecture/master-pages.md) | Present |
+| [Release architecture](architecture/release-architecture.md) | Present |
 
 ## Business modules
 
