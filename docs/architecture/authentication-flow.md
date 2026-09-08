@@ -143,3 +143,13 @@ Constants: `WebApplication1/bussiness/production/SessionKeys.cs`.
 | `ImpersonationCorrelation` | `IMPERSONATION_CORR` | GUID pairing IMPERSONATE / IMPERSONATE_RETURN |
 
 See `docs/architecture/impersonation-lifecycle.md` for ORIGINAL_* rules.
+
+## See also
+
+- [Authentication](authentication-flow.md) (this page)
+- [Authorization](authorization-flow.md)
+- [Switch User](switch-user.md)
+- [Permission overlay](permission-overlay.md)
+- [Session](session-architecture.md)
+- [Administration](../administration/README.md)
+- [Troubleshooting](../troubleshooting/README.md)

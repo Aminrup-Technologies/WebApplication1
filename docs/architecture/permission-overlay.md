@@ -127,3 +127,13 @@ Rules during migration:
 6. Empty overlay must not lock out operators who still rely on CSV (SWITCH_USER) or hardcoded lists (export / attach / expenses) until those codes are granted and signed off.
 
 v2.3 (after this baseline) is overlay CRUD and groups on this engine — not a replacement Session or Forms model.
+
+## See also
+
+- [Authentication](authentication-flow.md)
+- [Authorization](authorization-flow.md)
+- [Switch User](switch-user.md)
+- [Permission overlay](permission-overlay.md) (this page)
+- [Session](session-architecture.md)
+- [Administration](../administration/README.md)
+- [Troubleshooting](../troubleshooting/README.md)

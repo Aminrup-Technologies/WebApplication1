@@ -109,3 +109,13 @@ New platform permissions are added to `tlb_permissions` and checked with `CanAcc
 - Never compare `Session["USERTYPE"]` on a new page; call `IsAdmin()` or `CanAccess`.
 - Never use `UserRoleDB` or `tlb_EmployeePermissions` for allow/deny.
 - Preserve dual-path until a release pack shows overlay-only is safe.
+
+## See also
+
+- [Authentication](authentication-flow.md)
+- [Authorization](authorization-flow.md) (this page)
+- [Switch User](switch-user.md)
+- [Permission overlay](permission-overlay.md)
+- [Session](session-architecture.md)
+- [Administration](../administration/README.md)
+- [Troubleshooting](../troubleshooting/README.md)

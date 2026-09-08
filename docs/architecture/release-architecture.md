@@ -40,3 +40,13 @@ Release packs may contain UAT operator names (e.g. J8). Treat as evidence, not a
 ## Related PRs
 
 #104 TEMPLATE on default; #105 architecture; #107 CODEOWNERS; #67 JOBID roadmap.
+
+## See also
+
+- [Authentication](authentication-flow.md)
+- [Authorization](authorization-flow.md)
+- [Switch User](switch-user.md)
+- [Permission overlay](permission-overlay.md)
+- [Session](session-architecture.md)
+- [Administration](../administration/README.md)
+- [Troubleshooting](../troubleshooting/README.md)

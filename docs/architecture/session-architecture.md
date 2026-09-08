@@ -37,3 +37,13 @@ Never introduce Forms tickets. Never a second Session builder. New privilege che
 ## Related PRs
 
 #87 (extract builder, landed in #89), #89 impersonation keys, #91 Switch User, #93 homepage loader (`ATS_SHOW_HOME_LOADER`) kept during squash.
+
+## See also
+
+- [Authentication](authentication-flow.md)
+- [Authorization](authorization-flow.md)
+- [Switch User](switch-user.md)
+- [Permission overlay](permission-overlay.md)
+- [Session](session-architecture.md) (this page)
+- [Administration](../administration/README.md)
+- [Troubleshooting](../troubleshooting/README.md)

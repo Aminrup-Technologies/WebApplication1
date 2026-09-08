@@ -49,3 +49,13 @@ flowchart TD
 ## Related PRs / tags
 
 Login MFA predates Security Foundation squash (#89–#104). Documented as part of identity at `v2.2-security-foundation`. Scripts: `add_employee_mfa_*.sql`.
+
+## See also
+
+- [Authentication](authentication-flow.md)
+- [Authorization](authorization-flow.md)
+- [Switch User](switch-user.md)
+- [Permission overlay](permission-overlay.md)
+- [Session](session-architecture.md)
+- [Administration](../administration/README.md)
+- [Troubleshooting](../troubleshooting/README.md)

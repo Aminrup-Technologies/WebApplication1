@@ -30,3 +30,13 @@ Office Staff cannot Switch User. Nested switch denied. Logout while impersonatin
 ## Related PRs
 
 #89 foundation, #91 page + chrome, #102 dual-path canary, #104 Active Admin overlay pack. UAT pack: `docs/release/v2.2-security-foundation/`.
+
+## See also
+
+- [Authentication](authentication-flow.md)
+- [Authorization](authorization-flow.md)
+- [Switch User](switch-user.md) (this page)
+- [Permission overlay](permission-overlay.md)
+- [Session](session-architecture.md)
+- [Administration](../administration/README.md)
+- [Troubleshooting](../troubleshooting/README.md)

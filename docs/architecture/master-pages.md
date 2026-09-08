@@ -40,3 +40,13 @@ Sidebar hide is **not** page authorization. URLs remain reachable. `aminrup` / `
 ## Related PRs
 
 #91 chrome, #102 `CanAccess` on switch link, homepage loader from default-branch work kept in squash.
+
+## See also
+
+- [Authentication](authentication-flow.md)
+- [Authorization](authorization-flow.md)
+- [Switch User](switch-user.md)
+- [Permission overlay](permission-overlay.md)
+- [Session](session-architecture.md)
+- [Administration](../administration/README.md)
+- [Troubleshooting](../troubleshooting/README.md)
