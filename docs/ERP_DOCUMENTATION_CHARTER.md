@@ -6,7 +6,7 @@
 **Status:** Active — first-pass coverage for phases 5–11 is on the index; deepen when new evidence appears (SP bodies, payroll sheet tables). Do not invent schema.  
 **Kind:** Documentation only. Does not change application behavior.
 
-This charter is the governing document for every documentation task on this branch. Navigation hub: [`ERP_DOCUMENTATION_INDEX.md`](ERP_DOCUMENTATION_INDEX.md).
+This charter is the governing document for every documentation task on this branch. Navigation hub: [`ERP_DOCUMENTATION_INDEX.md`](ERP_DOCUMENTATION_INDEX.md). Living process (ownership, impact matrix, coverage, gaps): [`governance/documentation_governance.md`](governance/documentation_governance.md).
 
 ## Mission
 
