@@ -232,26 +232,10 @@ timeline
 
 ## 🛡️ Long-Term Support Statement
 
-**ATS ERP Repository** enters Long-Term Support (LTS) state at `v2.2.4-documentation-baseline` with the following commitments:
+**ATS ERP Repository** enters Long-Term Support (LTS) state at `v2.2.4-documentation-baseline` with institutionalized governance ensuring self-maintaining documentation, stable security foundation, and proven development processes. All future development builds additively on this foundation without breaking changes.
 
-### Supported Components
-- **Security Foundation**: AuthorizationService, permission overlays, Switch User infrastructure
-- **Documentation Governance**: Impact matrices, coverage tracking, evidence gap management
-- **Repository Standards**: CODEOWNERS, branch protection, development processes
-- **Architecture Documentation**: Cross-linked flows, troubleshooting runbooks, administration guides
-
-### Maintenance Policy
-- **Governance Processes**: Self-maintaining through institutionalized PR checklist integration
-- **Documentation Updates**: Automatic via impact matrix requirements for all code changes
-- **Security Standards**: Preserved through required review enforcement
-- **Evidence Discipline**: Maintained through gap register and charter requirements
-
-### Evolution Path
-- **Additive Development**: All future features build on LTS foundation without breaking changes
-- **Backward Compatibility**: LTS baseline remains valid reference for all subsequent development
-- **Process Continuity**: Established governance patterns apply to all future development streams
-
-**LTS Duration**: This baseline serves as the permanent foundation for ATS ERP development until a future major architecture revision (not currently planned).
+**LTS Duration:** Indefinite support as permanent foundation for ATS ERP development  
+**LTS Policy:** See [`release/LTS_BASELINE.md`](release/LTS_BASELINE.md) for complete support commitments, maintenance guarantees, and technical specifications
 
 ---
 
@@ -277,25 +261,11 @@ timeline
 
 ## 📊 Repository Health at LTS
 
-### Documentation State
-- **Coverage**: 100% across all 10 areas (Architecture, Business, Database, Security, Administration, Developer, Troubleshooting, Operations, Integrations, Appendix)
-- **Quality**: Complete (Architecture), First Pass (Business/Operations), Evidence Gap (Database SP bodies)
-- **Governance**: Institutionalized impact matrices and evidence gap tracking
-- **Navigation**: Project Manifest provides executive overview, ERP Documentation Index provides detailed navigation
+Repository achieves excellent health with operational security foundation, 100% documentation coverage across all areas, and institutionalized governance processes. All technical infrastructure, process automation, and quality gates are operational and ready for long-term support.
 
-### Technical State
-- **Security**: AuthorizationService operational, permission overlays deployed, Switch User enabled
-- **Session Management**: InProc Session with standardized keys and five-point validation
-- **Code Quality**: C# 6 standards, parameterized SQL, unified error handling
-- **Architecture**: Master pages, Session-based identity, stored procedure data access
-
-### Process State  
-- **Review Requirements**: CODEOWNERS enforcement for security and governance changes
-- **Branch Protection**: Force-push prevention, required PR reviews, status checks
-- **Release Management**: Evidence packs, systematic tagging, branch preservation
-- **Development Guidelines**: CONTRIBUTING standards, impact matrix compliance
-
-**Overall Assessment**: Repository is in excellent health with stable foundation, complete governance, and clear development path forward.
+**Current Status:** See `PROJECT_MANIFEST.md` (from PR #110) for executive overview and current readiness assessment  
+**Coverage Detail:** See [`DOCUMENTATION_COVERAGE.md`](DOCUMENTATION_COVERAGE.md) for complete coverage dashboard  
+**Evidence Tracking:** See [`EVIDENCE_GAP_REGISTER.md`](EVIDENCE_GAP_REGISTER.md) for 15 explicit gaps and evidence policy
 
 ---
 
@@ -313,7 +283,10 @@ This Foundation Program represents the **definitive modernization** of the ATS E
 ## 📍 References
 
 - **Project Manifest**: `PROJECT_MANIFEST.md` (from PR #110) — Executive repository overview
+- **LTS Baseline**: [`release/LTS_BASELINE.md`](release/LTS_BASELINE.md) — Long-term support policy and commitments
 - **Documentation Index**: [`ERP_DOCUMENTATION_INDEX.md`](ERP_DOCUMENTATION_INDEX.md) — Complete navigation
+- **Documentation Coverage**: [`DOCUMENTATION_COVERAGE.md`](DOCUMENTATION_COVERAGE.md) — Living coverage dashboard
+- **Evidence Gap Register**: [`EVIDENCE_GAP_REGISTER.md`](EVIDENCE_GAP_REGISTER.md) — Explicit unknown tracking
 - **Security Baseline**: [`../SECURITY_FOUNDATION_BASELINE.md`](../SECURITY_FOUNDATION_BASELINE.md) — Security foundation evidence
 - **Documentation Charter**: [`ERP_DOCUMENTATION_CHARTER.md`](ERP_DOCUMENTATION_CHARTER.md) — Evidence-first principles
 - **Governance Hub**: [`governance/cursor_governance.md`](governance/cursor_governance.md) — Repository governance
