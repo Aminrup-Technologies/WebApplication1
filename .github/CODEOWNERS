@@ -1,0 +1,32 @@
+# CODEOWNERS — Security Foundation v2.2.1
+#
+# These patterns request review from the listed owners when a PR touches
+# matching paths. GitHub enforces them only after branch protection is
+# enabled with "Require review from Code Owners" (see
+# docs/governance/branch_protection_runbook.md). This file does not by
+# itself lock the default branch.
+#
+# Placeholder owner: @Aminrup-Technologies (organization).
+# Repository owners may later replace @Aminrup-Technologies with a
+# dedicated GitHub team (for example @Aminrup-Technologies/security)
+# without changing the path list.
+
+# Global default
+* @Aminrup-Technologies
+
+# Security core — identity, Session keys, impersonation, authorization, overlay
+/WebApplication1/Login.aspx.cs @Aminrup-Technologies
+/WebApplication1/bussiness/production/SessionKeys.cs @Aminrup-Technologies
+/WebApplication1/App_Code/ImpersonationAudit.cs @Aminrup-Technologies
+/WebApplication1/App_Code/AuthorizationService.cs @Aminrup-Technologies
+/WebApplication1/App_Code/PermissionRepository.cs @Aminrup-Technologies
+/WebApplication1/bussiness/production/SwitchUser.* @Aminrup-Technologies
+
+# Architecture and contributing rules
+/docs/architecture/ @Aminrup-Technologies
+/docs/governance/ @Aminrup-Technologies
+/SECURITY_FOUNDATION_BASELINE.md @Aminrup-Technologies
+/CONTRIBUTING.md @Aminrup-Technologies
+
+# Release evidence packs
+/docs/release/ @Aminrup-Technologies
