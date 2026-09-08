@@ -15,6 +15,7 @@
 | PR template | `.github/pull_request_template.md` |
 | Who reviews | `.github/CODEOWNERS`, [security_change_matrix](../governance/security_change_matrix.md) |
 | Cursor / agent | [cursor_governance](../governance/cursor_governance.md) |
+| Documentation in the same PR | [impact matrix](../governance/documentation_impact_matrix.md) |
 
 ## Branching
 

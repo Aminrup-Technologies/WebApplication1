@@ -17,3 +17,13 @@ Do not duplicate the four Security Foundation flow docs. This folder **extends**
 | Release | [release-architecture.md](release-architecture.md) |
 
 Index: [`../ERP_DOCUMENTATION_INDEX.md`](../ERP_DOCUMENTATION_INDEX.md).
+
+## See also
+
+- [Authentication](authentication-flow.md)
+- [Authorization](authorization-flow.md)
+- [Switch User](switch-user.md)
+- [Permission overlay](permission-overlay.md)
+- [Session](session-architecture.md)
+- [Administration](../administration/README.md)
+- [Troubleshooting](../troubleshooting/README.md)

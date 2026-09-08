@@ -74,6 +74,7 @@ Stop and report BLOCKED if asked to:
 | Authz tree | `docs/architecture/authorization-flow.md` |
 | Impersonation | `docs/architecture/impersonation-lifecycle.md` |
 | Overlay | `docs/architecture/permission-overlay.md` |
+| Documentation impact | `docs/governance/documentation_impact_matrix.md` |
 | Reviewer / risk | `docs/governance/security_change_matrix.md` |
 | GitHub rules | `docs/governance/branch_protection_runbook.md` |
 | Stack branch cleanup | `docs/governance/branch_cleanup_runbook.md` |

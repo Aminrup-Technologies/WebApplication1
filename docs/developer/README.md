@@ -9,3 +9,5 @@ Canonical rules already live in:
 - [`MAINTENANCE_GUIDELINES.md`](../MAINTENANCE_GUIDELINES.md)
 
 Expansion: [handbook.md](handbook.md).
+
+PRs that change ERP code must follow [`documentation_impact_matrix.md`](../governance/documentation_impact_matrix.md).

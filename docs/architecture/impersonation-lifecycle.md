@@ -136,3 +136,13 @@ It:
 3. `Session.Abandon` — ORIGINAL_* disappear; there is no automatic return-to-admin.
 
 v2.2 accepted this. The supported exit is **Return to my account**, then logout as the admin. Do not add a silent restore in this baseline. A later CR may defer target LastLogout or block logout while `IS_IMPERSONATING`.
+
+## See also
+
+- [Authentication](authentication-flow.md)
+- [Authorization](authorization-flow.md)
+- [Switch User](switch-user.md)
+- [Permission overlay](permission-overlay.md)
+- [Session](session-architecture.md)
+- [Administration](../administration/README.md)
+- [Troubleshooting](../troubleshooting/README.md)
