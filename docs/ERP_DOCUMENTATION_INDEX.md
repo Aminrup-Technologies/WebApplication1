@@ -39,7 +39,7 @@
 
 | Document | Status |
 | --- | --- |
-| [Employee registration](modules/employee-registration.md) | Planned |
+| [Employee registration](modules/employee-registration.md) | Present |
 | Attendance | Planned |
 | Payroll | Planned |
 | JOBID | Link existing `JOBID_LIFECYCLE_FUNCTIONAL_AUDIT.md` then module wrapper |
