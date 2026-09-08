@@ -71,3 +71,9 @@ See `docs/RELEASE_GOVERNANCE.md`.
 ## Language and compile
 
 Production C# on this app is **C# 6** (`langversion` 6). Do not introduce newer syntax. Keep `WebApplication1.csproj` Compile items unique.
+
+## Documentation
+
+Every PR that changes ERP pages, `App_Code`, SQL scripts, or AppSettings must follow `docs/governance/documentation_impact_matrix.md` and complete the **Documentation Impact** checklist in `.github/pull_request_template.md`. Update `docs/ERP_DOCUMENTATION_INDEX.md` when adding a document. Unknown schema goes in `docs/EVIDENCE_GAP_REGISTER.md` — never invent tables or stored-procedure bodies.
+
+Charter: `docs/ERP_DOCUMENTATION_CHARTER.md`. Process: `docs/governance/documentation_governance.md`. Hub: `docs/ERP_DOCUMENTATION_INDEX.md`.

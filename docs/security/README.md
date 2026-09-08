@@ -19,3 +19,4 @@ This folder is the **operations and threat-model** companion to [architecture](.
 | Switch User | `docs/architecture/switch-user.md` |
 | Overlay schema | `docs/architecture/permission-overlay.md` |
 | Governance | `docs/governance/security_change_matrix.md` |
+| Documentation process | `docs/governance/documentation_governance.md` |
