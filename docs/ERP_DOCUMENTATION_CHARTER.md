@@ -3,7 +3,7 @@
 **Version:** Documentation program rooted in `v2.2.3-governance-final` (`495fc68`)  
 **Branch:** `feature/erp-documentation-program`  
 **Base:** `Jul_to_Sep_2026_Suport_N_Dev_Works`  
-**Status:** Active — governing instruction until the program is marked complete  
+**Status:** Active — first-pass coverage for phases 5–11 is on the index; deepen when new evidence appears (SP bodies, payroll sheet tables). Do not invent schema.  
 **Kind:** Documentation only. Does not change application behavior.
 
 This charter is the governing document for every documentation task on this branch. Navigation hub: [`ERP_DOCUMENTATION_INDEX.md`](ERP_DOCUMENTATION_INDEX.md).
