@@ -1,4 +1,5 @@
-﻿using System;
+﻿/* When: 2026-09-29 | Why: SU-P1-02 — homepage logout while switched must mark the original authenticated user offline and must not change the target employee's LoginStatus or LastLogout. | What: LogoutUserfromATS, LogoutUser, and btn_cancel1_Click resolve presence through ImpersonationAudit.GetLogoutPresenceIdentity. Normal logout still uses the effective session user. */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -1517,13 +1518,16 @@ namespace WebApplication1.bussiness.production
 
         private void LogoutUserfromATS()
         {
-            dbcl.UPDT_EmpMuster_LogoutInfo(Session["WORKMAN"].ToString(), Session["USERID"].ToString());
-            LogoutUser();
+            string presenceLoginId;
+            string presenceWorkman;
+            ImpersonationAudit.GetLogoutPresenceIdentity(Session, out presenceLoginId, out presenceWorkman);
+            dbcl.UPDT_EmpMuster_LogoutInfo(presenceWorkman, presenceLoginId);
+            LogoutUser(presenceLoginId);
             Session.Abandon();
             Response.Redirect("~/login.aspx", false);
         }
 
-        protected void LogoutUser()
+        protected void LogoutUser(string presenceLoginId)
         {
             dbcl.SPreturn_dt(
                 @"UPDATE tbl_UserLoginAudit
@@ -1538,7 +1542,7 @@ namespace WebApplication1.bussiness.production
                 "UPDATE tbl_Employee_Mustertable SET LastLogout=GETDATE(), LoginStatus=0 WHERE LoginID=@ID",
                 new SqlParameter[]
                 {
-            new SqlParameter("@ID", Session["USERID"].ToString())
+            new SqlParameter("@ID", presenceLoginId ?? "")
                 });
 
             Session.Clear();
@@ -1854,7 +1858,10 @@ namespace WebApplication1.bussiness.production
         protected void btn_cancel1_Click(object sender, EventArgs e)
         {
             dbcl.WriteToFile("User :" + Session["USERNAME"].ToString() + " Singout Successfully");
-            dbcl.UPDT_EmpMuster_LogoutInfo(Session["WORKMAN"].ToString(), Session["USERID"].ToString());
+            string presenceLoginId;
+            string presenceWorkman;
+            ImpersonationAudit.GetLogoutPresenceIdentity(Session, out presenceLoginId, out presenceWorkman);
+            dbcl.UPDT_EmpMuster_LogoutInfo(presenceWorkman, presenceLoginId);
 
             Session.Abandon();
             Response.Redirect("~/login.aspx", false);

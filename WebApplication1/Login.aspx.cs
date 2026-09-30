@@ -1,4 +1,5 @@
-﻿/*
+﻿/* When: 2026-09-29 | Why: SU-P1-01 — the shared employee-session writer must establish USTATE, SKIL, and DESG from the same row columns homepage_v2 already uses, so a switched or restored session cannot keep the previous employee's scope. | What: ApplySessionFromEmployeeRow now assigns USTATE from WorkState, SKIL from SkillCategory, and DESG from SkillDesignation beside the existing STATE, U_SKILL, and U_DESG writes. No second writer. */
+/*
  * WHEN: 2026-02-27
  * WHY: Fixing the tab reset bug by manipulating the tab HTML classes directly from the server.
  * WHAT: Implemented server-side control over tab_login_btn, tab_forgot_btn, pane_login, and pane_forgot in Page_PreRender.
@@ -800,12 +801,18 @@ namespace WebApplication1.bussiness.production
             session[SessionKeys.UserRoleDB] = employee["UserRoleDB"].ToString();
             session[SessionKeys.RolePermissionDB] = employee["RolePermissionDB"].ToString();
             session[SessionKeys.Region] = employee["WorkRegion"].ToString();
-            session[SessionKeys.UserState] = employee["WorkState"].ToString();
+            string workState = employee["WorkState"].ToString();
+            session[SessionKeys.UserState] = workState;
+            session["USTATE"] = workState;
             session[SessionKeys.CompanyCode] = employee["WorkCompany"].ToString();
             session[SessionKeys.WorkSite] = employee["WorkSite"].ToString();
             session[SessionKeys.SiteCode] = employee["Worksite_Code"].ToString();
-            session[SessionKeys.Designation] = employee["SkillDesignation"].ToString();
-            session[SessionKeys.Skill] = employee["SkillCategory"].ToString();
+            string skillDesignation = employee["SkillDesignation"].ToString();
+            session[SessionKeys.Designation] = skillDesignation;
+            session["DESG"] = skillDesignation;
+            string skillCategory = employee["SkillCategory"].ToString();
+            session[SessionKeys.Skill] = skillCategory;
+            session["SKIL"] = skillCategory;
 
             string photo = employee["PrfPicFile"].ToString();
             session[SessionKeys.UserPhoto] = (!string.IsNullOrEmpty(photo) && Directory.Exists(rootFolder) && File.Exists(Path.Combine(rootFolder, photo)))

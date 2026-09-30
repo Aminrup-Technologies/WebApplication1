@@ -1,3 +1,4 @@
+/* When: 2026-09-29 | Why: SU-P1-02 — logout while impersonating must update presence for the original authenticated user, and both logout pages must share that rule. | What: GetLogoutPresenceIdentity returns ORIGINAL_USERID and ORIGINAL_WORKMAN when IS_IMPERSONATING is set and both snapshot values are present; otherwise it returns the effective USERID and WORKMAN. */
 /*
  * WHEN: 2026-09-06
  * WHY: PR #89 impersonation audit foundation; PR #90 adds the restore-gate helper.
@@ -68,6 +69,20 @@ namespace WebApplication1.bussiness.production
             if (session == null) return false;
             if (!IsImpersonating(session)) return false;
             return IsOriginalIdentityCaptured(session);
+        }
+
+        public static void GetLogoutPresenceIdentity(HttpSessionState session, out string loginId, out string workmanSL)
+        {
+            loginId = Read(session, SessionKeys.UserID);
+            workmanSL = Read(session, SessionKeys.WorkmanSL);
+            if (!IsImpersonating(session)) return;
+
+            string originalLoginId = Read(session, SessionKeys.OriginalUserID);
+            string originalWorkman = Read(session, SessionKeys.OriginalWorkmanSL);
+            if (string.IsNullOrWhiteSpace(originalLoginId) || string.IsNullOrWhiteSpace(originalWorkman)) return;
+
+            loginId = originalLoginId;
+            workmanSL = originalWorkman;
         }
 
         public static void StoreCorrelationId(HttpSessionState session, Guid correlationId)
