@@ -1,4 +1,5 @@
-﻿using System;
+﻿/* When: 2026-09-30 | Why: Enforce the existing JOB360_OVERRIDE authorization decision at the server-side attendance handlers identified by F-P1-01. | What: Added existing IsAdmin() guards to the affected manpower invalidate/edit and worker-save execution paths without changing authorization semantics, SQL, or business behavior. */
+using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -291,6 +292,12 @@ namespace WebApplication1.bussiness.production
             // GAP 4 IMPLEMENTATION: Granular Roster Purging (Soft Delete)
             if (e.CommandName == "InvalidateWorker")
             {
+                if (!IsAdmin())
+                {
+                    ShowNotification("Access Denied", "You do not have permission to perform this override.", "error");
+                    return;
+                }
+
                 string workmanWrk = e.CommandArgument.ToString();
                 string jobid = txt_jobid.Text.Trim();
                 string adminUser = Session["USERNAME"] != null ? Session["USERNAME"].ToString() : "ADMIN";
@@ -352,6 +359,12 @@ namespace WebApplication1.bussiness.production
             }
             if (e.CommandName == "EditWorker")
             {
+                if (!IsAdmin())
+                {
+                    ShowNotification("Access Denied", "You do not have permission to perform this override.", "error");
+                    return;
+                }
+
                 string attendanceId = e.CommandArgument.ToString();
                 try
                 {
@@ -468,6 +481,12 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_SaveWorkerEdit_Click(object sender, EventArgs e)
         {
+            if (!IsAdmin())
+            {
+                ShowNotification("Access Denied", "You do not have permission to perform this override.", "error");
+                return;
+            }
+
             try
             {
                 dbcl.Sqlconnection();
