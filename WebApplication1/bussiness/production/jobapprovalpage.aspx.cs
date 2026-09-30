@@ -1,4 +1,5 @@
-﻿using System;
+﻿/* When: 2026-09-30 | Why: Approve and Reject postbacks changed tbl_jobs and tbl_attendance without proving the signed-in operator is that job's in-charge, without a conditional pending-state predicate, and without one transaction, so a repeated postback or a failed master update could leave a partial approval. | What: The live Approve and Reject path now re-reads tbl_jobs, authorizes Session WORKMAN against JOB_InchargeWrk, applies the existing out-punch approval predicate and 72-hour/admin lock inside one transaction, requires the job update to affect one row and the attendance update to affect every matching non-deleted row, rolls back when either mutation does not, and writes the existing success audit only after commit. */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -875,38 +876,307 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_approve_Click(object sender, EventArgs e)
         {
+            ApplyInchargeDecision("Approved", "Approved by Approver", "APPROVER: JOB APPROVED", "Shift approved by Site In-Charge. Attendance codes preserved.", "JOBID has been Approved.", true);
+        }
+
+        protected void btn_reject_Click(object sender, EventArgs e)
+        {
+            string remarks = txt_remarks.Text.Trim();
+            if (string.IsNullOrEmpty(remarks) || remarks.Equals("N/A", StringComparison.OrdinalIgnoreCase))
+            {
+                ShowNotice("Validation Error:", "Please provide remarks for rejecting this job.");
+                return;
+            }
+
+            ApplyInchargeDecision("Rejected", "Rejected by Approver", "APPROVER: JOB REJECTED", "Shift rejected by Site In-Charge.", "JOBID has been Rejected.", false);
+        }
+
+        private void ApplyInchargeDecision(string approvalStatus, string jobStatusText, string auditStep, string auditDetail, string successBody, bool isApprove)
+        {
+            string jobid = txt_jobid.Text == null ? "" : txt_jobid.Text.Trim();
+            if (string.IsNullOrEmpty(jobid))
+            {
+                ShowNotice("Error :", "A valid JOBID is required.");
+                return;
+            }
+
+            string operatorWrk = Session["WORKMAN"] == null ? "" : Session["WORKMAN"].ToString();
+            if (string.IsNullOrWhiteSpace(operatorWrk))
+            {
+                ShowNotice("Error :", "Your session has expired. Please log in again.");
+                return;
+            }
+
+            int thresholdHours;
             try
             {
-                string jobid = txt_jobid.Text.ToString();
-                string remarks = txt_remarks.Text.ToString();
-
-                // 1. SAFE CALL: Pass only the JOBID and the Status
-                if (Update_AttendanceTableStatus(jobid, "Approved") == true)
-                {
-                    // 2. Update the master JOB table
-                    Update_JOBTableStatus(jobid, "Blocked", "Approved by Approver", "5", "Approved", remarks);
-
-                    txt_remarks.ReadOnly = true;
-                    btn_approve.Enabled = false;
-                    btn_approve.Text = "Approved";
-                    btn_reject.Visible = false;
-
-                    Bind_JOBIDDetails(jobid);
-
-                    // 3. Log the action
-                    JobWorkflowLogger.LogAction(jobid, "APPROVER: JOB APPROVED", Session["WORKMAN"].ToString(), "Shift approved by Site In-Charge. Attendance codes preserved.");
-
-                    string title = "Success:";
-                    string body = "JOBID has been Approved.";
-                    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
-                }
+                thresholdHours = Convert.ToInt32(ConfigurationManager.AppSettings["TimeThresholdHours"]);
             }
             catch (Exception ex)
             {
-                string title = "Error :";
-                string body = ex.Message;
-                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                ShowNotice("Error :", ex.Message);
+                return;
             }
+
+            DataRow jobRow = ReadAuthoritativeJob(jobid);
+            if (jobRow == null)
+            {
+                ShowNotice("Error :", "This JOBID was not found.");
+                return;
+            }
+
+            string denial = DescribeApprovalDenial(jobRow, operatorWrk);
+            if (denial != null)
+            {
+                ShowNotice("Error :", denial);
+                return;
+            }
+
+            string remarks = isApprove ? txt_remarks.Text.ToString() : txt_remarks.Text.Trim();
+            string billingType;
+            string billingCode;
+            try
+            {
+                billingType = DDL_BillingType.SelectedItem.Text.ToString();
+                billingCode = DDL_BillingType.SelectedValue.ToString();
+            }
+            catch (Exception ex)
+            {
+                ShowNotice("Error :", ex.Message);
+                return;
+            }
+
+            bool committed = false;
+            SqlTransaction transaction = null;
+            try
+            {
+                dbcl.Sqlconnection();
+                dbcl.ConnectDb();
+                transaction = dbcl.Conn.BeginTransaction();
+                DateTime asOf = DateTime.Now;
+
+                int jobRows = ExecuteConditionalJobUpdate(transaction, jobid, operatorWrk, thresholdHours, asOf, "Blocked", jobStatusText, JobStatusConstants.CodeApproved, approvalStatus, remarks, billingType, billingCode);
+                if (jobRows != 1)
+                {
+                    transaction.Rollback();
+                    transaction = null;
+                    ShowNotice("Error :", "This job could not be updated. It is no longer eligible for approval. No change was saved.");
+                    return;
+                }
+
+                int expectedAttendance = CountLiveAttendance(transaction, jobid);
+                int attendanceRows = ExecuteAttendanceApproval(transaction, jobid, approvalStatus);
+                if (attendanceRows != expectedAttendance)
+                {
+                    transaction.Rollback();
+                    transaction = null;
+                    ShowNotice("Error :", "Attendance could not be updated for this job. No change was saved.");
+                    return;
+                }
+
+                transaction.Commit();
+                committed = true;
+                transaction = null;
+            }
+            catch (Exception ex)
+            {
+                if (transaction != null)
+                {
+                    try { transaction.Rollback(); } catch { }
+                }
+                ShowNotice("Error :", ex.Message);
+                return;
+            }
+            finally
+            {
+                try
+                {
+                    if (dbcl.Conn != null && dbcl.Conn.State != ConnectionState.Closed)
+                    {
+                        dbcl.DisconnectDb();
+                    }
+                }
+                catch { }
+            }
+
+            if (!committed)
+            {
+                return;
+            }
+
+            JobWorkflowLogger.LogAction(jobid, auditStep, operatorWrk, auditDetail);
+
+            if (isApprove)
+            {
+                txt_remarks.ReadOnly = true;
+                btn_approve.Enabled = false;
+                btn_approve.Text = "Approved";
+                btn_reject.Visible = false;
+            }
+            else
+            {
+                txt_remarks.ReadOnly = true;
+                btn_reject.Enabled = false;
+                btn_reject.Text = "Rejected";
+                btn_approve.Visible = false;
+            }
+
+            Bind_JOBIDDetails(jobid);
+            ShowNotice("Success:", successBody);
+        }
+
+        private DataRow ReadAuthoritativeJob(string jobid)
+        {
+            string constr = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
+            using (SqlConnection con = new SqlConnection(constr))
+            using (SqlCommand cmd = new SqlCommand("SELECT JOB_InchargeWrk, Incharge_Approval, JOB_Status, EntryExit, MasterStatusCode, JOBID_Status, IsBlocked, UnblockedUntil, CreatedDate FROM tbl_jobs WHERE JOBID=@JOBID", con))
+            {
+                cmd.Parameters.AddWithValue("@JOBID", jobid);
+                con.Open();
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    DataTable table = new DataTable();
+                    table.Load(reader);
+                    if (table.Rows.Count != 1)
+                    {
+                        return null;
+                    }
+                    return table.Rows[0];
+                }
+            }
+        }
+
+        private string DescribeApprovalDenial(DataRow row, string operatorWrk)
+        {
+            string incharge = row["JOB_InchargeWrk"] == DBNull.Value ? "" : row["JOB_InchargeWrk"].ToString();
+            if (!string.Equals(incharge, operatorWrk, StringComparison.OrdinalIgnoreCase))
+            {
+                return "You are not authorized to approve or reject this job.";
+            }
+
+            string approval = row["Incharge_Approval"] == DBNull.Value ? "" : row["Incharge_Approval"].ToString();
+            if (approval == "Approved")
+            {
+                return "This job is already approved.";
+            }
+            if (approval == "Rejected")
+            {
+                return "This job is already rejected.";
+            }
+            if (approval != "Pending" && approval != "Returned")
+            {
+                return "This job is not awaiting in-charge approval.";
+            }
+
+            string jobStatus = row["JOB_Status"] == DBNull.Value ? "" : row["JOB_Status"].ToString();
+            string entryExit = row["EntryExit"] == DBNull.Value ? "" : row["EntryExit"].ToString();
+            string masterCode = row["MasterStatusCode"] == DBNull.Value ? "" : row["MasterStatusCode"].ToString();
+            if (jobStatus != JobStatusConstants.StatusOutPunchDone || entryExit != JobStatusConstants.EntryExitExit || masterCode != JobStatusConstants.CodeClosed)
+            {
+                return "This job is not in a state that can be approved or rejected.";
+            }
+
+            DateTime createdDate = row["CreatedDate"] != DBNull.Value ? Convert.ToDateTime(row["CreatedDate"]) : DateTime.Now;
+            bool isDbBlocked = row["IsBlocked"] != DBNull.Value && Convert.ToBoolean(row["IsBlocked"]);
+            string jobIdStatus = row["JOBID_Status"] == DBNull.Value ? "" : row["JOBID_Status"].ToString();
+            bool isElapsed = Is72HoursElapsed(createdDate, row["UnblockedUntil"]);
+            bool finalBlock = isDbBlocked || isElapsed;
+            if (finalBlock && entryExit == JobStatusConstants.EntryExitExit && jobIdStatus == "Blocked")
+            {
+                if (isElapsed)
+                {
+                    return "The 72-hour window to approve this job has expired. Please contact HR Admin to request a 24-hour unblock.";
+                }
+                return "This job is currently blocked by the system.";
+            }
+
+            return null;
+        }
+
+        private int ExecuteConditionalJobUpdate(SqlTransaction transaction, string jobid, string operatorWrk, int thresholdHours, DateTime asOf, string jobidStatus, string jobStatusText, string masterCode, string approvalStatus, string remarks, string billingType, string billingCode)
+        {
+            string cmdString = @"UPDATE tbl_jobs
+                SET JOBID_Status=@JOBID_Status,
+                    JOB_Status=@JOB_Status,
+                    MasterStatusCode=@MasterStatusCode,
+                    Incharge_Approval=@Incharge_Approval,
+                    Incharge_Remarks=@Incharge_Remarks,
+                    Incharge_ApprovalDate=@Incharge_ApprovalDate,
+                    BillingType=@BillingType,
+                    BillingCode=@BillingCode
+                WHERE JOBID=@JOBID
+                  AND JOB_InchargeWrk=@Workman
+                  AND JOB_Status=@EligibleJobStatus
+                  AND EntryExit=@EligibleEntryExit
+                  AND MasterStatusCode=@EligibleMasterCode
+                  AND Incharge_Approval IN (@PendingStatus, @ReturnedStatus)
+                  AND NOT (
+                        JOBID_Status = @BlockedStatus
+                        AND (
+                            ISNULL(IsBlocked, 0) = 1
+                            OR (
+                                CreatedDate IS NOT NULL
+                                AND NOT (UnblockedUntil IS NOT NULL AND @AsOf <= UnblockedUntil)
+                                AND DATEADD(HOUR, @ThresholdHours, CAST(CreatedDate AS datetime)) <= @AsOf
+                            )
+                        )
+                  )";
+
+            using (SqlCommand cmd = new SqlCommand(cmdString, transaction.Connection, transaction))
+            {
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@JOBID", jobid);
+                cmd.Parameters.AddWithValue("@Workman", operatorWrk);
+                cmd.Parameters.AddWithValue("@JOBID_Status", jobidStatus);
+                cmd.Parameters.AddWithValue("@JOB_Status", jobStatusText);
+                cmd.Parameters.AddWithValue("@MasterStatusCode", masterCode);
+                cmd.Parameters.AddWithValue("@Incharge_Approval", approvalStatus);
+                cmd.Parameters.AddWithValue("@Incharge_Remarks", remarks);
+                cmd.Parameters.AddWithValue("@Incharge_ApprovalDate", asOf.ToString("yyyy-MM-dd hh:mm:ss tt"));
+                cmd.Parameters.AddWithValue("@BillingType", billingType);
+                cmd.Parameters.AddWithValue("@BillingCode", billingCode);
+                cmd.Parameters.AddWithValue("@EligibleJobStatus", JobStatusConstants.StatusOutPunchDone);
+                cmd.Parameters.AddWithValue("@EligibleEntryExit", JobStatusConstants.EntryExitExit);
+                cmd.Parameters.AddWithValue("@EligibleMasterCode", JobStatusConstants.CodeClosed);
+                cmd.Parameters.AddWithValue("@PendingStatus", "Pending");
+                cmd.Parameters.AddWithValue("@ReturnedStatus", "Returned");
+                cmd.Parameters.AddWithValue("@BlockedStatus", "Blocked");
+                cmd.Parameters.AddWithValue("@ThresholdHours", thresholdHours);
+                cmd.Parameters.AddWithValue("@AsOf", asOf);
+                return cmd.ExecuteNonQuery();
+            }
+        }
+
+        private int CountLiveAttendance(SqlTransaction transaction, string jobid)
+        {
+            using (SqlCommand cmd = new SqlCommand("SELECT COUNT(1) FROM tbl_attendance WHERE JOBID=@JOBID AND DeleteStatus=0", transaction.Connection, transaction))
+            {
+                cmd.Parameters.AddWithValue("@JOBID", jobid);
+                return Convert.ToInt32(cmd.ExecuteScalar());
+            }
+        }
+
+        private int ExecuteAttendanceApproval(SqlTransaction transaction, string jobid, string approvalStatus)
+        {
+            string cmdString = @"UPDATE tbl_attendance
+                             SET SiteIncharge_Approval = @SiteIncharge_Approval,
+                                 Approval_Date = GETDATE(),
+                                 AttendanceStatus = 'Present'
+                             WHERE JOBID = @JOBID AND DeleteStatus = 0";
+            using (SqlCommand cmd = new SqlCommand(cmdString, transaction.Connection, transaction))
+            {
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@JOBID", jobid);
+                cmd.Parameters.AddWithValue("@SiteIncharge_Approval", approvalStatus);
+                return cmd.ExecuteNonQuery();
+            }
+        }
+
+        private void ShowNotice(string title, string body)
+        {
+            string safeTitle = (title ?? "").Replace("'", "");
+            string safeBody = (body ?? "").Replace("'", "").Replace("\r", " ").Replace("\n", " ");
+            ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + safeTitle + "', '" + safeBody + "');", true);
         }
 
         private Boolean Update_AttendanceTableStatus(string jobid, string status)
@@ -1301,52 +1571,5 @@ namespace WebApplication1.bussiness.production
             Response.Redirect("attach_manpower.aspx?JOBID=" + txt_jobid.Text.ToString() + "");
         }
 
-        protected void btn_reject_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                string jobid = txt_jobid.Text.ToString();
-                string remarks = txt_remarks.Text.Trim();
-
-                // Optional but recommended: Force the approver to provide a reason for rejection
-                if (string.IsNullOrEmpty(remarks) || remarks.Equals("N/A", StringComparison.OrdinalIgnoreCase))
-                {
-                    string valTitle = "Validation Error:";
-                    string valBody = "Please provide remarks for rejecting this job.";
-                    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + valTitle + "', '" + valBody + "');", true);
-                    return;
-                }
-
-                // 1. Update Attendance Status to Rejected
-                if (Update_AttendanceTableStatus(jobid, "Rejected") == true)
-                {
-                    // 2. Update the master JOB table
-                    // Note: Adjust the MasterStatusCode ("5") if your DB uses a different code for rejected states
-                    Update_JOBTableStatus(jobid, "Blocked", "Rejected by Approver", "5", "Rejected", remarks);
-
-                    // 3. Update UI
-                    txt_remarks.ReadOnly = true;
-                    btn_reject.Enabled = false;
-                    btn_reject.Text = "Rejected";
-                    btn_approve.Visible = false;
-
-                    // 4. Re-bind to refresh the state
-                    Bind_JOBIDDetails(jobid);
-
-                    // 5. Log the action (matching your approval logging pattern)
-                    JobWorkflowLogger.LogAction(jobid, "APPROVER: JOB REJECTED", Session["WORKMAN"].ToString(), "Shift rejected by Site In-Charge.");
-
-                    string title = "Success:";
-                    string body = "JOBID has been Rejected.";
-                    ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
-                }
-            }
-            catch (Exception ex)
-            {
-                string title = "Error :";
-                string body = ex.Message;
-                ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
-            }
-        }
     }
 }
