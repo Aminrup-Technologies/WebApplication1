@@ -1,4 +1,5 @@
-﻿using System;
+﻿/* When: 2026-09-30 | Why: Parameterize the existing CheckforPendingOUT SQL inputs to remove the identified SQL-concatenation sink without changing query or business semantics. | What: Replaced direct SQL concatenation of jobid and supvwrkman with existing parameterized-command patterns while preserving the existing query, result behavior, callers, and database contract. */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -212,10 +213,12 @@ namespace WebApplication1.bussiness.production
         public Int32 CheckforPendingOUT(string jobid, string supvwrkman)
         {
             dbcl.Sqlconnection();
-            string cmdstring = "select count (JOBID) from tbl_attendance where JOBID= '" + jobid + "' and Creator_Workman='" + supvwrkman + "'  and AttendanceStatus = 'Entry'";
+            string cmdstring = "select count (JOBID) from tbl_attendance where JOBID=@JOBID and Creator_Workman=@Creator_Workman and AttendanceStatus = 'Entry'";
             dbcl.ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdstring, dbcl.Conn);
             cmd.CommandType = CommandType.Text;
+            cmd.Parameters.AddWithValue("@JOBID", jobid);
+            cmd.Parameters.AddWithValue("@Creator_Workman", supvwrkman);
             Int32 count = Convert.ToInt32(cmd.ExecuteScalar());
             dbcl.DisconnectDb();
             return count;
