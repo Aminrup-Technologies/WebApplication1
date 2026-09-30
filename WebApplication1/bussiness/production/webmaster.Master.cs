@@ -1,4 +1,5 @@
-﻿using System;
+﻿/* When: 2026-09-29 | Why: SU-P1-02 — logout while switched must mark the original authenticated user offline and must not change the target employee's LoginStatus or LastLogout. | What: btn_lgout_Click and LogoutUser resolve the presence login id and Workman through ImpersonationAudit.GetLogoutPresenceIdentity before the existing muster updates. Normal logout still uses the effective session user. */
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
@@ -197,17 +198,21 @@ namespace WebApplication1.gentelella_master.production
             // 1. Write to log
             dbcl.WriteToFile("User :" + lbl_loginusername1.Text + " Signout Successfully");
 
-            // 2. Execute DB updates BEFORE destroying the session using strongly-typed keys!
-            if (Session[SessionKeys.WorkmanSL] != null && Session[SessionKeys.UserID] != null)
+            // 2. Execute DB updates BEFORE destroying the session.
+            // While impersonating, presence is the original authenticated user.
+            string presenceLoginId;
+            string presenceWorkman;
+            ImpersonationAudit.GetLogoutPresenceIdentity(Session, out presenceLoginId, out presenceWorkman);
+            if (!string.IsNullOrEmpty(presenceWorkman) && !string.IsNullOrEmpty(presenceLoginId))
             {
-                dbcl.UPDT_EmpMuster_LogoutInfo(Session[SessionKeys.WorkmanSL].ToString(), Session[SessionKeys.UserID].ToString());
+                dbcl.UPDT_EmpMuster_LogoutInfo(presenceWorkman, presenceLoginId);
             }
 
             // 3. Finalize logout (This will clear sessions and redirect)
-            LogoutUser();
+            LogoutUser(presenceLoginId);
         }
 
-        protected void LogoutUser()
+        protected void LogoutUser(string presenceLoginId)
         {
             try
             {
@@ -221,14 +226,14 @@ namespace WebApplication1.gentelella_master.production
                         new SqlParameter("@SID", Session.SessionID)
                     });
 
-                // Update Muster Table Logout Status using strongly-typed key!
-                if (Session[SessionKeys.UserID] != null)
+                // Update Muster Table Logout Status for the original user while impersonating.
+                if (!string.IsNullOrEmpty(presenceLoginId))
                 {
                     dbcl.SPreturn_dt(
                         "UPDATE tbl_Employee_Mustertable SET LastLogout=GETDATE(), LoginStatus=0 WHERE LoginID=@ID",
                         new SqlParameter[]
                         {
-                            new SqlParameter("@ID", Session[SessionKeys.UserID].ToString())
+                            new SqlParameter("@ID", presenceLoginId)
                         });
                 }
             }
