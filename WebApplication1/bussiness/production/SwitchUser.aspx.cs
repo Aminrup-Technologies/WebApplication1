@@ -1,3 +1,4 @@
+/* When: 2026-10-08 | Why: Correct Switch User target authorization and impersonation logout identity handling without changing the existing architecture. | What: Enforce configured target employee-code allowlisting at search and execution boundaries and align homepage logout presence handling with the existing original-user impersonation path. */
 /*
  * WHEN: 2026-09-06
  * WHY: PR #90 Switch User — admin impersonation that replays the login Session builder without a password.
@@ -172,6 +173,14 @@ namespace WebApplication1.bussiness.production
                     ImpersonationAudit.ClearOriginalIdentity(Session);
                     WriteEvent(ImpersonationAudit.EventImpersonate, targetLoginId, targetWorkman, ImpersonationAudit.OutcomeFailure, corr);
                     Notify("Switch User", "Could not capture the original identity. Switch aborted.", "error");
+                    return;
+                }
+
+                if (!ImpersonationAudit.IsTargetWorkmanAuthorized(targetWorkman))
+                {
+                    ImpersonationAudit.ClearOriginalIdentity(Session);
+                    WriteEvent(ImpersonationAudit.EventImpersonate, targetLoginId, targetWorkman, ImpersonationAudit.OutcomeFailure, corr);
+                    Notify("Switch User", "That employee is not an authorized switch target.", "error");
                     return;
                 }
 
