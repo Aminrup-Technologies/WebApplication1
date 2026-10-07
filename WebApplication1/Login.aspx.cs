@@ -1,4 +1,5 @@
-﻿/* When: 2026-09-29 | Why: SU-P1-01 — the shared employee-session writer must establish USTATE, SKIL, and DESG from the same row columns homepage_v2 already uses, so a switched or restored session cannot keep the previous employee's scope. | What: ApplySessionFromEmployeeRow now assigns USTATE from WorkState, SKIL from SkillCategory, and DESG from SkillDesignation beside the existing STATE, U_SKILL, and U_DESG writes. No second writer. */
+﻿/* When: 2026-10-08 | Why: Correct Switch User target authorization and impersonation logout identity handling without changing the existing architecture. | What: Enforce configured target employee-code allowlisting at search and execution boundaries and align homepage logout presence handling with the existing original-user impersonation path. */
+/* When: 2026-09-29 | Why: SU-P1-01 — the shared employee-session writer must establish USTATE, SKIL, and DESG from the same row columns homepage_v2 already uses, so a switched or restored session cannot keep the previous employee's scope. | What: ApplySessionFromEmployeeRow now assigns USTATE from WorkState, SKIL from SkillCategory, and DESG from SkillDesignation beside the existing STATE, U_SKILL, and U_DESG writes. No second writer. */
 /*
  * WHEN: 2026-02-27
  * WHY: Fixing the tab reset bug by manipulating the tab HTML classes directly from the server.
@@ -158,10 +159,25 @@ namespace WebApplication1.bussiness.production
         {
             if (dbcl == null) throw new ArgumentNullException("dbcl");
 
+            string[] authorizedTargets = ImpersonationAudit.ReadAllowlistCodes(ImpersonationAudit.AuthorizedTargetsAppSetting);
+            if (authorizedTargets.Length == 0)
+            {
+                return new DataTable();
+            }
+
             List<string> filters = new List<string>();
             filters.Add("WorkStatus = @WorkStatus");
             List<SqlParameter> parameters = new List<SqlParameter>();
             parameters.Add(new SqlParameter("@WorkStatus", "Active"));
+
+            List<string> targetParameterNames = new List<string>();
+            for (int i = 0; i < authorizedTargets.Length; i++)
+            {
+                string parameterName = "@Target" + i.ToString();
+                targetParameterNames.Add(parameterName);
+                parameters.Add(new SqlParameter(parameterName, authorizedTargets[i]));
+            }
+            filters.Add("WorkmanSL IN (" + string.Join(", ", targetParameterNames.ToArray()) + ")");
 
             if (!string.IsNullOrWhiteSpace(workmanSL))
             {
@@ -179,7 +195,7 @@ namespace WebApplication1.bussiness.production
                 parameters.Add(new SqlParameter("@FullName", ToContainsLike(fullName.Trim())));
             }
 
-            if (filters.Count == 1)
+            if (filters.Count == 2)
             {
                 return new DataTable();
             }
@@ -191,7 +207,17 @@ namespace WebApplication1.bussiness.production
                 WHERE " + string.Join(" AND ", filters.ToArray()) + @"
                 ORDER BY FullName, WorkmanSL";
 
-            return dbcl.SPreturn_dt(query, parameters.ToArray());
+            DataTable dt = dbcl.SPreturn_dt(query, parameters.ToArray());
+            for (int i = dt.Rows.Count - 1; i >= 0; i--)
+            {
+                object workmanValue = dt.Rows[i]["WorkmanSL"];
+                string workman = workmanValue == null || workmanValue == DBNull.Value ? "" : workmanValue.ToString();
+                if (!ImpersonationAudit.IsTargetWorkmanAuthorized(workman))
+                {
+                    dt.Rows.RemoveAt(i);
+                }
+            }
+            return dt;
         }
 
         private static string ToContainsLike(string value)

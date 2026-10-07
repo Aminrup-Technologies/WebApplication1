@@ -1,3 +1,4 @@
+/* When: 2026-10-08 | Why: Correct Switch User target authorization and impersonation logout identity handling without changing the existing architecture. | What: Enforce configured target employee-code allowlisting at search and execution boundaries and align homepage logout presence handling with the existing original-user impersonation path. */
 /* When: 2026-09-29 | Why: SU-P1-02 — logout while impersonating must update presence for the original authenticated user, and both logout pages must share that rule. | What: GetLogoutPresenceIdentity returns ORIGINAL_USERID and ORIGINAL_WORKMAN when IS_IMPERSONATING is set and both snapshot values are present; otherwise it returns the effective USERID and WORKMAN. */
 /*
  * WHEN: 2026-09-06
@@ -9,6 +10,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Web;
@@ -23,6 +25,7 @@ namespace WebApplication1.bussiness.production
         public const string OutcomeSuccess = "SUCCESS";
         public const string OutcomeFailure = "FAILURE";
         public const string AuthorizedUsersAppSetting = "SwitchUserAuthorizedUsers";
+        public const string AuthorizedTargetsAppSetting = "SwitchUserAuthorizedTargets";
         public const string AdminUserType = "Admin";
 
         public static Guid NewCorrelationId()
@@ -51,6 +54,37 @@ namespace WebApplication1.bussiness.production
                 return false;
             }
             return IsWorkmanAuthorized(Read(session, SessionKeys.WorkmanSL));
+        }
+
+        public static bool IsTargetWorkmanAuthorized(string workmanSL)
+        {
+            return IsCodeOnAllowlist(workmanSL, AuthorizedTargetsAppSetting);
+        }
+
+        internal static string[] ReadAllowlistCodes(string appSettingKey)
+        {
+            string csv = ConfigurationManager.AppSettings[appSettingKey];
+            if (string.IsNullOrEmpty(csv)) return new string[0];
+
+            string[] parts = csv.Split(',');
+            List<string> codes = new List<string>();
+            for (int i = 0; i < parts.Length; i++)
+            {
+                string code = parts[i].Trim();
+                if (code.Length == 0) continue;
+
+                bool seen = false;
+                for (int j = 0; j < codes.Count; j++)
+                {
+                    if (string.Equals(codes[j], code, StringComparison.OrdinalIgnoreCase))
+                    {
+                        seen = true;
+                        break;
+                    }
+                }
+                if (!seen) codes.Add(code);
+            }
+            return codes.ToArray();
         }
 
         public static bool IsOriginalIdentityCaptured(HttpSessionState session)
@@ -197,15 +231,17 @@ namespace WebApplication1.bussiness.production
 
         private static bool IsWorkmanAuthorized(string workmanSL)
         {
-            if (string.IsNullOrWhiteSpace(workmanSL)) return false;
-            string authConfig = ConfigurationManager.AppSettings[AuthorizedUsersAppSetting];
-            if (string.IsNullOrEmpty(authConfig)) return false;
+            return IsCodeOnAllowlist(workmanSL, AuthorizedUsersAppSetting);
+        }
 
-            string needle = workmanSL.Trim().ToUpperInvariant();
-            string[] parts = authConfig.Split(',');
-            for (int i = 0; i < parts.Length; i++)
+        private static bool IsCodeOnAllowlist(string workmanSL, string appSettingKey)
+        {
+            if (string.IsNullOrWhiteSpace(workmanSL) || string.IsNullOrEmpty(appSettingKey)) return false;
+            string[] codes = ReadAllowlistCodes(appSettingKey);
+            string needle = workmanSL.Trim();
+            for (int i = 0; i < codes.Length; i++)
             {
-                if (parts[i].Trim().ToUpperInvariant() == needle) return true;
+                if (string.Equals(codes[i], needle, StringComparison.OrdinalIgnoreCase)) return true;
             }
             return false;
         }
