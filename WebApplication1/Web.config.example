@@ -16,6 +16,8 @@
     <add key="PayrollAuthorizedUsers" value="J8" />
     <!-- Used by ImpersonationAudit.CanImpersonate / Switch User. Comma-separated WorkmanSL allowlist. -->
     <add key="SwitchUserAuthorizedUsers" value="J8" />
+    <!-- Target WorkmanSL codes that may be switched into. Comma-separated. Independent of SwitchUserAuthorizedUsers. Empty allows no targets. -->
+    <add key="SwitchUserAuthorizedTargets" value="" />
     <add key="ValidationSettings:UnobtrusiveValidationMode" value="None" />
     <add key="TimeThresholdHours" value="72" />
     <add key="F17_GrossBreaker_KPO" value="18500" />

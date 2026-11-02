@@ -1,4 +1,5 @@
-﻿using System;
+﻿/* When: 2026-10-13 | Why: Correct switch-user authentication and logout identity lifecycle defects. | What: Clear stale impersonation state only on fresh authentication and reuse original-identity resolution in alternate logout handlers. */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -51,7 +52,10 @@ namespace WebApplication1.bussiness.production.aminrup
 
         protected void btn_lgout_Click(object sender, EventArgs e)
         {
-            dbcl.UPDT_EmpMuster_LogoutInfo(Session["WORKMAN"].ToString(), Session["USERID"].ToString());
+            string presenceLoginId;
+            string presenceWorkman;
+            ImpersonationAudit.GetLogoutPresenceIdentity(Session, out presenceLoginId, out presenceWorkman);
+            dbcl.UPDT_EmpMuster_LogoutInfo(presenceWorkman, presenceLoginId);
 
             Session.Abandon();
             Response.Redirect("/login.aspx", false);
