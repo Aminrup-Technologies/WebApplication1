@@ -1,4 +1,5 @@
-﻿/* When: 2026-09-29 | Why: SU-P1-02 — homepage logout while switched must mark the original authenticated user offline and must not change the target employee's LoginStatus or LastLogout. | What: LogoutUserfromATS, LogoutUser, and btn_cancel1_Click resolve presence through ImpersonationAudit.GetLogoutPresenceIdentity. Normal logout still uses the effective session user. */
+﻿/* When: 2026-10-08 | Why: Remove SkipDate-based Home blocking so pending compliance consent remains a prompt rather than an application-access redirect; preserve mandatory-document enforcement and existing consent persistence. | What: Removed the SkipDate redirect from ProcessDocumentStatus and gated existing consent-modal registration to fresh page arrivals so deferment does not immediately re-display the modal during postback. */
+/* When: 2026-09-29 | Why: SU-P1-02 — homepage logout while switched must mark the original authenticated user offline and must not change the target employee's LoginStatus or LastLogout. | What: LogoutUserfromATS, LogoutUser, and btn_cancel1_Click resolve presence through ImpersonationAudit.GetLogoutPresenceIdentity. Normal logout still uses the effective session user. */
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -490,7 +491,6 @@ namespace WebApplication1.bussiness.production
                 bool panStatus = reader["PanYesNo"] != DBNull.Value && Convert.ToInt32(reader["PanYesNo"]) == 1;
                 bool isBypassed = reader["IsBypassed"] != DBNull.Value && Convert.ToInt32(reader["IsBypassed"]) == 1;
                 bool noticeAccepted = reader["NoticeAccepted"] != DBNull.Value && Convert.ToInt32(reader["NoticeAccepted"]) == 1;
-                DateTime? skipDate = reader["SkipDate"] != DBNull.Value ? Convert.ToDateTime(reader["SkipDate"]) : (DateTime?)null;
 
                 if (isBypassed) return;
 
@@ -505,13 +505,7 @@ namespace WebApplication1.bussiness.production
 
                 if (!noticeAccepted)
                 {
-                    if (skipDate.HasValue && skipDate.Value > DateTime.Now)
-                    {
-                        Response.Redirect("usertoggle.aspx", false);
-                        Context.ApplicationInstance.CompleteRequest();
-                        return;
-                    }
-                    else
+                    if (!IsPostBack)
                     {
                         ClientScript.RegisterStartupScript(this.GetType(), "ShowDocModal", "ShowDocModal();", true);
                     }

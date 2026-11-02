@@ -1,4 +1,5 @@
-﻿/* When: 2026-10-08 | Why: Correct Switch User target authorization and impersonation logout identity handling without changing the existing architecture. | What: Enforce configured target employee-code allowlisting at search and execution boundaries and align homepage logout presence handling with the existing original-user impersonation path. */
+﻿/* When: 2026-10-08 | Why: Remove SkipDate-based Home blocking on the legacy live Home path so pending compliance consent remains a prompt rather than an application-access redirect; preserve mandatory-document enforcement and existing consent persistence. | What: Removed the SkipDate redirect from EmployeeDocStatusLoader and gated existing consent-modal registration to fresh page arrivals so deferment does not immediately re-display the modal during postback. */
+/* When: 2026-10-08 | Why: Correct Switch User target authorization and impersonation logout identity handling without changing the existing architecture. | What: Enforce configured target employee-code allowlisting at search and execution boundaries and align homepage logout presence handling with the existing original-user impersonation path. */
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -147,7 +148,6 @@ namespace WebApplication1.bussiness.production
                                 bool isBypassed = reader["IsBypassed"] != DBNull.Value && Convert.ToInt32(reader["IsBypassed"]) == 1;
 
                                 bool noticeAccepted = reader["NoticeAccepted"] != DBNull.Value && Convert.ToInt32(reader["NoticeAccepted"]) == 1;
-                                DateTime? skipDate = reader["SkipDate"] != DBNull.Value ? Convert.ToDateTime(reader["SkipDate"]) : (DateTime?)null;
 
                                 // If user is bypassed/exempt, allow them through (no redirect/modal).
                                 if (isBypassed)
@@ -168,23 +168,12 @@ namespace WebApplication1.bussiness.production
                                     return;
                                 }
 
-                                // ---- Existing Notice Check (redirect if notice not accepted and not skipped) ----
+                                // Pending consent prompts on a fresh Home arrival and does not block access.
                                 if (!noticeAccepted)
                                 {
-                                    if (skipDate.HasValue && skipDate.Value > DateTime.Now)
-                                    {
-                                        // User has chosen to skip for some days, allow access (do nothing).
-                                        // Close reader then redirect to upload page
-                                        reader.Close();
-                                        Response.Redirect("usertoggle.aspx", false);
-                                        Context.ApplicationInstance.CompleteRequest();
-                                        return;
-                                    }
-                                    else
+                                    if (!IsPostBack)
                                     {
                                         ClientScript.RegisterStartupScript(this.GetType(), "ShowDocModal", "ShowDocModal();", true);
-
-                                        
                                     }
                                 }
                             }
