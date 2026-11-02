@@ -1,6 +1,7 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="generate_banksheets.aspx.cs" Inherits="WebApplication1.bussiness.production.generate_banksheets" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+<% /* When: 2026-10-05 | Why: Restore the established legacy Bank Sheet export contract without changing payroll/business behavior | What: Restored the existing legacy export pathway and preserved the established bank-sheet format, structure, and presentation. */ %>
     <style type="text/css">
         .page-title {
             width: 100%;
@@ -44,6 +45,7 @@
             <div class="title_right">
                 <div class="pull-right">
                     <asp:Button ID="Button1" runat="server" Text="Export" Enabled="false" CssClass="btn btn-primary btn-sm" OnClick="ExportExcel"/>
+                    <asp:Button ID="btnExport" runat="server" Enabled="false" Text="Export To Excel" CssClass="btn btn-success btn-sm" OnClick="btn_excelexport_Click" />
                 </div>
             </div>
 

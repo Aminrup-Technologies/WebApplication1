@@ -445,7 +445,7 @@ namespace WebApplication1.bussiness.production
 
                     dbcl.Sqlconnection();
                     dbcl.ConnectDb();
-                    string findempquery1 = "select CreatedDate, EmployeeWrk,EmployeeName, AttendanceStatus,AttendanceCode, SUM(ProvidedOT) as ProvidedOT from tbl_attendance where CreatedDate between '" + date1 + "' and '" + date2 + "' and EmployeeWrk='" + EmpWrk + "' and SiteIncharge_Approval='Approved' Group by CreatedDate, EmployeeWrk,EmployeeName, AttendanceStatus,AttendanceCode order by CreatedDate";
+                    string findempquery1 = "select CreatedDate, EmployeeWrk, MAX(EmployeeName) as EmployeeName, AttendanceStatus, AttendanceCode, SUM(ProvidedOT) as ProvidedOT from tbl_attendance where CreatedDate between '" + date1 + "' and '" + date2 + "' and EmployeeWrk='" + EmpWrk + "' and SiteIncharge_Approval='Approved' Group by CreatedDate, EmployeeWrk, AttendanceStatus, AttendanceCode order by CreatedDate";
                     SqlCommand cmd1 = new SqlCommand(findempquery1, dbcl.Conn);
                     SqlDataAdapter da1 = new SqlDataAdapter(cmd1);
 
@@ -557,10 +557,13 @@ namespace WebApplication1.bussiness.production
                 if (result.Length > 0)
                 {
                     dtTemp = result.CopyToDataTable();
+                    System.Collections.Generic.HashSet<string> emittedStatus = new System.Collections.Generic.HashSet<string>();
                     for (int i = 0; i < dtTemp.Rows.Count; i++)
                     {
                         string present = dtTemp.Rows[i][3].ToString();
                         string status = dtTemp.Rows[i][4].ToString();
+                        if (!emittedStatus.Add(present + "|" + status))
+                            continue;
 
                         if (present == "Present")
                         {
@@ -988,7 +991,7 @@ namespace WebApplication1.bussiness.production
 
                     dbcl.Sqlconnection();
                     dbcl.ConnectDb();
-                    string findempquery1 = "select CreatedDate, EmployeeWrk,EmployeeName, AttendanceStatus,AttendanceCode, SUM(ProvidedOT) as ProvidedOT from tbl_attendance where CreatedDate between '" + date1 + "' and '" + date2 + "' and EmployeeWrk='" + EmpWrk + "' and SiteIncharge_Approval='Approved' Group by CreatedDate, EmployeeWrk,EmployeeName, AttendanceStatus,AttendanceCode order by CreatedDate";
+                    string findempquery1 = "select CreatedDate, EmployeeWrk, MAX(EmployeeName) as EmployeeName, AttendanceStatus, AttendanceCode, SUM(ProvidedOT) as ProvidedOT from tbl_attendance where CreatedDate between '" + date1 + "' and '" + date2 + "' and EmployeeWrk='" + EmpWrk + "' and SiteIncharge_Approval='Approved' Group by CreatedDate, EmployeeWrk, AttendanceStatus, AttendanceCode order by CreatedDate";
                     SqlCommand cmd1 = new SqlCommand(findempquery1, dbcl.Conn);
                     SqlDataAdapter da1 = new SqlDataAdapter(cmd1);
                     dt_present.Rows.Clear();
@@ -1118,10 +1121,13 @@ namespace WebApplication1.bussiness.production
                 if (result.Length > 0)
                 {
                     dtTemp = result.CopyToDataTable();
+                    System.Collections.Generic.HashSet<string> emittedStatus = new System.Collections.Generic.HashSet<string>();
                     for (int i = 0; i < dtTemp.Rows.Count; i++)
                     {
                         string present = dtTemp.Rows[i][3].ToString();
                         string status = dtTemp.Rows[i][4].ToString();
+                        if (!emittedStatus.Add(present + "|" + status))
+                            continue;
 
                         if (present == "Present")
                         {

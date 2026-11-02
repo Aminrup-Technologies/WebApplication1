@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+/* When: 2026-10-05 | Why: Restore the established legacy Bank Sheet export contract without changing payroll/business behavior | What: Restored the existing legacy export pathway and preserved the established bank-sheet format, structure, and presentation. */
 namespace WebApplication1.bussiness.production {
     
     
@@ -20,6 +21,15 @@ namespace WebApplication1.bussiness.production {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button Button1;
+
+        /// <summary>
+        /// btnExport control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnExport;
         
         /// <summary>
         /// DDL_Company control.

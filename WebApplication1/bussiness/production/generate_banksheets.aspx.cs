@@ -1,4 +1,5 @@
-﻿using ClosedXML.Excel;
+﻿/* When: 2026-10-05 | Why: Restore the established legacy Bank Sheet export contract without changing payroll/business behavior | What: Restored the existing legacy export pathway and preserved the established bank-sheet format, structure, and presentation. */
+using ClosedXML.Excel;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -19,6 +20,8 @@ namespace WebApplication1.bussiness.production
         DataTable dt = new DataTable();
 
         string str = string.Empty;
+        decimal bankSheetAmountTotal;
+        int bankSheetRow;
 
         public static string state = string.Empty;
         public static string region = string.Empty;
@@ -62,6 +65,7 @@ namespace WebApplication1.bussiness.production
                     dbcl.BindMonthAndYearDropdowns(DDL_Month, DDL_Year);
 
                     Button1.Enabled = false;
+                    btnExport.Enabled = false;
                     //dbcl.BindMonthAndYearDropdowns(DDL_M2, DDL_Y2);
                 }
             }
@@ -169,38 +173,67 @@ namespace WebApplication1.bussiness.production
                 //-------------------
             }
             Button1.Enabled = true;
+            btnExport.Enabled = true;
         }
 
 
         private void BindDefaultHeader(string Year, string Month, string Region)
         {
-            str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>SL NO</td>";
-            str = str + "<td width='1%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>WL SO</td>";
-            str = str + "<td width='5%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>DEBIT ACCOUNT NO</td>";
-            str = str + "<td width='4%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>BENEFICIARY NAME</td>";
-            str = str + "<td width='8%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>CREDIT ACC NO</td>";
-            str = str + "<td width='5%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>BANK NAME</td>";
-            str = str + "<td width='5%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>IFSC CODE</td>";
-            str = str + "<td width='5%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>BRANCH NAME</td>";
-            str = str + "<td width='1%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>AMOUNT</td>";
+            bankSheetAmountTotal = 0;
+            bankSheetRow = 0;
+            string head = "font-family:Calibri; font-size:11pt; font-weight:bold; color:#FFFFFF; background-color:#4472C4; border-top:1px solid #8EA9DB; border-bottom:1px solid #8EA9DB; border-left:none; border-right:none;";
+            string total = "font-family:Calibri; font-size:11pt; font-weight:bold; color:#000000; background-color:#FFFFFF; border-top:3px double #4472C4; border-bottom:1px solid #8EA9DB; border-left:none; border-right:none;";
+            str = str + "<table style='border-collapse:collapse; font-family:Calibri; font-size:11pt;'><tr style='height:15pt;'>";
+            str = str + "<td style='" + head + " width:53px; border-left:1px solid #8EA9DB;'>SrNo</td>";
+            str = str + "<td style='" + head + " width:98px;'>WorkmanSL</td>";
+            str = str + "<td style='" + head + " width:114px;'>CreditAccount</td>";
+            str = str + "<td style='" + head + " width:158px;'>FullName</td>";
+            str = str + "<td style='" + head + " width:140px;'>Payment_Account</td>";
+            str = str + "<td style='" + head + " width:165px;'>Payment_Bank</td>";
+            str = str + "<td style='" + head + " width:114px;'>Payment_IFSC</td>";
+            str = str + "<td style='" + head + " width:147px;'>BankBranch</td>";
+            str = str + "<td style='" + head + " width:100px; border-right:1px solid #8EA9DB;'>NetPayFinal 1</td></tr>";
             BindRBIData(Year, Month, Region);
-            str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='100%' style='font:normal 16px/16px Century Gothic; padding:5px 20px 5px 20px;' align='cen ter'></td></tr></table>";
+            str = str + "<tr style='height:15pt;'>";
+            str = str + "<td style='" + total + " border-left:1px solid #8EA9DB;'></td>";
+            str = str + "<td style='" + total + "'></td>";
+            str = str + "<td style='" + total + "'></td>";
+            str = str + "<td style='" + total + "'></td>";
+            str = str + "<td style='" + total + "'></td>";
+            str = str + "<td style='" + total + "'></td>";
+            str = str + "<td style='" + total + "'></td>";
+            str = str + "<td style='" + total + "'></td>";
+            str = str + "<td style='" + total + " border-right:1px solid #8EA9DB;' align='right'>" + bankSheetAmountTotal.ToString() + "</td></tr></table>";
             lblTotalData.Text = str;
         }
 
         private void BindDefaultHeader2(string Year, string Month, string Region)
         {
-            str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='2%' style='background-color:#92d050; border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align='center'>SL NO</td>";
-            str = str + "<td width='1%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>WL SO</td>";
-            str = str + "<td width='5%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>DEBIT ACCOUNT NO</td>";
-            str = str + "<td width='4%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>BENEFICIARY NAME</td>";
-            str = str + "<td width='8%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>CREDIT ACC NO</td>";
-            str = str + "<td width='5%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>BANK NAME</td>";
-            str = str + "<td width='5%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>IFSC CODE</td>";
-            str = str + "<td width='5%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>BRANCH NAME</td>";
-            str = str + "<td width='1%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>AMOUNT</td></tr>";
+            bankSheetAmountTotal = 0;
+            bankSheetRow = 0;
+            string head = "font-family:Calibri; font-size:11pt; font-weight:bold; color:#FFFFFF; background-color:#4472C4; border-top:1px solid #8EA9DB; border-bottom:1px solid #8EA9DB; border-left:none; border-right:none;";
+            string total = "font-family:Calibri; font-size:11pt; font-weight:bold; color:#000000; background-color:#FFFFFF; border-top:3px double #4472C4; border-bottom:1px solid #8EA9DB; border-left:none; border-right:none;";
+            str = str + "<table style='border-collapse:collapse; font-family:Calibri; font-size:11pt;'><tr style='height:15pt;'>";
+            str = str + "<td style='" + head + " width:53px; border-left:1px solid #8EA9DB;'>SrNo</td>";
+            str = str + "<td style='" + head + " width:98px;'>WorkmanSL</td>";
+            str = str + "<td style='" + head + " width:114px;'>CreditAccount</td>";
+            str = str + "<td style='" + head + " width:158px;'>FullName</td>";
+            str = str + "<td style='" + head + " width:140px;'>Payment_Account</td>";
+            str = str + "<td style='" + head + " width:165px;'>Payment_Bank</td>";
+            str = str + "<td style='" + head + " width:114px;'>Payment_IFSC</td>";
+            str = str + "<td style='" + head + " width:147px;'>BankBranch</td>";
+            str = str + "<td style='" + head + " width:100px; border-right:1px solid #8EA9DB;'>NetPay</td></tr>";
             BindRBIData2(Year, Month, Region);
-            str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='100%' style='font:normal 16px/16px Century Gothic; padding:5px 20px 5px 20px;' align='cen ter'></td></tr></table>";
+            str = str + "<tr style='height:15pt;'>";
+            str = str + "<td style='" + total + " border-left:1px solid #8EA9DB;'></td>";
+            str = str + "<td style='" + total + "'></td>";
+            str = str + "<td style='" + total + "'></td>";
+            str = str + "<td style='" + total + "'></td>";
+            str = str + "<td style='" + total + "'></td>";
+            str = str + "<td style='" + total + "'></td>";
+            str = str + "<td style='" + total + "'></td>";
+            str = str + "<td style='" + total + "'></td>";
+            str = str + "<td style='" + total + " border-right:1px solid #8EA9DB;' align='right'>" + bankSheetAmountTotal.ToString() + "</td></tr></table>";
             lblTotalData.Text = str;
         }
 
@@ -215,15 +248,21 @@ namespace WebApplication1.bussiness.production
             {
                 while (re.Read())
                 {
-                    str = str + "<tr><td width = '2%' style = 'border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align = 'center' >" + re["SrNo"].ToString() + "</ td > ";
-                    str = str + "<td width='3%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["WorkmanSL"].ToString() + "</td>";
-                    str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>`38233797214</td>";
-                    str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["FullName"].ToString() + "</td>";
-                    str = str + "<td width='8%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>`" + re["Payment_Account"].ToString() + "</td>";
-                    str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Payment_Bank"].ToString() + "</td>";
-                    str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>'" + re["Payment_IFSC"].ToString() + "</td>";
-                    str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["BankBranch"].ToString() + "</td>";
-                    str = str + "<td width='4%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["NetPayFinal"].ToString() + "</td></tr>";
+                    bankSheetRow++;
+                    string band = (bankSheetRow % 2 == 1) ? "#D9E1F2" : "#FFFFFF";
+                    string cell = "font-family:Calibri; font-size:11pt; font-weight:normal; color:#000000; background-color:" + band + "; border-top:1px solid #8EA9DB; border-bottom:1px solid #8EA9DB; border-left:none; border-right:none;";
+                    decimal amt;
+                    decimal.TryParse(re["NetPayFinal"].ToString(), out amt);
+                    bankSheetAmountTotal += amt;
+                    str = str + "<tr style='height:15pt;'><td style='" + cell + " border-left:1px solid #8EA9DB;' align='right'>" + re["SrNo"].ToString() + "</td>";
+                    str = str + "<td style='" + cell + " mso-number-format:\\@;' align='left'>" + re["WorkmanSL"].ToString() + "</td>";
+                    str = str + "<td style='" + cell + "' align='right'>38233797214</td>";
+                    str = str + "<td style='" + cell + " mso-number-format:\\@;' align='left'>" + re["FullName"].ToString() + "</td>";
+                    str = str + "<td style='" + cell + " mso-number-format:\\@;' align='left'>" + re["Payment_Account"].ToString() + "</td>";
+                    str = str + "<td style='" + cell + " mso-number-format:\\@;' align='left'>" + re["Payment_Bank"].ToString() + "</td>";
+                    str = str + "<td style='" + cell + " mso-number-format:\\@;' align='left'>" + re["Payment_IFSC"].ToString() + "</td>";
+                    str = str + "<td style='" + cell + " mso-number-format:\\@;' align='left'>" + re["BankBranch"].ToString() + "</td>";
+                    str = str + "<td style='" + cell + " border-right:1px solid #8EA9DB;' align='right'>" + re["NetPayFinal"].ToString() + "</td></tr>";
                 }
             }
         }
@@ -240,15 +279,21 @@ namespace WebApplication1.bussiness.production
             {
                 while (re.Read())
                 {
-                    str = str + "<tr><td width = '2%' style = 'border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align = 'center' >" + re["SrNo"].ToString() + "</ td > ";
-                    str = str + "<td width='3%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["WorkmanSL"].ToString() + "</td>";
-                    str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>'38233797214</td>";
-                    str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["FullName"].ToString() + "</td>";
-                    str = str + "<td width='8%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Payment_Account"].ToString() + "</td>";
-                    str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Payment_Bank"].ToString() + "</td>";
-                    str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>`" + re["Payment_IFSC"].ToString() + "</td>";
-                    str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["BankBranch"].ToString() + "</td>";
-                    str = str + "<td width='4%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["NetPay"].ToString() + "</td></tr>";
+                    bankSheetRow++;
+                    string band = (bankSheetRow % 2 == 1) ? "#D9E1F2" : "#FFFFFF";
+                    string cell = "font-family:Calibri; font-size:11pt; font-weight:normal; color:#000000; background-color:" + band + "; border-top:1px solid #8EA9DB; border-bottom:1px solid #8EA9DB; border-left:none; border-right:none;";
+                    decimal amt;
+                    decimal.TryParse(re["NetPay"].ToString(), out amt);
+                    bankSheetAmountTotal += amt;
+                    str = str + "<tr style='height:15pt;'><td style='" + cell + " border-left:1px solid #8EA9DB;' align='right'>" + re["SrNo"].ToString() + "</td>";
+                    str = str + "<td style='" + cell + " mso-number-format:\\@;' align='left'>" + re["WorkmanSL"].ToString() + "</td>";
+                    str = str + "<td style='" + cell + "' align='right'>38233797214</td>";
+                    str = str + "<td style='" + cell + " mso-number-format:\\@;' align='left'>" + re["FullName"].ToString() + "</td>";
+                    str = str + "<td style='" + cell + " mso-number-format:\\@;' align='left'>" + re["Payment_Account"].ToString() + "</td>";
+                    str = str + "<td style='" + cell + " mso-number-format:\\@;' align='left'>" + re["Payment_Bank"].ToString() + "</td>";
+                    str = str + "<td style='" + cell + " mso-number-format:\\@;' align='left'>" + re["Payment_IFSC"].ToString() + "</td>";
+                    str = str + "<td style='" + cell + " mso-number-format:\\@;' align='left'>" + re["BankBranch"].ToString() + "</td>";
+                    str = str + "<td style='" + cell + " border-right:1px solid #8EA9DB;' align='right'>" + re["NetPay"].ToString() + "</td></tr>";
                 }
             }
         }
