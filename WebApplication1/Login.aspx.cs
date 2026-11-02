@@ -1,4 +1,5 @@
-﻿/* When: 2026-10-08 | Why: Correct Switch User target authorization and impersonation logout identity handling without changing the existing architecture. | What: Enforce configured target employee-code allowlisting at search and execution boundaries and align homepage logout presence handling with the existing original-user impersonation path. */
+﻿/* When: 2026-10-13 | Why: Correct switch-user authentication and logout identity lifecycle defects. | What: Clear stale impersonation state only on fresh authentication and reuse original-identity resolution in alternate logout handlers. */
+/* When: 2026-10-08 | Why: Correct Switch User target authorization and impersonation logout identity handling without changing the existing architecture. | What: Enforce configured target employee-code allowlisting at search and execution boundaries and align homepage logout presence handling with the existing original-user impersonation path. */
 /* When: 2026-09-29 | Why: SU-P1-01 — the shared employee-session writer must establish USTATE, SKIL, and DESG from the same row columns homepage_v2 already uses, so a switched or restored session cannot keep the previous employee's scope. | What: ApplySessionFromEmployeeRow now assigns USTATE from WorkState, SKIL from SkillCategory, and DESG from SkillDesignation beside the existing STATE, U_SKILL, and U_DESG writes. No second writer. */
 /*
  * WHEN: 2026-02-27
@@ -848,6 +849,8 @@ namespace WebApplication1.bussiness.production
 
         private void GrantAuthenticatedSession(DataRow row, bool rememberMe, string auditResult, bool markMfaVerified)
         {
+            ImpersonationAudit.ClearOriginalIdentity(Session);
+
             string id = row["LoginID"].ToString();
             string workmanSL = row["WorkmanSL"].ToString();
 
