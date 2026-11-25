@@ -1,4 +1,5 @@
-﻿using System;
+﻿/* When: 2026-11-24 | Why: Enforce existing JOB360 authorization and server-verifiable selected-JOB identity for attendance ownership. | What: Gate Invalidate/Edit/Save with IsAdmin/JOB360_OVERRIDE and bind attendance reads/mutations to ViewState SelectedJobID resolved only after successful tbl_jobs load, rejecting cross-JOB Id and posted JOBID manipulation without changing permission or business behavior. */
+using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -72,6 +73,19 @@ namespace WebApplication1.bussiness.production
         {
             txt_jobid.Text = "";
             MainDashboardRow.Visible = false;
+            ViewState["SelectedJobID"] = null;
+        }
+
+        /// <summary>
+        /// MAC-protected ViewState JOB identity set only after Load360View resolves tbl_jobs.
+        /// Returns null when missing/blank so protected handlers fail closed.
+        /// </summary>
+        private string TryGetSelectedJobId()
+        {
+            object raw = ViewState["SelectedJobID"];
+            if (raw == null) return null;
+            string jobid = raw.ToString().Trim();
+            return string.IsNullOrEmpty(jobid) ? null : jobid;
         }
 
         private void Load360View(string jobid)
@@ -94,6 +108,17 @@ namespace WebApplication1.bussiness.production
                         {
                             MainDashboardRow.Visible = true;
                             DataRow row = dtJob.Rows[0];
+
+                            // Server-resolved JOB identity only — never from posted textbox/hidden/command args.
+                            string resolvedJobId = GetSafeString(row, "JOBID", "").Trim();
+                            if (string.IsNullOrEmpty(resolvedJobId))
+                            {
+                                ViewState["SelectedJobID"] = null;
+                                MainDashboardRow.Visible = false;
+                                ShowNotification("Not Found", "JOBID not found in the database!", "info");
+                                return;
+                            }
+                            ViewState["SelectedJobID"] = resolvedJobId;
 
                             // 1. CORE DETAILS & BACKDATED BADGE
                             DateTime dtCreatedDate = Convert.ToDateTime(row["CreatedDate"]);
@@ -160,19 +185,20 @@ namespace WebApplication1.bussiness.production
                             }
 
                             // 2. BIND ALL GRIDS
-                            LoadPermits(jobid);
-                            LoadTBT(jobid);
-                            LoadSOP(jobid);
-                            LoadManpower(jobid);
+                            LoadPermits(resolvedJobId);
+                            LoadTBT(resolvedJobId);
+                            LoadSOP(resolvedJobId);
+                            LoadManpower(resolvedJobId);
 
                             // 3. EVALUATE LIFECYCLE & ACTION BAR
-                            EvaluateSmartLifecycle(row, jobid, dtTimeStamp);
+                            EvaluateSmartLifecycle(row, resolvedJobId, dtTimeStamp);
 
                             ShowNotification("Loaded", "JOB details loaded successfully.", "success");
                         }
                         else
                         {
                             MainDashboardRow.Visible = false;
+                            ViewState["SelectedJobID"] = null;
                             ShowNotification("Not Found", "JOBID not found in the database!", "info");
                         }
                     }
@@ -291,8 +317,20 @@ namespace WebApplication1.bussiness.production
             // GAP 4 IMPLEMENTATION: Granular Roster Purging (Soft Delete)
             if (e.CommandName == "InvalidateWorker")
             {
+                if (!IsAdmin())
+                {
+                    ShowNotification("Access Denied", "You do not have permission to perform this override.", "error");
+                    return;
+                }
+
+                string jobid = TryGetSelectedJobId();
+                if (jobid == null)
+                {
+                    ShowNotification("Access Denied", "No valid selected JOB. Reload the JOB before continuing.", "error");
+                    return;
+                }
+
                 string workmanWrk = e.CommandArgument.ToString();
-                string jobid = txt_jobid.Text.Trim();
                 string adminUser = Session["USERNAME"] != null ? Session["USERNAME"].ToString() : "ADMIN";
 
                 try
@@ -303,6 +341,24 @@ namespace WebApplication1.bussiness.production
 
                     try
                     {
+                        // Validate worker belongs to the protected selected JOB before mutating.
+                        string chkAtt = @"SELECT COUNT(1) FROM tbl_attendance 
+                                      WHERE JOBID = @JOBID AND EmployeeWrk = @Workman 
+                                      AND (DeleteStatus = 0 OR DeleteStatus IS NULL)";
+                        int ownedCount;
+                        using (SqlCommand cmdChk = new SqlCommand(chkAtt, dbcl.Conn, transaction))
+                        {
+                            cmdChk.Parameters.AddWithValue("@JOBID", jobid);
+                            cmdChk.Parameters.AddWithValue("@Workman", workmanWrk);
+                            ownedCount = Convert.ToInt32(cmdChk.ExecuteScalar());
+                        }
+                        if (ownedCount <= 0)
+                        {
+                            transaction.Rollback();
+                            ShowNotification("Access Denied", "Worker attendance was not found for the selected JOB.", "error");
+                            return;
+                        }
+
                         // 1. Invalidate the worker
                         string updAtt = @"UPDATE tbl_attendance 
                                       SET DeleteStatus = 1, 
@@ -352,15 +408,30 @@ namespace WebApplication1.bussiness.production
             }
             if (e.CommandName == "EditWorker")
             {
+                if (!IsAdmin())
+                {
+                    ShowNotification("Access Denied", "You do not have permission to perform this override.", "error");
+                    return;
+                }
+
+                string jobid = TryGetSelectedJobId();
+                if (jobid == null)
+                {
+                    ShowNotification("Access Denied", "No valid selected JOB. Reload the JOB before continuing.", "error");
+                    return;
+                }
+
                 string attendanceId = e.CommandArgument.ToString();
                 try
                 {
                     dbcl.Sqlconnection();
                     dbcl.ConnectDb();
-                    string qry = "SELECT Id, EmployeeName, EmployeeWrk, Inpunch_Time, Outpunch_Time, ProvidedOT, AttendanceStatus FROM tbl_attendance WHERE Id = @Id";
+                    string qry = @"SELECT Id, EmployeeName, EmployeeWrk, Inpunch_Time, Outpunch_Time, ProvidedOT, AttendanceStatus 
+                                   FROM tbl_attendance WHERE Id = @Id AND JOBID = @JOBID";
                     using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
                     {
                         cmd.Parameters.AddWithValue("@Id", attendanceId);
+                        cmd.Parameters.AddWithValue("@JOBID", jobid);
                         using (SqlDataReader rdr = cmd.ExecuteReader())
                         {
                             if (rdr.Read())
@@ -379,6 +450,10 @@ namespace WebApplication1.bussiness.production
 
                                 // Trigger Modal
                                 ScriptManager.RegisterStartupScript(this, this.GetType(), "ShowEdit", "$('#modalEditWorker').modal('show');", true);
+                            }
+                            else
+                            {
+                                ShowNotification("Access Denied", "Attendance record was not found for the selected JOB.", "error");
                             }
                         }
                     }
@@ -468,6 +543,19 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_SaveWorkerEdit_Click(object sender, EventArgs e)
         {
+            if (!IsAdmin())
+            {
+                ShowNotification("Access Denied", "You do not have permission to perform this override.", "error");
+                return;
+            }
+
+            string jobid = TryGetSelectedJobId();
+            if (jobid == null)
+            {
+                ShowNotification("Access Denied", "No valid selected JOB. Reload the JOB before continuing.", "error");
+                return;
+            }
+
             try
             {
                 dbcl.Sqlconnection();
@@ -483,10 +571,11 @@ namespace WebApplication1.bussiness.production
                            ModifiedByWrk = @AdminWrk
                        WHERE Id = @Id AND JOBID = @JOBID";
 
+                int rows;
                 using (SqlCommand cmd = new SqlCommand(qry, dbcl.Conn))
                 {
                     cmd.Parameters.AddWithValue("@Id", hf_EditWorkerId.Value);
-                    cmd.Parameters.AddWithValue("@JOBID", txt_jobid.Text.Trim());
+                    cmd.Parameters.AddWithValue("@JOBID", jobid);
                     cmd.Parameters.AddWithValue("@InTime", string.IsNullOrEmpty(txt_EditInTime.Text) ? (object)DBNull.Value : Convert.ToDateTime(txt_EditInTime.Text));
                     cmd.Parameters.AddWithValue("@OutTime", string.IsNullOrEmpty(txt_EditOutTime.Text) ? (object)DBNull.Value : Convert.ToDateTime(txt_EditOutTime.Text));
                     cmd.Parameters.AddWithValue("@OT", string.IsNullOrEmpty(txt_EditOT.Text) ? 0 : Convert.ToDecimal(txt_EditOT.Text));
@@ -494,10 +583,15 @@ namespace WebApplication1.bussiness.production
                     cmd.Parameters.AddWithValue("@Admin", Session["USERNAME"].ToString());
                     cmd.Parameters.AddWithValue("@AdminWrk", Session["WORKMAN"].ToString());
 
-                    cmd.ExecuteNonQuery();
+                    rows = cmd.ExecuteNonQuery();
+                }
+                if (rows <= 0)
+                {
+                    ShowNotification("Access Denied", "Attendance record was not found for the selected JOB.", "error");
+                    return;
                 }
                 ShowNotification("Worker Updated", "Attendance details updated successfully.", "success");
-                Load360View(txt_jobid.Text); // Refresh the dashboard
+                Load360View(jobid); // Refresh the dashboard
             }
             catch (Exception ex) { ShowNotification("Update Error", ex.Message, "error"); }
             finally { dbcl.DisconnectDb(); }
