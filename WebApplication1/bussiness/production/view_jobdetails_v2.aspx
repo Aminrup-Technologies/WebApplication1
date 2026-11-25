@@ -1,6 +1,7 @@
 ﻿<%@ Page Title="View JOB Details" Language="C#" MasterPageFile="~/bussiness/production/webmaster.Master" AutoEventWireup="true" CodeBehind="view_jobdetails_v2.aspx.cs" Inherits="WebApplication1.bussiness.production.view_jobdetails_v2" MaintainScrollPositionOnPostBack="true" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+<% /* When: 2026-11-25 | Why: Attendance edit must accept a NULL LunchFactor | What: Show an unset LunchFactor as Not Set and avoid binding a NULL value into the lunch dropdown */ %>
     <style type="text/css">
         /* Ultra-Compact Typography and Layout */
         .top-label {
@@ -333,7 +334,8 @@
                                             <asp:Label ID="lbl_LunchFactor" runat="server" Text='<%# Bind("LunchFactor") %>'></asp:Label>
                                         </ItemTemplate>
                                         <EditItemTemplate>
-                                            <asp:DropDownList ID="DDL_LunchYesNo" runat="server" class="form-control form-control-sm modern-input" SelectedValue='<%# Bind("LunchFactor") %>'>
+                                            <asp:DropDownList ID="DDL_LunchYesNo" runat="server" class="form-control form-control-sm modern-input">
+                                                <asp:ListItem Value="">Not Set</asp:ListItem>
                                                 <asp:ListItem Value="Yes">Yes</asp:ListItem>
                                                 <asp:ListItem Value="No">No</asp:ListItem>
                                             </asp:DropDownList>

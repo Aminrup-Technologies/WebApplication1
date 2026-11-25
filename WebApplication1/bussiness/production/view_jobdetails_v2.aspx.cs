@@ -1,4 +1,5 @@
-﻿using System;
+﻿/* When: 2026-11-25 | Why: Attendance edit must accept a NULL LunchFactor | What: Persist an unset LunchFactor as SQL NULL and keep the existing worked-time and overtime calculations */
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -392,7 +393,10 @@ namespace WebApplication1.bussiness.production
             string convtimeout = timeout.ToString("yyyy-MM-dd hh:mm:ss tt");
 
             DropDownList DDL_Lunch = (DropDownList)GridView2.Rows[e.RowIndex].FindControl("DDL_LunchYesNo");
-            string lunchyesno = DDL_Lunch.SelectedItem.Text.ToString();
+            string lunchyesno = DDL_Lunch.SelectedValue;
+            if (string.IsNullOrEmpty(lunchyesno))
+                lunchyesno = null;
+            string lunchForCalc = lunchyesno ?? string.Empty;
 
             TextBox TextBoxWithOt = (TextBox)GridView2.Rows[e.RowIndex].FindControl("txt_ProvidedOT");
             string new_ot = TextBoxWithOt.Text.ToString();
@@ -411,11 +415,11 @@ namespace WebApplication1.bussiness.production
 
             if (region == "NINL")
             {
-                dbcl.CalculateOvertimeRev(emp_wrkmnis, workdmins, lunchyesno, ref emp_calOThrs);
+                dbcl.CalculateOvertimeRev(emp_wrkmnis, workdmins, lunchForCalc, ref emp_calOThrs);
             }
             else
             {
-                dbcl.CalculateOvertime(emp_wrkmnis, workdmins, lunchyesno, ref emp_calOThrs);
+                dbcl.CalculateOvertime(emp_wrkmnis, workdmins, lunchForCalc, ref emp_calOThrs);
             }
 
             UpdateDetails(id, jobid, workmansl, convtimein, convtimeout, lunchyesno, workdmins,
@@ -450,7 +454,7 @@ namespace WebApplication1.bussiness.production
                 cmd.Parameters.AddWithValue("@Outpunch_Time", convtimeout);
                 cmd.Parameters.AddWithValue("@WorkedTime", workdmins);
                 cmd.Parameters.AddWithValue("@WorkedHours", workedhours);
-                cmd.Parameters.AddWithValue("@LunchFactor", lunchyesno);
+                cmd.Parameters.AddWithValue("@LunchFactor", string.IsNullOrEmpty(lunchyesno) ? (object)DBNull.Value : lunchyesno);
                 cmd.Parameters.AddWithValue("@Calc_OT", emp_calOThrs);
                 cmd.Parameters.AddWithValue("@ProvidedOT", new_pot);
                 cmd.Parameters.AddWithValue("@LastModified", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt"));
@@ -463,7 +467,7 @@ namespace WebApplication1.bussiness.production
                 dbcl.DisconnectDb();
 
                 JobWorkflowLogger.LogAction(jobid, "ATTENDANCE EDITED", Session["WORKMAN"] != null ? Session["WORKMAN"].ToString() : "Unknown",
-                    $"Employee {empwrk}: In={convtimein}, Out={convtimeout}, Lunch={lunchyesno}, WorkedHrs={workedhours}, CalcOT={emp_calOThrs}, ProvidedOT={new_pot}, Status={ddl_newattensttaus}, Code={ddl_newattencode}.");
+                    $"Employee {empwrk}: In={convtimein}, Out={convtimeout}, Lunch={(lunchyesno ?? "NULL")}, WorkedHrs={workedhours}, CalcOT={emp_calOThrs}, ProvidedOT={new_pot}, Status={ddl_newattensttaus}, Code={ddl_newattencode}.");
 
                 ShowNotification("Success", "Data has been UPDATED !!", "success");
             }
@@ -475,8 +479,31 @@ namespace WebApplication1.bussiness.production
 
         protected void GridView2_RowDataBound(object sender, GridViewRowEventArgs e)
         {
+            if (e.Row.RowType == DataControlRowType.DataRow && GridView2.EditIndex != e.Row.RowIndex)
+            {
+                Label lblLunch = e.Row.FindControl("lbl_LunchFactor") as Label;
+                if (lblLunch != null && string.IsNullOrWhiteSpace(lblLunch.Text))
+                    lblLunch.Text = "Not Set";
+            }
+
             if (e.Row.RowType == DataControlRowType.DataRow && GridView2.EditIndex == e.Row.RowIndex)
             {
+                DropDownList DDL_Lunch = e.Row.FindControl("DDL_LunchYesNo") as DropDownList;
+                if (DDL_Lunch != null)
+                {
+                    object rawLunch = DataBinder.Eval(e.Row.DataItem, "LunchFactor");
+                    string lunch = (rawLunch == null || rawLunch == DBNull.Value) ? string.Empty : rawLunch.ToString().Trim();
+                    if (lunch.Length > 0 && DDL_Lunch.Items.FindByValue(lunch) == null)
+                        DDL_Lunch.Items.Add(new ListItem(lunch, lunch));
+
+                    DDL_Lunch.ClearSelection();
+                    ListItem lunchItem = DDL_Lunch.Items.FindByValue(lunch);
+                    if (lunchItem != null)
+                        lunchItem.Selected = true;
+                    else if (DDL_Lunch.Items.Count > 0)
+                        DDL_Lunch.SelectedIndex = 0;
+                }
+
                 var DDL_AttendanceStatus = e.Row.FindControl("DDL_AttendanceStatus") as DropDownList;
                 if (DDL_AttendanceStatus != null)
                 {
