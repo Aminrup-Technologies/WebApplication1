@@ -1,4 +1,7 @@
-﻿using ClosedXML.Excel;
+﻿/* When: 2026-10-05 | Why: Restore the established legacy Bank Sheet export contract without changing payroll/business behavior | What: Restored the existing legacy export pathway and preserved the established bank-sheet format, structure, and presentation. */
+/* When: 2026-11-03 | Why: Restore approved bank-sheet compatibility and prevent invalid exports. | What: Restore established bank-facing headers/layout, preserve account text formatting, and restrict export enablement to valid generated results. */
+/* When: 2026-11-25 | Why: Prevent client-tampered bank-sheet exports. | What: Regenerate authoritative export HTML from the validated server-side payroll query and close the bank-sheet table structure. */
+using ClosedXML.Excel;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -19,6 +22,7 @@ namespace WebApplication1.bussiness.production
         DataTable dt = new DataTable();
 
         string str = string.Empty;
+        int bankSheetRow;
 
         public static string state = string.Empty;
         public static string region = string.Empty;
@@ -28,30 +32,13 @@ namespace WebApplication1.bussiness.production
         {
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                if (!HasRequiredSession())
                 {
                     Response.Redirect("~/login.aspx");
                 }
                 else
                 {
-                    if (Session["Changer"] != null)
-                    {
-                        string[] retrievedArray = (string[])Session["Changer"];
-                        region = retrievedArray[1].ToString();
-                        comp = retrievedArray[2].ToString();
-                        state = retrievedArray[0].ToString();
-                        Session["Changer"] = null;
-                        Session["Changer"] = retrievedArray;
-                    }
-                    else
-                    {
-                        region = Session["REGION"].ToString();
-                        comp = Session["COMPANY_CODE"].ToString();
-                        state = Session["STATE"].ToString();
-                        string[] Bindervalue = { state, region, comp, "1" };
-                        Session["Changer"] = null;
-                        Session["Changer"] = Bindervalue;
-                    }
+                    ResolveAuthorizedContext();
 
                     //string CmdString1 = "select Work_Region_Name, Work_Region_Code from tlb_work_state_region where Country_Code = 'IN' and State_Code ='"+ state + "' order by Id ";
                     //BindRegions(CmdString1);
@@ -62,8 +49,41 @@ namespace WebApplication1.bussiness.production
                     dbcl.BindMonthAndYearDropdowns(DDL_Month, DDL_Year);
 
                     Button1.Enabled = false;
+                    btnExport.Enabled = false;
                     //dbcl.BindMonthAndYearDropdowns(DDL_M2, DDL_Y2);
                 }
+            }
+        }
+
+        private bool HasRequiredSession()
+        {
+            return Session["USERID"] != null
+                && Session["RolePermissionDB"] != null
+                && Session["UserRoleDB"] != null
+                && Session["USERNAME"] != null
+                && Session["WORKMAN"] != null
+                && Session["REGION"] != null;
+        }
+
+        private void ResolveAuthorizedContext()
+        {
+            if (Session["Changer"] != null)
+            {
+                string[] retrievedArray = (string[])Session["Changer"];
+                region = retrievedArray[1].ToString();
+                comp = retrievedArray[2].ToString();
+                state = retrievedArray[0].ToString();
+                Session["Changer"] = null;
+                Session["Changer"] = retrievedArray;
+            }
+            else
+            {
+                region = Session["REGION"].ToString();
+                comp = Session["COMPANY_CODE"].ToString();
+                state = Session["STATE"].ToString();
+                string[] Bindervalue = { state, region, comp, "1" };
+                Session["Changer"] = null;
+                Session["Changer"] = Bindervalue;
             }
         }
 
@@ -147,8 +167,58 @@ namespace WebApplication1.bussiness.production
             dbcl.DisconnectDb();
         }
 
+        private string BuildBankSheetSelection(string year, string month, int reportTypeIndex, string workRegion)
+        {
+            return year + "|" + month + "|" + reportTypeIndex + "|" + workRegion;
+        }
+
+        private bool TryGetCurrentBankSheetSelection(out string year, out string monthValue, out int reportTypeIndex, out string selectionKey)
+        {
+            year = null;
+            monthValue = null;
+            reportTypeIndex = 0;
+            selectionKey = null;
+
+            if (DDL_Year.SelectedItem == null || DDL_Month.SelectedItem == null || DDL_ReportType.SelectedItem == null)
+                return false;
+
+            year = DDL_Year.SelectedItem.Text;
+            monthValue = DDL_Month.SelectedValue;
+            reportTypeIndex = DDL_ReportType.SelectedIndex;
+            if (reportTypeIndex != 1 && reportTypeIndex != 2)
+                return false;
+
+            selectionKey = BuildBankSheetSelection(year, monthValue, reportTypeIndex, region);
+            return true;
+        }
+
+        private string BuildAuthoritativeBankSheetHtml(string year, string month, int reportTypeIndex, string workRegion)
+        {
+            str = string.Empty;
+            bankSheetRow = 0;
+
+            if (reportTypeIndex == 1)
+                BindDefaultHeader(year, month, workRegion);
+            else if (reportTypeIndex == 2)
+                BindDefaultHeader2(year, month, workRegion);
+            else
+                return string.Empty;
+
+            return str;
+        }
+
         protected void btn_submit_Click(object sender, EventArgs e)
         {
+            if (!HasRequiredSession())
+            {
+                btnExport.Enabled = false;
+                ViewState["BankSheetSelection"] = null;
+                Response.Redirect("~/login.aspx");
+                return;
+            }
+
+            ResolveAuthorizedContext();
+
             string current_year = DDL_Year.SelectedItem.Text.ToString();
             string current_month2 = DDL_Month.SelectedValue.ToString();
 
@@ -159,16 +229,16 @@ namespace WebApplication1.bussiness.production
             string strtday = "01";
             string endday = daysInMonth.ToString("D2");
 
-            if (DDL_ReportType.SelectedIndex == 1)
-            {
-                BindDefaultHeader(current_year, current_month2, region);
-            }
-            else if (DDL_ReportType.SelectedIndex == 2)
-            {
-                BindDefaultHeader2(current_year, current_month2, region);
-                //-------------------
-            }
+            string html = string.Empty;
+            if (DDL_ReportType.SelectedIndex == 1 || DDL_ReportType.SelectedIndex == 2)
+                html = BuildAuthoritativeBankSheetHtml(current_year, current_month2, DDL_ReportType.SelectedIndex, region);
+
+            lblTotalData.Text = html;
             Button1.Enabled = true;
+            btnExport.Enabled = bankSheetRow > 0;
+            ViewState["BankSheetSelection"] = btnExport.Enabled
+                ? BuildBankSheetSelection(current_year, current_month2, DDL_ReportType.SelectedIndex, region)
+                : null;
         }
 
 
@@ -182,10 +252,9 @@ namespace WebApplication1.bussiness.production
             str = str + "<td width='5%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>BANK NAME</td>";
             str = str + "<td width='5%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>IFSC CODE</td>";
             str = str + "<td width='5%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>BRANCH NAME</td>";
-            str = str + "<td width='1%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>AMOUNT</td>";
+            str = str + "<td width='1%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>AMOUNT</td></tr>";
             BindRBIData(Year, Month, Region);
-            str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='100%' style='font:normal 16px/16px Century Gothic; padding:5px 20px 5px 20px;' align='cen ter'></td></tr></table>";
-            lblTotalData.Text = str;
+            str = str + "</table>";
         }
 
         private void BindDefaultHeader2(string Year, string Month, string Region)
@@ -200,8 +269,7 @@ namespace WebApplication1.bussiness.production
             str = str + "<td width='5%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>BRANCH NAME</td>";
             str = str + "<td width='1%' style='background-color: #92d050; border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>AMOUNT</td></tr>";
             BindRBIData2(Year, Month, Region);
-            str = str + "<table width='100%' style='border-collapse:collapse;'><tr><td width='100%' style='font:normal 16px/16px Century Gothic; padding:5px 20px 5px 20px;' align='cen ter'></td></tr></table>";
-            lblTotalData.Text = str;
+            str = str + "</table>";
         }
 
         private void BindRBIData(string Year, string Month, string Region)
@@ -215,13 +283,14 @@ namespace WebApplication1.bussiness.production
             {
                 while (re.Read())
                 {
+                    bankSheetRow++;
                     str = str + "<tr><td width = '2%' style = 'border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align = 'center' >" + re["SrNo"].ToString() + "</ td > ";
                     str = str + "<td width='3%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["WorkmanSL"].ToString() + "</td>";
-                    str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>`38233797214</td>";
+                    str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px; mso-number-format:\\@;' align='center'>38233797214</td>";
                     str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["FullName"].ToString() + "</td>";
-                    str = str + "<td width='8%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>`" + re["Payment_Account"].ToString() + "</td>";
+                    str = str + "<td width='8%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px; mso-number-format:\\@;' align='center'>" + re["Payment_Account"].ToString() + "</td>";
                     str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Payment_Bank"].ToString() + "</td>";
-                    str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>'" + re["Payment_IFSC"].ToString() + "</td>";
+                    str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px; mso-number-format:\\@;' align='center'>" + re["Payment_IFSC"].ToString() + "</td>";
                     str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["BankBranch"].ToString() + "</td>";
                     str = str + "<td width='4%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["NetPayFinal"].ToString() + "</td></tr>";
                 }
@@ -240,13 +309,14 @@ namespace WebApplication1.bussiness.production
             {
                 while (re.Read())
                 {
+                    bankSheetRow++;
                     str = str + "<tr><td width = '2%' style = 'border:1px solid #595959; font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;'align = 'center' >" + re["SrNo"].ToString() + "</ td > ";
                     str = str + "<td width='3%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["WorkmanSL"].ToString() + "</td>";
-                    str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>'38233797214</td>";
+                    str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px; mso-number-format:\\@;' align='center'>38233797214</td>";
                     str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["FullName"].ToString() + "</td>";
-                    str = str + "<td width='8%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Payment_Account"].ToString() + "</td>";
+                    str = str + "<td width='8%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px; mso-number-format:\\@;' align='center'>" + re["Payment_Account"].ToString() + "</td>";
                     str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["Payment_Bank"].ToString() + "</td>";
-                    str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>`" + re["Payment_IFSC"].ToString() + "</td>";
+                    str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px; mso-number-format:\\@;' align='center'>" + re["Payment_IFSC"].ToString() + "</td>";
                     str = str + "<td width='5%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["BankBranch"].ToString() + "</td>";
                     str = str + "<td width='4%' style='border:1px solid #595959;  font:normal 12px/12px Century Gothic; font-weight: bold; padding:10px 0px 10px 0px;' align='center'>" + re["NetPay"].ToString() + "</td></tr>";
                 }
@@ -256,16 +326,55 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_excelexport_Click(object sender, EventArgs e)
         {
+            if (!HasRequiredSession())
+            {
+                btnExport.Enabled = false;
+                ViewState["BankSheetSelection"] = null;
+                Response.Redirect("~/login.aspx");
+                return;
+            }
+
+            ResolveAuthorizedContext();
+
+            string year;
+            string monthValue;
+            int reportTypeIndex;
+            string currentSelection;
+            string storedSelection = ViewState["BankSheetSelection"] as string;
+
+            if (!btnExport.Enabled
+                || !TryGetCurrentBankSheetSelection(out year, out monthValue, out reportTypeIndex, out currentSelection)
+                || string.IsNullOrEmpty(storedSelection)
+                || storedSelection != currentSelection)
+            {
+                btnExport.Enabled = false;
+                ViewState["BankSheetSelection"] = null;
+                return;
+            }
+
+            string exportHtml = BuildAuthoritativeBankSheetHtml(year, monthValue, reportTypeIndex, region);
+            if (bankSheetRow <= 0 || string.IsNullOrEmpty(exportHtml))
+            {
+                btnExport.Enabled = false;
+                ViewState["BankSheetSelection"] = null;
+                lblTotalData.Text = string.Empty;
+                return;
+            }
+
+            // Keep on-screen grid aligned with the authoritative export payload.
+            lblTotalData.Text = exportHtml;
+
             string strt = "BankSheet";
             //string regn = DDL_Region.SelectedItem.Text.ToString();
             string month = DDL_Month.SelectedItem.Text.ToString();
-            string year = DDL_Year.SelectedItem.Text.ToString();
+            string yearText = DDL_Year.SelectedItem.Text.ToString();
             Response.Clear();
             Response.Buffer = true;
-            Response.AddHeader("content-disposition", "attachment;filename=" + strt + "_" + region + "_" + month + "_" + year + ".xls");
+            Response.AddHeader("content-disposition", "attachment;filename=" + strt + "_" + region + "_" + month + "_" + yearText + ".xls");
             Response.Charset = "";
             Response.ContentType = "application/vnd.ms-excel";
-            Response.Output.Write(Request.Form[hfGridHtml.UniqueID]);
+            // Authoritative export: never trust Request.Form[hfGridHtml] for payout/account data.
+            Response.Output.Write(exportHtml);
             Response.Flush();
             Response.End();
         }
