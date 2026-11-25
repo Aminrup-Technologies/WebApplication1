@@ -1,4 +1,5 @@
-﻿using System;
+﻿/* When: 2026-11-25 | Why: Enforce destination authorization and correct the approved JOB access and SQL defects. | What: Add fail-closed region ownership checks, parameterize JOBID and WORKMAN queries, correct pending OUT, and enforce authorized JOB write-target consistency on final submit. */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -16,27 +17,137 @@ namespace WebApplication1.bussiness.production
         DataTable dt = new DataTable();
         CountChecker CC = new CountChecker();
 
+        /// <summary>
+        /// Candidate JOB identity from query string or server-rendered label.
+        /// Not proof of authorization — always revalidated via TryEnsureAuthorizedJob.
+        /// </summary>
+        private string ResolveCandidateJobId()
+        {
+            string qs = Request.QueryString["JOBID"];
+            if (!string.IsNullOrWhiteSpace(qs))
+            {
+                return qs;
+            }
+            if (lbl_jobid != null && !string.IsNullOrWhiteSpace(lbl_jobid.Text))
+            {
+                return lbl_jobid.Text;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Authenticated AND CanAccess(LegacyAttachManpower) AND ValidJOB AND ExactRegionMatch.
+        /// Ownership: exactly one tbl_jobs row for JOBID=@JOBID AND JOB_Region=@Region.
+        /// </summary>
+        private bool TryEnsureAuthorizedJob(string jobid, out string authorizedJobId)
+        {
+            string authorizedJobRegion;
+            return TryEnsureAuthorizedJob(jobid, out authorizedJobId, out authorizedJobRegion);
+        }
+
+        /// <summary>
+        /// Same as TryEnsureAuthorizedJob(jobid, out authorizedJobId), also returning
+        /// JOB_Region from the authorized tbl_jobs row (not from ViewState/labels).
+        /// </summary>
+        private bool TryEnsureAuthorizedJob(string jobid, out string authorizedJobId, out string authorizedJobRegion)
+        {
+            authorizedJobId = null;
+            authorizedJobRegion = null;
+
+            if (!AuthorizationService.IsAuthenticated())
+            {
+                Response.Redirect("~/login.aspx");
+                return false;
+            }
+
+            if (!AuthorizationService.CanAccess(AuthorizationFeatureCodes.LegacyAttachManpower))
+            {
+                DenyInaccessibleJob();
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(jobid))
+            {
+                DenyInaccessibleJob();
+                return false;
+            }
+
+            object regionObj = Session["REGION"];
+            string region = regionObj == null ? null : regionObj.ToString();
+            if (string.IsNullOrWhiteSpace(region))
+            {
+                DenyInaccessibleJob();
+                return false;
+            }
+
+            try
+            {
+                string ownershipQuery = "SELECT JOBID, JOB_Region FROM tbl_jobs WHERE JOBID = @JOBID AND JOB_Region = @Region";
+                SqlParameter[] ownershipParams = {
+                    new SqlParameter("@JOBID", jobid),
+                    new SqlParameter("@Region", region)
+                };
+                DataTable ownershipDt = dbcl.SPreturn_dt(ownershipQuery, ownershipParams);
+                if (ownershipDt == null || ownershipDt.Rows.Count != 1)
+                {
+                    DenyInaccessibleJob();
+                    return false;
+                }
+
+                string resolved = ownershipDt.Rows[0]["JOBID"] == null ? null : ownershipDt.Rows[0]["JOBID"].ToString();
+                string resolvedRegion = ownershipDt.Rows[0]["JOB_Region"] == null ? null : ownershipDt.Rows[0]["JOB_Region"].ToString();
+                if (string.IsNullOrWhiteSpace(resolved) || string.IsNullOrWhiteSpace(resolvedRegion))
+                {
+                    DenyInaccessibleJob();
+                    return false;
+                }
+
+                authorizedJobId = resolved;
+                authorizedJobRegion = resolvedRegion;
+                return true;
+            }
+            catch
+            {
+                DenyInaccessibleJob();
+                return false;
+            }
+        }
+
+        private void DenyInaccessibleJob()
+        {
+            if (JOBIDDetails_Row != null) JOBIDDetails_Row.Visible = false;
+            if (AttachedAttendanceRow != null) AttachedAttendanceRow.Visible = false;
+            if (InpunchPanel_Row != null) InpunchPanel_Row.Visible = false;
+            if (ViewState_TableRow != null) ViewState_TableRow.Visible = false;
+            if (SendAttendance_Buttons != null) SendAttendance_Buttons.Visible = false;
+            if (Addto_buttons != null) Addto_buttons.Visible = false;
+
+            string title = "Notifications :";
+            string body = "The requested JOB is inaccessible.";
+            ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
+            string authorizedJobId;
+            if (!TryEnsureAuthorizedJob(ResolveCandidateJobId(), out authorizedJobId))
+            {
+                return;
+            }
+
             if (!IsPostBack)
             {
-                if (Session["USERID"] == null || Session["RolePermissionDB"] == null || Session["UserRoleDB"] == null|| Session["USERNAME"] == null || Session["WORKMAN"] == null || Session["REGION"] == null)
+                //ViewState["RefUrl"] = Request.UrlReferrer.ToString();
+                if (!Bind_JOBIDDetails(authorizedJobId))
                 {
-                    Response.Redirect("~/login.aspx");
+                    return;
                 }
-                else
-                {
-                    //ViewState["RefUrl"] = Request.UrlReferrer.ToString();
-                    string jobid = Request.QueryString["JOBID"];
-                    Bind_JOBIDDetails(jobid);
-                    JOBIDDetails_Row.Visible = true;
+                JOBIDDetails_Row.Visible = true;
 
-                    string CmdString4 = "Select Status_Name,Status_Code from tlb_attendancecodes where Approver='Yes' and Status='Present' order by slno";
-                    Bind_AttendnaceCode(CmdString4);
+                string CmdString4 = "Select Status_Name,Status_Code from tlb_attendancecodes where Approver='Yes' and Status='Present' order by slno";
+                Bind_AttendnaceCode(CmdString4);
 
-                    AddDefaultFirstRecord();
-
-                }
+                AddDefaultFirstRecord();
             }
         }
 
@@ -54,54 +165,81 @@ namespace WebApplication1.bussiness.production
             dbcl.DisconnectDb();
         }
 
-        private void Bind_JOBIDDetails(string jobid)
+        private bool Bind_JOBIDDetails(string jobid)
         {
+            string authorizedJobId;
+            if (!TryEnsureAuthorizedJob(jobid, out authorizedJobId))
+            {
+                return false;
+            }
+
+            object regionObj = Session["REGION"];
+            string region = regionObj == null ? null : regionObj.ToString();
+            if (string.IsNullOrWhiteSpace(region))
+            {
+                DenyInaccessibleJob();
+                return false;
+            }
+
             try
             {
-                string query = "select CreatedDate, Creator_Name, Creator_Workman, Creator_Region, Creator_Company, Creator_Site, Creator_SiteCode, WorkOrderNo, JOBID, JOB_Region, JOB_Company, JOB_Site, JOB_SiteCode, JOB_InchargeWrk, JOB_InchargeName, JOB_Dept, JOB_Location, JOB_Shift, JOB_PermitNo from tbl_jobs where JOBID=@JOBID";
+                string query = "select CreatedDate, Creator_Name, Creator_Workman, Creator_Region, Creator_Company, Creator_Site, Creator_SiteCode, WorkOrderNo, JOBID, JOB_Region, JOB_Company, JOB_Site, JOB_SiteCode, JOB_InchargeWrk, JOB_InchargeName, JOB_Dept, JOB_Location, JOB_Shift, JOB_PermitNo from tbl_jobs where JOBID=@JOBID AND JOB_Region=@Region";
                 SqlParameter[] pram = {
-                                          new SqlParameter("@JOBID",jobid),
+                                          new SqlParameter("@JOBID", authorizedJobId),
+                                          new SqlParameter("@Region", region),
                                       };
                 dt = dbcl.SPreturn_dt(query, pram);
-                if (dt.Rows.Count > 0)
+                if (dt.Rows.Count != 1)
                 {
-                    lbl_jobiddate.Text = dt.Rows[0]["CreatedDate"].ToString();
-                    lbl_jobcreatorname.Text = dt.Rows[0]["Creator_Name"].ToString();
-                    lbl_creatorwrk.Text = dt.Rows[0]["Creator_Workman"].ToString();
-                    lbl_creatorregion.Text = dt.Rows[0]["Creator_Region"].ToString();
-                    lbl_creatorcompany.Text = dt.Rows[0]["Creator_Company"].ToString();
-                    lbl_crtrsitename.Text = dt.Rows[0]["Creator_Site"].ToString();
-                    lbl_crtrsitecode.Text = dt.Rows[0]["Creator_SiteCode"].ToString();
-                    lbl_wrkordr.Text = dt.Rows[0]["WorkOrderNo"].ToString();
-                    lbl_jobid.Text = dt.Rows[0]["JOBID"].ToString();
-                    lbl_jobrgn.Text = dt.Rows[0]["JOB_Region"].ToString();
-                    lbl_jobcompay.Text = dt.Rows[0]["JOB_Company"].ToString();
-                    lbl_jobsite.Text = dt.Rows[0]["JOB_Site"].ToString();
-                    lbl_jobsitecode.Text = dt.Rows[0]["JOB_SiteCode"].ToString();
-                    lbl_inchargewrk.Text = dt.Rows[0]["JOB_InchargeWrk"].ToString();
-                    lbl_inchargename.Text = dt.Rows[0]["JOB_InchargeName"].ToString();
-                    lbl_dept.Text = dt.Rows[0]["JOB_Dept"].ToString();
-                    lbl_jobloc.Text = dt.Rows[0]["JOB_Location"].ToString();
-                    lbl_jobshift.Text = dt.Rows[0]["JOB_Shift"].ToString();
-                    lbl_permitno.Text = dt.Rows[0]["JOB_PermitNo"].ToString();
-                    CheckforAttachedAttendnace(jobid);
+                    DenyInaccessibleJob();
+                    return false;
                 }
+
+                lbl_jobiddate.Text = dt.Rows[0]["CreatedDate"].ToString();
+                lbl_jobcreatorname.Text = dt.Rows[0]["Creator_Name"].ToString();
+                lbl_creatorwrk.Text = dt.Rows[0]["Creator_Workman"].ToString();
+                lbl_creatorregion.Text = dt.Rows[0]["Creator_Region"].ToString();
+                lbl_creatorcompany.Text = dt.Rows[0]["Creator_Company"].ToString();
+                lbl_crtrsitename.Text = dt.Rows[0]["Creator_Site"].ToString();
+                lbl_crtrsitecode.Text = dt.Rows[0]["Creator_SiteCode"].ToString();
+                lbl_wrkordr.Text = dt.Rows[0]["WorkOrderNo"].ToString();
+                lbl_jobid.Text = dt.Rows[0]["JOBID"].ToString();
+                lbl_jobrgn.Text = dt.Rows[0]["JOB_Region"].ToString();
+                lbl_jobcompay.Text = dt.Rows[0]["JOB_Company"].ToString();
+                lbl_jobsite.Text = dt.Rows[0]["JOB_Site"].ToString();
+                lbl_jobsitecode.Text = dt.Rows[0]["JOB_SiteCode"].ToString();
+                lbl_inchargewrk.Text = dt.Rows[0]["JOB_InchargeWrk"].ToString();
+                lbl_inchargename.Text = dt.Rows[0]["JOB_InchargeName"].ToString();
+                lbl_dept.Text = dt.Rows[0]["JOB_Dept"].ToString();
+                lbl_jobloc.Text = dt.Rows[0]["JOB_Location"].ToString();
+                lbl_jobshift.Text = dt.Rows[0]["JOB_Shift"].ToString();
+                lbl_permitno.Text = dt.Rows[0]["JOB_PermitNo"].ToString();
+                CheckforAttachedAttendnace(authorizedJobId);
+                return true;
             }
             catch (Exception ex)
             {
                 string title = "Notifications :";
                 string body = ex.Message;
                 ClientScript.RegisterStartupScript(this.GetType(), "Popup", "ShowPopup('" + title + "', '" + body + "');", true);
+                return false;
             }
         }
 
         private void CheckforAttachedAttendnace(string jobid)
         {
+            string authorizedJobId;
+            if (!TryEnsureAuthorizedJob(jobid, out authorizedJobId))
+            {
+                return;
+            }
+
             dbcl.Sqlconnection();
-            string cmdstring = "select count (Id) from tbl_attendance where JOBID= '" + jobid + "'";
+            string cmdstring = "select count (Id) from tbl_attendance where JOBID=@JOBID";
             dbcl.ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdstring, dbcl.Conn);
             cmd.CommandType = CommandType.Text;
+            cmd.Parameters.AddWithValue("@JOBID", authorizedJobId);
             Int32 count = Convert.ToInt32(cmd.ExecuteScalar());
             if (count == 0)
             {
@@ -110,17 +248,24 @@ namespace WebApplication1.bussiness.production
             else
             {
                 AttachedAttendanceRow.Visible = true;
-                Bind_AttendanceGridView(jobid);
+                Bind_AttendanceGridView(authorizedJobId);
             }
             dbcl.DisconnectDb();
         }
 
         private void Bind_AttendanceGridView(string jobid)
         {
+            string authorizedJobId;
+            if (!TryEnsureAuthorizedJob(jobid, out authorizedJobId))
+            {
+                return;
+            }
+
             dbcl.Sqlconnection();
             dbcl.ConnectDb();
-            string cmdString = "Select * from tbl_attendance where JOBID='" + jobid + "' order by Id";
+            string cmdString = "Select * from tbl_attendance where JOBID=@JOBID order by Id";
             SqlCommand cmd = new SqlCommand(cmdString, dbcl.Conn);
+            cmd.Parameters.AddWithValue("@JOBID", authorizedJobId);
             SqlDataAdapter ad = new SqlDataAdapter(cmd);
             DataTable dtbl = new DataTable();
             ad.Fill(dtbl);
@@ -135,6 +280,12 @@ namespace WebApplication1.bussiness.production
         //---------------------------------------------------------------------------------------------------------//
         protected void txt_empworkman_TextChanged(object sender, EventArgs e)
         {
+            string authorizedJobId;
+            if (!TryEnsureAuthorizedJob(ResolveCandidateJobId(), out authorizedJobId))
+            {
+                return;
+            }
+
             string entered_workman = txt_empworkman.Text.TrimEnd().ToString();
             PendingOUTMsg.Visible = false;
             if (entered_workman != string.Empty)
@@ -143,7 +294,8 @@ namespace WebApplication1.bussiness.production
                 {
                     if (dbcl.CheckEmployeeActiveStatus(entered_workman) == true)
                     {
-                        if (CC.Check_EmployeePunchOUT(entered_workman) == 0 || CC.Check_EmployeePunchOUT(entered_workman) != 0)
+                        Int32 pendingOutCount = CC.Check_EmployeePunchOUT(entered_workman);
+                        if (pendingOutCount == 0)
                         {
                             string name = string.Empty;
                             string workhours = string.Empty;
@@ -335,6 +487,12 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_submit_Click(object sender, EventArgs e)
         {
+            string authorizedJobId;
+            if (!TryEnsureAuthorizedJob(ResolveCandidateJobId(), out authorizedJobId))
+            {
+                return;
+            }
+
             if (txt_empname.Text.ToString() != "" && txt_worksite.Text.ToString() != "" && txt_indate.Text.ToString() != "" && txt_intime.Text.ToString() != "")
             {
                 ADDTOLIST();
@@ -486,6 +644,12 @@ namespace WebApplication1.bussiness.production
 
         protected void GridView1_RowDeleting(object sender, GridViewDeleteEventArgs e)
         {
+            string authorizedJobId;
+            if (!TryEnsureAuthorizedJob(ResolveCandidateJobId(), out authorizedJobId))
+            {
+                return;
+            }
+
             DataTable dtCurrentTable = (DataTable)ViewState["Attendance"];
             DataRow dr = dtCurrentTable.Rows[e.RowIndex];
             dtCurrentTable.Rows.Remove(dr);
@@ -495,8 +659,16 @@ namespace WebApplication1.bussiness.production
 
         protected void btn_finalsubmit_Click(object sender, EventArgs e)
         {
+            string authorizedJobId;
+            string authorizedJobRegion;
+            if (!TryEnsureAuthorizedJob(ResolveCandidateJobId(), out authorizedJobId, out authorizedJobRegion))
+            {
+                return;
+            }
 
-            if (DataTablePull() == true)
+            // Write-target invariant: AuthorizedJobID == AttendanceInsertJobID == JOBSpecificUpdateJobID
+            // and insert region is JOB_Region from the authorized JOB record — never ViewState labels.
+            if (DataTablePull(authorizedJobId, authorizedJobRegion) == true)
             {
                 AttendanceSentMesg.Visible = true;
                 SendAttendance_Buttons.Visible = false;
@@ -507,8 +679,8 @@ namespace WebApplication1.bussiness.production
                 //inpunched_buttons.Visible = true;
                 //btn_tbtpage.Visible = true;
 
-                CheckforAttachedAttendnace();
-                Bind_JOBIDDetails(lbl_jobid.Text.ToString());
+                CheckforAttachedAttendnaceAndUpdateCount(authorizedJobId);
+                Bind_JOBIDDetails(authorizedJobId);
 
                 AddDefaultFirstRecord();
             }
@@ -523,14 +695,31 @@ namespace WebApplication1.bussiness.production
 
         }
 
-        private void CheckforAttachedAttendnace()
+        /// <summary>
+        /// After final submit: revalidate the same authorized JOB used for inserts, then update ManpowerCount.
+        /// </summary>
+        private void CheckforAttachedAttendnaceAndUpdateCount(string jobid)
         {
-            string ddljobid = lbl_jobid.Text.ToString();
+            string authorizedJobId;
+            if (!TryEnsureAuthorizedJob(jobid, out authorizedJobId))
+            {
+                return;
+            }
+
+            object workmanObj = Session["WORKMAN"];
+            if (workmanObj == null || string.IsNullOrWhiteSpace(workmanObj.ToString()))
+            {
+                DenyInaccessibleJob();
+                return;
+            }
+
             dbcl.Sqlconnection();
-            string cmdstring = "select count (Id) from tbl_attendance where JOBID= '" + ddljobid + "' and Creator_Workman='" + Session["WORKMAN"].ToString() + "'  and AttendanceStatus = 'Entry'";
+            string cmdstring = "select count (Id) from tbl_attendance where JOBID=@JOBID and Creator_Workman=@Creator_Workman and AttendanceStatus = 'Entry'";
             dbcl.ConnectDb();
             SqlCommand cmd = new SqlCommand(cmdstring, dbcl.Conn);
             cmd.CommandType = CommandType.Text;
+            cmd.Parameters.AddWithValue("@JOBID", authorizedJobId);
+            cmd.Parameters.AddWithValue("@Creator_Workman", workmanObj.ToString());
             Int32 count = Convert.ToInt32(cmd.ExecuteScalar());
             if (count == 0)
             {
@@ -539,16 +728,22 @@ namespace WebApplication1.bussiness.production
             else
             {
                 //Update manpower count in job table for view in list, added on 15-04-2023
-                dbcl.UPDT_ManpowerCountJOBID(count, ddljobid);
+                dbcl.UPDT_ManpowerCountJOBID(count, authorizedJobId);
                 AttachedAttendanceRow.Visible = true;
-                Bind_AttendanceGridView(ddljobid);
+                Bind_AttendanceGridView(authorizedJobId);
             }
             dbcl.DisconnectDb();
         }
 
-        protected Boolean DataTablePull()
+        protected Boolean DataTablePull(string authorizedJobId, string authorizedJobRegion)
         {
             Boolean flag = false;
+
+            if (string.IsNullOrWhiteSpace(authorizedJobId) || string.IsNullOrWhiteSpace(authorizedJobRegion))
+            {
+                DenyInaccessibleJob();
+                return false;
+            }
 
             DataTable dt1;
             dt1 = (DataTable)ViewState["Attendance"];
@@ -583,7 +778,7 @@ namespace WebApplication1.bussiness.production
                     string ot = ((Label)GridView1.Rows[i].FindControl("lbl_pot")).Text;
                     string presentstatus = ((Label)GridView1.Rows[i].FindControl("lbl_presentstatus")).Text;
 
-                    Int32 returnflag = InsertIntoAttendanceTable(wrk, name, site, sitecode, wrkhrs, category, categorycode, po_category, po_categorycode, designation, designationcode, gpno, timein, timeout, lunch, wrkmin, wrkdhrs, cot, ot, presentstatus);
+                    Int32 returnflag = InsertIntoAttendanceTable(authorizedJobId, authorizedJobRegion, wrk, name, site, sitecode, wrkhrs, category, categorycode, po_category, po_categorycode, designation, designationcode, gpno, timein, timeout, lunch, wrkmin, wrkdhrs, cot, ot, presentstatus);
                     if (returnflag != 0)
                     {
                         flag = true;
@@ -596,9 +791,15 @@ namespace WebApplication1.bussiness.production
             }
             return flag;
         }
-        private Int32 InsertIntoAttendanceTable(string EmployeeWrk, string EmployeName, string SiteName, string SiteCode, string Workhours, string category, string categorycode, string po_category, string po_categorycode, string designation, string designationcode, string gpno, string InPunchTime, string OutPunchTime, string lunch, string wrkmin, string wrkdhrs, string cot, string pot, string presentstatus)
+        private Int32 InsertIntoAttendanceTable(string authorizedJobId, string authorizedJobRegion, string EmployeeWrk, string EmployeName, string SiteName, string SiteCode, string Workhours, string category, string categorycode, string po_category, string po_categorycode, string designation, string designationcode, string gpno, string InPunchTime, string OutPunchTime, string lunch, string wrkmin, string wrkdhrs, string cot, string pot, string presentstatus)
         {
             Int32 flag = 0;
+
+            if (string.IsNullOrWhiteSpace(authorizedJobId) || string.IsNullOrWhiteSpace(authorizedJobRegion))
+            {
+                DenyInaccessibleJob();
+                return 0;
+            }
 
             try
             {
@@ -612,10 +813,10 @@ namespace WebApplication1.bussiness.production
                 cmd.Parameters.AddWithValue("@Creator_Company", lbl_creatorcompany.Text.ToString());
                 cmd.Parameters.AddWithValue("@Creator_SiteName", lbl_crtrsitename.Text.ToString());
                 cmd.Parameters.AddWithValue("@Creator_SiteCode", lbl_crtrsitecode.Text.ToString());
-                cmd.Parameters.AddWithValue("@JOBID", lbl_jobid.Text.ToString());
+                cmd.Parameters.AddWithValue("@JOBID", authorizedJobId);
                 cmd.Parameters.AddWithValue("@WorkOrderNo", lbl_wrkordr.Text.ToString());
                 cmd.Parameters.AddWithValue("@PermitNo", lbl_permitno.Text.ToString());
-                cmd.Parameters.AddWithValue("@JOB_Region", lbl_jobrgn.Text.ToString());
+                cmd.Parameters.AddWithValue("@JOB_Region", authorizedJobRegion);
                 cmd.Parameters.AddWithValue("@JOB_Company", lbl_jobcompay.Text.ToString());
                 cmd.Parameters.AddWithValue("@JOB_SiteName", lbl_jobsite.Text.ToString());
                 cmd.Parameters.AddWithValue("@JOB_SiteCode", lbl_jobsitecode.Text.ToString());
