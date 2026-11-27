@@ -1,5 +1,5 @@
 ﻿/* When: 2026-10-13 | Why: Correct switch-user authentication and logout identity lifecycle defects. | What: Clear stale impersonation state only on fresh authentication and reuse original-identity resolution in alternate logout handlers. */
-/* When: 2026-10-08 | Why: Correct Switch User target authorization and impersonation logout identity handling without changing the existing architecture. | What: Enforce configured target employee-code allowlisting at search and execution boundaries and align homepage logout presence handling with the existing original-user impersonation path. */
+/* When: 2026-11-27 | Why: J1 must be able to switch to any Active employee without listing every WorkmanSL. | What: SearchActiveEmployeesForSwitch skips the target IN-list when SwitchUserAuthorizedTargets is exactly *, and still requires a search term. An empty list still returns no rows. */
 /* When: 2026-09-29 | Why: SU-P1-01 — the shared employee-session writer must establish USTATE, SKIL, and DESG from the same row columns homepage_v2 already uses, so a switched or restored session cannot keep the previous employee's scope. | What: ApplySessionFromEmployeeRow now assigns USTATE from WorkState, SKIL from SkillCategory, and DESG from SkillDesignation beside the existing STATE, U_SKILL, and U_DESG writes. No second writer. */
 /*
  * WHEN: 2026-02-27
@@ -160,8 +160,9 @@ namespace WebApplication1.bussiness.production
         {
             if (dbcl == null) throw new ArgumentNullException("dbcl");
 
+            bool allowAnyTarget = ImpersonationAudit.AllowsAnySwitchTarget();
             string[] authorizedTargets = ImpersonationAudit.ReadAllowlistCodes(ImpersonationAudit.AuthorizedTargetsAppSetting);
-            if (authorizedTargets.Length == 0)
+            if (!allowAnyTarget && authorizedTargets.Length == 0)
             {
                 return new DataTable();
             }
@@ -171,14 +172,17 @@ namespace WebApplication1.bussiness.production
             List<SqlParameter> parameters = new List<SqlParameter>();
             parameters.Add(new SqlParameter("@WorkStatus", "Active"));
 
-            List<string> targetParameterNames = new List<string>();
-            for (int i = 0; i < authorizedTargets.Length; i++)
+            if (!allowAnyTarget)
             {
-                string parameterName = "@Target" + i.ToString();
-                targetParameterNames.Add(parameterName);
-                parameters.Add(new SqlParameter(parameterName, authorizedTargets[i]));
+                List<string> targetParameterNames = new List<string>();
+                for (int i = 0; i < authorizedTargets.Length; i++)
+                {
+                    string parameterName = "@Target" + i.ToString();
+                    targetParameterNames.Add(parameterName);
+                    parameters.Add(new SqlParameter(parameterName, authorizedTargets[i]));
+                }
+                filters.Add("WorkmanSL IN (" + string.Join(", ", targetParameterNames.ToArray()) + ")");
             }
-            filters.Add("WorkmanSL IN (" + string.Join(", ", targetParameterNames.ToArray()) + ")");
 
             if (!string.IsNullOrWhiteSpace(workmanSL))
             {
@@ -196,7 +200,8 @@ namespace WebApplication1.bussiness.production
                 parameters.Add(new SqlParameter("@FullName", ToContainsLike(fullName.Trim())));
             }
 
-            if (filters.Count == 2)
+            int baselineFilterCount = allowAnyTarget ? 1 : 2;
+            if (filters.Count == baselineFilterCount)
             {
                 return new DataTable();
             }

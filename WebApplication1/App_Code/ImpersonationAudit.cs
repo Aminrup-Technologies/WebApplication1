@@ -1,3 +1,4 @@
+/* When: 2026-11-27 | Why: J1 must be able to switch to any Active employee without listing every WorkmanSL. | What: A SwitchUserAuthorizedTargets value of exactly * authorizes every non-blank target. An empty list still authorizes nobody. */
 /* When: 2026-10-08 | Why: Correct Switch User target authorization and impersonation logout identity handling without changing the existing architecture. | What: Enforce configured target employee-code allowlisting at search and execution boundaries and align homepage logout presence handling with the existing original-user impersonation path. */
 /* When: 2026-09-29 | Why: SU-P1-02 — logout while impersonating must update presence for the original authenticated user, and both logout pages must share that rule. | What: GetLogoutPresenceIdentity returns ORIGINAL_USERID and ORIGINAL_WORKMAN when IS_IMPERSONATING is set and both snapshot values are present; otherwise it returns the effective USERID and WORKMAN. */
 /*
@@ -26,6 +27,7 @@ namespace WebApplication1.bussiness.production
         public const string OutcomeFailure = "FAILURE";
         public const string AuthorizedUsersAppSetting = "SwitchUserAuthorizedUsers";
         public const string AuthorizedTargetsAppSetting = "SwitchUserAuthorizedTargets";
+        public const string AnyTargetToken = "*";
         public const string AdminUserType = "Admin";
 
         public static Guid NewCorrelationId()
@@ -49,15 +51,19 @@ namespace WebApplication1.bussiness.production
             if (IsImpersonating(session)) return false;
             if (string.IsNullOrWhiteSpace(Read(session, SessionKeys.UserID))) return false;
             if (string.IsNullOrWhiteSpace(Read(session, SessionKeys.WorkmanSL))) return false;
-            if (!string.Equals(Read(session, SessionKeys.UserType), AdminUserType, StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
             return IsWorkmanAuthorized(Read(session, SessionKeys.WorkmanSL));
+        }
+
+        public static bool AllowsAnySwitchTarget()
+        {
+            string[] codes = ReadAllowlistCodes(AuthorizedTargetsAppSetting);
+            return codes.Length == 1 && string.Equals(codes[0], AnyTargetToken, StringComparison.Ordinal);
         }
 
         public static bool IsTargetWorkmanAuthorized(string workmanSL)
         {
+            if (string.IsNullOrWhiteSpace(workmanSL)) return false;
+            if (AllowsAnySwitchTarget()) return true;
             return IsCodeOnAllowlist(workmanSL, AuthorizedTargetsAppSetting);
         }
 

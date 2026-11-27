@@ -3,9 +3,9 @@
  * WHY: Authorization modernization PR A. Wrap the hybrid Session / USERTYPE / WORKMAN model
  *      documented in docs/ROLE_PERMISSION_ARCHITECTURE_AUDIT.md without changing any page.
  * WHAT: Additive AuthorizationService. Overlay grants come from PermissionRepository
- *      (direct + group, 5-minute cache). SWITCH_USER is a dual-path canary: Admin
- *      required, then overlay Direct/Group, else SwitchUserAuthorizedUsers. Office Staff
- *      cannot gain impersonation. Empty overlay ⇒ same allow/deny as Admin+CSV.
+ *      (direct + group, 5-minute cache). SWITCH_USER grants SwitchUserAuthorizedUsers
+ *      without requiring USERTYPE=Admin. Overlay Direct/Group still requires Admin.
+ *      Office Staff who are not on that allowlist cannot impersonate.
  *      IsAdmin() is USERTYPE == Admin only. DescribeIdentity evaluates another employee
  *      through the same gates and restores the live Session.
  */
@@ -349,6 +349,13 @@ namespace WebApplication1.bussiness.production
                 item.Detail = "Already impersonating.";
                 return item;
             }
+            if (item.LegacyWouldAllow)
+            {
+                item.Granted = true;
+                item.Source = SourceLegacyConfig;
+                item.Detail = "SwitchUserAuthorizedUsers.";
+                return item;
+            }
             if (!IsAdmin(session))
             {
                 item.Source = SourceUserType;
@@ -363,14 +370,6 @@ namespace WebApplication1.bussiness.production
                     ? SourceOverlayGroup
                     : SourceOverlayDirect;
                 item.Detail = "Overlay " + overlaySource + " (SWITCH_USER canary). Config fallback still evaluated.";
-                return item;
-            }
-
-            if (item.LegacyWouldAllow)
-            {
-                item.Granted = true;
-                item.Source = SourceUserType + "+" + SourceLegacyConfig;
-                item.Detail = "USERTYPE=Admin and SwitchUserAuthorizedUsers.";
                 return item;
             }
 
@@ -390,7 +389,7 @@ namespace WebApplication1.bussiness.production
         public static bool SwitchUserDualPathMatches(EffectivePermission item, bool authenticated, bool admin)
         {
             if (item == null) return false;
-            bool expected = authenticated && admin && (item.OverlayWouldAllow || item.LegacyWouldAllow);
+            bool expected = authenticated && (item.LegacyWouldAllow || (admin && item.OverlayWouldAllow));
             return item.Granted == expected;
         }
 
