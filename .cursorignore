@@ -1,0 +1,9 @@
+# Keep Cursor from indexing build outputs, dependencies, and IDE clutter.
+
+**/bin/
+**/obj/
+**/.vs/
+**/packages/
+**/TestResults/
+**/node_modules/
+**/.git/
